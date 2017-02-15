@@ -52,6 +52,11 @@ namespace NuSysApp
         private ButtonUIElement _keywordVisibilityButton;
 
         /// <summary>
+        /// the button for toggling the visibility of touch keyboards on on scrollable text box ui elements
+        /// </summary>
+        private ButtonUIElement _touchKeyboardVisibilityButton;
+
+        /// <summary>
         /// stack layout manager to arrange buttons
         /// </summary>
         private StackLayoutManager _settingsStackLayout;
@@ -87,6 +92,9 @@ namespace NuSysApp
 
             _keywordVisibilityButton = new RectangleButtonUIElement(this, resourceCreator);
             AddChild(_keywordVisibilityButton);
+
+            _touchKeyboardVisibilityButton = new RectangleButtonUIElement(this, resourceCreator);
+            AddChild(_touchKeyboardVisibilityButton);
 
             _textSizeSlider = new SliderUIElement(this, resourceCreator, 1, 10)
             {
@@ -125,7 +133,7 @@ namespace NuSysApp
             AddChild(_serverStatus);
 
             MinWidth = 350;
-            MinHeight = 575;
+            MinHeight = 625;
             
             ShowClosable();
 
@@ -142,6 +150,7 @@ namespace NuSysApp
             _settingsStackLayout.AddElement(_dockBreadCrumbsButton);
             _settingsStackLayout.AddElement(_readOnlyModeSettingButton);
             _settingsStackLayout.AddElement(_keywordVisibilityButton);
+            _settingsStackLayout.AddElement(_touchKeyboardVisibilityButton);
             _settingsStackLayout.AddElement(_textSizeSlider);
             _settingsStackLayout.AddElement(_sliderText);
             _settingsStackLayout.AddElement(_serverStatus);
@@ -155,6 +164,7 @@ namespace NuSysApp
             _textSizeSlider.OnSliderMoveCompleted += TextSizeSliderOnOnSliderMoveCompleted;
             _readOnlyModeSettingButton.Tapped += ReadOnlyModeSettingButtonOnTapped;
             _keywordVisibilityButton.Tapped += KeywordVisibilityButtonOnTapped;
+            _touchKeyboardVisibilityButton.Tapped += TouchKeyboardVisibilityButtonOnTapped;
 
             SessionController.Instance.SessionSettings.ResizeElementTitlesChanged += SessionSettingsOnResizeElementTitlesChanged;
             SessionController.Instance.SessionSettings.LinkVisibilityChanged += SessionSettingsOnLinkVisibilityChanged;
@@ -164,10 +174,13 @@ namespace NuSysApp
             SessionController.Instance.SessionSettings.ReadOnlyModeSettingChanged += SessionSettingsOnReadOnlyModeSettingChanged;
             SessionController.Instance.SessionSettings.TagsVisibleChanged += SessionSettingsOnTagsVisibleChanged;
             SessionController.Instance.NuSysNetworkSession.ServerConnectionStatusChanged += NuSysNetworkSessionOnServerConnectionStatusChanged;
+            SessionController.Instance.SessionSettings.TouchKeyboardVisiblityChanged += SessionSettingsOnTouchKeyboardVisiblityChanged;
 
             SetButtonText();
             SetServerStatusText(SessionController.Instance.NuSysNetworkSession.Connection);
         }
+
+
 
 
         /// <summary>
@@ -183,6 +196,8 @@ namespace NuSysApp
             _textSizeSlider.OnSliderMoveCompleted -= TextSizeSliderOnOnSliderMoveCompleted;
             _readOnlyModeSettingButton.Tapped -= ReadOnlyModeSettingButtonOnTapped;
             _keywordVisibilityButton.Tapped -= KeywordVisibilityButtonOnTapped;
+            _touchKeyboardVisibilityButton.Tapped -= TouchKeyboardVisibilityButtonOnTapped;
+
 
             SessionController.Instance.SessionSettings.ResizeElementTitlesChanged -= SessionSettingsOnResizeElementTitlesChanged;
             SessionController.Instance.SessionSettings.LinkVisibilityChanged -= SessionSettingsOnLinkVisibilityChanged;
@@ -192,6 +207,8 @@ namespace NuSysApp
             SessionController.Instance.SessionSettings.ReadOnlyModeSettingChanged -= SessionSettingsOnReadOnlyModeSettingChanged;
             SessionController.Instance.SessionSettings.TagsVisibleChanged -= SessionSettingsOnTagsVisibleChanged;
             SessionController.Instance.NuSysNetworkSession.ServerConnectionStatusChanged -= NuSysNetworkSessionOnServerConnectionStatusChanged;
+            SessionController.Instance.SessionSettings.TouchKeyboardVisiblityChanged -= SessionSettingsOnTouchKeyboardVisiblityChanged;
+
         }
 
 
@@ -256,6 +273,7 @@ namespace NuSysApp
             _dockBreadCrumbsButton.ButtonText = "Dock Bread Crumb Trail: " + SessionController.Instance.SessionSettings.BreadCrumbsDocked.ToString();
 
             _readOnlyModeSettingButton.ButtonText = "Read Only Windows: " + SessionController.Instance.SessionSettings.ReadOnlyModeWindowsVisible.ToString();
+            _touchKeyboardVisibilityButton.ButtonText = "Show Touch Keyboard: " + SessionController.Instance.SessionSettings.TouchKeyboardVisible.ToString();
 
             _keywordVisibilityButton.ButtonText = "Show Keywords: "+SessionController.Instance.SessionSettings.TagsVisible;
         }
@@ -343,6 +361,27 @@ namespace NuSysApp
         private void SliderChanged(SliderUIElement sender, double currSliderPosition)
         {
             SessionController.Instance.SessionSettings.TextScale = Math.Round(Math.Max(currSliderPosition * 2,0) + .75,1);
+        }
+
+        /// <summary>
+        /// Event handle for when the user changes the touch keyboard visibility in this menu.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="b"></param>
+        private void SessionSettingsOnTouchKeyboardVisiblityChanged(object sender, bool b)
+        {
+            SetButtonText();
+        }
+
+        /// <summary>
+        /// Event handler fired whenever the touch keyboard visibility button is tapped
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void TouchKeyboardVisibilityButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            SessionController.Instance.SessionSettings.TouchKeyboardVisible = !SessionController.Instance.SessionSettings.TouchKeyboardVisible;
+
         }
 
 
