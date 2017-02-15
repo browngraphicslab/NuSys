@@ -3,25 +3,19 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.ApplicationModel.Core;
 using Windows.Devices.Input;
-using Windows.Foundation;
-using Windows.System;
-using Windows.UI.Core;
 using Windows.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
-using Microsoft.Graphics.Canvas.UI.Xaml;
-using SharpDX.Direct2D1;
-using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
 
    public class CanvasInteractionManager : IDisposable
     {
+        /// <summary>
+        /// The interaction types that pointers can support, basically determines if the pointer comes from a finger, mouse, or pen
+        /// </summary>
         public enum InteractionType
         {
             Mouse,
@@ -53,7 +47,7 @@ namespace NuSysApp
 
         /// <summary>
         /// Event fired whenever the last interaction changed the stored type of interaction.
-        /// The passed InteractionType is the latest interation type 
+        /// The passed InteractionType is the latest interaction type 
         /// </summary>
         public event EventHandler<InteractionType> InteractionTypeChanged;
 
@@ -62,10 +56,26 @@ namespace NuSysApp
         private double _twoFingerDist;
         private double _twoFingerDistTarget;
         private List<CanvasPointer> _pointers = new List<CanvasPointer>();
+
+
+        /// <summary>
+        /// The xaml element which maps pointer events to our win2d pointer handling system.
+        /// This is like the gateway to our app!
+        /// </summary>
         private FrameworkElement _canvas;
         private bool _cancelLongTapped;
+
+        /// <summary>
+        /// True if interactions are currently enabled for the app, false otherwise. When this is
+        /// false no interactions will be sent to any level of the win2d framework
+        /// </summary>
         private bool _isEnabled = true;
         private InteractionType _lastInteractionType = InteractionType.Touch;
+
+        /// <summary>
+        /// Gesture recognizer for the interactions
+        /// </summary>
+        private Windows.UI.Input.GestureRecognizer _gestureRecognizer;
 
         /// <summary>
         /// The interaction type of the last pointer down event.
@@ -88,6 +98,91 @@ namespace NuSysApp
             _canvas.Holding += OnHolding;
             AllPointersReleased += OnAllPointersReleased;
             SetEnabled(true);
+
+            // gesture recognizer based on this code http://bsubramanyamraju.blogspot.com/2015/01/windowsphone-81-gesture-support-with.html
+            // another example is here https://github.com/Microsoft/Windows-universal-samples/blob/master/Samples/BasicInput/cs/5-GestureRecognizer.xaml.cs
+            // create the gesture recognizer
+            _gestureRecognizer = new Windows.UI.Input.GestureRecognizer();
+            _gestureRecognizer.CrossSliding += gr_CrossSliding;
+            _gestureRecognizer.Dragging += gr_Dragging;
+            _gestureRecognizer.Holding += gr_Holding;
+            _gestureRecognizer.ManipulationCompleted += gr_ManipulationmCompleted;
+            _gestureRecognizer.ManipulationInertiaStarting += gr_ManipulationInertiaStarting;
+            _gestureRecognizer.ManipulationStarted += gr_ManipulationStarted;
+            _gestureRecognizer.ManipulationUpdated += gr_ManipulationUpdated;
+            _gestureRecognizer.RightTapped += gr_RightTapped;
+            _gestureRecognizer.Tapped += gr_Tapped;
+            _gestureRecognizer.GestureSettings = GestureSettings.ManipulationRotate | GestureSettings.ManipulationTranslateX | GestureSettings.ManipulationTranslateY |
+            GestureSettings.ManipulationScale | GestureSettings.ManipulationRotateInertia | GestureSettings.ManipulationScaleInertia |
+            GestureSettings.ManipulationTranslateInertia | GestureSettings.Tap | GestureSettings.DoubleTap;
+
+            // route events to the gesture recognizer through the canvas
+            _canvas.PointerCanceled += _canvasGRPointCanceled;
+            _canvas.PointerPressed += _canvasGRPointPressed;
+            _canvas.PointerReleased += _canvasGRPointReleased;
+            _canvas.PointerMoved += _canvasGRPointMoved;
+        }
+
+        private void _canvasGRPointMoved(object sender, PointerRoutedEventArgs e)
+        {
+            _gestureRecognizer.ProcessMoveEvents(e.GetIntermediatePoints(_canvas));
+        }
+
+        private void _canvasGRPointReleased(object sender, PointerRoutedEventArgs e)
+        {
+            _gestureRecognizer.ProcessUpEvent(e.GetCurrentPoint(_canvas));
+            e.Handled = true;
+        }
+
+        private void _canvasGRPointPressed(object sender, PointerRoutedEventArgs e)
+        {
+            _gestureRecognizer.ProcessDownEvent(e.GetCurrentPoint(_canvas));
+            // Set the pointer capture to the element being interacted with  
+            _canvas.CapturePointer(e.Pointer);
+            // Mark the event handled to prevent execution of default handlers  
+            e.Handled = true;
+        }
+
+        private void _canvasGRPointCanceled(object sender, PointerRoutedEventArgs e)
+        {
+            _gestureRecognizer.CompleteGesture();
+            e.Handled = true;
+        }
+
+        private void gr_Tapped(Windows.UI.Input.GestureRecognizer sender, TappedEventArgs args)
+        {
+        }
+
+        private void gr_RightTapped(Windows.UI.Input.GestureRecognizer sender, RightTappedEventArgs args)
+        {
+        }
+
+        private void gr_ManipulationUpdated(Windows.UI.Input.GestureRecognizer sender, ManipulationUpdatedEventArgs args)
+        {
+        }
+
+        private void gr_ManipulationStarted(Windows.UI.Input.GestureRecognizer sender, ManipulationStartedEventArgs args)
+        {
+        }
+
+        private void gr_ManipulationInertiaStarting(Windows.UI.Input.GestureRecognizer sender, ManipulationInertiaStartingEventArgs args)
+        {
+        }
+
+        private void gr_ManipulationmCompleted(Windows.UI.Input.GestureRecognizer sender, ManipulationCompletedEventArgs args)
+        {
+        }
+
+        private void gr_Holding(Windows.UI.Input.GestureRecognizer sender, HoldingEventArgs args)
+        {
+        }
+
+        private void gr_Dragging(Windows.UI.Input.GestureRecognizer sender, DraggingEventArgs args)
+        {
+        }
+
+        private void gr_CrossSliding(Windows.UI.Input.GestureRecognizer sender, CrossSlidingEventArgs args)
+        {
         }
 
 
@@ -155,17 +250,41 @@ namespace NuSysApp
             OnPointerTouchReleased(sender, args);
         }
 
+        /// <summary>
+        /// Called whenever a pointer is pressed on the app
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private void OnPointerPressed(object sender, PointerRoutedEventArgs args)
         {
+            // make sure all elements are responding to the correct interaction type
+            //todo this is probably deprecated in the new interaction scheme
             if (_lastInteractionType != PointerToInteractionType(args.Pointer))
             {
                 _lastInteractionType = PointerToInteractionType(args.Pointer);
                 InteractionTypeChanged?.Invoke(this, _lastInteractionType);
             }
+
+            // if interactions are currently disabled simply return
             if (!_isEnabled)
                 return;
-            OnPointerTouchPressed(sender, args);
+
+            // call the correct pointer pressed events based on the interactions type
+            switch (_lastInteractionType)
+            {
+                case InteractionType.Pen:
+                    OnPointerPenPressed(sender, args);
+                    break;
+                case InteractionType.Mouse:
+                case InteractionType.Touch:
+                    OnPointerTouchOrMousePressed(sender, args);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
         }
+
 
         private void OnPointerMoved(object sender, PointerRoutedEventArgs args)
         {
@@ -178,11 +297,11 @@ namespace NuSysApp
         {
             if (_pointers.Count == 1)
             {
-                _centerPoint = new Vector2((float)_pointers[0].CurrentPoint.X, (float)_pointers[0].CurrentPoint.Y);
+                _centerPoint = new Vector2(_pointers[0].CurrentPoint.X, _pointers[0].CurrentPoint.Y);
             } else {
                 var p0 = _pointers[0].GetBufferMean();
                 var p1 = _pointers[1].GetBufferMean();
-                _centerPoint = new Vector2((float) (p0.X + p1.X)/2f, (float) (p0.Y + p1.Y)/2f);
+                _centerPoint = new Vector2((p0.X + p1.X)/2f, (p0.Y + p1.Y)/2f);
             }
         }
 
@@ -193,11 +312,27 @@ namespace NuSysApp
             var p1 = _pointers[1].GetBufferMean();
             _twoFingerDist = MathUtil.Dist(p0, p1);
         }
-               
-        private async void OnPointerTouchPressed(object sender, PointerRoutedEventArgs e)
+
+
+        private void OnPointerPenPressed(object sender, PointerRoutedEventArgs args)
         {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Called whenever a touch or mouse pointer is pressed on the app
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void OnPointerTouchOrMousePressed(object sender, PointerRoutedEventArgs e)
+        {
+            // capturing the pointer makes sure that all events are sent to the canvas even if the point moves off the canvas
+            // or is moving to rapidly, basically takes care of any edge cases
             _canvas.CapturePointer(e.Pointer);
 
+            // add a new CanvasPointer to the list of pointers currently in contact with the app, where CanvasPointer is a wrapper around 
+            // the PointerPoint class. We get the pointer in the same coordinate system as the canvas, which essentially fills the full window
+            // of our app 
             _pointers.Add(new CanvasPointer(e.GetCurrentPoint(_canvas)));
 
             UpdateCenterPoint();
@@ -272,40 +407,36 @@ namespace NuSysApp
 
         private void OnPointerTouchMoved(object sender, PointerRoutedEventArgs args)
         {
-            unsafe
+            var exisitingPointer = _pointers.Where(p => p.PointerId == args.Pointer.PointerId);
+            if (!exisitingPointer.Any())
+                return;
+
+            var pointer = exisitingPointer.First();
+            pointer.Update(args.GetCurrentPoint(_canvas));
+
+            if (_pointers.Count == 1)
             {
-                var exisitingPointer = _pointers.Where(p => p.PointerId == args.Pointer.PointerId);
-                if (!exisitingPointer.Any())
-                    return;
-
-                var pointer = exisitingPointer.First();
-                pointer.Update(args.GetCurrentPoint(_canvas));
-
-                if (_pointers.Count == 1)
+                if (Math.Abs(pointer.DeltaSinceLastUpdate.X) > 0 || Math.Abs(pointer.DeltaSinceLastUpdate.Y) > 0)
                 {
-                    if (Math.Abs(pointer.DeltaSinceLastUpdate.X) > 0 || Math.Abs(pointer.DeltaSinceLastUpdate.Y) > 0)
-                    {
-                        Translated?.Invoke(pointer, pointer.CurrentPoint, pointer.DeltaSinceLastUpdate);
-                    }
+                    Translated?.Invoke(pointer, pointer.CurrentPoint, pointer.DeltaSinceLastUpdate);
                 }
-                if (_pointers.Count >= 2)
-                {
-                    var prevCenterPoint = _centerPoint;
-                    var prevDist = _twoFingerDist;
-                    UpdateCenterPoint();
-                    UpdateDist();
-                    var dx = _centerPoint.X - prevCenterPoint.X;
-                    var dy = _centerPoint.Y - prevCenterPoint.Y;
-                    var ds = (float)(_twoFingerDist / prevDist);
-                    if (Math.Abs(ds) > 0.9)
-                    {
-                        PanZoomed?.Invoke(_centerPoint, new Vector2(dx, dy), ds);
-                    }
-                }
-
-                PointerMoved?.Invoke(pointer);
             }
-           
+            if (_pointers.Count >= 2)
+            {
+                var prevCenterPoint = _centerPoint;
+                var prevDist = _twoFingerDist;
+                UpdateCenterPoint();
+                UpdateDist();
+                var dx = _centerPoint.X - prevCenterPoint.X;
+                var dy = _centerPoint.Y - prevCenterPoint.Y;
+                var ds = (float)(_twoFingerDist / prevDist);
+                if (Math.Abs(ds) > 0.9)
+                {
+                    PanZoomed?.Invoke(_centerPoint, new Vector2(dx, dy), ds);
+                }
+            }
+
+            PointerMoved?.Invoke(pointer);
         }
 
         /// <summary>
@@ -324,7 +455,7 @@ namespace NuSysApp
             {
                 return InteractionType.Pen;
             }
-            else if (pointer.PointerDeviceType == PointerDeviceType.Mouse)
+            if (pointer.PointerDeviceType == PointerDeviceType.Mouse)
             {
                 return InteractionType.Mouse;
             }

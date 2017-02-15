@@ -73,6 +73,7 @@ namespace NuSysApp
              _imageRect = new Rect(model.NormalizedX, model.NormalizedY, model.NormalizedWidth, model.NormalizedHeight);
         }
 
+        //todo why does this get called like 20 times
         private void CanvasInteractionManagerOnInteractionTypeChanged(object sender, CanvasInteractionManager.InteractionType interactionType)
         {
             if (interactionType == CanvasInteractionManager.InteractionType.Pen)

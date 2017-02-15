@@ -11,14 +11,47 @@ using Windows.UI.Xaml.Input;
 
 namespace NuSysApp
 {
+    /// <summary>
+    /// Wrapper class to get and store information about pointers
+    /// </summary>
     public class CanvasPointer
     {
+        /// <summary>
+        /// The moment the pointer was created
+        /// </summary>
         public DateTime StartTime = DateTime.MinValue;
+
+        /// <summary>
+        /// The most recently updated pointer information
+        /// </summary>
         public DateTime LastUpdated = DateTime.MinValue;
+
+        /// <summary>
+        /// A unique identifier for the input pointer
+        /// </summary>
         public uint PointerId;
+
+        /// <summary>
+        /// Whether or not the pointer is a touch pen or mouse pointer
+        /// </summary>
         public PointerDeviceType DeviceType;
+
+        /// <summary>
+        /// Extra properties for the pointer. BE CAREFUL THIS IS NOT A THREAD SAFE CLASS AND
+        /// SIMULTANEOUS ACCESS TO IT FROM THE UITHREAD AND BACKGROUND THREAD IS NOT RECOMMENDED
+        /// more info here https://msdn.microsoft.com/en-us/library/windows/apps/hh771042.aspx
+        /// and here https://msdn.microsoft.com/en-us/library/windows/apps/jj157115.aspx
+        /// </summary>
         public PointerPointProperties Properties;
+
+        /// <summary>
+        /// The initial position of the pointer, in our case it is relative to the full window
+        /// </summary>
         public Vector2 StartPoint;
+
+        /// <summary>
+        /// The current position of the pointer relative to the full window
+        /// </summary>
         public Vector2 CurrentPoint;
         public float Pressure;
         private Vector2[] _buffer;
@@ -37,6 +70,10 @@ namespace NuSysApp
         }
 
         public CanvasPointer() { }
+        /// <summary>
+        /// Creates a new canvas pointer, 
+        /// </summary>
+        /// <param name="pointerpoint"></param>
         public CanvasPointer(PointerPoint pointerpoint)
         {
             StartPoint = new Vector2((float)pointerpoint.Position.X, (float)pointerpoint.Position.Y);
