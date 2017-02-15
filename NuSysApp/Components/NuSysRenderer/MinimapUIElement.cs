@@ -58,12 +58,7 @@ namespace NuSysApp
         private void MinimapUIElement_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             var localPoint = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
-            /*
-            if (!HitsRect(localPoint))
-            {
-                return;
-            }
-            */
+
             var ratioHeight = (float)_collection.ViewModel.Height / (float)_collection.ViewModel.Width;
 
             if (!_zoomRectangle.IsVisible)
