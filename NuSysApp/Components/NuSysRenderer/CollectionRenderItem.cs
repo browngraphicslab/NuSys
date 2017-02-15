@@ -858,30 +858,25 @@ namespace NuSysApp
                 var widthAdjustment = ViewModel.Width / 2;
                 var heightAdjustment = ViewModel.Height / 2;
 
-                var scale = ViewModel.Width / (bottomRightPoint.X - topLeftPoint.X);
+                var scale = ViewModel.Width / (rectWidth);
 
                 var translateX = widthAdjustment - x;
                 var translateY = heightAdjustment - y;
 
 
-                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalPosition =
-                    new Vector2((float)translateX, (float)translateY);
                 SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScaleCenter =
-                    new Vector2((float)x, (float)y);
+    new Vector2((float)x, (float)y);
                 SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScale =
                     new Vector2((float)scale, (float)scale);
+                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalPosition =
+                    new Vector2((float)translateX, (float)translateY);
 
-                // SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScale =  new Vector2((float)scale, (float)scale);
 
 
-                //SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.CameraTranslation = new Vector2((float)translateX, (float)translateY);
-                //SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.CameraCenter = new Vector2((float)x, (float)y);
-                //SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.CameraScale = (float)scale;
+
                 SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.InkRenderItem?
                     .UpdateDryInkTransform();
-                //SessionController.Instance.SessionView.FreeFormViewer._minimap?.Invalidate();
                 SessionController.Instance.SessionView.FreeFormViewer.MiniMap.IsDirty = true;
-                //CameraOnCentered?.Invoke(this, SessionController.Instance.ContentController.GetLibraryElementController(elementToBeFullScreened.LibraryElementId));
 
             });
 

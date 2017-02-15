@@ -8,6 +8,7 @@ using Microsoft.Graphics.Canvas;
 using System.Diagnostics;
 using Windows.UI;
 using Windows.Foundation;
+using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
@@ -94,7 +95,6 @@ namespace NuSysApp
             }
             _zoomRectangle.IsVisible = false;
 
-            var localPoint = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
             /*
             if (!HitsRect(localPoint))
             {
@@ -108,12 +108,17 @@ namespace NuSysApp
             {
                 return;
             }
+
+            //collection points
             var topLeftPoint = GetCollectionPointFromLocalPoint(GetTrueLocalPoint(_zoomRectangle.Transform.LocalPosition));
             var bottomRightPoint = GetCollectionPointFromLocalPoint(GetTrueLocalPoint(_zoomRectangle.Transform.LocalPosition + new Vector2(_zoomRectangle.Width, _zoomRectangle.Height)));
+
+
             _collection.CenterCameraOnRectangle(topLeftPoint, bottomRightPoint);
+
         }
 
-        
+
 
 
 
@@ -127,7 +132,6 @@ _collection.ViewModel.Height);
 
             var collectionRectScreen = Win2dUtil.TransformRect(collectionRectOrg, SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetTransformUntil(_collection));
 
-            //if (currentColl == SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.InitialCollection)
             var collectionRect = Win2dUtil.TransformRect(collectionRectScreen, Win2dUtil.Invert(SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetCollectionTransform(_collection)));
 
             var c = Matrix3x2.CreateTranslation((float)_bb.X, (float)_bb.Y);
@@ -136,7 +140,14 @@ _collection.ViewModel.Height);
             var scale = Math.Min(_rect.Width / (float)_bb.Width, _rect.Height / (float)_bb.Height);
             var s = Matrix3x2.CreateScale((float)scale);
 
-            var matrix = cp * s;
+
+            //var pt = Vector2.Transform(localPoint, Win2dUtil.Invert(SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetCollectionTransform(_collection)));
+            var matrix =  cp * s;
+
+            if (_collection != SessionController.Instance.SessionView.FreeFormViewer.InitialCollection)
+            {
+            //If you're smarter than me, please fix this
+            }
 
             var point = Vector2.Transform(localPoint, Win2dUtil.Invert(matrix));
             return point;
@@ -230,17 +241,21 @@ _collection.ViewModel.Height);
             float rh = (float)_collection.ViewModel.Height / (float)_collection.ViewModel.Width;
             float newW;
             float newH;
-            if (rh < 1)
+
+            
+            if (rh < 170f/300f)
             {
                 newH = rh * 300f;
                 newW = 300;
             }
             else
             {
-                newW = 1 / rh * 170;
+                newW = 1 / rh * 170f;
                 newH = 170;
             }
-            _rect = new Rect(_collection.ViewModel.Width - newW, _collection.ViewModel.Height - newH, newW, newH);
+
+            //_rect = new Rect(_collection.ViewModel.Width - newW, _collection.ViewModel.Height - newH, newW, newH);
+            _rect = new Rect(0,0, newW, newH);
 
             using (var dss = _renderTarget.CreateDrawingSession())
             {
@@ -308,7 +323,7 @@ _collection.ViewModel.Height);
             try
             {
                 var old = ds.Transform;
-                ds.Transform = ds.Transform = Transform.LocalToScreenMatrix;
+                ds.Transform = Transform.LocalToScreenMatrix;
                 var xOffset =  300f - _rect.Width;
                 var yOffset = 170f - _rect.Height;
 
