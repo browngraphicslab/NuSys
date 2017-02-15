@@ -194,7 +194,6 @@ namespace NuSysApp
 
         public override async Task Load()
         {
-
             if (_collectionElementModels != null)
             {
                 // remove all current elements, we're essentially going to rrecreate the grid each time

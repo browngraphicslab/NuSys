@@ -63,6 +63,8 @@ namespace NuSysApp
         /// </summary>
         public ChatBoxUIElement Chatbox { get; }
         
+
+        public MinimapUIElement Minimap { get {return _minimap;} }
         private ButtonUIElement _backButton;
 
         /// <summary>
@@ -144,6 +146,9 @@ namespace NuSysApp
         /// the controller of the current collection
         /// </summary>
         private LibraryElementController _currController;
+
+
+        private MinimapUIElement _minimap;
 
 
         public NuSessionViewer(BaseRenderItem parent, CanvasAnimatedControl canvas) : base(parent, canvas)
@@ -304,6 +309,17 @@ namespace NuSysApp
                 Width = 250
             };
             AddChild(_readOnlyAliasesWindow);
+
+
+
+
+            _minimap = new MinimapUIElement(this, Canvas, null);
+            _minimap.Transform.LocalX = Width - 300f;
+            _minimap.Transform.LocalY = Height - 170f;
+
+            
+
+            AddChild(_minimap);
             _readOnlyAliasesWindow.Transform.LocalPosition = new Vector2(60, 100);
 
 
@@ -607,6 +623,8 @@ namespace NuSysApp
             _detailViewer.Width = Width/2;
             _detailViewer.MaxWidth = Width - 60;
 
+            _minimap.Transform.LocalPosition = new Vector2(Width - 300f, Height - 170f);
+
             // center the presentation mode buttons
             var buttonMargin = 10;
             var top = Height - _previousNode.Height - buttonMargin;
@@ -665,6 +683,8 @@ namespace NuSysApp
                 AddChild(Library);
                 Library.Transform.LocalPosition = new Vector2(_floatingMenu.Transform.LocalX + _floatingMenu.Width, _floatingMenu.Transform.LocalY + _floatingMenu.Height);
             }
+
+
             Library.IsVisible = false;
 
             _loaded = true;

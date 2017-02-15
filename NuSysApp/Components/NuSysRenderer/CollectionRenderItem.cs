@@ -876,7 +876,7 @@ namespace NuSysApp
 
                 SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.InkRenderItem?
                     .UpdateDryInkTransform();
-                SessionController.Instance.SessionView.FreeFormViewer.MiniMap.IsDirty = true;
+                SessionController.Instance.NuSessionView.Minimap.IsDirty = true;
 
             });
 
@@ -941,7 +941,7 @@ namespace NuSysApp
                 SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.InkRenderItem?
                     .UpdateDryInkTransform();
                 //SessionController.Instance.SessionView.FreeFormViewer._minimap?.Invalidate();
-                SessionController.Instance.SessionView.FreeFormViewer.MiniMap.IsDirty = true;
+                SessionController.Instance.NuSessionView.Minimap.IsDirty = true;
                 CameraOnCentered?.Invoke(this, SessionController.Instance.ContentController.GetLibraryElementController(elementToBeFullScreened.LibraryElementId));
 
             });

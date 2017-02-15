@@ -12,6 +12,12 @@ using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
+
+    /// <summary>
+    /// MinimapUIElement replaces MinimapRenderItem, which was once on its own CanvasControl.
+    /// 
+    /// This is now a RectangleUIElement that draws the minimap on the corner of the screen.
+    /// </summary>
     public class MinimapUIElement : RectangleUIElement
     {
         private Rect _rect;
@@ -26,13 +32,18 @@ namespace NuSysApp
         {
             SwitchCollection(collection);
             Background = Colors.Transparent;
-            Width = 300f;
-            Height = 170f;
+            Width = UIDefaults.MaxMinimapWidth;
+            Height = UIDefaults.MaxMinimapHeight;
+            AddHandlers();
+            SetUpZoomRectangle();
+        }
 
-            DoubleTapped += MinimapUIElement_DoubleTapped;
-            Released += MinimapUIElement_Released;
-            Dragged += MinimapUIElement_Dragged;
-
+        #region misc
+        /// <summary>
+        /// Sets up the rectangle that represents where we'll be zooming when released
+        /// </summary>
+        private void SetUpZoomRectangle()
+        {
             _zoomRectangle = new RectangleUIElement(this, ResourceCreator)
             {
                 BorderType = BorderType.Outside,
@@ -45,21 +56,64 @@ namespace NuSysApp
 
             };
             AddChild(_zoomRectangle);
-
+        }
+        /// <summary>
+        /// Adds interaction handlers
+        /// </summary>
+        private void AddHandlers()
+        {
+            DoubleTapped += MinimapUIElement_DoubleTapped;
+            Released += MinimapUIElement_Released;
+            Dragged += MinimapUIElement_Dragged;
+        }
+        /// <summary>
+        /// Removes interaction handlers
+        /// </summary>
+        private void RemoveHandlers()
+        {
+            DoubleTapped -= MinimapUIElement_DoubleTapped;
+            Released -= MinimapUIElement_Released;
+            Dragged -= MinimapUIElement_Dragged;
         }
 
+        #endregion misc
+
+        #region events
+
+        /// <summary>
+        /// On double tap, center camera at that point
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
         private void MinimapUIElement_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
+            //Goes from CanvasPointer, whose CurrentPoint is the local representation of the point, to the representation of the point relative to the minimap _rect, then to the representation of the point on the collection
             var point = GetCollectionPointFromCanvasPointer(pointer);
-            _collection.CenterCameraOnPoint(point);
+            //Finally we center the camera on that point, only if the current collection is the top collection
+            if (_collection == SessionController.Instance.SessionView.FreeFormViewer.InitialCollection)
+            {
+                _collection.CenterCameraOnPoint(point);
+            }
         }
 
-       
+        /// <summary>
+        /// On drag, if called when the zoom rectangle is invisible, make it visible and of 0 size. Then increase the width and
+        /// height based on the position of the pointer
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
         private void MinimapUIElement_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
+            //Don't do anything if this is a nested collection
+            if (_collection != SessionController.Instance.SessionView.FreeFormViewer.InitialCollection)
+            {
+                return;
+            }
             var localPoint = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
 
+            // get ratio of height to width of collection so that the corresponding Zoom rectangle is of the same dimension
             var ratioHeight = (float)_collection.ViewModel.Height / (float)_collection.ViewModel.Width;
+
 
             if (!_zoomRectangle.IsVisible)
             {
@@ -69,19 +123,20 @@ namespace NuSysApp
                 _zoomRectangle.Height = 0f;
 
             }
-
-
+            // Width of zoom rectangle
             var width = Math.Max(0, localPoint.X - _zoomRectangle.Transform.LocalX);
-            var height = width*ratioHeight;
+            //Height of zoom rectangle
+            var height = width * ratioHeight;
 
             _zoomRectangle.Width = width;
             _zoomRectangle.Height = height;
-
-
-            
         }
 
-
+        /// <summary>
+        /// On released, we want to zoom to the rectangle represented by the zoomrectangle
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
         private void MinimapUIElement_Released(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             if (!_zoomRectangle.IsVisible)
@@ -90,36 +145,37 @@ namespace NuSysApp
             }
             _zoomRectangle.IsVisible = false;
 
-            /*
-            if (!HitsRect(localPoint))
-            {
-                return;
-            }
-            */
-
             var ratioHeight = (float)_collection.ViewModel.Height / (float)_collection.ViewModel.Width;
 
-            if (_zoomRectangle.Width <15 || _zoomRectangle.Height < 15 * ratioHeight)
+            if (_zoomRectangle.Width < 15 || _zoomRectangle.Height < 15 * ratioHeight)
             {
                 return;
             }
 
-            //collection points
+            //collection points of the rectangle
             var topLeftPoint = GetCollectionPointFromLocalPoint(GetTrueLocalPoint(_zoomRectangle.Transform.LocalPosition));
             var bottomRightPoint = GetCollectionPointFromLocalPoint(GetTrueLocalPoint(_zoomRectangle.Transform.LocalPosition + new Vector2(_zoomRectangle.Width, _zoomRectangle.Height)));
 
+            //Centers camera on that rectangle. Only call this when current collection is the top collection
+            if (_collection == SessionController.Instance.SessionView.FreeFormViewer.InitialCollection)
+            {
+                _collection.CenterCameraOnRectangle(topLeftPoint, bottomRightPoint);
 
-            _collection.CenterCameraOnRectangle(topLeftPoint, bottomRightPoint);
+            }
 
         }
+        #endregion events
 
-
-
-
-
-
+        /// <summary>
+        /// Input: local point relative to the _rect.
+        /// Output: point on collection the input represents
+        /// </summary>
+        /// <param name="localPoint"></param>
+        /// <returns></returns>
         private Vector2 GetCollectionPointFromLocalPoint(Vector2 localPoint)
         {
+
+            /*
             var collectionRectOrg = new Rect(_collection.ViewModel.X,
 _collection.ViewModel.Y,
 _collection.ViewModel.Width,
@@ -128,22 +184,26 @@ _collection.ViewModel.Height);
             var collectionRectScreen = Win2dUtil.TransformRect(collectionRectOrg, SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetTransformUntil(_collection));
 
             var collectionRect = Win2dUtil.TransformRect(collectionRectScreen, Win2dUtil.Invert(SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetCollectionTransform(_collection)));
+            */
 
-            var c = Matrix3x2.CreateTranslation((float)_bb.X, (float)_bb.Y);
-            var cp = Win2dUtil.Invert(c);
-
+            //Creates translation based on the start of the bounding rectangle of all the nodes in the collection
+            var translationMatrix = Matrix3x2.CreateTranslation((float)_bb.X, (float)_bb.Y);
+            //Inverts this matrix
+            var translationMatrixInverse = Win2dUtil.Invert(translationMatrix);
+            //Gets scale based on the rectangle width and the bounding rectangle of all the nodes in the collection
             var scale = Math.Min(_rect.Width / (float)_bb.Width, _rect.Height / (float)_bb.Height);
-            var s = Matrix3x2.CreateScale((float)scale);
+            //Creates scale based on this double
+            var scaleInverse = Matrix3x2.CreateScale((float)scale);
 
 
             //var pt = Vector2.Transform(localPoint, Win2dUtil.Invert(SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetCollectionTransform(_collection)));
-            var matrix =  cp * s;
+            var matrix =  translationMatrixInverse * scaleInverse;
 
+            //If you're smarter than me, please fix this
             if (_collection != SessionController.Instance.SessionView.FreeFormViewer.InitialCollection)
             {
-            //If you're smarter than me, please fix this
+                //Currently, this method doesn't give the correct collection point for nested collections. I figure it probably has to do with having to use the GetTransformUntil method on the collection to take into account the parent's transform.
             }
-
             var point = Vector2.Transform(localPoint, Win2dUtil.Invert(matrix));
             return point;
         }
@@ -155,7 +215,7 @@ _collection.ViewModel.Height);
         /// <returns></returns>
         private Vector2 GetTrueLocalPoint(Vector2 point)
         {
-            return point - new Vector2(300f - (float)_rect.Width, 170f - (float)_rect.Height);
+            return point - new Vector2(UIDefaults.MaxMinimapWidth - (float)_rect.Width, UIDefaults.MaxMinimapHeight - (float)_rect.Height);
         }
         /// <summary>
         /// input: local point
@@ -164,10 +224,10 @@ _collection.ViewModel.Height);
         /// <returns></returns>
         private bool HitsRect(Vector2 point)
         {
-            var maxX = 300f;
-            var minX = 300f - _rect.Width;
-            var maxY = 170f;
-            var minY = 170f - _rect.Height;
+            var maxX = UIDefaults.MaxMinimapWidth;
+            var minX = UIDefaults.MaxMinimapWidth - _rect.Width;
+            var maxY = UIDefaults.MaxMinimapHeight;
+            var minY = UIDefaults.MaxMinimapHeight - _rect.Height;
             
             if(point.X >= minX && point.X <= maxX && point.Y >= minY && point.Y <= maxY)
             {
@@ -176,7 +236,11 @@ _collection.ViewModel.Height);
 
             return false;
         }
-        
+        /// <summary>
+        /// Overrides hittest so that only the rect can be hit
+        /// </summary>
+        /// <param name="screenPoint"></param>
+        /// <returns></returns>
         public override BaseRenderItem HitTest(Vector2 screenPoint)
         {
             var localPoint = Vector2.Transform(screenPoint, Transform.ScreenToLocalMatrix);
@@ -188,28 +252,36 @@ _collection.ViewModel.Height);
             return null;
         }
         
-
+        /// <summary>
+        /// Goes from CanvasPointer's currentpoint to the local point relative to the MinimapUIElement to the point relative to the rect.
+        /// </summary>
+        /// <param name="pointer"></param>
+        /// <returns></returns>
         private Vector2 GetCollectionPointFromCanvasPointer(CanvasPointer pointer)
         {
             var localPoint = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
             var trueLocalPoint = GetTrueLocalPoint(localPoint);
             return GetCollectionPointFromLocalPoint(trueLocalPoint);
-
         }
 
-
+        /// <summary>
+        /// IMPORTANT: Call this when we switch collections
+        /// </summary>
+        /// <param name="collection"></param>
         public void SwitchCollection(CollectionRenderItem collection)
         {
             _collection = collection;
             _renderTarget = null;
             IsDirty = true;
-
         }
 
-
+        /// <summary>
+        /// Most of this is written by Phil
+        /// </summary>
+        /// <param name="ds"></param>
         public override void Draw(CanvasDrawingSession ds)
         {
-            if (IsDisposed || !SessionController.Instance.SessionSettings.MinimapVisible)
+            if (IsDisposed || !SessionController.Instance.SessionSettings.MinimapVisible || _collection == null)
             {
                 return;
             }
@@ -224,8 +296,6 @@ _collection.ViewModel.Height);
                 CreateResources();
             }
 
-
-
             Debug.Assert(_collection?.ViewModel != null, "this shouldn't be null");
             if (_collection?.ViewModel == null)
             {
@@ -238,19 +308,19 @@ _collection.ViewModel.Height);
             float newH;
 
             
-            if (rh < 170f/300f)
+            if (rh < UIDefaults.MaxMinimapHeight/UIDefaults.MaxMinimapWidth)
             {
-                newH = rh * 300f;
-                newW = 300;
+                newH = rh * UIDefaults.MaxMinimapWidth;
+                newW = UIDefaults.MaxMinimapWidth;
             }
             else
             {
-                newW = 1 / rh * 170f;
-                newH = 170;
+                newW = 1 / rh * UIDefaults.MaxMinimapHeight;
+                newH = UIDefaults.MaxMinimapHeight;
             }
 
             //_rect = new Rect(_collection.ViewModel.Width - newW, _collection.ViewModel.Height - newH, newW, newH);
-            _rect = new Rect(0,0, newW, newH);
+            _rect = new Rect(0,0, newW, newH); //I don't know the difference between this line and the line above. Both behave the same.
 
             using (var dss = _renderTarget.CreateDrawingSession())
             {
@@ -319,8 +389,8 @@ _collection.ViewModel.Height);
             {
                 var old = ds.Transform;
                 ds.Transform = Transform.LocalToScreenMatrix;
-                var xOffset =  300f - _rect.Width;
-                var yOffset = 170f - _rect.Height;
+                var xOffset =  UIDefaults.MaxMinimapWidth - _rect.Width;
+                var yOffset = UIDefaults.MaxMinimapHeight - _rect.Height;
 
                 ds.DrawImage(_renderTarget, new Rect(xOffset, yOffset, _rect.Width, _rect.Height));
                 ds.Transform = old;
@@ -346,18 +416,24 @@ _collection.ViewModel.Height);
             float newH;
             if (rh < 1)
             {
-                newH = rh * 300f;
-                newW = 300;
+                newH = rh * UIDefaults.MaxMinimapWidth;
+                newW = UIDefaults.MaxMinimapWidth;
             }
             else
             {
-                newW = 1 / rh * 170;
-                newH = 170;
+                newW = 1 / rh * UIDefaults.MaxMinimapHeight;
+                newH = UIDefaults.MaxMinimapHeight;
             }
             _renderTarget = new CanvasRenderTarget(ResourceCreator, new Size(newW, newH));
             _rect = new Rect(_collection.ViewModel.Width - newW, _collection.ViewModel.Height - newH, newW, newH);
 
         }
+
+        /// <summary>
+        /// Gets bounding rect from a list of rects
+        /// </summary>
+        /// <param name="rects"></param>
+        /// <returns></returns>
         private Rect GetBoundingRect(List<Rect> rects)
         {
             var minX = double.PositiveInfinity;
@@ -374,11 +450,11 @@ _collection.ViewModel.Height);
             return new Rect(minX, minY, maxW - minX, maxH - minY);
 
         }
-        public override void Update(Matrix3x2 parentLocalToScreenTransform)
+
+        public override void Dispose()
         {
-            base.Update(parentLocalToScreenTransform);
+            RemoveHandlers();
+            base.Dispose();
         }
-
-
     }
 }
