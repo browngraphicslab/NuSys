@@ -396,37 +396,7 @@ namespace NuSysApp
             await ExecuteRequestAsync(request);
             return request.GetReturnedResults();
         }
-        /// <summary>
-        /// Downloads a docx for the specified library ID and returns the temporary docx file path,
-        /// null if an error occurred like the document doesn't exist;
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public async Task<string> DownloadDocx(string id)
-        {
-            var bytes = await _serverClient.GetDocxBytes(id);
-            if (bytes == null)
-            {
-                return null;
-            }
-            var path = NuSysStorages.SaveFolder.Path + "\\" + id + ".docx";
-            try
-            {
-                using (var stream = new FileStream(path, FileMode.Create, FileAccess.ReadWrite))
-                {
-                    await stream.WriteAsync(bytes, 0, bytes.Length);
-                }
-            }
-            catch (UnauthorizedAccessException unAuth)
-            {
-                throw new UnauthorizedAccessException("Couldn't write to file most likely because it is already open");
-            }
-            catch (Exception e)
-            {
-                throw new Exception("couldn't write to file because " + e.Message);
-            }
-            return path;
-        }
+
         public async Task<IEnumerable<LibraryElementModel>> GetAllLibraryElements()
         {
             var request = new GetAllLibraryElementsRequest();

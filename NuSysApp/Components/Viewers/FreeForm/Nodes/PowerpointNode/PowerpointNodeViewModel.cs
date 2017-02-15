@@ -32,47 +32,47 @@ namespace NuSysApp
 
         private async void WatchForPdf()
         {
-            string token = Controller.LibraryElementController.GetMetadata("Token").First();
+            //string token = Controller.LibraryElementController.GetMetadata("Token").First();
 
-            if (!String.IsNullOrEmpty(token) && Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token))
-            {
-                Task.Run(async () =>
-                {
-                    while (true)
-                    {
-                        var fileList = await NuSysStorages.Media.GetFilesAsync();
-                        bool foundPdf = false;
+            //if (!String.IsNullOrEmpty(token) && Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.ContainsItem(token))
+            //{
+            //    Task.Run(async () =>
+            //    {
+            //        while (true)
+            //        {
+            //            var fileList = await NuSysStorages.Media.GetFilesAsync();
+            //            bool foundPdf = false;
 
-                        foreach (StorageFile file in fileList)
-                        {
-                            string ext = Path.GetExtension(file.Path);
-                            string name = Path.GetFileNameWithoutExtension(file.Path);
+            //            foreach (StorageFile file in fileList)
+            //            {
+            //                string ext = Path.GetExtension(file.Path);
+            //                string name = Path.GetFileNameWithoutExtension(file.Path);
 
-                            if (Constants.PdfFileTypes.Contains(ext) && token == name)
-                            {
-                                foundPdf = true;
-                                try
-                                {
-                                    await CreatePdfNode(file);
-                                }
-                                catch (Exception ex)
-                                {
-                                //TODO error handling
-                            }
-                            }
-                        }
+            //                if (Constants.PdfFileTypes.Contains(ext) && token == name)
+            //                {
+            //                    foundPdf = true;
+            //                    try
+            //                    {
+            //                        await CreatePdfNode(file);
+            //                    }
+            //                    catch (Exception ex)
+            //                    {
+            //                    //TODO error handling
+            //                }
+            //                }
+            //            }
 
-                        if (!foundPdf)
-                        {
-                            await Task.Delay(1000 * 5);
-                        }
-                        else
-                        {
-                            return;
-                        }
-                    }
-                });
-            }
+            //            if (!foundPdf)
+            //            {
+            //                await Task.Delay(1000 * 5);
+            //            }
+            //            else
+            //            {
+            //                return;
+            //            }
+            //        }
+            //    });
+            //}
         }
 
         private async Task CreatePdfNode(StorageFile pdfFile)

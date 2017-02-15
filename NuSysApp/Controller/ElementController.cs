@@ -388,14 +388,14 @@ namespace NuSysApp
             /// create the node's HTML file in the HTML folder
             /// if there already is an HTML folder, add the sample file to that folder, otherwise make a new folder
             StorageFolder htmlFolder = null;
-            if (await NuSysStorages.NuSysTempFolder.ContainsFolderAsync("HTML"))
-            {
-                htmlFolder = await NuSysStorages.NuSysTempFolder.GetFolderAsync("HTML");
-            }
-            else
-            {
-                htmlFolder = await NuSysStorages.NuSysTempFolder.CreateFolderAsync("HTML");
-            }
+            //if (await ApplicationData.Current.LocalCacheFolder.ContainsFolderAsync("HTML"))
+            //{
+            //    htmlFolder = await NuSysStorages.NuSysTempFolder.GetFolderAsync("HTML");
+            //}
+            //else
+            //{
+            //    htmlFolder = await NuSysStorages.NuSysTempFolder.CreateFolderAsync("HTML");
+            //}
 
             ///make file for the element
             var nodeFile = await htmlFolder.CreateFileAsync(Id + ".html", CreationCollisionOption.ReplaceExisting);

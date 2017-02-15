@@ -159,37 +159,6 @@ namespace NuSysApp
 
         public event WorkspaceChangedHandler WorkspaceChanged;
 
-        private async Task LoadThumbs()
-        {
-            Thumbnails.Clear();
-            var thumbs = await NuSysStorages.Thumbs.GetFilesAsync();
-            foreach (var thumbFile in thumbs)
-            {
-                if (thumbFile == null)
-                    continue;
-                var buffer = await FileIO.ReadBufferAsync(thumbFile);
-                var id = Path.GetFileNameWithoutExtension(thumbFile.Path);
-                var img = await MediaUtil.ByteArrayToBitmapImage(buffer.ToArray());
-                Thumbnails[id] = img;
-            }
-        }
-
-        public async Task SaveThumb(string id, RenderTargetBitmap image)
-        {
-            Thumbnails[id] = image;
-            var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.Thumbs, id + ".png");
-            var img = await MediaUtil.RenderTargetBitmapToByteArray(image);
-            FileIO.WriteBytesAsync(file, img);
-        }
-
-        public async Task SaveThumb(string id, byte[] byteArray)
-        {
-            var image = await MediaUtil.ByteArrayToBitmapImage(byteArray);
-            Thumbnails[id] = image;
-            var file = await StorageUtil.CreateFileIfNotExists(NuSysStorages.Thumbs, id + ".png");
-            FileIO.WriteBytesAsync(file, byteArray);
-        }
-
         /// <summary>
         /// The current mode of the workspace, set this using SwitchMode
         /// </summary>

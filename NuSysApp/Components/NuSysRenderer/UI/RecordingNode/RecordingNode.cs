@@ -348,7 +348,7 @@ namespace NuSysApp
                 var fileName = _currRecordingType == RecordingType.Audio
                     ? "New Audio Recording.mp3"
                     : "New Video Recording.mp4";
-                _file = await NuSysStorages.NuSysTempFolder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
+                _file = await ApplicationData.Current.LocalCacheFolder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
 
                 // prepare a low lag media recording object to record to the file
                 var profile = _currRecordingType == RecordingType.Audio

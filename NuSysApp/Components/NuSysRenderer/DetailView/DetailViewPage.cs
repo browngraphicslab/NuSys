@@ -233,7 +233,7 @@ namespace NuSysApp
 
                     await Task.Run(async delegate
                     {
-                        NuSysStorages.SaveFolder.CreateFileAsync(path, CreationCollisionOption.ReplaceExisting);
+                        ApplicationData.Current.LocalFolder.CreateFileAsync(path, CreationCollisionOption.ReplaceExisting);
                         try
                         {
                             File.WriteAllBytes(fullPath, bytes);
