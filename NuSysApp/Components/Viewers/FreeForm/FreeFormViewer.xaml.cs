@@ -233,6 +233,13 @@ namespace NuSysApp
         {
             if (_selectedLink is TrailRenderItem)
             {
+                //get a new folderpicker, set suggested start location to documents folder
+                var savePicker = new Windows.Storage.Pickers.FolderPicker();
+                savePicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
+                savePicker.FileTypeFilter.Add(".html");
+                //this is the folder that the user picks
+                var storageFolder = await savePicker.PickSingleFolderAsync();
+
                 //get trail as a list of nodes
                 var trailvm = (_selectedLink as TrailRenderItem).ViewModel;
                 if(trailvm == null)
@@ -256,19 +263,22 @@ namespace NuSysApp
                         next = trailList[i + 1].Id;
                     }
 
-                    await currElement.ExportToHTML(prev, next);
+                    await currElement.ExportToHTML(storageFolder, prev, next);
                 }
                 
-                StorageFolder htmlFolder = await NuSysStorages.NuSysTempFolder.GetFolderAsync("HTML");
+                StorageFolder htmlFolder = await storageFolder.GetFolderAsync("HTMLExport");
+                Debug.Assert(htmlFolder != null, "htmlFolder should not be null");
+
                 var firstPage = await htmlFolder.GetFileAsync(trailList[0].Id + ".html");
 
                 var exportPopup = new CenteredPopup(RenderEngine.Root, xRenderCanvas,
-                    "You have exported your trail! \n \n" +
-                    "Find it in your Documents/NuSys/HTML.");
+                    "You have exported your trail! \n \n");
                 RenderEngine.Root.AddChild(exportPopup);
 
                 //open the exported html in browser
                 await Windows.System.Launcher.LaunchFileAsync(firstPage);
+
+
             }
         }
 
