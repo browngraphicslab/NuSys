@@ -1119,14 +1119,12 @@ namespace NuSysApp
                 xVideoPlayer.Visibility = Visibility.Collapsed;
             }
 
-           // collection.ViewModel.Controller.SetSize(500,500);
-          //  collection.ViewModel.Controller.SetPosition(50000,50000);
-
             var targetPoint = RenderEngine.ScreenPointerToCollectionPoint(pointer.CurrentPoint, collection);
+            StaticServerCalls.AddElementToCollection(pointer.CurrentPoint, element.ViewModel.ElementType,
+                element.ViewModel.Controller.LibraryElementController, collection);
             var target = new Vector2(targetPoint.X - (float) element.ViewModel.Width/2f, targetPoint.Y - (float) element.ViewModel.Height/2f);
             var elementId = element.ViewModel.Id;
             var parentCollectionId = element.ViewModel.Controller.GetParentCollectionId();
-            await element.ViewModel.Controller.RequestMoveToCollection(collection.ViewModel.Model.LibraryId, target.X, target.Y);
 
             var oldLocationScreen = new Point2d(pointer.StartPoint.X, pointer.StartPoint.Y);
             var oldLocationCollectionV = RenderEngine.ScreenPointerToCollectionPoint(pointer.StartPoint, CurrentCollection);
