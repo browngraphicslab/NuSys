@@ -17,7 +17,7 @@ namespace NusysIntermediate
         /// <summary>
         /// a boolean representing whether we are using the test server by default or the live server
         /// </summary>
-        public const bool TEST_SERVER_BOOLEAN = true;
+        public const bool TEST_SERVER_BOOLEAN = false;
 
         /// <summary>
         /// the name of the currently used server

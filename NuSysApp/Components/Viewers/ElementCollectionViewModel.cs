@@ -47,7 +47,7 @@ namespace NuSysApp
             get
             {
                 Debug.Assert(Controller.LibraryElementModel is CollectionLibraryElementModel);
-                return ((CollectionLibraryElementModel)Controller.LibraryElementModel).IsFinite;
+                return ((CollectionLibraryElementModel)Controller.LibraryElementModel)?.IsFinite ?? false;
             }
         }
 
