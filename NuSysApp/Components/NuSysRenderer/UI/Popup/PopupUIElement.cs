@@ -104,7 +104,7 @@ namespace NuSysApp
         public virtual void DismissPopup()
         {
             //TODO add 'dismissable' logic here so its encapsulated in one place
-            this.IsVisible = false;
+            IsVisible = false;
             Dismissed?.Invoke(this, EventArgs.Empty);
             Parent?.RemoveChild(this);
             Dispose();
@@ -130,10 +130,10 @@ namespace NuSysApp
             if (!_dismissable)
             {
                 _dismissButton = new RectangleButtonUIElement(this, resourceCreator, UIDefaults.PrimaryStyle, DismissText);
-                _dismissButton.Transform.LocalPosition = new System.Numerics.Vector2(this.Width / 2 - _dismissButton.Width / 2,
-                    this.Height - _dismissButton.Height - 25);
+                _dismissButton.Transform.LocalPosition = new System.Numerics.Vector2(Width / 2 - _dismissButton.Width / 2,
+                    Height - _dismissButton.Height - 25);
                 AddButtonHandlers(_dismissButton);
-                this.AddChild(_dismissButton);
+                AddChild(_dismissButton);
             }
         }
 

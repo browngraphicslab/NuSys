@@ -19,7 +19,7 @@ namespace NuSysApp
 
         private AddElementMenuUIElement _addElementMenu;
 
-        private bool _disabled = false;
+        private bool _disabled;
 
         /// <summary>
         ///  the initial drag position of the floating menu view

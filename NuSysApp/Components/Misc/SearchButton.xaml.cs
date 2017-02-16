@@ -30,7 +30,7 @@ namespace NuSysApp
         private static readonly SolidColorBrush ColoredBorder = new SolidColorBrush(Color.FromArgb(255, 194, 251, 255));
         public SearchButton()
         {
-            this.InitializeComponent();
+            InitializeComponent();
         }
 
 

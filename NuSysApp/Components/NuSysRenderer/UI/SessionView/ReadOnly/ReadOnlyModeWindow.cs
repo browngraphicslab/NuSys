@@ -24,7 +24,7 @@ namespace NuSysApp
 
         private void _closeButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            this.IsVisible = false;
+            IsVisible = false;
         }
     }
 }

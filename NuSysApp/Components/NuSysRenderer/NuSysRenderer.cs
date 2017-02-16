@@ -150,10 +150,6 @@ namespace NuSysApp
                             }
                             return childCollection;
                         }
-                        else
-                        {
-
-                        }
                     }
                     if (currentLevel + 1 < maxLevel)
                     {

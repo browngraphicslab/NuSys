@@ -18,7 +18,7 @@ namespace ReverseMarkdown
 
 		public string PreTidy(string content)
 		{
-			content = this.CleanTagBorders(content);
+			content = CleanTagBorders(content);
 
 			return content;
 		}

@@ -24,15 +24,11 @@ namespace MarkdownDeep
 		NA,
 		Left,
 		Right,
-		Center,
+		Center
 	}
 	internal class TableSpec
 	{
-		public TableSpec()
-		{
-		}
-
-		public bool LeadingBar;
+	    public bool LeadingBar;
 		public bool TrailingBar;
 
 		public List<ColumnAlignment> Columns=new List<ColumnAlignment>();

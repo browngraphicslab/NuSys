@@ -124,7 +124,7 @@ namespace NuSysApp
             // we cannot render while the image is loading
             if (_isLoading) return;
 
-            var croppy = new CropEffect()
+            var croppy = new CropEffect
             {
                 Source = _audioWaveImage
             };

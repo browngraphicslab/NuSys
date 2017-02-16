@@ -19,7 +19,7 @@ namespace NuSysApp
         {
             get
             {
-                Debug.Assert(base.Shape.GetType() == typeof(RoundedRectangleUIElement));
+                Debug.Assert(Shape.GetType() == typeof(RoundedRectangleUIElement));
                 return (RoundedRectangleUIElement)Shape;
             }
         }

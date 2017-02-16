@@ -24,7 +24,7 @@ namespace NuSysApp.Components.NuSysRenderer.UI
         private ButtonUIElement _addButton;
         private EditTagsUIElement _editTagsElement;
         private ImmutableHashSet<Keyword> _tags;
-        private string _currentText = null;
+        private string _currentText;
 
         public EditTagsUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator)
             : base(parent, resourceCreator)
@@ -49,7 +49,7 @@ namespace NuSysApp.Components.NuSysRenderer.UI
                 {
                     //return new List<Keyword>(_tags.Where(keyword => keyword.Text.ToLower().StartsWith(s)));
                     return new List<Keyword>(_tags.Where(keyword => keyword.Text.Contains(s)));
-                },
+                }
             };
 
             _autoSuggest.KeyPressed += AutoSuggest_KeyPressed;

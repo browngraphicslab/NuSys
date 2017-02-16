@@ -33,7 +33,7 @@ namespace NuSysApp
             listColumn.RelativeWidth = 1;
             listColumn.ColumnFunction = model => model;
 
-            _listView.AddColumns(new List<ListColumn<string>>() { listColumn });
+            _listView.AddColumns(new List<ListColumn<string>> { listColumn });
             _listView.RowTapped += _listView_RowTapped;
             _listView.RowDragged += _listView_RowDragged;
             _listView.RowDragCompleted += _listView_RowDragCompleted;
@@ -65,8 +65,8 @@ namespace NuSysApp
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            _listView.Width = this.Width;
-            _listView.Height = this.Height;
+            _listView.Width = Width;
+            _listView.Height = Height;
             base.Update(parentLocalToScreenTransform);
             
         }

@@ -99,7 +99,7 @@ namespace NuSysApp
             if (_bmp == null) return;
 
             // create a crop effect, used for displaying cropped portions of images
-            var croppy = new CropEffect()
+            var croppy = new CropEffect
             {
                 Source = _bmp
             };

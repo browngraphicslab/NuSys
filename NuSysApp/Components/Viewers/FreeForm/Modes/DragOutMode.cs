@@ -20,7 +20,7 @@ namespace NuSysApp
         private FrameworkElement _dragItem;
         private NusysConstants.ElementType _elementType;
         private DispatcherTimer _timer;
-        private int _counter = 0;
+        private int _counter;
         private readonly int _waitTime = 500;
         private ElementViewModel _draggedVm;
         private PointerEventHandler _releasedHandler;
@@ -89,7 +89,7 @@ namespace NuSysApp
             _dragItem = img;
             _dragItem.IsHitTestVisible = false;
             _draggedVm = (ElementViewModel)send.DataContext;
-            var point = this.GetRealCoordinatesOnScreen(sender);
+            var point = GetRealCoordinatesOnScreen(sender);
             var t = (CompositeTransform)_dragItem.RenderTransform;
             t.TranslateX = point.X;
             t.TranslateY = point.Y;
@@ -191,7 +191,7 @@ namespace NuSysApp
         private bool IsPointerInGroup(Point point)
         {
             var hits = VisualTreeHelper.FindElementsInHostCoordinates(point, SessionController.Instance.SessionView);
-            var result = hits.Where((uiElem) => uiElem is AreaNodeView);
+            var result = hits.Where(uiElem => uiElem is AreaNodeView);
             return result.Any();
         }
 

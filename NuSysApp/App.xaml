@@ -24,7 +24,7 @@
             <SolidColorBrush x:Key="ComboBoxItemSelectedDisabledForegroundThemeBrush" Color="White" />
             <SolidColorBrush x:Key="ComboBoxItemSelectedPointerOverBackgroundThemeBrush" Color="LightBlue" />
 
-            <SolidColorBrush x:Key="SystemControlHighlightListAccentHighBrush" Color="#FFC7DEDE"></SolidColorBrush>
+            <SolidColorBrush x:Key="SystemControlHighlightListAccentHighBrush" Color="#FFC7DEDE" />
 
 
             <local:SelectionToColorConverter x:Key="sConverter" />

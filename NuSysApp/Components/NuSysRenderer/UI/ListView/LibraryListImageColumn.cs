@@ -68,20 +68,20 @@ namespace NuSysApp
                 var model = itemSource as LibraryElementModel;
 
 
-                if (base.ImageDict.Keys.Contains(itemSource))
+                if (ImageDict.Keys.Contains(itemSource))
                 {
-                    cell.Image = base.ImageDict[itemSource];
+                    cell.Image = ImageDict[itemSource];
                 }
                 else if (_defaultIconDictionary.ContainsKey(model.Type))
                 {
                     cell.Image = _defaultIconDictionary[model.Type];
-                    base.ImageDict[itemSource] = cell.Image;
+                    ImageDict[itemSource] = cell.Image;
                 }
                 else 
                 {
-                    cell.Image = base.DefaultImage;
-                    base.ImageDict[itemSource] = cell.Image;
-                    base.ImageDict[itemSource] = await MediaUtil.LoadCanvasBitmapAsync(cell.ResourceCreator, base.ColumnFunction(itemSource));
+                    cell.Image = DefaultImage;
+                    ImageDict[itemSource] = cell.Image;
+                    ImageDict[itemSource] = await MediaUtil.LoadCanvasBitmapAsync(cell.ResourceCreator, ColumnFunction(itemSource));
 
                 }
 

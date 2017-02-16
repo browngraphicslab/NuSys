@@ -75,9 +75,9 @@ namespace MarkdownDeep
 				pos = str.Length;
 
 			this.str = str;
-			this.start = pos;
+			start = pos;
 			this.pos = pos;
-			this.end = pos + len;
+			end = pos + len;
 
 			if (end > str.Length)
 				end = str.Length;
@@ -97,10 +97,9 @@ namespace MarkdownDeep
 		{
 			get
 			{
-				if (pos < start || pos >= end)
+			    if (pos < start || pos >= end)
 					return '\0';
-				else
-					return str[pos];
+			    return str[pos];
 			}
 		}
 
@@ -160,13 +159,13 @@ namespace MarkdownDeep
 					return true;
 				}
 
-				else if (ch == '\n')
-				{
-					pos++;
-					if (pos < end && str[pos] == '\r')
-						pos++;
-					return true;
-				}
+			    if (ch == '\n')
+			    {
+			        pos++;
+			        if (pos < end && str[pos] == '\r')
+			            pos++;
+			        return true;
+			    }
 			}
 
 			return false;
@@ -438,7 +437,7 @@ namespace MarkdownDeep
 		public bool SkipIdentifier(ref string identifier)
 		{
 			int savepos = position;
-			if (!Utils.ParseIdentifier(this.str, ref pos, ref identifier))
+			if (!Utils.ParseIdentifier(str, ref pos, ref identifier))
 				return false;
 			if (pos >= end)
 			{
@@ -484,7 +483,7 @@ namespace MarkdownDeep
 		public bool SkipHtmlEntity(ref string entity)
 		{
 			int savepos = position;
-			if (!Utils.SkipHtmlEntity(this.str, ref pos, ref entity))
+			if (!Utils.SkipHtmlEntity(str, ref pos, ref entity))
 				return false;
 			if (pos > end)
 			{

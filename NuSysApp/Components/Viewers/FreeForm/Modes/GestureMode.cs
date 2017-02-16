@@ -28,7 +28,7 @@ namespace NuSysApp
         public GestureMode(FreeFormViewer view) : base(view)
         {
             var wvm = (FreeFormViewerViewModel)_view.DataContext;
-            _cview = (FreeFormViewer) view;           
+            _cview = view;           
  
             _tFirstPress = DateTime.Now.Subtract(TimeSpan.FromMinutes(1));
         }

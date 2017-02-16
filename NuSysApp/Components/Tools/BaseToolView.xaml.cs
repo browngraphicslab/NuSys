@@ -36,7 +36,7 @@ namespace NuSysApp
         private ViewMode _currentViewMode;
 
 
-        private enum DragMode { Filter, Scroll };
+        private enum DragMode { Filter, Scroll }
         private DragMode _currentDragMode = DragMode.Filter;
         private bool _draggedOutside;
         private object currentManipultaionSender;
@@ -49,8 +49,8 @@ namespace NuSysApp
 
         public BaseToolView(BasicToolViewModel vm, double x, double y)
         {
-            this.DataContext = vm;
-            this.InitializeComponent();
+            DataContext = vm;
+            InitializeComponent();
             //vm.Controller.SetLocation(x, y);
             Vm = vm;
             xFilterComboBox.ItemsSource = Enum.GetValues(typeof(ToolModel.ToolFilterTypeTitle)).Cast<ToolModel.ToolFilterTypeTitle> ();
@@ -59,7 +59,7 @@ namespace NuSysApp
 
             //xTitle.Text = vm.Filter.ToString();
             vm.ReloadPropertiesToDisplay();
-            _toolView = new Tools.ListToolView(this);
+            _toolView = new ListToolView(this);
             _toolView.SetProperties(Vm.PropertiesToDisplay);
             xViewTypeGrid.Children.Add((UIElement)_toolView);
             _currentViewMode = ViewMode.List;
@@ -130,7 +130,7 @@ namespace NuSysApp
             _dragItem.Height = ((Button)sender).Height;
             xCanvas.Children.Add(_dragItem);
             _dragItem.RenderTransform = new CompositeTransform();
-            (sender as FrameworkElement).AddHandler(UIElement.PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta), true);
+            (sender as FrameworkElement).AddHandler(PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta), true);
             args.Handled = true;
         }
 
@@ -170,13 +170,13 @@ namespace NuSysApp
                 }
             }
             ReleasePointerCaptures();
-            (sender as FrameworkElement).RemoveHandler(UIElement.PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta));
+            (sender as FrameworkElement).RemoveHandler(PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta));
             args.Handled = true;
         }
 
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
-            this.Dispose();
+            Dispose();
         }
 
         /// <summary>
@@ -209,7 +209,7 @@ namespace NuSysApp
         {
 
 
-            var vm = (BasicToolViewModel)this.DataContext;
+            var vm = (BasicToolViewModel)DataContext;
             var zoom = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
             var resizeX = vm.Width + e.Delta.Translation.X / zoom;
             var resizeY = vm.Height + e.Delta.Translation.Y / zoom;
@@ -243,11 +243,11 @@ namespace NuSysApp
             }
             else if (height < _minHeight)
             {
-                (DataContext as BasicToolViewModel).Controller.SetSize(width, this.Height);
+                (DataContext as BasicToolViewModel).Controller.SetSize(width, Height);
             }
             else if (width < _minWidth)
             {
-                (DataContext as BasicToolViewModel).Controller.SetSize(this.Width, height);
+                (DataContext as BasicToolViewModel).Controller.SetSize(Width, height);
             }
 
             ToolAnchorChanged?.Invoke(this, new Point2d(_x,_y));
@@ -265,7 +265,7 @@ namespace NuSysApp
                 _toolView.SetProperties(Vm.PropertiesToDisplay);
                 xViewTypeGrid.Children.Add((UIElement)_toolView);
                 _currentViewMode = ViewMode.PieChart;
-                SetSize(400, this.Height);
+                SetSize(400, Height);
             }
         }
 
@@ -277,11 +277,11 @@ namespace NuSysApp
             if (_currentViewMode != ViewMode.List)
             {
                 xViewTypeGrid.Children.Remove((UIElement)_toolView);
-                _toolView = new Tools.ListToolView(this);
+                _toolView = new ListToolView(this);
                 _toolView.SetProperties(Vm.PropertiesToDisplay);
                 xViewTypeGrid.Children.Add((UIElement)_toolView);
                 _currentViewMode = ViewMode.List;
-                SetSize(this.Width, this.Height);
+                SetSize(Width, Height);
             }
         }
 
@@ -297,7 +297,7 @@ namespace NuSysApp
                 _toolView.SetProperties(Vm.PropertiesToDisplay);
                 xViewTypeGrid.Children.Add((UIElement)_toolView);
                 _currentViewMode = ViewMode.BarChart;
-                SetSize(400, this.Height);
+                SetSize(400, Height);
                 _toolView.SetVisualSelection(Vm.Selection);
             }
         }
@@ -452,7 +452,7 @@ namespace NuSysApp
         /// </summary>
         public void Item_ManipulationDelta(FrameworkElement sender, ManipulationDeltaRoutedEventArgs e, FrameworkElement boundingScrollingElement = null)
         {
-            var el = (FrameworkElement)sender;
+            var el = sender;
             
             if (boundingScrollingElement != null)
             {
@@ -463,7 +463,7 @@ namespace NuSysApp
                     _dragFilterItem.Visibility = Visibility.Visible;
                     _currentDragMode = DragMode.Filter;
                 }
-                else if (_draggedOutside == true && e.IsInertial)
+                else if (_draggedOutside && e.IsInertial)
                 {
                     e.Complete();
                 }
@@ -508,7 +508,7 @@ namespace NuSysApp
                 }
                 else
                 {
-                    Vm.Selection = new HashSet<string>() { selection };
+                    Vm.Selection = new HashSet<string> { selection };
                 }
 
                 var wvm = SessionController.Instance.ActiveFreeFormViewer;
@@ -534,7 +534,7 @@ namespace NuSysApp
             {
 
                 //Vm.SwitchToAllMetadataTool();
-                this.Dispose();
+                Dispose();
             }
         }
 

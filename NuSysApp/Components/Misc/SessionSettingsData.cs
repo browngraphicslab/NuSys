@@ -15,7 +15,7 @@ namespace NuSysApp
         AllLinks,
         NoLinks,
         VisibleWhenSelected,
-        NoTrails,
+        NoTrails
     }
 
     /// <summary>
@@ -84,7 +84,7 @@ namespace NuSysApp
         /// <summary>
         /// private version of the ResizeElementTitles.
         /// </summary>
-        private bool _resizeElementTitles = false;
+        private bool _resizeElementTitles;
 
         /// <summary>
         /// The private version of LinksVisible. 
@@ -106,7 +106,7 @@ namespace NuSysApp
         /// </summary>
         private bool _tagsVisible = true;
 
-        private string _serverName = null;
+        private string _serverName;
 
         public string ServerName
         {

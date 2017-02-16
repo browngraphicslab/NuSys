@@ -28,7 +28,7 @@ namespace NuSysApp
         /// </summary>
         public RelevanceLineView(ElementModel node1, ElementModel node2, double relevance)
         {
-            this.InitializeComponent();
+            InitializeComponent();
             _node1 = node1;
             _node2 = node2;
 

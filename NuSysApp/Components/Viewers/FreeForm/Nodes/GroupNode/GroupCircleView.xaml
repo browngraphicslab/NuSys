@@ -19,15 +19,15 @@
 
     <Grid  x:Name="xCircleView" >
         <Grid Width="{Binding Width}" Height="{Binding Height}">
-            <Ellipse Opacity="0.5" Width="{Binding Width}" Height="{Binding Height}" Fill="#62bcd5"></Ellipse>
+            <Ellipse Opacity="0.5" Width="{Binding Width}" Height="{Binding Height}" Fill="#62bcd5" />
             <ItemsControl Name="IC" ItemsSource="{Binding AtomViewList}" IsHitTestVisible="false">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel Padding="42,42,42,42" HorizontalAlignment="Center" VerticalAlignment="Center"></StackPanel>
+                        <StackPanel Padding="42,42,42,42" HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
-            <Ellipse Stroke="CadetBlue"  StrokeThickness="20"  Width="{Binding Width}" Height="{Binding Height}"></Ellipse>
+            <Ellipse Stroke="CadetBlue"  StrokeThickness="20"  Width="{Binding Width}" Height="{Binding Height}" />
             <Border CornerRadius="50"
                             Width="34"
                             Height="34"
@@ -35,7 +35,7 @@
                             x:Name="NumBorder"
                             Canvas.Top="3">
                 <Border.RenderTransform>
-                    <TranslateTransform X="138" Y="-117"></TranslateTransform>
+                    <TranslateTransform X="138" Y="-117" />
                 </Border.RenderTransform>
                 <TextBlock HorizontalAlignment="Center" x:Name="Num" Foreground="{StaticResource foreground6}" FontSize="22" FontWeight="Bold" Text="{Binding AtomViewList.Count}" />
             </Border>

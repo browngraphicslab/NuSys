@@ -10,21 +10,18 @@ namespace ReverseMarkdown.Converters
 		public Strong(Converter converter)
 			: base(converter)
 		{
-			this.Converter.Register("strong", this);
-			this.Converter.Register("b", this);
+			Converter.Register("strong", this);
+			Converter.Register("b", this);
 		}
 
 		public override string Convert(HtmlNode node)
 		{
-			string content = this.TreatChildren(node);
+			string content = TreatChildren(node);
 			if (string.IsNullOrEmpty(content.Trim()) || AlreadyBold(node))
 			{
 				return content;
 			}
-			else
-			{
-				return "**" + content.Trim() + "**";
-			}
+		    return "**" + content.Trim() + "**";
 		}
 
 		private bool AlreadyBold(HtmlNode node)

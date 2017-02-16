@@ -182,12 +182,12 @@
                                         <TranslateTransform x:Name="KnobTranslateTransform"/>
                                     </Grid.RenderTransform>
                                     <Grid x:Name="SwitchKnobOn" Background="Transparent" Height="50" Opacity="0" Width="50">
-                                        <Ellipse Height="50" Width="50" Fill="{StaticResource color2}"></Ellipse>
-                                        <Image Source="ms-appx:///Assets/node icons/icon_video.png" Width="30"></Image>
+                                        <Ellipse Height="50" Width="50" Fill="{StaticResource color2}" />
+                                        <Image Source="ms-appx:///Assets/node icons/icon_video.png" Width="30" />
                                     </Grid>
                                     <Grid x:Name="SwitchKnobOff" Background="Transparent" Height="50" Width="50">
-                                        <Ellipse Height="50" Width="50" Fill="{StaticResource color2}"></Ellipse>
-                                        <Image Source="ms-appx:///Assets/node icons/record.png" Height="30"></Image>
+                                        <Ellipse Height="50" Width="50" Fill="{StaticResource color2}" />
+                                        <Image Source="ms-appx:///Assets/node icons/record.png" Height="30" />
                                     </Grid>
                                 </Grid>
                                 <Thumb x:Name="SwitchThumb" AutomationProperties.AccessibilityView="Raw" Grid.ColumnSpan="3">
@@ -206,20 +206,20 @@
     </UserControl.Resources>
     
     <Grid x:Name="MediaGrid" Background="{StaticResource color6}" VerticalAlignment="Top" HorizontalAlignment="Center">
-        <CaptureElement VerticalAlignment="Top" Name="Element"></CaptureElement>
-        <ToggleSwitch x:Name="AudioVideoSwitch" Style="{StaticResource AudioVideoSwitch}" VerticalAlignment="Center"  HorizontalAlignment="Center" OnContent="Video" OffContent="Audio" Foreground="{StaticResource color3}"></ToggleSwitch>
+        <CaptureElement VerticalAlignment="Top" Name="Element" />
+        <ToggleSwitch x:Name="AudioVideoSwitch" Style="{StaticResource AudioVideoSwitch}" VerticalAlignment="Center"  HorizontalAlignment="Center" OnContent="Video" OffContent="Audio" Foreground="{StaticResource color3}" />
         <Grid VerticalAlignment="Bottom" Background="#606d7a">
             <Grid Height="60" VerticalAlignment="Bottom" Background="Transparent">
                 <Button x:Name="RecordButton" Height="60" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Padding ="10" HorizontalContentAlignment="Center" Tapped="RecordButton_OnTapped">
                     <Grid>
-                        <Ellipse Width="30" Height="30" StrokeThickness="4" Stroke="DarkRed"></Ellipse>
-                        <Ellipse Width="12" Height="12" StrokeThickness="3" Fill="DarkRed"  Stroke="DarkRed"></Ellipse>
+                        <Ellipse Width="30" Height="30" StrokeThickness="4" Stroke="DarkRed" />
+                        <Ellipse Width="12" Height="12" StrokeThickness="3" Fill="DarkRed"  Stroke="DarkRed" />
                     </Grid>
                 </Button>
                 <Button x:Name="StopButton" Visibility="Collapsed"  Height="60" Background="Transparent"  HorizontalAlignment="Center" VerticalAlignment="Center" Padding ="10" HorizontalContentAlignment="Center" Tapped="RecordButton_OnTapped">
                     <Grid>
-                        <Ellipse Width="30" Height="30" StrokeThickness="4" Stroke="DarkRed"></Ellipse>
-                        <Rectangle Width="10" Height="10" Fill="DarkRed"></Rectangle>
+                        <Ellipse Width="30" Height="30" StrokeThickness="4" Stroke="DarkRed" />
+                        <Rectangle Width="10" Height="10" Fill="DarkRed" />
                     </Grid>
                 </Button>
             </Grid>

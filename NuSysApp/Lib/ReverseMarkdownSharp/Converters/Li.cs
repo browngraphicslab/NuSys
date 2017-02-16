@@ -10,12 +10,12 @@ namespace ReverseMarkdown.Converters
 		public Li(Converter converter)
 			: base(converter)
 		{
-			this.Converter.Register("li", this);
+			Converter.Register("li", this);
 		}
 
 		public override string Convert(HtmlNode node)
 		{
-			string content = this.TreatChildren(node);
+			string content = TreatChildren(node);
 			string indentation = IndentationFor(node);
 			string prefix = PrefixFor(node);
 	
@@ -24,19 +24,16 @@ namespace ReverseMarkdown.Converters
 
 		private string PrefixFor(HtmlNode node)
 		{
-			if (node.ParentNode != null && node.ParentNode.Name == "ol")
+		    if (node.ParentNode != null && node.ParentNode.Name == "ol")
 			{
                 // index are zero based hence add one
                 int index = node.ParentNode.Descendants("./li").ToList().IndexOf(node) + 1;
 				return string.Format("{0}. ",index);
 			}
-			else
-			{
-				return "- ";
-			}
+		    return "- ";
 		}
-		
-		private string IndentationFor(HtmlNode node)
+
+	    private string IndentationFor(HtmlNode node)
 		{
 			int length = node.Ancestors("ol").Count() + node.Ancestors("ul").Count();
 			return new string(' ', Math.Max(length-1,0));

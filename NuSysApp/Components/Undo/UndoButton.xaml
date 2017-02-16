@@ -31,14 +31,14 @@
                                             <Storyboard>
                                                 <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Ellipse"
                                                                            Storyboard.TargetProperty="Opacity">
-                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="1"></DiscreteObjectKeyFrame>
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="1" />
                                                 </ObjectAnimationUsingKeyFrames>
                                             </Storyboard>
                                         </VisualState>
                                     </VisualStateGroup>
                                 </VisualStateManager.VisualStateGroups>
                                 <Ellipse Height="40" Width ="40" Fill="{StaticResource color1}" VerticalAlignment="Bottom" x:Name="Ellipse" Opacity="1" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="2" HorizontalAlignment="Center"/>
-                                <ContentPresenter></ContentPresenter>
+                                <ContentPresenter />
                             </Grid>
                         </ControlTemplate>
                     </Setter.Value>
@@ -48,6 +48,6 @@
     </UserControl.Resources>
 
     <Button x:Name="UndoCircle"  Style="{StaticResource FloatingButton}" Tapped="UndoButton_OnTapped">
-        <Image Height="20" Margin="0,0,0,2"  Source="ms-appx:///Assets/dark undo.png"></Image>
+        <Image Height="20" Margin="0,0,0,2"  Source="ms-appx:///Assets/dark undo.png" />
     </Button>
 </local:AnimatableUserControl>

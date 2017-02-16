@@ -98,7 +98,7 @@ namespace NuSysApp
                 {
                     var viewModel = new BasicToolViewModel(controller)
                     {
-                        Filter = ToolModel.ToolFilterTypeTitle.Title,
+                        Filter = ToolModel.ToolFilterTypeTitle.Title
                     };
                     controller.SetSize(500, 500);
                     controller.SetPosition(canvasCoordinate.X, canvasCoordinate.Y);

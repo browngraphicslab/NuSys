@@ -54,16 +54,16 @@ namespace NuSysApp
         private Ellipse _ellipse;
         public AudioRegionBound()
         {
-            this.InitializeComponent();
-            this.RenderTransform = new CompositeTransform();
-            X1 = System.Convert.ToDouble( GetValue(X1Dp));
-            X2 = System.Convert.ToDouble(GetValue(X2Dp));
-            Y1 = System.Convert.ToDouble(GetValue(Y1Dp));
-            Y2 = System.Convert.ToDouble(GetValue(Y2Dp));
+            InitializeComponent();
+            RenderTransform = new CompositeTransform();
+            X1 = Convert.ToDouble( GetValue(X1Dp));
+            X2 = Convert.ToDouble(GetValue(X2Dp));
+            Y1 = Convert.ToDouble(GetValue(Y1Dp));
+            Y2 = Convert.ToDouble(GetValue(Y2Dp));
         }
         public double X1
         {
-            get { return System.Convert.ToDouble( GetValue(X1Dp)); }
+            get { return Convert.ToDouble( GetValue(X1Dp)); }
             set
             {
                 SetValue(X1Dp, value);
@@ -72,7 +72,7 @@ namespace NuSysApp
         }
         public double X2
         {
-            get { return System.Convert.ToDouble( GetValue(X2Dp)); }
+            get { return Convert.ToDouble( GetValue(X2Dp)); }
             set
             {
                 SetValue(X2Dp, value);
@@ -80,7 +80,7 @@ namespace NuSysApp
         }
         public double Y1
         {
-            get { return System.Convert.ToDouble( GetValue(Y1Dp)); }
+            get { return Convert.ToDouble( GetValue(Y1Dp)); }
             set
             {
                 SetValue(Y1Dp, value);
@@ -89,7 +89,7 @@ namespace NuSysApp
         }
         public double Y2
         {
-            get { return System.Convert.ToDouble( GetValue(Y2Dp)); }
+            get { return Convert.ToDouble( GetValue(Y2Dp)); }
             set
             {
                 SetValue(Y2Dp, value);

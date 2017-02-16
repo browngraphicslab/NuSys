@@ -23,7 +23,7 @@ namespace NuSysApp
 
         public AudioLibraryElementModel AudioLibraryElementModel
         {
-            get { return base.LibraryElementModel  as AudioLibraryElementModel; }
+            get { return LibraryElementModel  as AudioLibraryElementModel; }
         }
         public AudioLibraryElementController(AudioLibraryElementModel model) : base(model)
         {

@@ -28,7 +28,7 @@ namespace NuSysApp
     public sealed partial class MetadataToolView : AnimatableUserControl, ITool
     {
         private Image _dragItem;
-        private enum DragMode { Collection, Key, Value, Scroll };
+        private enum DragMode { Collection, Key, Value, Scroll }
 
         private DragMode _currentDragMode = DragMode.Key;
 
@@ -47,12 +47,12 @@ namespace NuSysApp
 
         public MetadataToolView(MetadataToolViewModel vm, double x, double y)
         {
-            this.InitializeComponent();
+            InitializeComponent();
             _dragItem = vm.InitializeDragFilterImage();
             //vm.Controller.SetLocation(x, y);
             xFilterComboBox.ItemsSource = Enum.GetValues(typeof(ToolModel.ToolFilterTypeTitle)).Cast<ToolModel.ToolFilterTypeTitle>();
             xFilterComboBox.SelectedItem = vm.Filter;
-            this.DataContext = vm;
+            DataContext = vm;
             SetSize(400,500);
             xCollectionElement.AddHandler(PointerPressedEvent, new PointerEventHandler(CollectionBtnAddOnManipulationStarting), true);
             xCollectionElement.AddHandler(PointerReleasedEvent, new PointerEventHandler(CollectionBtnAddOnManipulationCompleted), true);
@@ -152,7 +152,7 @@ namespace NuSysApp
                 if (vm?.Selection?.Item1 != null && vm.Controller.ToolModel.Selected)
                 {
                     var filteredList = FilterValuesList(xSearchBox.Text);
-                    if (!ScrambledEquals(xMetadataValuesList.Items.Select(item => ((KeyValuePair<string, double>)item).Key), filteredList.Select(item => ((KeyValuePair<string, double>)item).Key)))
+                    if (!ScrambledEquals(xMetadataValuesList.Items.Select(item => ((KeyValuePair<string, double>)item).Key), filteredList.Select(item => item.Key)))
                     {
                         //if new filtered list is different from old filtered list, set new list as item source, set the visual selection, and 
                         //scroll into view if necessary.
@@ -231,7 +231,7 @@ namespace NuSysApp
 
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
-            this.Dispose();
+            Dispose();
         }
 
         public void Dispose()
@@ -307,7 +307,7 @@ namespace NuSysApp
 
             if (sender == xCollectionElement)
             {
-                _currentDragMode = MetadataToolView.DragMode.Collection;
+                _currentDragMode = DragMode.Collection;
             }
 
             var bmp = new RenderTargetBitmap();
@@ -318,7 +318,7 @@ namespace NuSysApp
             _dragItem.Height = 50;
             xCanvas.Children.Add(_dragItem);
             _dragItem.RenderTransform = new CompositeTransform();
-            (sender as FrameworkElement).AddHandler(UIElement.PointerMovedEvent, new PointerEventHandler(CollectionBtnAddOnManipulationDelta), true);
+            (sender as FrameworkElement).AddHandler(PointerMovedEvent, new PointerEventHandler(CollectionBtnAddOnManipulationDelta), true);
             args.Handled = true;
         }
 
@@ -359,7 +359,7 @@ namespace NuSysApp
                 }
             }
             ReleasePointerCaptures();
-            (sender as FrameworkElement).RemoveHandler(UIElement.PointerMovedEvent, new PointerEventHandler(CollectionBtnAddOnManipulationDelta));
+            (sender as FrameworkElement).RemoveHandler(PointerMovedEvent, new PointerEventHandler(CollectionBtnAddOnManipulationDelta));
             args.Handled = true;
         }
 
@@ -405,7 +405,7 @@ namespace NuSysApp
         private void Resizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
 
-            var vm = (ToolViewModel)this.DataContext;
+            var vm = (ToolViewModel)DataContext;
             var zoom = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
             var resizeX = vm.Width + e.Delta.Translation.X / zoom;
             var resizeY = vm.Height + e.Delta.Translation.Y / zoom;
@@ -442,13 +442,13 @@ namespace NuSysApp
             }
             else if (height < _minHeight)
             {
-                vm.Controller.SetSize(width, this.Height);
+                vm.Controller.SetSize(width, Height);
                 xMetadataKeysList.Width = width / 2;
                 xMetadataValuesList.Width = width / 2;
             }
             else if (width < _minWidth)
             {
-                vm.Controller.SetSize(this.Width, height);
+                vm.Controller.SetSize(Width, height);
             }
             ToolAnchorChanged?.Invoke(this, new Point2d(_x, _y));
 
@@ -559,7 +559,7 @@ namespace NuSysApp
                     else
                     {
                         vm.Selection = new Tuple<string, HashSet<string>>(vm.Selection.Item1,
-                            new HashSet<string>() { GetTextFromListItemGrid(sender as Grid) });
+                            new HashSet<string> { GetTextFromListItemGrid(sender as Grid) });
                     }
                 }
                 var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(sp, null);
@@ -578,10 +578,7 @@ namespace NuSysApp
             {
                 return (grid.Children[0] as TextBlock).Text;
             }
-            else
-            {
-                return (grid.Children[1] as TextBlock).Text;
-            }
+            return (grid.Children[1] as TextBlock).Text;
         }
 
         /// <summary>
@@ -658,14 +655,14 @@ namespace NuSysApp
                         else
                         {
                             vm.Selection = new Tuple<string, HashSet<string>>(vm.Selection.Item1,
-                            new HashSet<string>() { GetTextFromListItemGrid(sender as Grid) });
+                            new HashSet<string> { GetTextFromListItemGrid(sender as Grid) });
                         }
                     }
                     else
                     {
                         //if tapped item is not selected and in single mode, set the item as the only selection
                         vm.Selection = new Tuple<string, HashSet<string>>(vm.Selection.Item1,
-                             new HashSet<string>() { GetTextFromListItemGrid(sender as Grid) });
+                             new HashSet<string> { GetTextFromListItemGrid(sender as Grid) });
                     }
                 }
             }
@@ -681,7 +678,7 @@ namespace NuSysApp
             if (!vm.Selection.Item2.Contains(textTapped) && vm.Selection.Item2.Count == 0)
             {
                 vm.Selection = new Tuple<string, HashSet<string>>(vm.Selection.Item1,
-                            new HashSet<string>() { textTapped });
+                            new HashSet<string> { textTapped });
             }
             if (vm.Selection.Item2.Count == 1 &&
                 vm.Selection.Item2.First().Equals(textTapped))
@@ -703,7 +700,7 @@ namespace NuSysApp
             {
 
                 //(DataContext as MetadataToolViewModel).SwitchToBasicTool(filter);
-                this.Dispose();
+                Dispose();
             }
         }
 
@@ -780,7 +777,7 @@ namespace NuSysApp
                             {
                                 UITask.Run(delegate
                                 {
-                                    button.Content = Math.Round((double)100 * ((double)returned / (double)needed), 0) + " %";
+                                    button.Content = Math.Round(100 * (returned / (double)needed), 0) + " %";
                                 });
                             }
                         });

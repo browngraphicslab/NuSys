@@ -238,7 +238,7 @@ namespace NuSysApp
             Chatbox = new ChatBoxUIElement(this, canvas)
             {
 
-                IsVisible = false,
+                IsVisible = false
             };
             AddChild(Chatbox);
 
@@ -266,7 +266,7 @@ namespace NuSysApp
             AddChild(_nextNode);
             _currentNode = new EllipseButtonUIElement(this, canvas, UIDefaults.SecondaryStyle)
             {
-                IsVisible = false,
+                IsVisible = false
             };
             AddChild(_currentNode);
             _exitPresentation = new EllipseButtonUIElement(this, canvas, UIDefaults.SecondaryStyle)

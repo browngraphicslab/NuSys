@@ -184,7 +184,7 @@ namespace NuSysApp
             _filterButton = new RectangleButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "Filter")
             {
                 Width = UIDefaults.FilterButtonWidth,
-                Height = UIDefaults.SearchBarHeight,
+                Height = UIDefaults.SearchBarHeight
             };
             AddChild(_filterButton);
 

@@ -100,7 +100,7 @@ namespace NuSysApp
             Background = Colors.White;
             
 
-            _dropDownManager = new StackLayoutManager()
+            _dropDownManager = new StackLayoutManager
             {
                 TopMargin = 5,
                 BottomMargin = 5,

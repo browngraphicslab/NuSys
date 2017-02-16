@@ -32,10 +32,10 @@ namespace NuSysApp
         private const double PROGRESS_BAR_DEFAULT_HEIGHT = 50;
 
         private Rectangle _progressBar = new Rectangle();
-        private Rectangle _backgroundRectangle = new Rectangle() {Fill = new SolidColorBrush(Colors.Transparent)};
-        private RectangleGeometry _clipping = new RectangleGeometry()
+        private Rectangle _backgroundRectangle = new Rectangle {Fill = new SolidColorBrush(Colors.Transparent)};
+        private RectangleGeometry _clipping = new RectangleGeometry
         {
-            Transform = new TranslateTransform() { Y = - 2 * RegionView.HANDLE_EXTENSION_HEIGHT}
+            Transform = new TranslateTransform { Y = - 2 * RegionView.HANDLE_EXTENSION_HEIGHT}
         };
 
         private IEnumerable<RegionView> _regionViews {
@@ -58,7 +58,7 @@ namespace NuSysApp
         {
             Children.Add(_progressBar);
             Children.Add(_backgroundRectangle);
-            this.Clip = _clipping;
+            Clip = _clipping;
             _progressBar.Fill = new SolidColorBrush(Colors.Chartreuse);
             _progressBar.Height = PROGRESS_BAR_DEFAULT_HEIGHT;
             _backgroundRectangle.Height = PROGRESS_BAR_DEFAULT_HEIGHT;
@@ -139,7 +139,7 @@ namespace NuSysApp
                     CurrentLibraryElementController.AudioLibraryElementModel.NormalizedStartTime +
                     CurrentLibraryElementController.AudioLibraryElementModel.NormalizedDuration))
                 {
-                    Canvas.SetZIndex(region,5);
+                    SetZIndex(region,5);
                 }
             }
         }
@@ -171,7 +171,7 @@ namespace NuSysApp
                     CurrentLibraryElementController.AudioLibraryElementModel.NormalizedStartTime +
                     CurrentLibraryElementController.AudioLibraryElementModel.NormalizedDuration))
                 {
-                    Canvas.SetZIndex(child, 5);
+                    SetZIndex(child, 5);
                 }
             }
         }
@@ -197,7 +197,7 @@ namespace NuSysApp
 
         public void SetHeight(double height)
         {
-            Height = (double)height;
+            Height = height;
             _progressBar.Height = height;
             _backgroundRectangle.Height = height;
             _regionViews.ForEach(region => region.SetHeight(height));
@@ -207,7 +207,7 @@ namespace NuSysApp
         {
             Width = width;
             _backgroundRectangle.Width = width;
-            _clipping.Rect = new Rect() { Height = Height + 4 * RegionView.HANDLE_EXTENSION_HEIGHT, Width = width};
+            _clipping.Rect = new Rect { Height = Height + 4 * RegionView.HANDLE_EXTENSION_HEIGHT, Width = width};
             foreach (var region in _regionViews)
             {
                 region?.SetDuration(this, region.LibraryElementController.AudioLibraryElementModel.NormalizedDuration);
@@ -277,52 +277,52 @@ namespace NuSysApp
                 Height = progressBar.Height;
                 Background = new SolidColorBrush(_color);
 
-                _leftHitBox = new Rectangle()
+                _leftHitBox = new Rectangle
                 {
                     Fill = new SolidColorBrush(Colors.Transparent),
                     Height = progressBar.Height + 4 * HANDLE_EXTENSION_HEIGHT,
                     Width = 3*HANDLE_EXTENSION_HEIGHT,
-                    RenderTransform = new TranslateTransform() { Y = - 2 * HANDLE_EXTENSION_HEIGHT, X = -1.5*HANDLE_EXTENSION_HEIGHT }
+                    RenderTransform = new TranslateTransform { Y = - 2 * HANDLE_EXTENSION_HEIGHT, X = -1.5*HANDLE_EXTENSION_HEIGHT }
                 };
 
-                _rightHitBox = new Rectangle()
+                _rightHitBox = new Rectangle
                 {
                     Fill = new SolidColorBrush(Colors.Transparent),
                     Height = progressBar.Height + 4 * HANDLE_EXTENSION_HEIGHT,
                     Width = 3 * HANDLE_EXTENSION_HEIGHT,
-                    RenderTransform = new TranslateTransform() { Y = - 2 * HANDLE_EXTENSION_HEIGHT, X = this.Width - 1.5* HANDLE_EXTENSION_HEIGHT}
+                    RenderTransform = new TranslateTransform { Y = - 2 * HANDLE_EXTENSION_HEIGHT, X = Width - 1.5* HANDLE_EXTENSION_HEIGHT}
                 };
 
-                _topLeftCircle = new Ellipse()
+                _topLeftCircle = new Ellipse
                 {
                     Fill = new SolidColorBrush(_circleColor),
                     Height = 2* HANDLE_EXTENSION_HEIGHT,
                     Width = 2 * HANDLE_EXTENSION_HEIGHT,
-                    RenderTransform = new TranslateTransform() { Y = -HANDLE_EXTENSION_HEIGHT , X = -HANDLE_EXTENSION_HEIGHT}
+                    RenderTransform = new TranslateTransform { Y = -HANDLE_EXTENSION_HEIGHT , X = -HANDLE_EXTENSION_HEIGHT}
                 };
 
-                _topRightCircle = new Ellipse()
+                _topRightCircle = new Ellipse
                 {
                     Fill = new SolidColorBrush(_circleColor) ,
                     Height = 2 * HANDLE_EXTENSION_HEIGHT,
                     Width = 2 * HANDLE_EXTENSION_HEIGHT,
-                    RenderTransform = new TranslateTransform() { Y = -HANDLE_EXTENSION_HEIGHT, X =  this.Width -  HANDLE_EXTENSION_HEIGHT}
+                    RenderTransform = new TranslateTransform { Y = -HANDLE_EXTENSION_HEIGHT, X =  Width -  HANDLE_EXTENSION_HEIGHT}
                 };
 
-                _bottomLeftCircle = new Ellipse()
+                _bottomLeftCircle = new Ellipse
                 {
                     Fill = new SolidColorBrush(_circleColor),
                     Height = 2 * HANDLE_EXTENSION_HEIGHT,
                     Width = 2 * HANDLE_EXTENSION_HEIGHT,
-                    RenderTransform = new TranslateTransform() { Y = progressBar.Height - HANDLE_EXTENSION_HEIGHT, X = -HANDLE_EXTENSION_HEIGHT }
+                    RenderTransform = new TranslateTransform { Y = progressBar.Height - HANDLE_EXTENSION_HEIGHT, X = -HANDLE_EXTENSION_HEIGHT }
                 };
 
-                _bottomRightCircle = new Ellipse()
+                _bottomRightCircle = new Ellipse
                 {
                     Fill = new SolidColorBrush(_circleColor),
                     Height = 2 * HANDLE_EXTENSION_HEIGHT,
                     Width = 2 * HANDLE_EXTENSION_HEIGHT,
-                    RenderTransform = new TranslateTransform() { Y = progressBar.Height - HANDLE_EXTENSION_HEIGHT, X = this.Width - HANDLE_EXTENSION_HEIGHT }
+                    RenderTransform = new TranslateTransform { Y = progressBar.Height - HANDLE_EXTENSION_HEIGHT, X = Width - HANDLE_EXTENSION_HEIGHT }
                 };
                 
                 Children.Add(_topRightCircle);
@@ -469,9 +469,9 @@ namespace NuSysApp
                 Debug.Assert(bottomRightCircleTransform != null);
                 Debug.Assert(rightHitBoxTransform != null);
 
-                var newX = this.Width - HANDLE_EXTENSION_HEIGHT;
+                var newX = Width - HANDLE_EXTENSION_HEIGHT;
 
-                rightHitBoxTransform.X = this.Width - 1.5* HANDLE_EXTENSION_HEIGHT;
+                rightHitBoxTransform.X = Width - 1.5* HANDLE_EXTENSION_HEIGHT;
                 bottomRightCircleTransform.X = newX;
                 topRightCircleTransform.X = newX;
             }

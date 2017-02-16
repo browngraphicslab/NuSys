@@ -23,7 +23,7 @@ namespace NuSysApp
         private CanvasGeometry _triangle;
         public ImageDetailRegionResizerRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
-            _triangle = CanvasGeometry.CreatePolygon(ResourceCreator, new System.Numerics.Vector2[4]{
+            _triangle = CanvasGeometry.CreatePolygon(ResourceCreator, new Vector2[4]{
                 new Vector2(0, 0),
                 new Vector2(0, -30),
                 new Vector2(-30, 0),

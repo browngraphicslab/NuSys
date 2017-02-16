@@ -681,7 +681,7 @@ namespace NuSysApp
             if (_listview != null)
             {
                 _header.Transform.LocalPosition = new Vector2(0,0);
-                _header.Width = this.Width;
+                _header.Width = Width;
                 _header.Height = UIDefaults.ListHeaderHeight;
                 _header.RefreshTitles(_listview.ListColumns, ListView.Width, _listview.SumOfColRelWidths, _resourceCreator);
             }

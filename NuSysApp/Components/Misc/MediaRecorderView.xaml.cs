@@ -45,7 +45,7 @@ namespace NuSysApp
         }
         public MediaRecorderView()
         {
-            this.InitializeComponent();
+            InitializeComponent();
             _recording = false;
             stream = new InMemoryRandomAccessStream();
             _recordingType = RecordingType.Audio;
@@ -95,7 +95,7 @@ namespace NuSysApp
                 await SendRequest(fileBytes, NusysConstants.ElementType.Video);
                 _recording = false;
                 mediaCapture.Dispose();
-                this.IsRecordingSwitch(false);
+                IsRecordingSwitch(false);
             }
             else
             {
@@ -113,7 +113,7 @@ namespace NuSysApp
                     Element.Source = mediaCapture;
                     await mediaCapture.StartPreviewAsync();
                     _recording = true;
-                    this.IsRecordingSwitch(true);
+                    IsRecordingSwitch(true);
                 }
                 catch (Exception exception)
                 {
@@ -141,7 +141,7 @@ namespace NuSysApp
                 _recording = false;
 
                 mediaCapture.Dispose();
-                this.IsRecordingSwitch(false);
+                IsRecordingSwitch(false);
             }
             else
             {
@@ -157,7 +157,7 @@ namespace NuSysApp
                             MediaEncodingProfile.CreateMp3(AudioEncodingQuality.Low),
                             stream);
                     _recording = true;
-                    this.IsRecordingSwitch(true);
+                    IsRecordingSwitch(true);
                 }
                 catch (Exception exception)
                 {
@@ -219,7 +219,7 @@ namespace NuSysApp
                     var tempFileName = "recordedvideo" + fileExtension;
                     var storageFile = await ApplicationData.Current.LocalCacheFolder.CreateFileAsync(tempFileName, CreationCollisionOption.ReplaceExisting);
                     //Write data byte array to storagefile.
-                    await Windows.Storage.FileIO.WriteBytesAsync(storageFile, data);
+                    await FileIO.WriteBytesAsync(storageFile, data);
                     //Create thumbnails and set as args
                     thumbnails = await MediaUtil.GetThumbnailDictionary(storageFile);
                     createNewVideoLibraryElementRequestArgs.Large_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Large];

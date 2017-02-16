@@ -79,8 +79,8 @@ namespace NuSysApp
 
         public override void Update(System.Numerics.Matrix3x2 parentLocalToScreenTransform)
         {
-            _barChart.Width = this.Width;
-            _barChart.Height = this.Height;
+            _barChart.Width = Width;
+            _barChart.Height = Height;
             base.Update(parentLocalToScreenTransform);
 
         }

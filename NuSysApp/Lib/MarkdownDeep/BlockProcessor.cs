@@ -766,13 +766,12 @@ namespace MarkdownDeep
 
 				if (eol && count >= 3)
 				{
-					if (m_markdown.UserBreaks)
+				    if (m_markdown.UserBreaks)
 						return BlockType.user_break;
-					else 
-						return BlockType.hr;
+				    return BlockType.hr;
 				}
 
-				// Rewind
+			    // Rewind
 				position = b.contentStart;
 			}
 
@@ -887,7 +886,7 @@ namespace MarkdownDeep
 			Block,		// markdown=1 or markdown=block
 			Span,		// markdown=1 or markdown=span
 			Deep,		// markdown=deep - recursive block mode
-			Off,		// Markdown="something else"
+			Off		// Markdown="something else"
 		}
 
 		internal MarkdownInHtmlMode GetMarkdownMode(HtmlTag tag)
@@ -896,13 +895,12 @@ namespace MarkdownDeep
 			string strMarkdownMode;
 			if (!m_markdown.ExtraMode || !tag.attributes.TryGetValue("markdown", out strMarkdownMode))
 			{
-				if (m_bMarkdownInHtml)
+			    if (m_bMarkdownInHtml)
 					return MarkdownInHtmlMode.Deep;
-				else
-					return MarkdownInHtmlMode.NA;
+			    return MarkdownInHtmlMode.NA;
 			}
 
-			// Remove it
+		    // Remove it
 			tag.attributes.Remove("markdown");
 
 			// Parse mode
@@ -976,7 +974,7 @@ namespace MarkdownDeep
 							{
 								case MarkdownInHtmlMode.Span:
 								{
-									Block span = this.CreateBlock();
+									Block span = CreateBlock();
 									span.buf = input;
 									span.blockType = BlockType.span;
 									span.contentStart = inner_pos;
@@ -1005,7 +1003,7 @@ namespace MarkdownDeep
 									}
 									else
 									{
-										Block span = this.CreateBlock();
+										Block span = CreateBlock();
 										span.buf = input;
 										span.blockType = BlockType.html;
 										span.contentStart = inner_pos;
@@ -1037,7 +1035,7 @@ namespace MarkdownDeep
 		internal bool ScanHtml(Block b)
 		{
 			// Remember start of html
-			int posStartPiece = this.position;
+			int posStartPiece = position;
 
 			// Parse a HTML tag
 			HtmlTag openingTag = HtmlTag.Parse(this);
@@ -1081,15 +1079,15 @@ namespace MarkdownDeep
 
 			// Head block extraction?
 			bool bHeadBlock = m_markdown.ExtractHeadBlocks && string.Compare(openingTag.name, "head", true) == 0;
-			int headStart = this.position;
+			int headStart = position;
 
 			// Work out the markdown mode for this element
 			if (!bHeadBlock && m_markdown.ExtraMode)
 			{
-				MarkdownInHtmlMode MarkdownMode = this.GetMarkdownMode(openingTag);
+				MarkdownInHtmlMode MarkdownMode = GetMarkdownMode(openingTag);
 				if (MarkdownMode != MarkdownInHtmlMode.NA)
 				{
-					return this.ProcessMarkdownEnabledHtml(b, openingTag, MarkdownMode);
+					return ProcessMarkdownEnabledHtml(b, openingTag, MarkdownMode);
 				}
 			}
 
@@ -1127,11 +1125,11 @@ namespace MarkdownDeep
 				// Markdown enabled content?
 				if (!bHeadBlock && !tag.closing && m_markdown.ExtraMode && !bHasUnsafeContent)
 				{
-					MarkdownInHtmlMode MarkdownMode = this.GetMarkdownMode(tag);
+					MarkdownInHtmlMode MarkdownMode = GetMarkdownMode(tag);
 					if (MarkdownMode != MarkdownInHtmlMode.NA)
 					{
-						Block markdownBlock = this.CreateBlock();
-						if (this.ProcessMarkdownEnabledHtml(markdownBlock, tag, MarkdownMode))
+						Block markdownBlock = CreateBlock();
+						if (ProcessMarkdownEnabledHtml(markdownBlock, tag, MarkdownMode))
 						{
 							if (childBlocks==null)
 							{
@@ -1141,7 +1139,7 @@ namespace MarkdownDeep
 							// Create a block for everything before the markdown tag
 							if (posStartCurrentTag > posStartPiece)
 							{
-								Block htmlBlock = this.CreateBlock();
+								Block htmlBlock = CreateBlock();
 								htmlBlock.buf = input;
 								htmlBlock.blockType = BlockType.html;
 								htmlBlock.contentStart = posStartPiece;
@@ -1158,10 +1156,7 @@ namespace MarkdownDeep
 
 							continue;
 						}
-						else
-						{
-							this.FreeBlock(markdownBlock);
-						}
+					    FreeBlock(markdownBlock);
 					}
 				}
 				
@@ -1191,7 +1186,7 @@ namespace MarkdownDeep
 								// Create a block for the remainder
 								if (position > posStartPiece)
 								{
-									Block htmlBlock = this.CreateBlock();
+									Block htmlBlock = CreateBlock();
 									htmlBlock.buf = input;
 									htmlBlock.blockType = BlockType.html;
 									htmlBlock.contentStart = posStartPiece;
@@ -1210,7 +1205,7 @@ namespace MarkdownDeep
 							// Extract the head block content
 							if (bHeadBlock)
 							{
-								var content = this.Substring(headStart, posStartCurrentTag - headStart);
+								var content = Substring(headStart, posStartCurrentTag - headStart);
 								m_markdown.HeadBlockContent = (m_markdown.HeadBlockContent ?? "") + content.Trim() + "\n";
 								b.blockType = BlockType.html;
 								b.contentStart = position;
@@ -1377,7 +1372,6 @@ namespace MarkdownDeep
 					FreeBlock(lines[i]);
 					lines.RemoveAt(i);
 					i--;
-					continue;
 				}
 			}
 
@@ -1400,7 +1394,7 @@ namespace MarkdownDeep
 			}
 
 			// Create the item and process child blocks
-			var item = this.CreateBlock();
+			var item = CreateBlock();
 			item.blockType = BlockType.dd;
 			item.children = new BlockProcessor(m_markdown, m_bMarkdownInHtml, BlockType.dd).Process(sb.ToString());
 
@@ -1454,7 +1448,6 @@ namespace MarkdownDeep
 					FreeBlock(lines[i]);
 					lines.RemoveAt(i);
 					i--;
-					continue;
 				}
 			}
 
@@ -1468,7 +1461,7 @@ namespace MarkdownDeep
 			}
 
 			// Create the item and process child blocks
-			var item = this.CreateBlock();
+			var item = CreateBlock();
 			item.blockType = BlockType.footnote;
 			item.data = lines[0].data;
 			item.children = new BlockProcessor(m_markdown, m_bMarkdownInHtml, BlockType.footnote).Process(sb.ToString());

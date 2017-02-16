@@ -25,7 +25,7 @@ namespace NuSysApp
     {
         public LibraryDragElement()
         {
-            this.InitializeComponent();
+            InitializeComponent();
         }
 
         public void Show()

@@ -79,32 +79,32 @@ namespace NuSysApp
             switch (s)
             {
                 case "TitleButton":
-                    this.SortTitle(reverse);
+                    SortTitle(reverse);
                     break;
                 case "TypeButton":
-                    this.SortType(reverse);
+                    SortType(reverse);
                     break;
                 default:
-                    this.SortDate(reverse);
+                    SortDate(reverse);
                     break;
             }
         }
 
         public async Task SortTitle(bool reverse)
         {
-            List<LibraryItemTemplate> ordered = new List<LibraryItemTemplate>(ItemList.OrderBy(l => ((LibraryItemTemplate)l).Title));
+            List<LibraryItemTemplate> ordered = new List<LibraryItemTemplate>(ItemList.OrderBy(l => l.Title));
             SetList(ordered, reverse);
         }
 
         public async Task SortType(bool reverse)
         {
-            List<LibraryItemTemplate> ordered = new List<LibraryItemTemplate>(ItemList.OrderBy(l => ((LibraryItemTemplate)l).Type.ToString()));
+            List<LibraryItemTemplate> ordered = new List<LibraryItemTemplate>(ItemList.OrderBy(l => l.Type.ToString()));
             SetList(ordered, reverse);
         }
 
         public async Task SortDate(bool reverse)
         {
-            List<LibraryItemTemplate> ordered = new List<LibraryItemTemplate>(ItemList.OrderByDescending(l => Constants.GetTimestampTicksOfLibraryElementModel((LibraryItemTemplate)l)));
+            List<LibraryItemTemplate> ordered = new List<LibraryItemTemplate>(ItemList.OrderByDescending(l => Constants.GetTimestampTicksOfLibraryElementModel(l)));
             SetList(ordered, reverse);
         }
 

@@ -34,7 +34,7 @@ namespace NuSysApp
                 return false;
 
             var other = (WordAlternates)obj;
-            return string.Compare(this.Word, other.Word) == 0 && this.Alternates.All(alternate => other.Alternates.Contains(alternate));
+            return string.Compare(Word, other.Word) == 0 && Alternates.All(alternate => other.Alternates.Contains(alternate));
         }
 
         public override string ToString()

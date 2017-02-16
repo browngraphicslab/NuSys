@@ -94,7 +94,7 @@ namespace NuSysApp
             };
             AddChild(_userIdListView);
             // give the list view a column to display creators
-            _creatorCheckboxColumn = new ListCheckBoxColumn<string>()
+            _creatorCheckboxColumn = new ListCheckBoxColumn<string>
             {
                 RelativeWidth = 1,
                 Title = FilterMenu.FilterCategoryToString(FilterMenu.FilterCategory.Creator),
@@ -110,11 +110,11 @@ namespace NuSysApp
             };
             AddChild(_elementTypeListView);
             // give the list view a column to display element types
-            _typeCheckboxColumn = new ListCheckBoxColumn<NusysConstants.ElementType>()
+            _typeCheckboxColumn = new ListCheckBoxColumn<NusysConstants.ElementType>
             {
                 RelativeWidth = 1,
                 Title = "Type",
-                ColumnFunction = elem => elem.ToString(),
+                ColumnFunction = elem => elem.ToString()
             };
             _elementTypeListView.AddColumn(_typeCheckboxColumn);
 
@@ -353,7 +353,7 @@ namespace NuSysApp
                 NusysConstants.ElementType.Image,
                 NusysConstants.ElementType.PDF,
                 NusysConstants.ElementType.Text,
-                NusysConstants.ElementType.Video,            
+                NusysConstants.ElementType.Video            
             });
             foreach (var type in CurrBrush.Types)
             {
@@ -372,7 +372,7 @@ namespace NuSysApp
                 NusysConstants.ElementType.Image,
                 NusysConstants.ElementType.PDF,
                 NusysConstants.ElementType.Text,
-                NusysConstants.ElementType.Video,
+                NusysConstants.ElementType.Video
             });
         }
 

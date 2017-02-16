@@ -127,7 +127,7 @@
     </UserControl.Resources>
 
     <Grid Background="{StaticResource color1}">
-        <local:SessionView x:Name="xSessionView" Visibility="Collapsed"></local:SessionView>
+        <local:SessionView x:Name="xSessionView" Visibility="Collapsed" />
         <Grid x:Name="xWaitingRoom">
         <StackPanel Margin="0,100,0,0" x:Name="NuSysTitle">
             <TextBlock  VerticalAlignment="Top"  Height="75" Width="300" TextAlignment="Center" FontSize="45" 
@@ -147,18 +147,18 @@
                 <CompositeTransform/>
             </Grid.RenderTransform>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="*"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Button Visibility="Collapsed"  Grid.Row="1"  HorizontalAlignment="Left" Margin="0,30,0,0" Height="50" Width="50" VerticalAlignment="Center"  Background="Transparent" Click="BackToLoginFromList">
-                <Image Source="ms-appx:///Assets/back icon triangle.png"></Image>
+                <Image Source="ms-appx:///Assets/back icon triangle.png" />
             </Button>
             <Grid Grid.Row="0" Margin="60,60,60,10">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="100"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
-                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="100" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <Button Grid.Column="0" x:Name="NewButton" Style="{StaticResource DarkButton}" Background="{StaticResource color2}" Height="40" Width="80" VerticalAlignment="Bottom" 
                         Foreground="White" Click="NewButton_OnClick">NEW</Button>
@@ -177,17 +177,17 @@
             </Grid>
             <Grid Grid.Row="1" Margin="60,0,60,0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
-                    <ColumnDefinition Width="300"></ColumnDefinition>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="300" />
                 </Grid.ColumnDefinitions>
                     <ListView x:Name="List" Grid.Column="0" BorderThickness="0"  Background="White" Margin="0,0,0,0" SelectionChanged="ListItemSelected">
                     <ListView.Header>
                         <Grid Height="40" BorderThickness="0,0,0,5" BorderBrush="{StaticResource color1}">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="320"></ColumnDefinition>
-                                <ColumnDefinition Width="100"></ColumnDefinition>
-                                <ColumnDefinition Width="200"></ColumnDefinition>
-                                </Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="320" />
+                                <ColumnDefinition Width="100" />
+                                <ColumnDefinition Width="200" />
+                            </Grid.ColumnDefinitions>
                             <Button x:Name="TitleHeader" Grid.Column="0" Background="White" Style="{StaticResource WhiteButton}"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Foreground="{StaticResource color2}" FontSize="18" 
                                     HorizontalContentAlignment="Left" FontWeight="SemiBold" Click="SortList_OnClick">TITLE</Button>
                             <Button x:Name="AccessHeader" Grid.Column="1" Background="White" Style="{StaticResource WhiteButton}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Foreground="{StaticResource color2}" FontSize="18" 
@@ -217,14 +217,14 @@
                             Title</TextBlock>
                         <Grid x:Name="Details" VerticalAlignment="Center" Margin="50,20,50,0">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"></RowDefinition>
-                                <RowDefinition Height="Auto"></RowDefinition>
-                                <RowDefinition Height="Auto"></RowDefinition>
-                                <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition></ColumnDefinition>
-                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,2,0,2"  Foreground="{StaticResource color3}">Creator:</TextBlock>
                             <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,2,0,2" Foreground="{StaticResource color3}">Last Edited By:</TextBlock>
@@ -243,13 +243,13 @@
             </Grid>
             <Grid Grid.Row="2" Margin="70,10,70,0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="500"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
-                    <ColumnDefinition Width="500"></ColumnDefinition>
+                    <ColumnDefinition Width="500" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="500" />
                 </Grid.ColumnDefinitions>
                 <Button x:Name="JoinWorkspaceButton" Click="Join_Workspace_Click" IsEnabled="False"  Style="{StaticResource WhiteButton}" Grid.Column="1" Height="50" Width="200" Margin="0,10,0,0"  Background="White" Foreground="{StaticResource color2}" HorizontalAlignment="Center" FontWeight="SemiBold" VerticalAlignment="Center" 
                         FontSize="25">ENTER</Button>
-                <StackPanel x:Name="Users" Grid.Column="0" MaxWidth="480" VerticalAlignment="Top" Margin="10" Height="110" Orientation="Horizontal"></StackPanel>
+                <StackPanel x:Name="Users" Grid.Column="0" MaxWidth="480" VerticalAlignment="Top" Margin="10" Height="110" Orientation="Horizontal" />
             </Grid>
         </Grid>
        
@@ -260,9 +260,9 @@
             <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="500">
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Width="500">
                     <TextBlock HorizontalAlignment="Center" Height="35" Foreground="{StaticResource darkforeground}" Margin="0,20,0,0" FontSize="20">USERNAME:</TextBlock>
-                    <TextBox Style="{StaticResource WhiteTextBox}"  Name="usernameInput" HorizontalAlignment="Center" VerticalAlignment="Center" Height="35" Width="350" PlaceholderText="USERNAME"></TextBox>
+                    <TextBox Style="{StaticResource WhiteTextBox}"  Name="usernameInput" HorizontalAlignment="Center" VerticalAlignment="Center" Height="35" Width="350" PlaceholderText="USERNAME" />
                     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Height="35" Margin="0,20,0,0" Foreground="{StaticResource darkforeground}" FontSize="20">PASSWORD:</TextBlock>
-                    <PasswordBox Style="{StaticResource PasswordBox}" Name="passwordInput" HorizontalAlignment="Center" VerticalAlignment="Center" Height="35" Width="350" PlaceholderText="PASSWORD"></PasswordBox>
+                    <PasswordBox Style="{StaticResource PasswordBox}" Name="passwordInput" HorizontalAlignment="Center" VerticalAlignment="Center" Height="35" Width="350" PlaceholderText="PASSWORD" />
                 </StackPanel>
             </Grid>
             <StackPanel Margin="0,330,0,0" VerticalAlignment="Center">
@@ -274,13 +274,12 @@
                         </Underline>
                     </TextBlock>
                 </HyperlinkButton>
-                <TextBlock Name="loggedInText" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0"></TextBlock>
+                <TextBlock Name="loggedInText" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" />
             </StackPanel>
 
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,20">
                     <TextBox Visibility="Visible" x:Name="ServerNameText" Width="350" Height="30" 
-                       TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="18" TextChanging="ServerNameText_TextChanging" >
-                    </TextBox>
+                       TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="18" TextChanging="ServerNameText_TextChanging" />
                 <HyperlinkButton HorizontalAlignment="Center" Foreground="{StaticResource color2}" Margin="0,5,0,0"  FontSize="18">
                     <TextBlock>
                         <Underline>
@@ -297,38 +296,38 @@
                 <CompositeTransform/>
             </Grid.RenderTransform>
             <Button Visibility="Visible"  HorizontalAlignment="Center" Margin="0,30,500,0" Height="50" Width="50" Background="Transparent" Click="BackToLoginFromNew">
-                <Image Source="ms-appx:///Assets/back icon triangle.png"></Image>
+                <Image Source="ms-appx:///Assets/back icon triangle.png" />
             </Button>
             <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="500">
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Width="500">
                     <TextBlock  HorizontalAlignment="Center" Height="35" Foreground="{StaticResource darkforeground}" FontSize="20">USERNAME:</TextBlock>
-                    <TextBox x:Name="NewUsername" Style="{StaticResource WhiteTextBox}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="35" Width="350" PlaceholderText="ex. josiahcarberry"></TextBox>
+                    <TextBox x:Name="NewUsername" Style="{StaticResource WhiteTextBox}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="35" Width="350" PlaceholderText="ex. josiahcarberry" />
                     <TextBlock HorizontalAlignment="Center" Height="35" Foreground="{StaticResource darkforeground}" Margin="0,20,0,0" FontSize="20">DISPLAY NAME:</TextBlock>
-                    <TextBox x:Name="NewDisplayName" Style="{StaticResource WhiteTextBox}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="35" Width="350" PlaceholderText="ex. joe"></TextBox>
+                    <TextBox x:Name="NewDisplayName" Style="{StaticResource WhiteTextBox}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="35" Width="350" PlaceholderText="ex. joe" />
                     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Height="35" Margin="0,20,0,0" Foreground="{StaticResource darkforeground}" FontSize="20">PASSWORD</TextBlock>
-                    <PasswordBox x:Name="NewPassword"  Style="{StaticResource PasswordBox}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="35" Width="350" PlaceholderText="PASSWORD"></PasswordBox>
+                    <PasswordBox x:Name="NewPassword"  Style="{StaticResource PasswordBox}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="35" Width="350" PlaceholderText="PASSWORD" />
                 </StackPanel>
 
             </Grid>
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"  Margin="0,400,0,0">
                 <Button HorizontalAlignment="Center"  Style="{StaticResource WhiteButton}"  Width="150" Height="50" Background="{StaticResource color6}" Foreground="{StaticResource color2}" FontSize="18"  Click="NewUser_OnClick">CREATE</Button>
-                <TextBlock x:Name="NewUserLoginText" HorizontalAlignment="Center" Margin="10"  TextAlignment="Center" Foreground="{StaticResource color3}"></TextBlock>
+                <TextBlock x:Name="NewUserLoginText" HorizontalAlignment="Center" Margin="10"  TextAlignment="Center" Foreground="{StaticResource color3}" />
             </StackPanel>
         </Grid>
         
         <Popup x:Name="NewWorkspacePopup">
             <Grid Background="White" Height="220" Width="500" BorderThickness="3" BorderBrush="{StaticResource color2}">
                 <Button Height="20" Width="20" Padding="0" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5" Click="ClosePopupOnClick">
-                    <Image Source="ms-appx:///Assets/icon_node_x.png" Height="10"></Image>
+                    <Image Source="ms-appx:///Assets/icon_node_x.png" Height="10" />
                 </Button>
                 <StackPanel>
                     <TextBlock Margin="10" HorizontalAlignment="Center" FontSize="18" Height="20" Foreground="{StaticResource color2}">Enter a title:</TextBlock>
-                    <TextBox Style="{StaticResource DarkTextBox}"  Name="NewWorkspaceName" FontSize="16" Height="30" Width="350" Background="{StaticResource color1}" BorderBrush="{StaticResource color2}"></TextBox>
+                    <TextBox Style="{StaticResource DarkTextBox}"  Name="NewWorkspaceName" FontSize="16" Height="30" Width="350" Background="{StaticResource color1}" BorderBrush="{StaticResource color2}" />
                     <TextBlock HorizontalAlignment="Center" Foreground="{StaticResource color2}" FontSize="18" Margin="10">Choose access settings:</TextBlock>
                     <StackPanel x:Name="ButtonGroup" HorizontalAlignment="Center" Orientation="Horizontal" Margin="18,0,0,10">
-                        <RadioButton x:Name="PrivateButton" Style="{StaticResource NuSysRadioButton}"  Foreground="{StaticResource color3}" Content="Private" IsChecked="False"></RadioButton>
-                        <RadioButton x:Name="PublicButton" Style="{StaticResource NuSysRadioButton}" Foreground="{StaticResource color3}" Content="Public" IsChecked="True" ></RadioButton>
-                        <RadioButton x:Name="ReadOnlyButton" Style="{StaticResource NuSysRadioButton}" Foreground="{StaticResource color3}" Content="Read Only" IsChecked="False"></RadioButton>
+                        <RadioButton x:Name="PrivateButton" Style="{StaticResource NuSysRadioButton}"  Foreground="{StaticResource color3}" Content="Private" IsChecked="False" />
+                        <RadioButton x:Name="PublicButton" Style="{StaticResource NuSysRadioButton}" Foreground="{StaticResource color3}" Content="Public" IsChecked="True" />
+                        <RadioButton x:Name="ReadOnlyButton" Style="{StaticResource NuSysRadioButton}" Foreground="{StaticResource color3}" Content="Read Only" IsChecked="False" />
                     </StackPanel>
                     <Button x:Name="NewWorkspaceButton" Click="NewWorkspaceOnClick"  HorizontalAlignment="Center" Style="{StaticResource DarkButton}" Height="30" Width="120">CREATE</Button>
                 </StackPanel>

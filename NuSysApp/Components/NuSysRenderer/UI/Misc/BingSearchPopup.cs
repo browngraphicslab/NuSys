@@ -40,10 +40,10 @@ namespace NuSysApp
             _layoutManager = new GridLayoutManager(this, ResourceCreator)
             {
                 Height = Height,
-                Width = Width,
+                Width = Width
             };
-            _layoutManager.AddRows(new List<float>() { 1 });
-            _layoutManager.AddColumns(new List<float>() { 5, 1 });
+            _layoutManager.AddRows(new List<float> { 1 });
+            _layoutManager.AddColumns(new List<float> { 5, 1 });
             _layoutManager.AddElement(_searchbar, 0, 0);
             _layoutManager.AddElement(_addResults, 0, 1);
 
@@ -53,7 +53,7 @@ namespace NuSysApp
         private async void _addResults_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
 
-            var searchRequest = new WebSearchRequest(new WebSearchRequestArgs() { SearchString = _searchbar.Text });
+            var searchRequest = new WebSearchRequest(new WebSearchRequestArgs { SearchString = _searchbar.Text });
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(searchRequest);
             var s = searchRequest.WasSuccessful();
             DismissPopup();

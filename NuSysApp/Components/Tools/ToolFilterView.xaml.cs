@@ -58,7 +58,7 @@ namespace NuSysApp
 
         public ToolFilterView(double x, double y)//, ToolLinkable parentToolStartable = null)
         {
-            this.InitializeComponent();
+            InitializeComponent();
             SetUp(x, y);
             //if (parentToolStartable != null)
             //{
@@ -183,7 +183,7 @@ namespace NuSysApp
         {
             var wvm = SessionController.Instance.ActiveFreeFormViewer;
             wvm.AtomViewList.Remove(this);
-            this.Dispose();
+            Dispose();
         }
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace NuSysApp
         private void SetUp(double x, double y)
         {
             //_parentToolStartables = new HashSet<ToolLinkable>();
-            this.RenderTransform = new CompositeTransform();
+            RenderTransform = new CompositeTransform();
             SetSize(300, 400);
             SetLocation(x, y);
             Filters =
@@ -311,7 +311,7 @@ namespace NuSysApp
             }
             Disposed?.Invoke(this, "ToolFilterView");
             wvm.AtomViewList.Remove(this);
-            this.Dispose();
+            Dispose();
         }
 
         /// <summary>
@@ -321,24 +321,24 @@ namespace NuSysApp
         {
 
             var zoom = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
-            var resizeX = this.Width + e.Delta.Translation.X / zoom;
-            var resizeY = this.Height + e.Delta.Translation.Y / zoom;
+            var resizeX = Width + e.Delta.Translation.X / zoom;
+            var resizeY = Height + e.Delta.Translation.Y / zoom;
 
 
 
             xFilterList.Width = resizeX;
             if (resizeX > MinWidth && resizeY > MinHeight)
             {
-                this.SetSize(resizeX, resizeY);
+                SetSize(resizeX, resizeY);
 
             }
             else if (resizeX > MinWidth)
             {
-                this.SetSize(resizeX, this.Height);
+                SetSize(resizeX, Height);
             }
             else if (resizeY > MinHeight)
             {
-                SetSize(this.Width, resizeY);
+                SetSize(Width, resizeY);
             }
             e.Handled = true;
         }

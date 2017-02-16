@@ -27,7 +27,7 @@ namespace NuSysApp
             var format = new CanvasTextFormat
             {
                 FontSize = 15f,
-                FontFamily = UIDefaults.TextFont,
+                FontFamily = UIDefaults.TextFont
             };
 
             _textLayout = new CanvasTextLayout(resourceCreator, text, format, 500, 500);

@@ -120,7 +120,7 @@ namespace NuSysApp
                 Width = 200,
                 Height = 20,
                 TextHorizontalAlignment = CanvasHorizontalAlignment.Center,
-                TextVerticalAlignment = CanvasVerticalAlignment.Top,
+                TextVerticalAlignment = CanvasVerticalAlignment.Top
             };
             AddChild(_serverStatus);
 
@@ -249,13 +249,13 @@ namespace NuSysApp
         /// </summary>
         private void SetButtonText()
         {
-            _resizeElementTitlesButton.ButtonText = "Resize Titles: " + SessionController.Instance.SessionSettings.ResizeElementTitles.ToString();
-            _showLinksButton.ButtonText = "Show Links: "+SessionController.Instance.SessionSettings.LinksVisible.ToString();
-            _showMinimapButton.ButtonText = "Show Minimap: " + SessionController.Instance.SessionSettings.MinimapVisible.ToString();
+            _resizeElementTitlesButton.ButtonText = "Resize Titles: " + SessionController.Instance.SessionSettings.ResizeElementTitles;
+            _showLinksButton.ButtonText = "Show Links: "+SessionController.Instance.SessionSettings.LinksVisible;
+            _showMinimapButton.ButtonText = "Show Minimap: " + SessionController.Instance.SessionSettings.MinimapVisible;
 
-            _dockBreadCrumbsButton.ButtonText = "Dock Bread Crumb Trail: " + SessionController.Instance.SessionSettings.BreadCrumbsDocked.ToString();
+            _dockBreadCrumbsButton.ButtonText = "Dock Bread Crumb Trail: " + SessionController.Instance.SessionSettings.BreadCrumbsDocked;
 
-            _readOnlyModeSettingButton.ButtonText = "Read Only Windows: " + SessionController.Instance.SessionSettings.ReadOnlyModeWindowsVisible.ToString();
+            _readOnlyModeSettingButton.ButtonText = "Read Only Windows: " + SessionController.Instance.SessionSettings.ReadOnlyModeWindowsVisible;
 
             _keywordVisibilityButton.ButtonText = "Show Keywords: "+SessionController.Instance.SessionSettings.TagsVisible;
         }

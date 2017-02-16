@@ -95,7 +95,7 @@ namespace NuSysApp
             _settingsButton = new ButtonUIElement(this, resourceCreator)
             {
                 Width = 50,
-                Height = 50,
+                Height = 50
             };
             AddChild(_settingsButton);
 
@@ -128,7 +128,7 @@ namespace NuSysApp
             _settingsPopup.AddFlyoutItem("Scroll To", OnScrollToFlyoutTapped, Canvas);
 
             _settingsPopup.AddFlyoutItem("Change Access", OnChangeAccessFlyoutTapped, Canvas);
-            if (this._currentController.LibraryElementModel.Type == NusysConstants.ElementType.Collection)
+            if (_currentController.LibraryElementModel.Type == NusysConstants.ElementType.Collection)
             {
                 _settingsPopup.AddFlyoutItem("Change Collection Settings", CollectionSettingsOnTapped, Canvas);
             }
@@ -381,7 +381,7 @@ namespace NuSysApp
             if (_currentController.LibraryElementModel.Type ==NusysConstants.ElementType.Link)
             {
                 await SessionController.Instance.LinksController.RemoveLink(_currentController.LibraryElementModel.LibraryElementId);
-                if (SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.BtnDelete.IsVisible == true)
+                if (SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.BtnDelete.IsVisible)
                 {
                     SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.BtnDelete.IsVisible = false;
                 }
@@ -490,8 +490,8 @@ namespace NuSysApp
             {
                 if (rect != null && controllerId == _currentController.LibraryElementModel.LibraryElementId)
                 {
-                    rect.Height = this.Height;
-                    rect.Width = this.Width;
+                    rect.Height = Height;
+                    rect.Width = Width;
                     _pageTabContainer.SetPage(rect);
                     OnPageTabChanged?.Invoke(_currentController.LibraryElementModel.LibraryElementId, tabType);
                 }

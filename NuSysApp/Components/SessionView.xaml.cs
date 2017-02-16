@@ -40,7 +40,7 @@ namespace NuSysApp
 
         public SessionView()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
             SessionController.Instance.SessionView = this;
 

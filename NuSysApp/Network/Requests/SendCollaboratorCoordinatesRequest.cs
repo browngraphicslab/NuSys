@@ -31,7 +31,7 @@ namespace NuSysApp
         /// static bool for knowing if we are currently already joining a collection.
         /// This is needed in case multiple requests happen too quickly
         /// </summary>
-        public static bool _currentlyJoining = false;
+        public static bool _currentlyJoining;
 
         /// <summary>
         /// This will only be called when another client has forwarded this request to me.
@@ -92,8 +92,8 @@ namespace NuSysApp
             }
 
             SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalPosition = new Vector2(senderArgs.XCoordinatePosition.Value, senderArgs.YCoordinatePosition.Value);
-            SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScaleCenter = new Vector2((float)senderArgs.XLocalScaleCenter.Value, (float)senderArgs.YLocalScaleCenter.Value);
-            SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScale = new Vector2((float)senderArgs.CameraScaleX.Value, (float)senderArgs.CameraScaleY.Value);
+            SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScaleCenter = new Vector2(senderArgs.XLocalScaleCenter.Value, senderArgs.YLocalScaleCenter.Value);
+            SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScale = new Vector2(senderArgs.CameraScaleX.Value, senderArgs.CameraScaleY.Value);
             SessionController.Instance.SessionView.FreeFormViewer.InvalidateMinimap();
             _currentlyJoining = false;
         }

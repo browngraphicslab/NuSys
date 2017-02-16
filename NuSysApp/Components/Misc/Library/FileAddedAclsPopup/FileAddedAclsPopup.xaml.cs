@@ -33,7 +33,7 @@ namespace NuSysApp
         /// <summary>
         /// A threading boolean that allows us to wait until the submit event is fired
         /// </summary>
-        private TaskCompletionSource<bool> tcs = null;
+        private TaskCompletionSource<bool> tcs;
 
         /// <summary>
         /// Boolean used to determine if we are in the middle of a select all call
@@ -139,7 +139,7 @@ namespace NuSysApp
                 return null;
             }
 
-            Debug.Assert(_vm.Files.Select(r => _vm.AccessDictionary.ContainsKey(r.FolderRelativeId)).All(r => r == true), "If this fails, the dictionary does not contain all the requested files when the submit button was clicked");
+            Debug.Assert(_vm.Files.Select(r => _vm.AccessDictionary.ContainsKey(r.FolderRelativeId)).All(r => r), "If this fails, the dictionary does not contain all the requested files when the submit button was clicked");
 
             // return the dictionary
             return _vm.AccessDictionary;

@@ -92,12 +92,12 @@ namespace NuSysApp
         {
             if (ImageSize.Width > ImageSize.Height)
             {
-                var r = ImageSize.Height / (double)ImageSize.Width;
+                var r = ImageSize.Height / ImageSize.Width;
                 base.SetSize(width, width * r);
             }
             else
             {
-                var r = ImageSize.Width / (double)ImageSize.Height;
+                var r = ImageSize.Width / ImageSize.Height;
                 base.SetSize(height * r, height);
             }
         }

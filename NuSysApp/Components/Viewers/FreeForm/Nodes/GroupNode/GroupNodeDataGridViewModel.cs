@@ -63,7 +63,7 @@ namespace NuSysApp
                     if (vm is LinkViewModel)
                         continue;
                     
-                    _nodeModel = (ElementModel)vm.Model; // access model
+                    _nodeModel = vm.Model; // access model
                     //LibraryElementController.LibraryElementController.AddMetadata(new MetadataEntry("creator", new List<string> {_nodeModel.CreatorId}, MetadataMutability.MUTABLE));
 
                     var id = _nodeModel.Id;

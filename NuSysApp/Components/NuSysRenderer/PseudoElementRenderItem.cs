@@ -17,7 +17,7 @@ namespace NuSysApp
 {
     public class PseudoElementRenderItem : ElementRenderItem
     {
-        public Rect Rect { get; set; } = new Rect();
+        public Rect Rect { get; set; }
         public ITool Tool;
 
         public PseudoElementRenderItem(ITool tool, CollectionRenderItem parent,

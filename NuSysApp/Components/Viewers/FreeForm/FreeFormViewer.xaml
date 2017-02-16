@@ -34,25 +34,25 @@
             <Canvas x:Name="xMultimediaCanvas" HorizontalAlignment="Left">
                 <local:VideoPlayer x:Name="xVideoPlayer" Visibility="Collapsed">
                     <local:BaseMediaPlayer.RenderTransform>
-                        <CompositeTransform></CompositeTransform>
+                        <CompositeTransform />
                     </local:BaseMediaPlayer.RenderTransform>
                 </local:VideoPlayer>
 
                 <local:AudioPlayer x:Name="xAudioPlayer" Visibility="Collapsed">
                     <local:BaseMediaPlayer.RenderTransform>
-                        <CompositeTransform></CompositeTransform>
+                        <CompositeTransform />
                     </local:BaseMediaPlayer.RenderTransform>
                 </local:AudioPlayer>
             </Canvas>
 
-            <local:UndoButton x:Name="xUndoButton" Visibility="Collapsed"></local:UndoButton>
+            <local:UndoButton x:Name="xUndoButton" Visibility="Collapsed" />
 
 
             <local:MultiSelectMenuView x:Name="multiMenu" Visibility="Collapsed" Canvas.Top="30" Canvas.Left="300"/>
-            <Rectangle x:Name="xFullScreenVideoBackground" Visibility="Collapsed" Width="{Binding ElementName=xFreeFormViewer, Path=Width}" Height="{Binding ElementName=xFreeFormViewer, Path=Height}" Fill="Black" ></Rectangle>
+            <Rectangle x:Name="xFullScreenVideoBackground" Visibility="Collapsed" Width="{Binding ElementName=xFreeFormViewer, Path=Width}" Height="{Binding ElementName=xFreeFormViewer, Path=Height}" Fill="Black" />
             <local:VideoPlayer x:Name="xFullScreenVideoElement" Visibility="Collapsed" Width="{Binding ElementName=xFreeFormViewer, Path=Width}" Height="{Binding ElementName=xFreeFormViewer, Path=Height}">
                 <local:BaseMediaPlayer.RenderTransform>
-                    <CompositeTransform></CompositeTransform>
+                    <CompositeTransform />
                 </local:BaseMediaPlayer.RenderTransform>
             </local:VideoPlayer>
             <Button x:Name="xFullScreenVideoCloseButton" Width ="150" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Tapped="XFullScreenVideoCloseButton_OnTapped" Visibility="Collapsed">
@@ -72,9 +72,9 @@
             </Grid>
             
         </Canvas>
-        <local:Keyboard x:Name="xKeyboard" Visibility="Collapsed"  ></local:Keyboard>
+        <local:Keyboard x:Name="xKeyboard" Visibility="Collapsed" />
 
-        <local:DetailViewFullScreenImageViewer VerticalAlignment="Stretch" HorizontalAlignment="Stretch" x:Name="xFullScreenImageViewer"></local:DetailViewFullScreenImageViewer>
+        <local:DetailViewFullScreenImageViewer VerticalAlignment="Stretch" HorizontalAlignment="Stretch" x:Name="xFullScreenImageViewer" />
 
     </Canvas>
 

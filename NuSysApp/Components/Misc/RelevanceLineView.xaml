@@ -11,8 +11,6 @@
 
     <Grid>
         <!-- bind opacity to relevance, x1y1 to focused node, x2y2 to relevant node -->
-        <Line x:Name="xLine" StrokeThickness="3" Stroke="{StaticResource color2}">
-            
-        </Line>
+        <Line x:Name="xLine" StrokeThickness="3" Stroke="{StaticResource color2}" />
     </Grid>
 </UserControl>

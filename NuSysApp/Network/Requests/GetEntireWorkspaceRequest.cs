@@ -129,7 +129,7 @@ namespace NuSysApp
                 _returnedInkModels = new List<InkModel>();
                 foreach (var ink in args?.InkStrokes ?? new List<string>())
                 {
-                    _returnedInkModels.Add(JsonConvert.DeserializeObject<InkModel>(ink, new JsonSerializerSettings() {StringEscapeHandling = StringEscapeHandling.EscapeNonAscii}));
+                    _returnedInkModels.Add(JsonConvert.DeserializeObject<InkModel>(ink, new JsonSerializerSettings {StringEscapeHandling = StringEscapeHandling.EscapeNonAscii}));
                 }
 
             }

@@ -208,14 +208,14 @@ namespace NuSysApp
             if(_collectionContentController.CollectionModel.Shape?.ImageUrl != null)
             {
                 _collectionContentController.ClearShape();
-                _collectionContentController.SetShapePoints(new List<PointModel>()
+                _collectionContentController.SetShapePoints(new List<PointModel>
                 {
                     new PointModel(50000,50000),
                     new PointModel(50000,51000),
                     new PointModel(50000,52000),
                     new PointModel(52000,52000),
                     new PointModel(52000,51000),
-                    new PointModel(52000,50000),
+                    new PointModel(52000,50000)
                 });
             }
         }

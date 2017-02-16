@@ -45,21 +45,21 @@ namespace NuSysApp
 
         private async void OnPageLeftClick(object sender, TappedRoutedEventArgs e)
         {
-            var vm = (WordNodeViewModel)this.DataContext;
+            var vm = (WordNodeViewModel)DataContext;
             await vm.FlipLeft();
             e.Handled = true;
         }
 
         private async void OnPageRightClick(object sender, TappedRoutedEventArgs e)
         {
-            var vm = (WordNodeViewModel)this.DataContext;
+            var vm = (WordNodeViewModel)DataContext;
             await vm.FlipRight();
             e.Handled = true;
         }
 
         private void OnDeleteClick(object sender, RoutedEventArgs e)
         {
-            var vm = (ElementViewModel)this.DataContext;
+            var vm = (ElementViewModel)DataContext;
             vm.Controller.RequestDelete();
         }
 

@@ -134,7 +134,7 @@ namespace NuSysApp
         private void CreateCircleLinks()
         {
             return;
-            var libraryElementId = this.Controller.LibraryElementModel?.LibraryElementId;
+            var libraryElementId = Controller.LibraryElementModel?.LibraryElementId;
             if (libraryElementId == null)
             {
                 return;
@@ -155,11 +155,11 @@ namespace NuSysApp
                 if (linkLibraryElementModel != null)
                 {
                     string contentId = "";
-                    if (this.LibraryElementId == linkLibraryElementModel.InAtomId)
+                    if (LibraryElementId == linkLibraryElementModel.InAtomId)
                     {
                         contentId = linkLibraryElementModel.OutAtomId;
                     }
-                    else if (this.LibraryElementId == linkLibraryElementModel.OutAtomId)
+                    if (LibraryElementId == linkLibraryElementModel.OutAtomId)
                     {
                         contentId = linkLibraryElementModel.InAtomId;
                     }
@@ -424,12 +424,12 @@ namespace NuSysApp
 
         public NusysConstants.ElementType ElementType
         {
-            get { return ((ElementModel) Model).ElementType; }
+            get { return Model.ElementType; }
         }
 
         public string LibraryElementId
         {
-            get { return ((ElementModel) Model).LibraryId; }
+            get { return Model.LibraryId; }
         }
 
 

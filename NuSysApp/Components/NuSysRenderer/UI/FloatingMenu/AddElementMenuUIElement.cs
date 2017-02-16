@@ -74,7 +74,7 @@ namespace NuSysApp
             AddChild(_addRecordingNodeButton);
 
             // initialize a list of menu buttons which is useful for writing short code
-            _menuButtons = new List<ButtonUIElement>()
+            _menuButtons = new List<ButtonUIElement>
             {
                 _addRecordingNodeButton,
                 _addTextNodeButton,

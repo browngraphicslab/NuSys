@@ -152,12 +152,12 @@ namespace NuSysApp
                 }
             }
 
-            var nodeToTagModel = (ElementModel)nodeToTag.Model;
+            var nodeToTagModel = nodeToTag.Model;
             if (!keepOriginal) {
 
               //  nodeToTagModel.MoveToGroup((NodeContainerModel)groupTagNode.Model, true);
             } else { 
-                var callback = new Action<string>((s) =>
+                var callback = new Action<string>(s =>
                 {
                     UITask.Run(() =>
                     {

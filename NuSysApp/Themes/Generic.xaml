@@ -20,8 +20,8 @@
                     <Canvas>
                         <Grid x:Name="xContainer" Width="{Binding Width}" Height="{Binding Height}">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"></RowDefinition>
-                                <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             <Canvas x:Name="xCanvas" Grid.Row="0" Width="{Binding Width}" Height="{Binding Height}">
                                 <Grid x:Name="xTitleContainer" VerticalAlignment="Top" Width="{Binding Width}" >
@@ -29,7 +29,7 @@
                                     <TextBox Padding="10,5,10,10" Margin="0,0" x:Name="xTitle" IsTabStop="{Binding IsSelected}" Width="{Binding Width}"  IsHitTestVisible="{Binding IsSelected}" TextWrapping="NoWrap"  Text="{Binding Title, Mode=TwoWay}" MaxHeight="80" FontSize="20" FontWeight="Bold" BorderBrush="Transparent" Background="Transparent" TextAlignment="Center" VerticalAlignment="Center" BorderThickness="0">
                                         <TextBox.Resources>
                                             <Style TargetType="ContentControl">
-                                                <Setter Property="Foreground" Value="Black"></Setter>
+                                                <Setter Property="Foreground" Value="Black" />
                                             </Style>
                                         </TextBox.Resources>
                                     </TextBox>
@@ -42,53 +42,53 @@
                                     <Rectangle Height="{Binding Height}" Width="{Binding Width}" Margin="-2,-2"  />
                                     <Canvas x:Name="TopMenu" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Top" Margin="0,0,85,0" HorizontalAlignment="Right"  Visibility="{Binding IsEditing, Converter={StaticResource vConverter}}">
                                         <Canvas.RenderTransform>
-                                            <TranslateTransform Y ="-85"></TranslateTransform>
+                                            <TranslateTransform Y ="-85" />
                                         </Canvas.RenderTransform>
-                                        <ContentControl Content="{TemplateBinding TopMenu}"></ContentControl>
+                                        <ContentControl Content="{TemplateBinding TopMenu}" />
                                     </Canvas>
                                     <Canvas x:Name="SubMenu" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Top" Margin="0,0,0,0" Visibility="{Binding IsEditing, Converter={StaticResource vConverter}}">
                                         <Canvas.RenderTransform>
-                                            <TranslateTransform X="-60"></TranslateTransform>
+                                            <TranslateTransform X="-60" />
                                         </Canvas.RenderTransform>
                                         <StackPanel Orientation="Vertical">
                                             <Button Margin="0,2,0,2" x:Name="btnDelete" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}">
-                                                <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform"></Image>
+                                                <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform" />
                                             </Button>
-                                            <ContentControl Content="{TemplateBinding SubMenu}"></ContentControl>
+                                            <ContentControl Content="{TemplateBinding SubMenu}" />
                                         </StackPanel>
                                     </Canvas>
                                     <Canvas x:Name="SubMenuRight" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,0,0" Visibility="{Binding IsEditing, Converter={StaticResource vConverter}}">
                                         <Canvas.RenderTransform>
-                                            <TranslateTransform X="15"></TranslateTransform>
+                                            <TranslateTransform X="15" />
                                         </Canvas.RenderTransform>
                                         <Button x:Name="DuplicateElement" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}">
                                             <StackPanel>
-                                                <Image Source="ms-appx:///Assets/icon_duplicate.png" Height="28" Width="28" Stretch="Uniform"></Image>
-                                                <TextBlock Text="Duplicate" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12"></TextBlock>
+                                                <Image Source="ms-appx:///Assets/icon_duplicate.png" Height="28" Width="28" Stretch="Uniform" />
+                                                <TextBlock Text="Duplicate" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12" />
                                             </StackPanel>
                                         </Button>
                                         <Button x:Name="Link" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" Margin="0,70,0,0">
                                             <StackPanel>
-                                                <Image Source="ms-appx:///Assets/icon_link.png" Height="28" Width="28" Stretch="Uniform"></Image>
-                                                <TextBlock Text="Link" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12"></TextBlock>
+                                                <Image Source="ms-appx:///Assets/icon_link.png" Height="28" Width="28" Stretch="Uniform" />
+                                                <TextBlock Text="Link" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12" />
                                             </StackPanel>
                                         </Button>
                                         <Button x:Name="PresentationLink" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" Margin="0,140,0,0">
                                             <StackPanel>
-                                                <Image Source="ms-appx:///Assets/icon_presentation_link.png" Height="28" Width="28" Stretch="Uniform"></Image>
-                                                <TextBlock Text="Trail" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12"></TextBlock>
+                                                <Image Source="ms-appx:///Assets/icon_presentation_link.png" Height="28" Width="28" Stretch="Uniform" />
+                                                <TextBlock Text="Trail" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12" />
                                             </StackPanel>
                                         </Button>
                                         <Button x:Name="PresentationMode" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" Margin="0,210,0,0">
                                             <StackPanel>
-                                                <Image Source="ms-appx:///Assets/present icon.png" Height="28" Width="28" Stretch="Uniform"></Image>
-                                                <TextBlock Text="Present" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12"></TextBlock>
+                                                <Image Source="ms-appx:///Assets/present icon.png" Height="28" Width="28" Stretch="Uniform" />
+                                                <TextBlock Text="Present" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12" />
                                             </StackPanel>
                                         </Button>
                                         <Button x:Name ="ExplorationMode" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" Margin="0,280,0,0">
                                             <StackPanel>
-                                                <Image Source="/Assets/exploration icon.png" Height="28" Width="28" Stretch="Uniform"></Image>
-                                                <TextBlock Text="Explore" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12"></TextBlock>
+                                                <Image Source="/Assets/exploration icon.png" Height="28" Width="28" Stretch="Uniform" />
+                                                <TextBlock Text="Explore" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="12" />
                                             </StackPanel>
                                         </Button>
 
@@ -113,7 +113,7 @@
                                     <Border x:Name="xHighlight" Width="{Binding Width}" BorderThickness="4" CornerRadius="5,5,0,0" Visibility="Collapsed" />
                                 </Canvas>
                                 <Canvas>
-                                    <TextBlock x:Name="xUserName"  Text="" Margin="0,-67.5,0,0" FontSize="22.5"></TextBlock>
+                                    <TextBlock x:Name="xUserName"  Text="" Margin="0,-67.5,0,0" FontSize="22.5" />
                                 </Canvas>
                             </Canvas>
                             <Canvas Grid.Row="2">
@@ -124,7 +124,7 @@
                                                 <ItemsPanelTemplate>
                                                     <local:WrapPanel Width="{Binding Width}">
                                                         <local:WrapPanel.RenderTransform>
-                                                            <TranslateTransform Y="5"></TranslateTransform>
+                                                            <TranslateTransform Y="5" />
                                                         </local:WrapPanel.RenderTransform>
                                                     </local:WrapPanel>
                                                 </ItemsPanelTemplate>
@@ -137,7 +137,7 @@
                                                 <ItemsPanelTemplate>
                                                     <local:WrapPanel Width="{Binding Width}">
                                                         <local:WrapPanel.RenderTransform>
-                                                            <TranslateTransform Y="5"></TranslateTransform>
+                                                            <TranslateTransform Y="5" />
                                                         </local:WrapPanel.RenderTransform>
                                                     </local:WrapPanel>
                                                 </ItemsPanelTemplate>

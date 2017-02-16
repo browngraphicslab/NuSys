@@ -129,7 +129,7 @@ namespace NuSysApp
                 Background = Constants.DARK_BLUE,
                 BorderColor = Constants.DARK_BLUE,
                 SelectedBorder = Constants.LIGHT_BLUE,
-                BorderWidth = 3,
+                BorderWidth = 3
             };
             _mediaTypeSwitch.ImageBounds = new Rect(.25,.25,.5,.5);
             AddChild(_mediaTypeSwitch);

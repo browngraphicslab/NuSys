@@ -41,11 +41,11 @@ namespace NuSysApp
         public static readonly DependencyProperty LeftJustifiedProperty = DependencyProperty.RegisterAttached("LeftJustified", typeof(bool), typeof(TextInputBlock), null);
         public static readonly DependencyProperty BubbleTopProperty = DependencyProperty.RegisterAttached("BubbleLocation", typeof(bool), typeof(TextInputBlock), null);
         public static readonly DependencyProperty HeightProperty = DependencyProperty.RegisterAttached("SetHeight", typeof(double), typeof(TextInputBlock), null);
-        public static readonly DependencyProperty ButtonBgProperty = DependencyProperty.RegisterAttached("ButtonBg", typeof(Windows.UI.Color), typeof(TextInputBlock), null);
+        public static readonly DependencyProperty ButtonBgProperty = DependencyProperty.RegisterAttached("ButtonBg", typeof(Color), typeof(TextInputBlock), null);
         public static readonly DependencyProperty HasBackgroundProperty = DependencyProperty.RegisterAttached("HasBackground", typeof(bool), typeof(TextInputBlock), null);
-        public static readonly DependencyProperty ButtonStrokeProperty = DependencyProperty.RegisterAttached("ButtonStroke", typeof(Windows.UI.Color), typeof(TextInputBlock), null);
+        public static readonly DependencyProperty ButtonStrokeProperty = DependencyProperty.RegisterAttached("ButtonStroke", typeof(Color), typeof(TextInputBlock), null);
         public static readonly DependencyProperty TextProperty = DependencyProperty.RegisterAttached("Text", typeof(string), typeof(TextInputBlock), null);
-        public static readonly DependencyProperty TextColorProperty = DependencyProperty.RegisterAttached("TextColor", typeof(Windows.UI.Color), typeof(TextInputBlock), null);
+        public static readonly DependencyProperty TextColorProperty = DependencyProperty.RegisterAttached("TextColor", typeof(Color), typeof(TextInputBlock), null);
 
         public TextInputBlock()
         {
@@ -55,10 +55,10 @@ namespace NuSysApp
             _isRecording = false;
             _isInking = false;
             _isActivated = false;
-            this.InitializeComponent();
+            InitializeComponent();
 
             //TextBox.KeyUp += TextBoxOnKeyUp;
-            this.SetUpInking();
+            SetUpInking();
         }
 
         /*
@@ -76,7 +76,7 @@ namespace NuSysApp
             }
         }
 
-        public Windows.UI.Color ButtonBg
+        public Color ButtonBg
         {
             set
             {
@@ -87,7 +87,7 @@ namespace NuSysApp
             }
         }
 
-        public Windows.UI.Color ButtonStroke
+        public Color ButtonStroke
         {
             set
             {
@@ -96,7 +96,7 @@ namespace NuSysApp
             }
         }
 
-        public Windows.UI.Color TextColor
+        public Color TextColor
         {
             set { TextBox.Foreground = new SolidColorBrush(value); }
         }
@@ -152,7 +152,7 @@ namespace NuSysApp
         
         private void TextBox_OnTextChanged(object sender, TextChangedEventArgs args)
         {
-            TextChanged?.Invoke(this, this.Text);
+            TextChanged?.Invoke(this, Text);
         }
         
 
@@ -231,7 +231,7 @@ namespace NuSysApp
                 if (texts.Count > 0)
                 {
                     TextBox.Text = _savedForInking + " " + texts[0];
-                    TextBox.Text = this.TextBox.Text.Trim();
+                    TextBox.Text = TextBox.Text.Trim();
                 }
                 TextChanged?.Invoke(this, TextBox.Text.Trim());
             };
@@ -247,10 +247,10 @@ namespace NuSysApp
             marker.Height = Inker.Height;
             marker.Width = 30;
             marker.HorizontalAlignment = Windows.UI.Xaml.HorizontalAlignment.Left;
-            curr.Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(1, 242, 242, 242));
+            curr.Fill = new SolidColorBrush(Color.FromArgb(1, 242, 242, 242));
             marker.Stroke = new SolidColorBrush(Colors.LightSlateGray);
 
-            marker.Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(1, 242, 242, 242));
+            marker.Fill = new SolidColorBrush(Color.FromArgb(1, 242, 242, 242));
             Inker.Children.Add(curr);
             Inker.Children.Add(_inqView);
             Inker.Children.Add(marker);
@@ -345,7 +345,7 @@ namespace NuSysApp
             else
             {
                 InkBubble.Visibility = Visibility.Collapsed;
-                TextBox.Text = this.TextBox.Text.Trim();
+                TextBox.Text = TextBox.Text.Trim();
                 TextChanged?.Invoke(this, TextBox.Text.Trim());
                 SetImage("ms-appx:///Assets/ink.png", InkImg);
             }

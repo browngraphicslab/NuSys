@@ -51,7 +51,7 @@ namespace MarkdownDeep
 		// These are used during construction of <em> and <strong> tokens
 		opening_mark,	// opening '*' or '_'
 		closing_mark,	// closing '*' or '_'
-		internal_mark,	// internal '*' or '_'
+		internal_mark	// internal '*' or '_'
 	}
 
 	// Token
@@ -74,17 +74,14 @@ namespace MarkdownDeep
 
 		public override string ToString()
 		{
-			if (true || data == null)
+		    if (true || data == null)
 			{
 				return string.Format("{0} - {1} - {2}", type.ToString(), startOffset, length);
 			}
-			else
-			{
-				return string.Format("{0} - {1} - {2} -> {3}", type.ToString(), startOffset, length, data.ToString());
-			}
+		    return string.Format("{0} - {1} - {2} -> {3}", type, startOffset, length, data);
 		}
 
-		public TokenType type;
+	    public TokenType type;
 		public int startOffset;
 		public int length;
 		public object data;

@@ -16,9 +16,9 @@
     <Canvas>
         <Grid x:Name="GroupSettings" BorderBrush="{StaticResource color2}" BorderThickness="2"  Height="185" Width="250" Visibility="Collapsed" Background="{StaticResource color1}">
             <StackPanel Margin="10">
-                <ToggleSwitch Style="{StaticResource NuSysToggleSwitch}"  x:Name="FiniteCheck" OnContent="Bounded" OffContent="Unbounded" ></ToggleSwitch>
-                <ToggleSwitch Style="{StaticResource NuSysToggleSwitch}"  x:Name="ShapeCheck" OnContent="Has Shape" OffContent="No Shape"></ToggleSwitch>
-                <ToggleSwitch Style="{StaticResource NuSysToggleSwitch}"  x:Name="BoundingRectCheck" OnContent="Use Bounding Rectangle" OffContent="Use Regular Shape"></ToggleSwitch>
+                <ToggleSwitch Style="{StaticResource NuSysToggleSwitch}"  x:Name="FiniteCheck" OnContent="Bounded" OffContent="Unbounded" />
+                <ToggleSwitch Style="{StaticResource NuSysToggleSwitch}"  x:Name="ShapeCheck" OnContent="Has Shape" OffContent="No Shape" />
+                <ToggleSwitch Style="{StaticResource NuSysToggleSwitch}"  x:Name="BoundingRectCheck" OnContent="Use Bounding Rectangle" OffContent="Use Regular Shape" />
                 <!--<CheckBox FontSize="16" Foreground="{StaticResource color2}"  Content="Finite"></CheckBox>-->
                 <!--<CheckBox FontSize="16" Foreground="{StaticResource color2}" Content="Shaped"></CheckBox>-->
             </StackPanel>
@@ -28,13 +28,13 @@
             </Button>
             <Button x:Name="CloseGroupSettings" Background="Transparent" Height="20" Width="20" HorizontalAlignment="Right"
                     VerticalAlignment="Top" Margin="10" Padding="0" Click="GroupSettingsXOnClick">
-                <Image Source="ms-appx:///Assets/icon_node_x.png"></Image>
+                <Image Source="ms-appx:///Assets/icon_node_x.png" />
             </Button>
         </Grid>
 
         <Grid x:Name="AccessPanel" Width="200" Height="200" Background="{StaticResource color1}" BorderThickness="2" BorderBrush="{StaticResource color2}" Visibility="Collapsed">
             <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Center">
-                <TextBlock Text="Change Access Controls" HorizontalAlignment="Center"  Foreground="{StaticResource color3}" FontSize="15" Margin="0,10,0,10"></TextBlock>
+                <TextBlock Text="Change Access Controls" HorizontalAlignment="Center"  Foreground="{StaticResource color3}" FontSize="15" Margin="0,10,0,10" />
                 <RadioButton Style="{StaticResource NuSysRadioButton}" Foreground="{StaticResource color3}" HorizontalAlignment="Center">Private</RadioButton>
                 <RadioButton Style="{StaticResource NuSysRadioButton}" Foreground="{StaticResource color3}" HorizontalAlignment="Center">Public</RadioButton>
                 <RadioButton Style="{StaticResource NuSysRadioButton}" Foreground="{StaticResource color3}" HorizontalAlignment="Center">Read-Only</RadioButton>
@@ -49,10 +49,10 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Button Grid.Column="0" x:Name="DeleteButton" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}">
-                <Image Source="ms-appx:///Assets/node icons/delete.png" Height="20" Width="20"></Image>
+                <Image Source="ms-appx:///Assets/node icons/delete.png" Height="20" Width="20" />
             </Button>
             <Button Grid.Column="1" x:Name="OptionsButton" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}">
-                <Image Source="ms-appx:///Assets/settings icon white.png" Height="20" Width="20"></Image>
+                <Image Source="ms-appx:///Assets/settings icon white.png" Height="20" Width="20" />
                 <Button.Flyout>
                     <MenuFlyout Placement="Bottom">
                         <MenuFlyoutItem Click="OnChangeAccessClick">Change Access</MenuFlyoutItem>
@@ -60,7 +60,7 @@
                 </Button.Flyout>
             </Button>
             <Button Grid.Column="2" x:Name="GroupButton" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}" Click="GroupButtonOnClick">
-                <Image Source="ms-appx:///Assets/collection icon bluegreen.png" Height="20" Width="20"></Image>
+                <Image Source="ms-appx:///Assets/collection icon bluegreen.png" Height="20" Width="20" />
             </Button>
         </Grid>
 
@@ -68,11 +68,11 @@
             <StackPanel.RenderTransform>
                 <TranslateTransform  />
             </StackPanel.RenderTransform>
-            <Rectangle Width="30" Height="30" Fill="LightBlue" PointerReleased="Rectangle_PointerReleased"></Rectangle>
-            <Rectangle Width="30" Height="30" Fill="LightCoral" PointerReleased="Rectangle_PointerReleased"></Rectangle>
-            <Rectangle Width="30" Height="30" Fill="LightCyan" PointerReleased="Rectangle_PointerReleased"></Rectangle>
-            <Rectangle Width="30" Height="30" Fill="LightGreen" PointerReleased="Rectangle_PointerReleased"></Rectangle>
-            
+            <Rectangle Width="30" Height="30" Fill="LightBlue" PointerReleased="Rectangle_PointerReleased" />
+            <Rectangle Width="30" Height="30" Fill="LightCoral" PointerReleased="Rectangle_PointerReleased" />
+            <Rectangle Width="30" Height="30" Fill="LightCyan" PointerReleased="Rectangle_PointerReleased" />
+            <Rectangle Width="30" Height="30" Fill="LightGreen" PointerReleased="Rectangle_PointerReleased" />
+
         </StackPanel>
 
         

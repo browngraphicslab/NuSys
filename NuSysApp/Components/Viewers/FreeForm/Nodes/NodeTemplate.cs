@@ -34,24 +34,24 @@ namespace NuSysApp
         public delegate void TemplateReady();
 
         //public InqCanvasView inkCanvas = null;
-        public Button btnDelete = null;
-        public Path resizer = null;
-        public Grid bg = null;
-        public Rectangle hitArea = null;
+        public Button btnDelete;
+        public Path resizer;
+        public Grid bg;
+        public Rectangle hitArea;
         //public TextBlock tags = null;
-        public Grid titleContainer = null;
-        public TextBox title = null;
-        public Border highlight = null;
-        public ItemsControl tags = null;
-        public TextBlock userName = null;
-        public Canvas xCanvas = null;
-        public Button DuplicateElement = null;
-        public Button Link = null;
-        public Button PresentationLink = null;
-        public Button PresentationMode = null;
-        public Button ExplorationMode = null;
+        public Grid titleContainer;
+        public TextBox title;
+        public Border highlight;
+        public ItemsControl tags;
+        public TextBlock userName;
+        public Canvas xCanvas;
+        public Button DuplicateElement;
+        public Button Link;
+        public Button PresentationLink;
+        public Button PresentationMode;
+        public Button ExplorationMode;
 
-        public Button isSearched = null;
+        public Button isSearched;
 
         /// <summary>
         /// Used to hold the icon indicating the position and type of anything being dragged from the node template
@@ -87,7 +87,7 @@ namespace NuSysApp
 
         public NodeTemplate()
         {
-            this.DefaultStyleKey = typeof(NodeTemplate);
+            DefaultStyleKey = typeof(NodeTemplate);
             SubMenu = null;
             TopMenu = null;
             Inner = null;
@@ -96,7 +96,7 @@ namespace NuSysApp
 
         public void Dispose()
         {
-            var vm = (ElementViewModel)this.DataContext;
+            var vm = (ElementViewModel)DataContext;
             vm.PropertyChanged -= OnPropertyChanged;
 
             if (vm?.Controller?.LibraryElementController != null)
@@ -120,19 +120,19 @@ namespace NuSysApp
 
         public object SubMenu
         {
-            get { return (object)GetValue(SubMenuProperty); }
+            get { return GetValue(SubMenuProperty); }
             set { SetValue(SubMenuProperty, value); }
         }
 
         public object TopMenu
         {
-            get { return (object)GetValue(TopMenuProperty); }
+            get { return GetValue(TopMenuProperty); }
             set { SetValue(TopMenuProperty, value); }
         }
 
         public object Inner
         {
-            get { return (object)GetValue(InnerProperty); }
+            get { return GetValue(InnerProperty); }
             set { SetValue(InnerProperty, value); }
         }
 
@@ -198,13 +198,13 @@ namespace NuSysApp
             }
             titleContainer = (Grid)GetTemplateChild("xTitleContainer");
 
-            title.Loaded += delegate (object sender, RoutedEventArgs args)
+            title.Loaded += delegate
             {
                 titleContainer.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
                 highlight.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
             };
 
-            var vm = (ElementViewModel)this.DataContext;
+            var vm = (ElementViewModel)DataContext;
             if (vm?.Controller?.LibraryElementModel != null)
             {
                 vm.Controller.LibraryElementController.UserChanged += ControllerOnUserChanged;
@@ -231,7 +231,7 @@ namespace NuSysApp
                 MetadataToolController metadataToolController = new MetadataToolController(metadataModel);
                 MetadataToolViewModel metadataToolViewModel = new MetadataToolViewModel(metadataToolController);
                 metadataToolViewModel.Filter = ToolModel.ToolFilterTypeTitle.AllMetadata;
-                metadataToolController.SetSelection(new Tuple<string, HashSet<string>>("Keywords", new HashSet<string>() {selectedTag }));
+                metadataToolController.SetSelection(new Tuple<string, HashSet<string>>("Keywords", new HashSet<string> {selectedTag }));
                 MetadataToolView metadataToolView = new MetadataToolView(metadataToolViewModel, centerpoint.X, centerpoint.Y);
                 wvm.AtomViewList.Add(metadataToolView);
 
@@ -261,7 +261,7 @@ namespace NuSysApp
 
         private void TitleOnTextChanged(object sender, object args)
         {
-            var vm = (ElementViewModel)this.DataContext;
+            var vm = (ElementViewModel)DataContext;
             titleContainer.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
             highlight.RenderTransform = new TranslateTransform { X = 0, Y = -title.ActualHeight + 5 };
             highlight.Height = vm.Height + title.ActualHeight - 5;
@@ -273,7 +273,7 @@ namespace NuSysApp
 
         private void LibraryElementModelOnOnTitleChanged(object sender, string newTitle)
         {
-            var vm = (ElementViewModel)this.DataContext;
+            var vm = (ElementViewModel)DataContext;
             if (title.Text != newTitle)
             {
                 title.TextChanged -= TitleOnTextChanged;
@@ -285,7 +285,7 @@ namespace NuSysApp
 
         private void ControllerOnUserChanged(object sender, NetworkUser user)
         {
-            var vm = (ElementViewModel)this.DataContext;
+            var vm = (ElementViewModel)DataContext;
             if (user == null)
             {
                 userName.Foreground = new SolidColorBrush(Colors.Transparent);
@@ -434,7 +434,7 @@ namespace NuSysApp
             }
 
             ReleasePointerCaptures();
-            (sender as FrameworkElement).RemoveHandler(UIElement.PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta));
+            (sender as FrameworkElement).RemoveHandler(PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta));
         }
 
         /// <summary>
@@ -499,12 +499,12 @@ namespace NuSysApp
             _dragItem.Height = 50;
             xCanvas.Children.Add(_dragItem);
             _dragItem.RenderTransform = new CompositeTransform();
-            (sender as FrameworkElement).AddHandler(UIElement.PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta), true);
+            (sender as FrameworkElement).AddHandler(PointerMovedEvent, new PointerEventHandler(BtnAddOnManipulationDelta), true);
         }
 
         public void ToggleInkMode()
         {
-            var vm = (ElementViewModel) this.DataContext;
+            var vm = (ElementViewModel) DataContext;
             //vm.ToggleEditingInk();
             //inkCanvas.IsEnabled = vm.IsEditingInk;
         }
@@ -513,8 +513,8 @@ namespace NuSysApp
         {
 
            
-            var vm = (ElementViewModel)this.DataContext;
-            var model = (ElementModel) vm.Model;
+            var vm = (ElementViewModel)DataContext;
+            var model = vm.Model;
             
             //Creates a DeleteElementAction
             var removeElementAction = new DeleteElementAction(vm.Controller);
@@ -553,7 +553,7 @@ namespace NuSysApp
 
         private void OnExplorationClick(object sender, RoutedEventArgs e)
         {
-            var vm = ((ElementViewModel) this.DataContext);
+            var vm = ((ElementViewModel) DataContext);
 
             // unselect start element
             vm.IsSelected = false;
@@ -567,7 +567,7 @@ namespace NuSysApp
         {
 
 
-            var vm = (ElementViewModel) this.DataContext;
+            var vm = (ElementViewModel) DataContext;
 
             var zoom = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
             var resizeX = vm.Model.Width + e.Delta.Translation.X/zoom;
@@ -583,7 +583,7 @@ namespace NuSysApp
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            var vm = (ElementViewModel) this.DataContext;
+            var vm = (ElementViewModel) DataContext;
             if (e.PropertyName == "Height")
             {
                 highlight.Height = vm.Height + title.ActualHeight - 5;

@@ -122,7 +122,7 @@ namespace NuSysApp
             //If an action had been done and a new manipulation has started then we want to then make sure that it doesn't interfere with our current manipulation
             if (_moveNodeUndoButton != null)
             {
-                if (_moveNodeUndoButton.ActionExecuted == true)
+                if (_moveNodeUndoButton.ActionExecuted)
                 {
                     _moveNodeUndoButton.ActionExecuted = false; // This prevents the node from being immovable right agter being undo'd
                 }
@@ -196,7 +196,7 @@ namespace NuSysApp
             //If the undo action for moving elements has been executed, stop inertia!
             if(_moveNodeUndoButton != null)
             {
-                if(_moveNodeUndoButton.ActionExecuted == true)
+                if(_moveNodeUndoButton.ActionExecuted)
                 {
                     //Completes the manipulation without inertia
                     e.Complete();

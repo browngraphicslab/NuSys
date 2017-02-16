@@ -40,7 +40,7 @@ namespace NuSysApp
                 FontSize = 10,
                 TextHorizontalAlignment = CanvasHorizontalAlignment.Center,
                 TextVerticalAlignment = CanvasVerticalAlignment.Top,
-                Background = Colors.Transparent,
+                Background = Colors.Transparent
             };
 
             AddChild(_label);

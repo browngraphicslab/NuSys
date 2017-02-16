@@ -19,7 +19,7 @@ namespace NuSysApp
     {
         public VideoNodeViewModel(ElementController controller) : base(controller)
         {
-            this.Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
+            Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
         }
 
         public override async Task Init()

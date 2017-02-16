@@ -76,14 +76,14 @@ namespace NuSysApp
                 return;
 
             
-            var controller = (LinkController)_vm.Controller;
+            var controller = _vm.Controller;
             if (controller.InElement == null || controller.OutElement == null)
                 return;
             var anchor1 = new Vector2((float)controller.InElement.Anchor.X, (float)controller.InElement.Anchor.Y);
             var anchor2 = new Vector2((float)controller.OutElement.Anchor.X, (float)controller.OutElement.Anchor.Y);
 
-            var distanceX = (float)anchor1.X - anchor2.X;
-            var distanceY = (float)anchor1.Y - anchor2.Y;
+            var distanceX = anchor1.X - anchor2.X;
+            var distanceY = anchor1.Y - anchor2.Y;
 
             var Point2 = new Vector2(anchor1.X - distanceX / 2, anchor2.Y);
             var Point1 = new Vector2(anchor2.X + distanceX / 2, anchor1.Y);

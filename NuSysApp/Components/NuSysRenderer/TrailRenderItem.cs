@@ -77,8 +77,8 @@ namespace NuSysApp
             var anchor1 = new Vector2((float)_vm.InAnchor.X, (float)_vm.InAnchor.Y);
             var anchor2 = new Vector2((float)_vm.OutAnchor.X, (float)_vm.OutAnchor.Y);
 
-            var distanceX = (float)anchor1.X - anchor2.X;
-            var distanceY = (float)anchor1.Y - anchor2.Y;
+            var distanceX = anchor1.X - anchor2.X;
+            var distanceY = anchor1.Y - anchor2.Y;
 
             var Point2 = new Vector2(anchor1.X - distanceX / 2, anchor2.Y);
             var Point1 = new Vector2(anchor2.X + distanceX / 2, anchor1.Y);

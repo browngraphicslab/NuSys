@@ -66,8 +66,8 @@ namespace NuSysApp
         //private Dictionary<string, LibraryElement> _elements = new Dictionary<string, LibraryElement>();
         public LibraryView(LibraryBucketViewModel vm, LibraryElementPropertiesWindow properties, FloatingMenuView menu)
         {
-            this.DataContext = vm;
-            this.InitializeComponent();
+            DataContext = vm;
+            InitializeComponent();
             _propertiesWindow = properties;
             _menu = menu;
 
@@ -78,9 +78,9 @@ namespace NuSysApp
             var data = SessionController.Instance.ContentController.ContentValues.Select(item => SessionController.Instance.ContentController.GetLibraryElementController(item.LibraryElementId));
             _pageViewModel = new LibraryPageViewModel(new ObservableCollection<LibraryElementController>(data));
             _favoritesViewModel = new LibraryFavoritesViewModel(new ObservableCollection<LibraryElementController>(data));
-            this.MakeViews(_pageViewModel, _propertiesWindow);
+            MakeViews(_pageViewModel, _propertiesWindow);
             _propertiesWindow.AddedToFavorite += AddToFavorites;
-            this._libraryList.DeleteClicked += DeleteClicked;
+            _libraryList.DeleteClicked += DeleteClicked;
             ListContainer.Children.Add(_libraryList);
             Searchfield.SetHeight = 34;
            
@@ -209,7 +209,7 @@ namespace NuSysApp
                     data = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(storageFile));
 
                     var thumb = await storageFile.GetThumbnailAsync(ThumbnailMode.SingleItem, 300);
-                    aspectRatio = ((double)thumb.OriginalWidth)/((double)thumb.OriginalHeight);
+                    aspectRatio = thumb.OriginalWidth/((double)thumb.OriginalHeight);
 
                     thumbnails = await MediaUtil.GetThumbnailDictionary(storageFile);
                 }
@@ -271,7 +271,7 @@ namespace NuSysApp
                     }
 
                     var thumb = await storageFile.GetThumbnailAsync(ThumbnailMode.SingleItem, 300);
-                    aspectRatio = ((double)thumb.OriginalWidth) / ((double)thumb.OriginalHeight);
+                    aspectRatio = thumb.OriginalWidth / ((double)thumb.OriginalHeight);
 
                     data = Convert.ToBase64String(fileBytes);
                     thumbnails = await MediaUtil.GetThumbnailDictionary(storageFile);
@@ -310,7 +310,7 @@ namespace NuSysApp
                     //if there is pdf text, add it to the request
                     if (pdfTextByPage.Any())
                     {
-                        args = new CreateNewPdfContentRequestArgs()
+                        args = new CreateNewPdfContentRequestArgs
                         {
                             PdfText = JsonConvert.SerializeObject(pdfTextByPage),
                             PageCount = pdfPageCount
@@ -401,7 +401,7 @@ namespace NuSysApp
 
         private void Folder_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            this.AddFile();
+            AddFile();
         }
 
         public FrameworkElement HeaderRow
@@ -433,10 +433,10 @@ namespace NuSysApp
             }
 
             // This creates a request to create the new collection of search results 
-            var newContentRequestArgs = new CreateNewContentRequestArgs()
+            var newContentRequestArgs = new CreateNewContentRequestArgs
             {
                 ContentId = contentId,
-                LibraryElementArgs = new CreateNewLibraryElementRequestArgs()
+                LibraryElementArgs = new CreateNewLibraryElementRequestArgs
                 {
                     ContentId = contentId,
                     AccessType = newCollectionAccessType,
@@ -459,7 +459,7 @@ namespace NuSysApp
             //    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(contentId, "", NusysConstants.ElementType.Collection, "Favorites"));
 
             // After creating the collection, we need to instantiate an instance of the collection and place it on the workspace. 
-            var newElementRequestArgs = new NewElementRequestArgs()
+            var newElementRequestArgs = new NewElementRequestArgs
             {
                 Height = 300,
                 Width = 300,
@@ -484,7 +484,7 @@ namespace NuSysApp
                     }
                     else
                     {
-                        var elementRequestArgs = new NewElementRequestArgs()
+                        var elementRequestArgs = new NewElementRequestArgs
                         {
                             Height = 300,
                             Width = 300,

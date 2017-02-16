@@ -24,7 +24,7 @@ namespace NuSysApp
         /// </summary>
         public ReadonlyFloatingMenuView()
         {
-            this.InitializeComponent();
+            InitializeComponent();
             
         }
 
@@ -35,7 +35,7 @@ namespace NuSysApp
         /// <param name="e"></param>
         private void xPresentButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            this.DeactivateAllButtons();
+            DeactivateAllButtons();
             xPresentButton.Activate();
             SessionController.Instance.SwitchMode(Options.Presentation);
             //SessionController.Instance.SessionView.EnterPresentationMode();
@@ -48,7 +48,7 @@ namespace NuSysApp
         /// <param name="e"></param>
         private void xExploreButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            this.DeactivateAllButtons();
+            DeactivateAllButtons();
             xExploreButton.Activate();
             SessionController.Instance.SwitchMode(Options.ReadOnly);
            
@@ -62,9 +62,9 @@ namespace NuSysApp
         /// <param name="e"></param>
         private void xRevertButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            this.DeactivateAllButtons();
+            DeactivateAllButtons();
             //xRevertButton.Activate();
-            this.RevertToNormalWorkspace();
+            RevertToNormalWorkspace();
 
         }
 

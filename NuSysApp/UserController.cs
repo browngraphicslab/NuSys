@@ -24,8 +24,8 @@ namespace NuSysApp
 
         public UserController()
         {
-            this.UserAdded += UserController_UserAdded;
-            this.UserRemoved += UserController_UserRemoved;
+            UserAdded += UserController_UserAdded;
+            UserRemoved += UserController_UserRemoved;
         }
 
         private void UserController_UserRemoved(string controllerId, string userId)
@@ -94,8 +94,8 @@ namespace NuSysApp
 
         public void Dispose()
         {
-            this.UserAdded -= UserController_UserAdded;
-            this.UserRemoved -= UserController_UserRemoved;
+            UserAdded -= UserController_UserAdded;
+            UserRemoved -= UserController_UserRemoved;
             ClearUsers();
         }
     }

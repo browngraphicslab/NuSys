@@ -37,7 +37,7 @@ namespace NuSysApp
             set
             {
                 _pinned = value;
-                xPinHighlight.Visibility = _pinned == true ? Visibility.Visible : Visibility.Collapsed;
+                xPinHighlight.Visibility = _pinned ? Visibility.Visible : Visibility.Collapsed;
             }
         }
         private Thickness _collapsedThickness;
@@ -55,15 +55,15 @@ namespace NuSysApp
         /// <param name="libraryId"></param>
         public LinkCircle(string linkLibraryElementId, string libraryId)
         {
-            this.LinkLibraryElementId = linkLibraryElementId;
-            this.LibraryId = libraryId;
+            LinkLibraryElementId = linkLibraryElementId;
+            LibraryId = libraryId;
             //represents if the image has been loaded before
             _firstTimeOpened = false;
             //thickness to make border visible/invisible
             _collapsedThickness = new Thickness(0);
             _visibleThickness = new Thickness(1);
 
-            this.InitializeComponent();
+            InitializeComponent();
             //border starts off invisible
             border.BorderThickness = _collapsedThickness;
             //thumbnail is not pinned to begin with

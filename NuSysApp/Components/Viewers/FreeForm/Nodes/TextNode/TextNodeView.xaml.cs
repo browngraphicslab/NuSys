@@ -41,8 +41,8 @@ namespace NuSysApp
         private string _text = string.Empty;
 
 
-        private static int _count = 0;
-        private bool navigated = false;
+        private static int _count;
+        private bool navigated;
 
         // Inking variables
         private string _saved = string.Empty;
@@ -72,7 +72,7 @@ namespace NuSysApp
 
             DataContext = vm;
 
-            this.SetUpInking();
+            SetUpInking();
 
             vm.Controller.Disposed += ControllerOnDisposed;
             vm.TextBindingChanged += TextChanged;
@@ -291,7 +291,7 @@ namespace NuSysApp
 
         private void OnDeleteClick(object sender, RoutedEventArgs e)
         {
-            var vm = (ElementViewModel)this.DataContext;
+            var vm = (ElementViewModel)DataContext;
             vm.Controller.RequestDelete();
         }
 
@@ -322,9 +322,9 @@ namespace NuSysApp
             {
                 return;
             }
-            this._dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
-            this._dictatedTextBuilder = new StringBuilder();
-            this._hypothesisBuilder = new StringBuilder();
+            _dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
+            _dictatedTextBuilder = new StringBuilder();
+            _hypothesisBuilder = new StringBuilder();
 
             ((ElementViewModel)DataContext).PropertyChanged += propertyChanged;
 
@@ -361,7 +361,7 @@ namespace NuSysApp
         private async void SpeechRecognizer_HypothesisGenerated(SpeechRecognizer sender, SpeechRecognitionHypothesisGeneratedEventArgs args)
         {
             string hypothesis = args.Hypothesis.Text;
-            string textboxContent = _hypothesisBuilder.ToString() + " " + hypothesis + "...";
+            string textboxContent = _hypothesisBuilder + " " + hypothesis + "...";
 
             await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
@@ -381,7 +381,7 @@ namespace NuSysApp
 
             await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                UpdateText(_saved + " " + _dictatedTextBuilder.ToString());
+                UpdateText(_saved + " " + _dictatedTextBuilder);
                 UpdateController(_text);
                 Debug.WriteLine(_dictatedTextBuilder.ToString());
             });
@@ -398,7 +398,7 @@ namespace NuSysApp
                 {
                     await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                     {
-                        UpdateText(_saved + " " + _dictatedTextBuilder.ToString());
+                        UpdateText(_saved + " " + _dictatedTextBuilder);
                         UpdateController(_text);
 
                     });

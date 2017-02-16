@@ -15,18 +15,18 @@
 
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"></ColumnDefinition>
-                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <TextBlock x:Name="xTitle" Text="Related Elements" Grid.Column="0" FontWeight="Bold" FontSize="18" Padding="10" IsColorFontEnabled="True" Foreground="White"></TextBlock>
+            <TextBlock x:Name="xTitle" Text="Related Elements" Grid.Column="0" FontWeight="Bold" FontSize="18" Padding="10" IsColorFontEnabled="True" Foreground="White" />
             <Border Grid.Column="1" x:Name="xExitButton" HorizontalAlignment="Right" VerticalAlignment="Top" Tapped="XExitButton_OnTapped"  Padding="5,0,10,0">
                 <TextBlock Text="X" Foreground="White" FontSize="28"/>
             </Border>
@@ -60,8 +60,8 @@
         <Grid Grid.Row="2">
 
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"></ColumnDefinition>
-                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
 
             </Grid.ColumnDefinitions>
 
@@ -71,8 +71,8 @@
 
         <Grid.RenderTransform>
             <TransformGroup x:Name="xTransformGroup">
-                <MatrixTransform x:Name="xMatrixTransform"></MatrixTransform>
-                <CompositeTransform x:Name="xCompositeTransform"></CompositeTransform>
+                <MatrixTransform x:Name="xMatrixTransform" />
+                <CompositeTransform x:Name="xCompositeTransform" />
             </TransformGroup>
         </Grid.RenderTransform>
     </Grid>

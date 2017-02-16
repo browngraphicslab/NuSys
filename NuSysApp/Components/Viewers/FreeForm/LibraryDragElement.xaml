@@ -10,7 +10,7 @@
 
     <Grid>
         <Grid.RenderTransform>
-            <CompositeTransform ScaleX="3" ScaleY="3"></CompositeTransform>
+            <CompositeTransform ScaleX="3" ScaleY="3" />
         </Grid.RenderTransform>
         <Image x:Name="IconImage" Source="../../../Assets/icon_delete_color.png" MaxHeight="25" MaxWidth="25" Stretch="Uniform"/>
             

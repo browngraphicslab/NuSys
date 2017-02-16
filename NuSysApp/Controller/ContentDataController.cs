@@ -190,7 +190,7 @@ namespace NuSysApp
                     A = inkModel.Color.A,
                     B = inkModel.Color.B,
                     G = inkModel.Color.G,
-                    R = inkModel.Color.R,
+                    R = inkModel.Color.R
                 };
                 args.Thickness = inkModel.Thickness;
 
@@ -294,7 +294,7 @@ namespace NuSysApp
         /// <returns></returns>
         public virtual async Task<Dictionary<string, int>> GetSuggestedTagsAsync(bool makeServerCallsIfNeeded = true)
         {
-            var dict = new Dictionary<string, int>() { { ContentDataModel.ContentType.ToString(), 1}}; //add the content data type string
+            var dict = new Dictionary<string, int> { { ContentDataModel.ContentType.ToString(), 1}}; //add the content data type string
 
             if (SessionController.Instance.ContentController.HasAnalysisModel(ContentDataModel.ContentId) || makeServerCallsIfNeeded)
             {

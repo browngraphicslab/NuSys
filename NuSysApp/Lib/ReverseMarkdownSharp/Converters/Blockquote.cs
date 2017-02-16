@@ -9,12 +9,12 @@ namespace ReverseMarkdown.Converters
 	{
 		public Blockquote(Converter converter):base(converter)
 		{
-			this.Converter.Register("blockquote", this);
+			Converter.Register("blockquote", this);
 		}
 
 		public override string Convert(HtmlNode node)
 		{
-			string content = this.TreatChildren(node).Trim();
+			string content = TreatChildren(node).Trim();
 
 			// get the lines based on carriage return and prefix "> " to each line
 			var lines = content.ReadLines().Select(item => "> " + item + Environment.NewLine);

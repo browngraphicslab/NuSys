@@ -160,7 +160,7 @@ namespace NuSysApp
                     return;
               //  SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Mode = PhilInqCanvas.InqCanvasMode.Ink;
                 IsPenMode = true;
-                btnPen.Background = new Windows.UI.Xaml.Media.SolidColorBrush(Color.FromArgb(255, 197, 118, 97));
+                btnPen.Background = new SolidColorBrush(Color.FromArgb(255, 197, 118, 97));
 
             }
             else
@@ -169,7 +169,7 @@ namespace NuSysApp
                     return;
               //  SessionController.Instance.SessionView.FreeFormViewer.InqCanvas.Mode = PhilInqCanvas.InqCanvasMode.Disabled;
                 IsPenMode = false;
-                btnPen.Background = new Windows.UI.Xaml.Media.SolidColorBrush(Color.FromArgb(255, 197, 158, 156));
+                btnPen.Background = new SolidColorBrush(Color.FromArgb(255, 197, 158, 156));
                
 
             }

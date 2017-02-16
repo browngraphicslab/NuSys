@@ -127,7 +127,7 @@ namespace NuSysApp
         public static Color linkColor22 = Color.FromArgb(255, 200, 179, 215);
         public static Color linkColor23 = Color.FromArgb(255, 180, 181, 216);
         public static Color linkColor24 = Color.FromArgb(255, 172, 163, 216);
-        public static List<Color> linkColors = new List<Color>()
+        public static List<Color> linkColors = new List<Color>
         {
             linkColor1, linkColor2, linkColor3, linkColor4, linkColor5, linkColor7,
             linkColor8, linkColor9, linkColor10, linkColor11, linkColor12, linkColor13, linkColor14, linkColor15, linkColor16,
@@ -166,7 +166,7 @@ namespace NuSysApp
 
         public static IEnumerable<string> ImageFileTypes = new List<string> { ".bmp", ".png", ".jpeg", ".jpg", ".tif", ".tiff" };
         public static IEnumerable<string> WordFileTypes = new List<string> { ".docx" };
-        public static IEnumerable<string> PowerpointFileTypes = new List<string> { };
+        public static IEnumerable<string> PowerpointFileTypes = new List<string>();
 
         public static IEnumerable<string> PdfFileTypes   = new List<string> { ".pdf" };
         public static IEnumerable<string> VideoFileTypes   = new List<string> { ".mp4"};//TODO add more types

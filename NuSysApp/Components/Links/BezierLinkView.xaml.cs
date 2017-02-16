@@ -43,7 +43,7 @@ namespace NuSysApp
 
             //    Annotation.Text = vm.Annotation;
 
-            Loaded += async delegate (object sender, RoutedEventArgs args)
+            Loaded += async delegate
             {
                 UpdateControlPoints();
                 Title.TextChanged += TitleOnTextChanged;
@@ -112,14 +112,14 @@ namespace NuSysApp
         private async void OnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
 
-            this.UpdateControlPoints();
+            UpdateControlPoints();
 
         }
 
 
         private void OnAtomPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            this.UpdateControlPoints();
+            UpdateControlPoints();
         }
 
         /// <summary>
@@ -129,11 +129,11 @@ namespace NuSysApp
         private void UpdateControlPoints()
         {
 
-            this.UpdateEndPoints();
-            this.UpdateArrow();
-            var vm = (LinkViewModel)this.DataContext;
+            UpdateEndPoints();
+            UpdateArrow();
+            var vm = (LinkViewModel)DataContext;
 
-            var controller = (LinkController)vm.Controller;
+            var controller = vm.Controller;
             var anchor1 = new Point(controller.InElement.Anchor.X, controller.InElement.Anchor.Y);
             var anchor2 = new Point(controller.OutElement.Anchor.X, controller.OutElement.Anchor.Y);
 
@@ -174,8 +174,8 @@ namespace NuSysApp
 
         private void UpdateEndPoints()
         {
-            var vm = (LinkViewModel)this.DataContext;
-            var controller = (LinkController)vm.Controller;
+            var vm = (LinkViewModel)DataContext;
+            var controller = vm.Controller;
             var anchor1 = new Point(controller.InElement.Anchor.X, controller.InElement.Anchor.Y);
             var anchor2 = new Point(controller.OutElement.Anchor.X, controller.OutElement.Anchor.Y);
 

@@ -22,7 +22,7 @@ namespace NuSysApp
     {
         public DialogBlock(string text, NetworkUser user)
         {
-            this.InitializeComponent();
+            InitializeComponent();
             var brush = new SolidColorBrush(user.Color);
             TheGrid.BorderBrush = brush;
             Box.Foreground = brush;

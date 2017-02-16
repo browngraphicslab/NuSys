@@ -16,9 +16,9 @@
             <Grid x:Name="xGrid">
                 
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition ></ColumnDefinition>
-                    <ColumnDefinition ></ColumnDefinition>
-                    <ColumnDefinition ></ColumnDefinition>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
                 </Grid.ColumnDefinitions>
             </Grid>
         </StackPanel>

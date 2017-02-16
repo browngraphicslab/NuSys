@@ -37,7 +37,7 @@ namespace NuSysApp
             }
             AddChild(GridLayoutManager);
 
-            slm = new StackLayoutManager()
+            slm = new StackLayoutManager
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,

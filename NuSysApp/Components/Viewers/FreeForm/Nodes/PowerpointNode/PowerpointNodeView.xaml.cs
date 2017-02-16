@@ -28,7 +28,7 @@ namespace NuSysApp
             InitializeComponent();
             DataContext = vm;
 
-            Loaded += delegate(object sender, RoutedEventArgs args)
+            Loaded += delegate
             {
                 vm.Init();
                 //nodeTpl.inkCanvas.ViewModel.CanvasSize = new Size(vm.Width, vm.Height);

@@ -54,7 +54,7 @@ namespace MarkdownDeep
 		dt,				// render only
 		dl,				// render only
 		footnote,		// footnote definition  eg: [^id]   `data` holds the footnote id
-		p_footnote,		// paragraph with footnote return link append.  Return link string is in `data`.
+		p_footnote		// paragraph with footnote return link append.  Return link string is in `data`.
 	}
 
 	class Block
@@ -88,8 +88,7 @@ namespace MarkdownDeep
 
 				if (buf==null)
 					return null;
-				else
-					return contentStart == -1 ? buf : buf.Substring(contentStart, contentLen);
+			    return contentStart == -1 ? buf : buf.Substring(contentStart, contentLen);
 			}
 		}
 
@@ -120,8 +119,8 @@ namespace MarkdownDeep
 		internal string ResolveHeaderID(Markdown m)
 		{
 			// Already resolved?
-			if (this.data!=null && this.data is string)
-				return (string)this.data;
+			if (data!=null && data is string)
+				return (string)data;
 
 			// Approach 1 - PHP Markdown Extra style header id
 			int end=contentEnd;
@@ -136,7 +135,7 @@ namespace MarkdownDeep
 				id = m.MakeUniqueHeaderID(buf, contentStart, contentLen);
 			}
 
-			this.data = id;
+			data = id;
 			return id;
 		}
 
@@ -164,7 +163,7 @@ namespace MarkdownDeep
 				case BlockType.h6:
 					if (m.ExtraMode && !m.SafeMode)
 					{
-						b.Append("<" + blockType.ToString());
+						b.Append("<" + blockType);
 						string id = ResolveHeaderID(m);
 						if (!String.IsNullOrEmpty(id))
 						{
@@ -179,10 +178,10 @@ namespace MarkdownDeep
 					}
 					else
 					{
-						b.Append("<" + blockType.ToString() + ">");
+						b.Append("<" + blockType + ">");
 					}
 					m.SpanFormatter.Format(b, buf, contentStart, contentLen);
-					b.Append("</" + blockType.ToString() + ">\n");
+					b.Append("</" + blockType + ">\n");
 					break;
 
 				case BlockType.hr:
@@ -334,9 +333,9 @@ namespace MarkdownDeep
 					break;
 
 				default:
-					b.Append("<" + blockType.ToString() + ">");
+					b.Append("<" + blockType + ">");
 					m.SpanFormatter.Format(b, buf, contentStart, contentLen);
-					b.Append("</" + blockType.ToString() + ">\n");
+					b.Append("</" + blockType + ">\n");
 					break;
 			}
 		}
@@ -466,7 +465,7 @@ namespace MarkdownDeep
 		public override string ToString()
 		{
 			string c = Content;
-			return blockType.ToString() + " - " + (c==null ? "<null>" : c);
+			return blockType + " - " + (c==null ? "<null>" : c);
 		}
 
 		public Block CopyFrom(Block other)

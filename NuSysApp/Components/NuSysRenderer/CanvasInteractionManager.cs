@@ -178,11 +178,11 @@ namespace NuSysApp
         {
             if (_pointers.Count == 1)
             {
-                _centerPoint = new Vector2((float)_pointers[0].CurrentPoint.X, (float)_pointers[0].CurrentPoint.Y);
+                _centerPoint = new Vector2(_pointers[0].CurrentPoint.X, _pointers[0].CurrentPoint.Y);
             } else {
                 var p0 = _pointers[0].GetBufferMean();
                 var p1 = _pointers[1].GetBufferMean();
-                _centerPoint = new Vector2((float) (p0.X + p1.X)/2f, (float) (p0.Y + p1.Y)/2f);
+                _centerPoint = new Vector2((p0.X + p1.X)/2f, (p0.Y + p1.Y)/2f);
             }
         }
 
@@ -321,7 +321,7 @@ namespace NuSysApp
             {
                 return InteractionType.Pen;
             }
-            else if (pointer.PointerDeviceType == PointerDeviceType.Mouse)
+            if (pointer.PointerDeviceType == PointerDeviceType.Mouse)
             {
                 return InteractionType.Mouse;
             }

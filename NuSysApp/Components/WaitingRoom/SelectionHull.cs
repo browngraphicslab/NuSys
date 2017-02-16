@@ -25,22 +25,6 @@ namespace NuSysApp
         private Canvas _mainCanvas;
 
         /// <summary>
-        /// Makes a selection hull by checking for bad input, doing housekeeping tasks, and 
-        /// finally creating the hull & selecting what's inside
-        /// 
-        /// NOTE!!!!!!!!!!!!
-        /// If you want to visually confirm that addSelectionHull lasso works, remove the comments on the
-        /// last 2 lines of the addSelectionHull() method
-        /// 
-        /// UPDATE: Whoever was the last person to work on this, please chime and and tell everyone
-        ///  what this class is being used for now! Not sure why the constructor was removed and what
-        ///  the compute method is doing. Thanks. -Z
-        /// </summary>
-        public SelectionHull()
-        {
-        }
-
-        /// <summary>
         /// This will always return 0. Not sure what exactly is going on here.
         /// </summary>
         /// <param name="lasso"></param>
@@ -135,7 +119,7 @@ namespace NuSysApp
         // swaps the bottom left point to be the first position
         private void PlaceBottomLeftMostPointAtFirstPosition()
         {
-            this.Swap(_points[0], _points[_min]);
+            Swap(_points[0], _points[_min]);
             _rootPoint = _points[0];
         }
 
@@ -242,14 +226,11 @@ namespace NuSysApp
             {
                 return 0;
             }
-            else if (val > 0)
+            if (val > 0)
             {
                 return 1; //clockwise
             }
-            else
-            {
-                return 2; //counter clockwise
-            }
+            return 2; //counter clockwise
         }
 
         /// <summary>
@@ -299,7 +280,7 @@ namespace NuSysApp
                 }
                 foreach (var refPoint in atom.ReferencePoints)
                 {
-                    if (this.IsPointInHull(refPoint))
+                    if (IsPointInHull(refPoint))
                     {
                         SessionController.Instance.ActiveFreeFormViewer.AddSelection(atom);
                         count++;

@@ -31,7 +31,7 @@ namespace NuSysApp
 
         public FloatingMenuButtonView()
         {
-            this.InitializeComponent();
+            InitializeComponent();
         }
 
         public bool IsSubButton
@@ -42,7 +42,7 @@ namespace NuSysApp
                 SetValue(IsSubButtonProperty, value);
                 if (value)
                 {
-                    Style style = this.Resources["SubButton"] as Style;
+                    Style style = Resources["SubButton"] as Style;
                     btn.Style = style;
                     icon.Visibility = Visibility.Collapsed;
                 }

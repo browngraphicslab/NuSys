@@ -115,7 +115,7 @@ namespace NuSysApp
                 var thumb = await file.GetThumbnailAsync(ThumbnailMode.SingleItem, 300);
                 var aspectRatio = thumb.OriginalWidth / (double)thumb.OriginalHeight;
 
-                var args = new UploadCollectionBackgroundImageServerRequestArgs()
+                var args = new UploadCollectionBackgroundImageServerRequestArgs
                 {
                     FileExtension = file.FileType,
                     ImageBytes = bytes

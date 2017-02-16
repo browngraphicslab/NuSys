@@ -18,5 +18,5 @@
         </ResourceDictionary>
     </UserControl.Resources>
     
-    <Grid Background="{StaticResource color7}"></Grid>
+    <Grid Background="{StaticResource color7}" />
 </UserControl>

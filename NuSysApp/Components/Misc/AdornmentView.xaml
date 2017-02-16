@@ -13,7 +13,7 @@
     <Grid>
         <Polygon Name="Adornment" Fill="Green" >
             <Polygon.RenderTransform>
-                <CompositeTransform></CompositeTransform>
+                <CompositeTransform />
             </Polygon.RenderTransform>
             
         </Polygon>

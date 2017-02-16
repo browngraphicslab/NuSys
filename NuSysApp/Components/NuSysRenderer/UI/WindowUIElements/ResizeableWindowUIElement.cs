@@ -300,7 +300,7 @@ namespace NuSysApp
                 IsVisible = false,
                 IsHitTestVisible = false,
                 BackgroundGradients = CreateGradientList(true),
-                Direction = GradientBackgroundRectangleUIElement.GradientDirection.UpperRightLowerLeft,
+                Direction = GradientBackgroundRectangleUIElement.GradientDirection.UpperRightLowerLeft
                 //Type = GradientBackgroundRectangleUIElement.GradientType.Radial
             };
             AddChild(_bottomLeftResizeHighlight);
@@ -310,7 +310,7 @@ namespace NuSysApp
                 IsVisible = false,
                 IsHitTestVisible = false,
                 BackgroundGradients = CreateGradientList(true),
-                Direction = GradientBackgroundRectangleUIElement.GradientDirection.UpperLeftLowerRight,
+                Direction = GradientBackgroundRectangleUIElement.GradientDirection.UpperLeftLowerRight
                 //Type = GradientBackgroundRectangleUIElement.GradientType.Radial
             };
             AddChild(_bottomRightResizeHighlight);
@@ -607,11 +607,11 @@ namespace NuSysApp
             _bottomRightResizeHighlight.Height = ErrorMargin;
 
             // check gradient visibility 
-            if ((HasFocus == true || ChildHasFocus == true) && _leftResizeHighlight.IsVisible == false)
+            if ((HasFocus || ChildHasFocus) && _leftResizeHighlight.IsVisible == false)
             {
                 ToggleResizeHighlight(true);
             }
-            if ((HasFocus == false && ChildHasFocus == false) && _leftResizeHighlight.IsVisible == true)
+            if ((HasFocus == false && ChildHasFocus == false) && _leftResizeHighlight.IsVisible)
             {
                 ToggleResizeHighlight(false);
             }

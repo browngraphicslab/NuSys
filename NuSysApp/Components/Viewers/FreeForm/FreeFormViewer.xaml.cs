@@ -102,7 +102,7 @@ namespace NuSysApp
 
         public FreeFormViewer()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
             SizeChanged += OnSizeChanged;
             xMinimapCanvas.IsHitTestVisible = false;
@@ -658,7 +658,6 @@ namespace NuSysApp
                 AudioPlayer.SetSize(element.ViewModel.Width, element.ViewModel.Height);
                 AudioPlayer.SetLibraryElement(element.ViewModel.Controller.LibraryElementController as AudioLibraryElementController);
                 AudioPlayer.Visibility = Visibility.Visible;
-                return;
             }
             
         }
@@ -717,14 +716,14 @@ namespace NuSysApp
                 if (useBoundingRect)
                 {
                     var rect = Geometry.PointCollecionToBoundingRect(shapePoints);
-                    shapePoints = new List<PointModel>()
+                    shapePoints = new List<PointModel>
                     {
                         new PointModel(rect.X,rect.Y),
                         new PointModel(rect.X,rect.Y),
                         new PointModel(rect.X + rect.Width,rect.Y),
                         new PointModel(rect.X + rect.Width,rect.Y + rect.Height),
                         new PointModel(rect.X,rect.Y + rect.Height),
-                        new PointModel(rect.X,rect.Y),
+                        new PointModel(rect.X,rect.Y)
                     };
                 }
             }
@@ -740,14 +739,14 @@ namespace NuSysApp
                 if (useBoundingRect)
                 {
                     var rect = Geometry.PointCollecionToBoundingRect(shapePoints);
-                    shapePoints = new List<PointModel>()
+                    shapePoints = new List<PointModel>
                     {
                         new PointModel(rect.X,rect.Y),
                         new PointModel(rect.X,rect.Y),
                         new PointModel(rect.X + rect.Width,rect.Y),
                         new PointModel(rect.X + rect.Width,rect.Y + rect.Height),
                         new PointModel(rect.X,rect.Y + rect.Height),
-                        new PointModel(rect.X,rect.Y),
+                        new PointModel(rect.X,rect.Y)
                     };
                 }
             }
@@ -765,19 +764,20 @@ namespace NuSysApp
             }
 
 
-            var createNewContentRequestArgs = new CreateNewCollectionContentRequestArgs()
+            var createNewContentRequestArgs = new CreateNewCollectionContentRequestArgs
             {
-                LibraryElementArgs = new CreateNewCollectionLibraryElementRequestArgs()
+                LibraryElementArgs = new CreateNewCollectionLibraryElementRequestArgs
                 {
                     AccessType =
                         SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.AccessType,
                     LibraryElementType = NusysConstants.ElementType.Collection,
                     Title = "Unnamed Collection",
                     LibraryElementId = SessionController.Instance.GenerateId(),
-                    IsFiniteCollection = finite,
+                    IsFiniteCollection = finite
                 },
                 ContentId = SessionController.Instance.GenerateId(),
-                Shape = new CollectionShapeModel() {
+                Shape = new CollectionShapeModel
+                {
                     ShapePoints = shapePoints,
                     AspectRatio = targetRectInCollection.Width / targetRectInCollection.Height,
                     ShapeColor = _latestStroke != null ? ColorExtensions.ToColorModel(CurrentCollection.InkRenderItem.InkColor == Colors.Black ? Colors.CadetBlue : CurrentCollection.InkRenderItem.InkColor) : ColorExtensions.ToColorModel(Colors.DarkSeaGreen)
@@ -950,12 +950,14 @@ namespace NuSysApp
                             a = 0;
                             b = 1;
                             break;
-                        } else if (n == sortedSelections.Count - 1)
+                        }
+                        if (n == sortedSelections.Count - 1)
                         {
                             a = points.Length - 2;
                             b = points.Length - 1;
                             break;
-                        } else if (pointDistances[p] > n * nodeDistance)
+                        }
+                        if (pointDistances[p] > n * nodeDistance)
                         {
                             a = p - 1;
                             b = p;
@@ -975,7 +977,6 @@ namespace NuSysApp
                     sortedSelections[n].ViewModel.Controller.SetPosition(interpolatedPoint.X, interpolatedPoint.Y);
                 }
                 CurrentCollection.InkRenderItem.RemoveCurrentStroke();
-                return;
             }
         }
 
@@ -1046,7 +1047,7 @@ namespace NuSysApp
                         maxHeight = (float)Math.Max(maxHeight, elementRenderItem.ViewModel.Height);
                         if (i % rows == rows - 1)
                         {
-                            nextPosition.Y = (float)(nextPosition.Y + ARRANGE_BORDER + maxHeight);
+                            nextPosition.Y = nextPosition.Y + ARRANGE_BORDER + maxHeight;
                             nextPosition.X = start.X;
                             maxHeight = 0.0f;
                         }
@@ -1551,7 +1552,6 @@ namespace NuSysApp
 
         public async Task SetViewMode(AbstractWorkspaceViewMode mode, bool isFixed = false)
         {
-            return;
         }
 
 

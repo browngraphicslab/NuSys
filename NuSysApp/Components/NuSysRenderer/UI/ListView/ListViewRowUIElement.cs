@@ -306,10 +306,7 @@ namespace NuSysApp
             {
                 return null;
             }
-            else
-            {
-                return textCell.Text;
-            }
+            return textCell.Text;
         }
         /// <summary>
         /// Draw sets position of each cell in the row, then calls base.draw()

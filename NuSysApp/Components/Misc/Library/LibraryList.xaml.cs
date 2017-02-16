@@ -56,10 +56,9 @@ namespace NuSysApp
         
         public LibraryList(LibraryView library, LibraryPageViewModel vm, LibraryElementPropertiesWindow propertiesWindow)
         {
-            this.DataContext = vm;
-            this.InitializeComponent();
-            Loaded += delegate(object sender, RoutedEventArgs args)
-            {
+            DataContext = vm;
+            InitializeComponent();
+            Loaded += delegate {
                 ((LibraryBucketViewModel)library.DataContext).OnNewContents += SetItems;
             };
             ((LibraryBucketViewModel)library.DataContext).OnHighlightElement += Select;
@@ -104,7 +103,7 @@ namespace NuSysApp
 
         public async Task Search(string s)
         {
-            await ((LibraryPageViewModel)this.DataContext).Search(s);
+            await ((LibraryPageViewModel)DataContext).Search(s);
             //this.SetItems(((LibraryPageViewModel)this.DataContext).PageElements);
         }
 
@@ -143,7 +142,7 @@ namespace NuSysApp
 
         public async Task Sort(string s, bool reverse = false)
         {
-            await ((LibraryPageViewModel)this.DataContext).Sort(s, reverse);
+            await ((LibraryPageViewModel)DataContext).Sort(s, reverse);
         }
         private void LibraryListItem_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {

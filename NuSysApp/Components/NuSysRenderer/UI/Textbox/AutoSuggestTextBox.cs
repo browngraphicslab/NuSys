@@ -75,9 +75,9 @@ namespace NuSysApp.Components.NuSysRenderer.UI
             };
             AddChild(suggestion_list);
 
-            suggestion_list_column = new ListTextColumn<T>()
+            suggestion_list_column = new ListTextColumn<T>
             {
-                RelativeWidth = 1,
+                RelativeWidth = 1
             };
 
             suggestion_list.AddColumn(suggestion_list_column);

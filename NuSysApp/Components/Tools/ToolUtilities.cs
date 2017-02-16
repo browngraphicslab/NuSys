@@ -16,10 +16,7 @@ namespace NuSysApp
                     {
                         return dt.Month + "/" + dt.Day + "/" + dt.Year;
                     }
-                    else
-                    {
-                        return dt.Hour + ":00";
-                    }
+                    return dt.Hour + ":00";
                 case ToolModel.ToolFilterTypeTitle.Creator:
                 //case ToolModel.ToolFilterTypeTitle.MetadataKeys:
                 case ToolModel.ToolFilterTypeTitle.Title:

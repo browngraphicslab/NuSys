@@ -22,11 +22,11 @@ namespace NuSysApp
             return Enum.GetValues(typeof(T)).Cast<T>().ToList();
         }
 
-        public static Matrix3x2 GetDisplayTransform(System.Numerics.Vector2 outputSize, System.Numerics.Vector2 sourceSize)
+        public static Matrix3x2 GetDisplayTransform(Vector2 outputSize, Vector2 sourceSize)
         {
             // Scale the display to fill the control.
             var scale = outputSize / sourceSize;
-            var offset = System.Numerics.Vector2.Zero;
+            var offset = Vector2.Zero;
 
             // Letterbox or pillarbox to preserve aspect ratio.
             if (scale.X > scale.Y)
@@ -44,20 +44,20 @@ namespace NuSysApp
                    Matrix3x2.CreateTranslation(offset);
         }
 
-        public static CanvasGeometry CreateStarGeometry(ICanvasResourceCreator resourceCreator, float scale, System.Numerics.Vector2 center)
+        public static CanvasGeometry CreateStarGeometry(ICanvasResourceCreator resourceCreator, float scale, Vector2 center)
         {
-            System.Numerics.Vector2[] points =
+            Vector2[] points =
             {
-                new System.Numerics.Vector2(-0.24f, -0.24f),
-                new System.Numerics.Vector2(0, -1),
-                new System.Numerics.Vector2(0.24f, -0.24f),
-                new System.Numerics.Vector2(1, -0.2f),
-                new System.Numerics.Vector2(0.4f, 0.2f),
-                new System.Numerics.Vector2(0.6f, 1),
-                new System.Numerics.Vector2(0, 0.56f),
-                new System.Numerics.Vector2(-0.6f, 1),
-                new System.Numerics.Vector2(-0.4f, 0.2f),
-                new System.Numerics.Vector2(-1, -0.2f),
+                new Vector2(-0.24f, -0.24f),
+                new Vector2(0, -1),
+                new Vector2(0.24f, -0.24f),
+                new Vector2(1, -0.2f),
+                new Vector2(0.4f, 0.2f),
+                new Vector2(0.6f, 1),
+                new Vector2(0, 0.56f),
+                new Vector2(-0.6f, 1),
+                new Vector2(-0.4f, 0.2f),
+                new Vector2(-1, -0.2f)
             };
 
             var transformedPoints = from point in points
@@ -96,7 +96,7 @@ namespace NuSysApp
         static byte[] GetBytes(string str)
         {
             byte[] bytes = new byte[str.Length * sizeof(char)];
-            System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
+            Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
             return bytes;
         }
 
@@ -126,10 +126,7 @@ namespace NuSysApp
             {
                 return await task;
             }
-            else
-            {
-                throw new TimeoutException();
-            }
+            throw new TimeoutException();
         }
 
         public struct WordBoundary { public int Start; public int Length; }

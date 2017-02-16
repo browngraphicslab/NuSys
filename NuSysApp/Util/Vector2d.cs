@@ -37,8 +37,8 @@ namespace NuSysApp
 
     public class Vector2d
     {
-        public double X = 0;
-        public double Y = 0;
+        public double X;
+        public double Y;
 
         public Vector2d()
         {

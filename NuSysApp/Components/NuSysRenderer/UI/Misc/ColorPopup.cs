@@ -160,14 +160,14 @@ namespace NuSysApp
             {
                 _collectionController.CollectionContentDataController.ClearShape();
                 ///sets shape to the bounding square
-                _collectionController.CollectionContentDataController.SetShapePoints(new List<PointModel>()
+                _collectionController.CollectionContentDataController.SetShapePoints(new List<PointModel>
                 {
                     new PointModel(50000,50000),
                     new PointModel(50000,51000),
                     new PointModel(50000,52000),
                     new PointModel(52000,52000),
                     new PointModel(52000,51000),
-                    new PointModel(52000,50000),
+                    new PointModel(52000,50000)
                 });
             }
 

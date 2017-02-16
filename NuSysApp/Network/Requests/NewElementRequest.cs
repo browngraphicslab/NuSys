@@ -60,7 +60,7 @@ namespace NuSysApp
             var model = GetReturnedElementModel();
             Task.Run(async delegate {
                 var success = await SessionController.Instance.AddElementAsync(model);
-                Debug.Assert(success == true);
+                Debug.Assert(success);
             });
         }
 

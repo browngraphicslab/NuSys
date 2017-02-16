@@ -43,14 +43,14 @@ namespace NuSysApp
         private HashSet<string> _metaDataButtons;
         private int _custom;
         private const int TimelineNodeWidth = 140;
-        private Boolean panelTapped = false;
+        private Boolean panelTapped;
         private TimelineNodeViewFactory _factory;
         private int _counter;
         private int _count;
         private List<string> _loadedList = new List<string>();
         public GroupNodeTimelineView(GroupNodeTimelineViewModel viewModel)
         {
-            this.InitializeComponent();
+            InitializeComponent();
             _elementControllerDict = new Dictionary<Image, ElementController>();
             _vm = viewModel;
             DataContext = _vm;
@@ -82,7 +82,7 @@ namespace NuSysApp
             TagBlock.Tapped += TagBlock_Tapped;
 
             //line for rearranging elements
-            _moveLine = new Line()
+            _moveLine = new Line
             {
                 Stroke = new SolidColorBrush(Colors.Coral)
             };
@@ -179,7 +179,7 @@ namespace NuSysApp
             {
                 var atom = node.getAtom();
                 var vm = (ElementViewModel)atom.DataContext;
-                var nodeModel = (ElementModel)vm.Model;
+                var nodeModel = vm.Model;
 
                 TextBlock tb = (TextBlock)node.FindVisualChild("TextBlock");
                 Object metaData = vm.Controller.LibraryElementController.GetMetadata(_viewBy);
@@ -212,7 +212,7 @@ namespace NuSysApp
                 
                 vm.Height = 80;
                 vm.Width = 130;
-                _nodeModel = (ElementModel)vm.Model; // access model
+                _nodeModel = vm.Model; // access model
 
                 Object metaData = vm.Controller.LibraryElementController.GetMetadata(dataName);
 
@@ -276,7 +276,7 @@ namespace NuSysApp
                 {
                     return;
                 }
-                else if (type != NusysConstants.ElementType.Link)
+                if (type != NusysConstants.ElementType.Link)
                 {
                     SessionController.Instance.NuSessionView.ShowDetailView((dc.DataContext as ElementViewModel).Controller.LibraryElementController);
                 }
@@ -320,7 +320,7 @@ namespace NuSysApp
             {
                 var atom = (FrameworkElement)item;
                 var vm = (ElementViewModel)atom.DataContext;
-                var model = (ElementModel)vm.Model;
+                var model = vm.Model;
                 var keys = vm.Controller.LibraryElementController.LibraryElementModel.Metadata.Keys.ToArray();
 
                 Debug.WriteLine("key length: " + keys.Length);
@@ -333,19 +333,19 @@ namespace NuSysApp
                 {
                     if (IsType(vm.Controller.LibraryElementController.GetMetadata(metadatatitle)) && !_metaDataButtons.Contains(metadatatitle))
                     {
-                        Button bb = new Button()
+                        Button bb = new Button
                         {
                             Content = metadatatitle,
-                            Width = 100,
+                            Width = 100
                         };
                         bb.Tapped += MetaButton_Tapped;
                         TagPanel.Children.Add(bb);
                         _metaDataButtons.Add(metadatatitle);
 
-                        Button viewButton = new Button()
+                        Button viewButton = new Button
                         {
                             Content = metadatatitle,
-                            Width = 100,
+                            Width = 100
                         };
                         viewButton.Tapped += ViewButton_Tapped;
                         ViewPanel.Children.Add(viewButton);
@@ -390,7 +390,7 @@ namespace NuSysApp
                     //t.Start();t
 
                     // where element will be moved to
-                    _moveToXPos = (int)index * TimelineNodeWidth;
+                    _moveToXPos = index * TimelineNodeWidth;
                     var moveToIndex = _moveToXPos / TimelineNodeWidth;
 
                     // draw line
@@ -442,10 +442,10 @@ namespace NuSysApp
                 {
                     // if not custom, create a new custom
                     // add metadata button
-                    Button bb = new Button()
+                    Button bb = new Button
                     {
                         Content = custom,
-                        Width = 100,
+                        Width = 100
                     };
                     bb.Tapped += MetaButton_Tapped;
                     TagPanel.Children.Add(bb);
@@ -462,7 +462,7 @@ namespace NuSysApp
                 {
                     var atom = node.FindVisualChild("TimelineNode").GetVisualChild(0);
                     var vm = (ElementViewModel)atom.DataContext;
-                    var nodeModel = (ElementModel)vm.Model;
+                    var nodeModel = vm.Model;
                     vm.Controller.LibraryElementController.AddMetadata(new MetadataEntry(custom, new List<string> {index.ToString()} ,MetadataMutability.MUTABLE));
                     index++;
                 }
@@ -509,7 +509,7 @@ namespace NuSysApp
                     _vm.CompositeTransform.ScaleY = prevZoom;
 
                     // Animate element being search for
-                    TimelineItemView element = (TimelineItemView)_panelNodes.ElementAt(index);
+                    TimelineItemView element = _panelNodes.ElementAt(index);
                     Grid timelineNode = (Grid)element.FindVisualChild("TimelineNode");
 
                     Anim.FromTo(timelineNode, "Opacity", 0, 1, 1200, null);
@@ -673,7 +673,7 @@ namespace NuSysApp
                 string str2 = (string)b.Item2;
                 return str1.CompareTo(str2);
             }
-            else if (GroupNodeTimelineView.IsNum(a.Item2))
+            if (GroupNodeTimelineView.IsNum(a.Item2))
             {
                 double double1;
                 double double2;
@@ -681,17 +681,14 @@ namespace NuSysApp
                 Double.TryParse(b.Item2.ToString(), out double2);
                 return double1.CompareTo(double2);
             }
-            else if (a.Item2 is DateTime)
+            if (a.Item2 is DateTime)
             {
                 DateTime date1 = (DateTime)a.Item2;
                 DateTime date2 = (DateTime)b.Item2;
                 return date1.CompareTo(date2);
             }
-            else
-            {
-                Debug.WriteLine("weird object - ERROR: " + a.Item2.GetType());
-                return 1;
-            }
+            Debug.WriteLine("weird object - ERROR: " + a.Item2.GetType());
+            return 1;
         }
 
         public static IComparer<Tuple<FrameworkElement, Object>> sortTimeline()

@@ -10,7 +10,7 @@ namespace NuSysApp
 {
     public class CreateNewPdfLibraryElementModelRequestArgs : CreateNewImageLibraryElementRequestArgs
     {
-        public CreateNewPdfLibraryElementModelRequestArgs() : base()
+        public CreateNewPdfLibraryElementModelRequestArgs()
         {
             LibraryElementType = NusysConstants.ElementType.PDF;
         }

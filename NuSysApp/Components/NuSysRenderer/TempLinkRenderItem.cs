@@ -47,8 +47,8 @@ namespace NuSysApp
             var anchor1 = new Vector2((float)Element1.ViewModel.Anchor.X, (float)Element1.ViewModel.Anchor.Y);
             var anchor2 = new Vector2((float)Element2.ViewModel.Anchor.X, (float)Element2.ViewModel.Anchor.Y);
 
-            var distanceX = (float)anchor1.X - anchor2.X;
-            var distanceY = (float)anchor1.Y - anchor2.Y;
+            var distanceX = anchor1.X - anchor2.X;
+            var distanceY = anchor1.Y - anchor2.Y;
 
             var Point2 = new Vector2(anchor1.X - distanceX / 2, anchor2.Y);
             var Point1 = new Vector2(anchor2.X + distanceX / 2, anchor1.Y);
@@ -74,7 +74,7 @@ namespace NuSysApp
             var anchor1 = new Vector2((float)Element1.ViewModel.Anchor.X, (float)Element1.ViewModel.Anchor.Y);
             var anchor2 = new Vector2((float)Element2.ViewModel.Anchor.X, (float)Element2.ViewModel.Anchor.Y);
 
-            var distanceX = (float)anchor1.X - anchor2.X;
+            var distanceX = anchor1.X - anchor2.X;
 
             var p2 = new Point(anchor1.X - distanceX / 2, anchor2.Y);
             var p1 = new Point(anchor2.X + distanceX / 2, anchor1.Y);

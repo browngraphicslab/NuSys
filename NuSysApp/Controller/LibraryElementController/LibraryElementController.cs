@@ -187,7 +187,7 @@ namespace NuSysApp
                 if (!metadata.ContainsKey("Access"))
                 {
                     metadata.Add("Access",
-                        new MetadataEntry("Access", new List<string>() {LibraryElementModel.AccessType.ToString()},MetadataMutability.IMMUTABLE));
+                        new MetadataEntry("Access", new List<string> {LibraryElementModel.AccessType.ToString()},MetadataMutability.IMMUTABLE));
                 }
                 return metadata;
             }
@@ -317,7 +317,7 @@ namespace NuSysApp
 
             var requestArgs = new CreateNewMetadataRequestArgs();
             requestArgs.Entry = entry;
-            requestArgs.LibraryElementId = this.LibraryElementModel.LibraryElementId;
+            requestArgs.LibraryElementId = LibraryElementModel.LibraryElementId;
             Task.Run(async delegate
             {
                 var request = new CreateNewMetadataRequest(requestArgs);
@@ -372,7 +372,7 @@ namespace NuSysApp
 
             var requestArgs = new DeleteMetadataRequestArgs();
             requestArgs.Key = key;
-            requestArgs.LibraryElementId = this.LibraryElementModel.LibraryElementId;
+            requestArgs.LibraryElementId = LibraryElementModel.LibraryElementId;
 
             Task.Run(async delegate
             {
@@ -397,7 +397,7 @@ namespace NuSysApp
             {
                 MetadataChanged?.Invoke(this);
             }
-            Debug.Assert(success == true);
+            Debug.Assert(success);
             return success;
         }
 
@@ -425,7 +425,7 @@ namespace NuSysApp
             var requestArgs = new UpdateMetadataEntryRequestArgs();
             requestArgs.Entry = original;
             requestArgs.NewValues = values;
-            requestArgs.LibraryElementId = this.LibraryElementModel.LibraryElementId;
+            requestArgs.LibraryElementId = LibraryElementModel.LibraryElementId;
 
             Task.Run(async delegate
             {
@@ -481,7 +481,7 @@ namespace NuSysApp
         public virtual void Delete()
         {
             SessionController.Instance.ActiveFreeFormViewer?.DeselectAll();
-            SessionController.Instance.ContentController.Remove(this.LibraryElementModel);
+            SessionController.Instance.ContentController.Remove(LibraryElementModel);
             Deleted?.Invoke(this);
             Dispose();
         }
@@ -838,10 +838,7 @@ namespace NuSysApp
             {
                 return time;
             }
-            else
-            {
-                return time.Remove(lastIndex, 3);
-            }
+            return time.Remove(lastIndex, 3);
         }
 
         /// <summary>
@@ -864,10 +861,7 @@ namespace NuSysApp
             {
                 return time;
             }
-            else
-            {
-                return time.Remove(lastIndex, 3);
-            }
+            return time.Remove(lastIndex, 3);
         }
 
         public void FireAliasRemoved(ElementModel elementModel)

@@ -31,8 +31,8 @@
         </Grid>
 
         <Grid x:Name="xDraggableBar" Grid.Row="0"  Background="Red"  ManipulationMode="TranslateX,TranslateY"  ManipulationStarted="Keyboard_OnManipulationStarted" ManipulationDelta="Keyboard_OnManipulationDelta" ManipulationCompleted="Keyboard_OnManipulationCompleted">
-            <TextBlock x:Name="xTestingText" HorizontalAlignment="Left"></TextBlock>
-            <TextBlock x:Name="xTestingText2" HorizontalAlignment="Center"></TextBlock>
+            <TextBlock x:Name="xTestingText" HorizontalAlignment="Left" />
+            <TextBlock x:Name="xTestingText2" HorizontalAlignment="Center" />
 
             <Button   HorizontalAlignment="Right"  Height="50" Width="50" Click="X_OnClick">
                     <Button.Content>
@@ -79,7 +79,7 @@
                 <local:KeyboardKey Grid.Column="9" KeyValue="P" KeyText="p" HorizontalAlignment="Stretch" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited"/>
                 <local:KeyboardKey x:Name="xBackKey2" Grid.Column="10" KeyValue="BACK" PointerPressed="Key_OnPointerPressed" PointerReleased="Key_OnPointerReleased" PointerExited="Key_OnPointerExited">
                     <local:KeyboardKey.AdditionalContent>
-                        <Path Stretch="Fill" Width="36" Height="24" HorizontalAlignment="Stretch" Data="F1M555.0371,274.4893L552.7871,276.7383L549.9861,273.9373L547.1991,276.7243L545.1131,274.6393L547.9001,271.8523L545.0101,268.9603L547.2601,266.7113L550.1501,269.6023L552.8921,266.8613L554.9761,268.9463L552.2361,271.6883z M555.3751,264.0003L544.8751,264.0003C543.1251,264.1253,535.0001,270.7503,535.0001,272.2503C535.0001,273.7503,543.1251,279.3753,544.8751,279.5003L555.3751,279.5003C558.8751,279.5003,559.3751,277.7093,559.3751,275.5003L559.3751,268.0003C559.3751,265.7913,558.7501,264.0003,555.3751,264.0003" Fill="White"></Path>
+                        <Path Stretch="Fill" Width="36" Height="24" HorizontalAlignment="Stretch" Data="F1M555.0371,274.4893L552.7871,276.7383L549.9861,273.9373L547.1991,276.7243L545.1131,274.6393L547.9001,271.8523L545.0101,268.9603L547.2601,266.7113L550.1501,269.6023L552.8921,266.8613L554.9761,268.9463L552.2361,271.6883z M555.3751,264.0003L544.8751,264.0003C543.1251,264.1253,535.0001,270.7503,535.0001,272.2503C535.0001,273.7503,543.1251,279.3753,544.8751,279.5003L555.3751,279.5003C558.8751,279.5003,559.3751,277.7093,559.3751,275.5003L559.3751,268.0003C559.3751,265.7913,558.7501,264.0003,555.3751,264.0003" Fill="White" />
                     </local:KeyboardKey.AdditionalContent>
                 </local:KeyboardKey>
             </Grid>

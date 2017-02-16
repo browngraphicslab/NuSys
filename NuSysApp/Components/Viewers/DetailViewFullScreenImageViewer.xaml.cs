@@ -33,7 +33,7 @@ namespace NuSysApp
         /// </summary>
         public DetailViewFullScreenImageViewer()
         {
-            this.InitializeComponent();
+            InitializeComponent();
             SizeChanged += FreeFormViewerOnSizeChanged;
             var color = Colors.Gray;
             color.A = 210;
@@ -196,7 +196,7 @@ namespace NuSysApp
 
             var center = e.Position;
 
-            var tmpTranslate = new CompositeTransform()
+            var tmpTranslate = new CompositeTransform
             {
                 TranslateX = compositeTransform.CenterX,
                 TranslateY = compositeTransform.CenterY,
@@ -266,7 +266,7 @@ namespace NuSysApp
             var delta = e.GetCurrentPoint(xImage).Properties.MouseWheelDelta;
             var compositeTransform = transform;
             var center = e.GetCurrentPoint(xImage).Position;
-            var tmpTranslate = new CompositeTransform()
+            var tmpTranslate = new CompositeTransform
             {
                 TranslateX = compositeTransform.CenterX,
                 TranslateY = compositeTransform.CenterY,

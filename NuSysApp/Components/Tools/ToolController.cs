@@ -44,10 +44,7 @@ namespace NuSysApp
                 {
                     return new Point2d(Model.X + Model.Width / 2, Model.Y);
                 }
-                else
-                {
-                    return new Point2d(Model.X + Model.Width / 2, Model.Y + 20);
-                }
+                return new Point2d(Model.X + Model.Width / 2, Model.Y + 20);
             }
         }
 
@@ -96,7 +93,7 @@ namespace NuSysApp
                 if (ToolModel.ParentIds.Add(parentController.GetID()))
                 {
                     var linkModel = new ToolLinkModel();
-                    linkModel.InAtomId = this.Id;
+                    linkModel.InAtomId = Id;
                     linkModel.OutAtomId = parentController.GetID();
                     Debug.Assert((parentController as ElementController) != null);
                     var linkController = new ToolLinkController(linkModel, this, parentController as ElementController);
@@ -266,15 +263,15 @@ namespace NuSysApp
 
                 if (SessionController.Instance.ContentController.HasAnalysisModel(controller.LibraryElementModel.ContentDataModelId) && ((Model as MetadataToolModel)?.IncludeSuggestedTags ?? false)) { 
                     var analysisController = SessionController.Instance.ContentController.GetAnalysisModel(controller.LibraryElementModel.ContentDataModelId);
-                    metadata.Add("Suggested_Keywords", analysisController?.GetSuggestedTagsAsync(false)?.Result.ToDictionary(k => k.Key, v => 2.5 + (double)Math.Log(v.Value)));
+                    metadata.Add("Suggested_Keywords", analysisController?.GetSuggestedTagsAsync(false)?.Result.ToDictionary(k => k.Key, v => 2.5 + Math.Log(v.Value)));
                 }
                 var element = controller.LibraryElementModel;
                 Debug.Assert(element != null);
-                metadata["Title"] = new Dictionary<string, double>(){ { element.Title,1 } };
-                metadata["Type"] = new Dictionary<string, double>() { { element.Type.ToString(), 1 }};
-                metadata["Date"] = new Dictionary<string, double>() { { GetDate(element), 1 } };
-                metadata["LastEditedDate"] = new Dictionary<string, double>() { { GetLastEditedDate(element), 1} };
-                metadata["Creator"] = new Dictionary<string, double>()
+                metadata["Title"] = new Dictionary<string, double> { { element.Title,1 } };
+                metadata["Type"] = new Dictionary<string, double> { { element.Type.ToString(), 1 }};
+                metadata["Date"] = new Dictionary<string, double> { { GetDate(element), 1 } };
+                metadata["LastEditedDate"] = new Dictionary<string, double> { { GetLastEditedDate(element), 1} };
+                metadata["Creator"] = new Dictionary<string, double>
                 {//map from the UserID hash to the User Dissplay Name
                     { SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary.ContainsKey(element.Creator ?? "") ?
                         SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary[element.Creator] : element.Creator, 1 }
@@ -340,7 +337,7 @@ namespace NuSysApp
                 FireOutputLibraryIdsChanged();
                 IdsToDisplayChanged?.Invoke();
             }
-            foreach (var parentController in ToolModel.ParentIds.Select(parentId => ToolController.ToolControllers[parentId]))
+            foreach (var parentController in ToolModel.ParentIds.Select(parentId => ToolControllers[parentId]))
             {
                 parentController.RefreshFromTopOfChain();
             }

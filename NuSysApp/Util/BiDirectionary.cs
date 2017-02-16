@@ -30,8 +30,8 @@ namespace NuSysApp
         public TV this[TK i]
         {
             get { return base[i]; }
-            set { base[i] = (TV)value;
-                valueToKey[(TV)value] = i; }
+            set { base[i] = value;
+                valueToKey[value] = i; }
         }
 
     }

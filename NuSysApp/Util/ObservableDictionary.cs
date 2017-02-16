@@ -209,10 +209,9 @@ namespace NuSysApp
             {
                 if (Dictionary.Count > 0)
                 {
-                    if (items.Keys.Any((k) => Dictionary.ContainsKey(k)))
+                    if (items.Keys.Any(k => Dictionary.ContainsKey(k)))
                         throw new ArgumentException("An item with the same key has already been added.");
-                    else
-                        foreach (var item in items) Dictionary.Add(item);
+                    foreach (var item in items) Dictionary.Add(item);
                 }
                 else
                     _Dictionary = new Dictionary<TKey, TValue>(items);

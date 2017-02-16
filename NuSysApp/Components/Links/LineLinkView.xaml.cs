@@ -15,9 +15,9 @@ namespace NuSysApp
     {
         public LineLinkView(LinkViewModel vm)
         {
-            this.InitializeComponent();
-            this.DataContext = vm;
-            this.SetUpBindings();
+            InitializeComponent();
+            DataContext = vm;
+            SetUpBindings();
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace NuSysApp
                 Path = new PropertyPath("X"),
                 Mode = BindingMode.TwoWay
             };
-            this.SetBinding(Canvas.LeftProperty, leftBinding);
+            SetBinding(Canvas.LeftProperty, leftBinding);
 
             var topBinding = new Binding
             {
@@ -39,7 +39,7 @@ namespace NuSysApp
                 Mode = BindingMode.TwoWay
             };
 
-            this.SetBinding(Canvas.TopProperty, topBinding);
+            SetBinding(Canvas.TopProperty, topBinding);
         }
     }
 }

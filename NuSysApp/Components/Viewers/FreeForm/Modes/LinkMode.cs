@@ -20,7 +20,7 @@ namespace NuSysApp {
 
         public LinkMode(FreeFormViewer view) : base(view)
         {
-            _cview = (FreeFormViewer) view;
+            _cview = view;
         }
 
         public async override Task Activate()

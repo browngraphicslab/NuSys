@@ -93,14 +93,14 @@
                                             <Storyboard>
                                                 <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Ellipse"
                                                                            Storyboard.TargetProperty="Opacity">
-                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="1"></DiscreteObjectKeyFrame>
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="1" />
                                                 </ObjectAnimationUsingKeyFrames>
                                             </Storyboard>
                                         </VisualState>
                                     </VisualStateGroup>
                                 </VisualStateManager.VisualStateGroups>
                                 <Ellipse Height="54" Width ="54" Fill="{StaticResource color2}" VerticalAlignment="Bottom" x:Name="Ellipse" Opacity="1" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="2" HorizontalAlignment="Center"/>
-                                <ContentPresenter></ContentPresenter>
+                                <ContentPresenter />
                             </Grid>
                         </ControlTemplate>
                     </Setter.Value>
@@ -112,8 +112,8 @@
     <Button x:Name="btn" Style="{StaticResource FloatingButton}" BorderBrush="{StaticResource color2}">
         <Button.Content>
             <StackPanel Orientation="Vertical">
-                <TextBlock x:Name="btnCaption" TextAlignment="Center" FontSize="12" Margin="0,5,0,0"  FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" Foreground="{StaticResource color8}" ></TextBlock>
-                <Image x:Name="icon" Height="35" Width="20" VerticalAlignment="Center" Margin="0,16,0,0"  HorizontalAlignment="Center"></Image>
+                <TextBlock x:Name="btnCaption" TextAlignment="Center" FontSize="12" Margin="0,5,0,0"  FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" Foreground="{StaticResource color8}" />
+                <Image x:Name="icon" Height="35" Width="20" VerticalAlignment="Center" Margin="0,16,0,0"  HorizontalAlignment="Center" />
             </StackPanel>
         </Button.Content>
     </Button>

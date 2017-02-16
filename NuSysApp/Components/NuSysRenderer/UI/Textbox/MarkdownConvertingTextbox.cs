@@ -52,7 +52,7 @@ namespace NuSysApp
         /// <summary>
         /// private IsDirty boolean for the text layout object
         /// </summary>
-        private bool _textLayoutIsDirty = false;
+        private bool _textLayoutIsDirty;
 
         /// <summary>
         /// Vertical scrollbar used in conjunction with the markdown
@@ -345,13 +345,13 @@ namespace NuSysApp
             }
 
             // create the new canvas text format
-            CanvasTextFormat = new CanvasTextFormat()
+            CanvasTextFormat = new CanvasTextFormat
             {
                 HorizontalAlignment = TextHorizontalAlignment,
                 VerticalAlignment = TextVerticalAlignment,
                 WordWrapping = Wrapping,
                 TrimmingGranularity = TrimmingGranularity,
-                TrimmingSign = TrimmingSign,
+                TrimmingSign = TrimmingSign
             };
 
 

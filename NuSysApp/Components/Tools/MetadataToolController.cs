@@ -16,8 +16,8 @@ namespace NuSysApp
         {
             get
             {
-                Debug.Assert(base.Model is MetadataToolModel);
-                return base.Model as MetadataToolModel;
+                Debug.Assert(Model is MetadataToolModel);
+                return Model as MetadataToolModel;
             }
         }
 
@@ -59,7 +59,7 @@ namespace NuSysApp
                 {
                     return true;
                 }
-                else if (metadata[MetadataToolModel.Selection.Item1].Keys.Intersect(
+                if (metadata[MetadataToolModel.Selection.Item1].Keys.Intersect(
                     MetadataToolModel.Selection.Item2).Any())
                 {
                     return true;

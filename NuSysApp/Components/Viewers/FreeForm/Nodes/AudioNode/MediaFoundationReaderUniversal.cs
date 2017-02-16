@@ -15,14 +15,14 @@
                 public MediaFoundationReaderUniversalSettings()
                 {
                     // can't recreate since we're using a file stream
-                    this.SingleReaderObject = true;
+                    SingleReaderObject = true;
                 }
 
                 public IRandomAccessStream Stream { get; set; }
             }
 
             public MediaFoundationReaderUniversal(IRandomAccessStream stream)
-                : this(new MediaFoundationReaderUniversalSettings() { Stream = stream })
+                : this(new MediaFoundationReaderUniversalSettings { Stream = stream })
             {
 
             }

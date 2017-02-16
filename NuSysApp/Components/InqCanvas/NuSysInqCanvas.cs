@@ -86,7 +86,7 @@ namespace NuSysApp
         public void AddAdorment(InkStroke stroke, Color color, bool fireEvent = true)
         {
             _colors.Add(color);
-            var multipoint = new MultiPoint(stroke.GetInkPoints().Select(p => new NetTopologySuite.Geometries.Point(p.Position.X, p.Position.Y)).ToArray());
+            var multipoint = new MultiPoint(stroke.GetInkPoints().Select(p => new Point(p.Position.X, p.Position.Y)).ToArray());
             var ch = multipoint.ConvexHull().Coordinates.Select(p => new Vector2((float)p.X, (float)p.Y)).ToArray();
             var geom = CanvasGeometry.CreatePolygon(_dryCanvas, ch);
             _adornments.Add(geom);

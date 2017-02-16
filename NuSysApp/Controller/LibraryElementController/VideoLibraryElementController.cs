@@ -15,7 +15,7 @@ namespace NuSysApp
         {
             get
             {
-                return base.LibraryElementModel as VideoLibraryElementModel;
+                return LibraryElementModel as VideoLibraryElementModel;
             }
         }
         public VideoLibraryElementController(VideoLibraryElementModel model) : base(model)

@@ -89,7 +89,7 @@ namespace NuSysApp
                 var title = LibraryElementModel.Title;
                 Model.Title = title;
             }
-            Debug.Assert(this.Id != null);
+            Debug.Assert(Id != null);
             SessionController.Instance.LinksController.AddLinkable(this);
         }
 
@@ -332,14 +332,14 @@ namespace NuSysApp
             if (props.ContainsKey(NusysConstants.ALIAS_LOCATION_X_KEY) || props.ContainsKey(NusysConstants.ALIAS_LOCATION_Y_KEY))
             {
                 //if either "x" or "y" are not found in props, x/y stays the current value stored in Model.X/Y
-                var x = props.GetDouble(NusysConstants.ALIAS_LOCATION_X_KEY, this.Model.X);
-                var y = props.GetDouble(NusysConstants.ALIAS_LOCATION_Y_KEY, this.Model.Y);
+                var x = props.GetDouble(NusysConstants.ALIAS_LOCATION_X_KEY, Model.X);
+                var y = props.GetDouble(NusysConstants.ALIAS_LOCATION_Y_KEY, Model.Y);
                 SetPosition(x,y);
             }
             if (props.ContainsKey(NusysConstants.ALIAS_SIZE_WIDTH_KEY) || props.ContainsKey(NusysConstants.ALIAS_SIZE_HEIGHT_KEY))
             {
-                var width = props.GetDouble(NusysConstants.ALIAS_SIZE_WIDTH_KEY, this.Model.Width);
-                var height = props.GetDouble(NusysConstants.ALIAS_SIZE_HEIGHT_KEY, this.Model.Height);
+                var width = props.GetDouble(NusysConstants.ALIAS_SIZE_WIDTH_KEY, Model.Width);
+                var height = props.GetDouble(NusysConstants.ALIAS_SIZE_HEIGHT_KEY, Model.Height);
                 SetSize(width,height);
             }
             if (props.ContainsKey(NusysConstants.ALIAS_TITLE_VISIBILITY_KEY))

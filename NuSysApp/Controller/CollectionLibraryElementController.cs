@@ -41,7 +41,7 @@ namespace NuSysApp
         {
             get
             {
-                return base.LibraryElementModel as CollectionLibraryElementModel;
+                return LibraryElementModel as CollectionLibraryElementModel;
             }
         }
 

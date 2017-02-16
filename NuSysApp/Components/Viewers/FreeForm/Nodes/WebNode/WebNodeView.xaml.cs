@@ -29,7 +29,7 @@ namespace NuSysApp
             };
 
 
-            Loaded += delegate(object sender, RoutedEventArgs args)
+            Loaded += delegate
             {
                 String url = vm.Controller.LibraryElementController.Data;
                 url = url ?? "http://www.google.com";
@@ -53,7 +53,7 @@ namespace NuSysApp
 
         private void OnDeleteClick(object sender, RoutedEventArgs e)
         {
-            var vm = (ElementViewModel)this.DataContext;
+            var vm = (ElementViewModel)DataContext;
             vm.Controller.RequestDelete();
         }
 
@@ -82,7 +82,7 @@ namespace NuSysApp
                 var vm = (WebNodeViewModel)DataContext;
 
                 //(vm.Model as WebNodeModel).Url = xUrlBox.Text;
-                var url  = this.checkIfUrlRight(xUrlBox.Text);
+                var url  = checkIfUrlRight(xUrlBox.Text);
                 vm.Controller.LibraryElementController?.ContentDataController.SetData(url);
 
             }
@@ -97,52 +97,44 @@ namespace NuSysApp
                 url = s;
                 return url;
             }
-            else
+            if (s?.StartsWith("http://") == false && s.EndsWith(".com"))
             {
-                if (s?.StartsWith("http://") == false && s.EndsWith(".com") == true)
+                if (!s.Contains("www."))
                 {
-                    if (!s.Contains("www."))
-                    {
-                        s = "http://www." + s;
-                        url = s;
-                    }
-                    else
-                    {
-                        s = "http://" + s;
-                        url = s;
-                    }
-
-                    return url;
-                }
-                else if ( s != null && !s.EndsWith(".com"))
-                {
-                    List<string> terms = new List<string>();
-                    string[] separators = new string[] { ",", ".", "!", "\'", " ", "\'s" };
-                    foreach (string word in s.Split(separators, StringSplitOptions.RemoveEmptyEntries))
-                        terms.Add(word);
-                    foreach (string word in terms)
-                    {
-                        searchterms = searchterms + word + "+";
-                    }
-                    if ( searchterms != null && !searchterms.EndsWith("+"))
-                    {
-                        searchterms = searchterms.Remove(-1);
-                    }
-                    if(searchterms == null)
-                    {
-                        return "http://www.google.com";
-                    }
-                    url = "http://www.google.com/search?q=" + searchterms;
-                    return url;
+                    s = "http://www." + s;
+                    url = s;
                 }
                 else
                 {
+                    s = "http://" + s;
                     url = s;
-                    return url;
                 }
+
+                return url;
             }
-            
-               
+            if ( s != null && !s.EndsWith(".com"))
+            {
+                List<string> terms = new List<string>();
+                string[] separators = { ",", ".", "!", "\'", " ", "\'s" };
+                foreach (string word in s.Split(separators, StringSplitOptions.RemoveEmptyEntries))
+                    terms.Add(word);
+                foreach (string word in terms)
+                {
+                    searchterms = searchterms + word + "+";
+                }
+                if ( searchterms != null && !searchterms.EndsWith("+"))
+                {
+                    searchterms = searchterms.Remove(-1);
+                }
+                if(searchterms == null)
+                {
+                    return "http://www.google.com";
+                }
+                url = "http://www.google.com/search?q=" + searchterms;
+                return url;
+            }
+            url = s;
+            return url;
         }
         
         private void XWebView_OnNavigationStarting(WebView sender, WebViewNavigationStartingEventArgs args)

@@ -9,12 +9,12 @@ namespace ReverseMarkdown.Converters
 	{
 		public Div(Converter converter):base(converter)
 		{
-			this.Converter.Register("div", this);
+			Converter.Register("div", this);
 		}
 
 		public override string Convert(HtmlNode node)
 		{
-			return Environment.NewLine + this.TreatChildren(node).Trim() + Environment.NewLine;
+			return Environment.NewLine + TreatChildren(node).Trim() + Environment.NewLine;
 		}
 	}
 }

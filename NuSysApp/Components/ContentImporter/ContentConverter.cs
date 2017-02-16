@@ -28,7 +28,7 @@ namespace NuSysApp
         private static ManualResetEvent manualReset = new ManualResetEvent(false);
         private static TypedEventHandler<WebView, WebViewNavigationCompletedEventArgs> NavigationCompleted = async delegate
         {
-            await _wv.InvokeScriptAsync("eval", new string[] { "(function(){ var r = document.createRange(); r.selectNodeContents(document.body); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);  })();" });
+            await _wv.InvokeScriptAsync("eval", new[] { "(function(){ var r = document.createRange(); r.selectNodeContents(document.body); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);  })();" });
             DataPackage p = await _wv.CaptureSelectedContentToDataPackageAsync();
             result = await p.GetView().GetRtfAsync();
             manualReset.Set();
@@ -108,7 +108,7 @@ namespace NuSysApp
             SynchronizationContext context = SynchronizationContext.Current;
             await Task.Run(() =>
             {
-                context.Post((a) => {
+                context.Post(a => {
                     _wv.NavigateToString(html);
                 }, null);
                 

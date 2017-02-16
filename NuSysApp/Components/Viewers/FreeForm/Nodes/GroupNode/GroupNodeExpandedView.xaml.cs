@@ -22,12 +22,12 @@ namespace NuSysApp
 {
     public sealed partial class GroupNodeExpandedView : AnimatableUserControl
     {
-        private int _count = 0;
+        private int _count;
         private GroupItemThumbFactory _factory;
 
         public GroupNodeExpandedView()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
             _factory = new GroupItemThumbFactory();
 

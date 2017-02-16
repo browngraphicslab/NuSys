@@ -133,7 +133,7 @@ namespace NuSysApp
         /// </summary>
         public void Item_Dragging(CanvasPointer pointer)
         {
-            _dragFilterItem.Transform.LocalPosition = Vector2.Transform(pointer.CurrentPoint, this.Transform.ScreenToLocalMatrix) ;
+            _dragFilterItem.Transform.LocalPosition = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix) ;
             if (_dragFilterItem.Transform.LocalX > 0 && _dragFilterItem.Transform.LocalX < Width &&
                 _dragFilterItem.Transform.LocalY < Height && _dragFilterItem.Transform.LocalY > 0)
             {
@@ -160,7 +160,7 @@ namespace NuSysApp
                 }
                 else
                 {
-                    Vm.Selection = new HashSet<string>() { selection };
+                    Vm.Selection = new HashSet<string> { selection };
                 }
 
                 //IDK WHAT TO DO W THIS SHIT

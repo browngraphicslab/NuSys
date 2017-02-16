@@ -9,7 +9,7 @@ namespace NuSysApp
 {
     public class CreateNewAudioLibraryElementRequestArgs : CreateNewLibraryElementRequestArgs
     {
-        public CreateNewAudioLibraryElementRequestArgs() : base()
+        public CreateNewAudioLibraryElementRequestArgs()
         {
             LibraryElementType = NusysConstants.ElementType.Audio;
         }

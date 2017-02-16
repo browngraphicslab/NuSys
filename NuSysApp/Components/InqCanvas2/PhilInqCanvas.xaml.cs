@@ -93,7 +93,7 @@ namespace NuSysApp
 
         public PhilInqCanvas()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
             inkCanvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Pen | Windows.UI.Core.CoreInputDeviceTypes.Mouse | Windows.UI.Core.CoreInputDeviceTypes.Touch;
 
@@ -245,7 +245,7 @@ namespace NuSysApp
         private IEnumerable<InkStroke> GetSelectedStrokes()
         {
             var selectedStrokes = new List<InkStroke>();
-            return inkManager.GetStrokes().ToArray().Where(stroke => stroke.Selected == true);           
+            return inkManager.GetStrokes().ToArray().Where(stroke => stroke.Selected);           
         }
 
         private void DrawSelectionLasso(CanvasControl sender, CanvasDrawingSession ds)
@@ -363,7 +363,7 @@ namespace NuSysApp
         {
             InkDrawingAttributes drawingAttributes = inkCanvas.InkPresenter.CopyDefaultDrawingAttributes();
             drawingAttributes.PenTip = PenTipShape.Circle;
-            drawingAttributes.PenTipTransform = System.Numerics.Matrix3x2.CreateRotation((float) Math.PI/4);
+            drawingAttributes.PenTipTransform = Matrix3x2.CreateRotation((float) Math.PI/4);
 
             drawingAttributes.Size = new Size(2 * Transform.ScaleX, 4 * Transform.ScaleX);
             drawingAttributes.Color = Colors.Black;

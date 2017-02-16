@@ -38,7 +38,7 @@ namespace NuSysApp
                 AlignmentX = AlignmentX.Center,
                 AlignmentY = AlignmentY.Center,
                 ImageSource = img.Source,
-                Stretch = Stretch.Uniform,
+                Stretch = Stretch.Uniform
 
             };
             if (img.Source is RenderTargetBitmap)

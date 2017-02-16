@@ -36,7 +36,7 @@ namespace NuSysApp
             PropertiesToDisplay = new List<string>((_controller as BasicToolController).GetAllProperties().OrderBy(key => !string.IsNullOrEmpty(key) && char.IsNumber(key[0])).ThenBy(key => key));
             InvokePropertiesToDisplayChanged();
             if ((_controller as BasicToolController).BasicToolModel.Selection != null &&
-                (_controller as BasicToolController).BasicToolModel.Selected == true &&
+                (_controller as BasicToolController).BasicToolModel.Selected &&
                 !PropertiesToDisplay.Intersect((_controller as BasicToolController).BasicToolModel.Selection).Any())
             {
                 if (Selection.Any())
@@ -45,7 +45,7 @@ namespace NuSysApp
                     editedSelection = true;
                 }
             }
-            else if ((_controller as BasicToolController).BasicToolModel.Selected == true)
+            else if ((_controller as BasicToolController).BasicToolModel.Selected)
             {
                 foreach (var item in new List<string>(Selection))
                 {

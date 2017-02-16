@@ -33,7 +33,7 @@ namespace NuSysApp
 
         public override async Task Load()
         {
-            _triangle = CanvasGeometry.CreatePolygon(ResourceCreator, new System.Numerics.Vector2[4]{new Vector2(0, Height),
+            _triangle = CanvasGeometry.CreatePolygon(ResourceCreator, new Vector2[4]{new Vector2(0, Height),
                 new Vector2(Width, Height),
                 new Vector2(Width, 0),
                 new Vector2(0, Height)

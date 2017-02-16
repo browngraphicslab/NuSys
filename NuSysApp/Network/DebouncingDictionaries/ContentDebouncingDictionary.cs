@@ -62,7 +62,7 @@ namespace NuSysApp
         /// <param name="latestContent"></param>
         public void AddLatestContent(string latestContent)
         {
-            base.Add(NusysConstants.CONTENT_DATA_MODEL_DATA_STRING_KEY, latestContent);
+            Add(NusysConstants.CONTENT_DATA_MODEL_DATA_STRING_KEY, latestContent);
         }
     }
 }

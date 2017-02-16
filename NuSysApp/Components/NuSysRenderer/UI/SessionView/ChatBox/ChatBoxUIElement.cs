@@ -62,7 +62,7 @@ namespace NuSysApp
             _typingRectContainer = new RectangleUIElement(this, ResourceCreator)
             {
                 BorderColor = Constants.LIGHT_BLUE,
-                BorderWidth = this.BorderWidth,
+                BorderWidth = BorderWidth,
                 Background = Colors.White,
                 Height = 50,
                 Width = Width
@@ -83,7 +83,7 @@ namespace NuSysApp
             {
                 Background = Colors.White,
                 Width = Width,
-                Height = Height - _typingRectContainer.Height - TopBarHeight,
+                Height = Height - _typingRectContainer.Height - TopBarHeight
                 
             };
             _readingRect.ScrollAreaSize = new Size(Width - _readingRect.VerticalScrollBarWidth, _readingRect.Height);
@@ -101,8 +101,8 @@ namespace NuSysApp
                 Width = 100
             };
             AddChild(_chatTitle);
-            _chatTitle.Transform.LocalPosition = new Vector2(this.Transform.LocalX,
-                this.Transform.LocalY - _chatTitle.Height);
+            _chatTitle.Transform.LocalPosition = new Vector2(Transform.LocalX,
+                Transform.LocalY - _chatTitle.Height);
 
             _typingRect.InputSubmitted += _typingRect_InputSubmitted;
         }

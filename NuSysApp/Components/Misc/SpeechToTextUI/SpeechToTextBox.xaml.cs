@@ -58,12 +58,12 @@ namespace NuSysApp
 
         public SpeechToTextBox()
         {
-            this.InitializeComponent();
+            InitializeComponent();
             _vm = new SpeechToTextViewModel();
             // Keep track of the UI thread _dispatcher, as speech events will come in on a separate thread.
             _dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
 
-            DataContextChanged += delegate(FrameworkElement sender, DataContextChangedEventArgs args)
+            DataContextChanged += delegate
             {
                 // await the sessionController.instance.sessionview.maincanvas onloaded event to set the data context
                 _vm = DataContext as SpeechToTextViewModel;
@@ -111,11 +111,11 @@ namespace NuSysApp
 
         private async void CleanlyCloseSpeechRecognizer()
         {
-            if (this._speechRecognizer != null)
+            if (_speechRecognizer != null)
             {
                 if (_isListening)
                 {
-                    await this._speechRecognizer.ContinuousRecognitionSession.CancelAsync();
+                    await _speechRecognizer.ContinuousRecognitionSession.CancelAsync();
                     _isListening = false;
                 }
 
@@ -123,8 +123,8 @@ namespace NuSysApp
                 _speechRecognizer.ContinuousRecognitionSession.ResultGenerated -= ContinuousRecognitionSession_ResultGenerated;
                 _speechRecognizer.HypothesisGenerated -= SpeechRecognizer_HypothesisGenerated;
 
-                this._speechRecognizer.Dispose();
-                this._speechRecognizer = null;
+                _speechRecognizer.Dispose();
+                _speechRecognizer = null;
                 _pairedController = null;
 
                 _vm.IsEnabled = Visibility.Collapsed;
@@ -167,11 +167,11 @@ namespace NuSysApp
                 _speechRecognizer.ContinuousRecognitionSession.ResultGenerated -= ContinuousRecognitionSession_ResultGenerated;
                 _speechRecognizer.HypothesisGenerated -= SpeechRecognizer_HypothesisGenerated;
 
-                this._speechRecognizer.Dispose();
-                this._speechRecognizer = null;
+                _speechRecognizer.Dispose();
+                _speechRecognizer = null;
             }
 
-            this._speechRecognizer = new SpeechRecognizer(recognizerLanguage);
+            _speechRecognizer = new SpeechRecognizer(recognizerLanguage);
 
             // Apply the dictation topic constraint to optimize for dictated freeform speech.
             var dictationConstraint = new SpeechRecognitionTopicConstraint(SpeechRecognitionScenario.Dictation, "dictation");
@@ -387,7 +387,7 @@ namespace NuSysApp
                 }
                 catch (Exception exception)
                 {
-                    var messageDialog = new Windows.UI.Popups.MessageDialog(exception.Message, "Exception");
+                    var messageDialog = new MessageDialog(exception.Message, "Exception");
                     await messageDialog.ShowAsync();
                 }
             }
@@ -429,7 +429,7 @@ namespace NuSysApp
                 }
 
                 // create selection rectangle
-                var rect = this.GetTextboxSelectionRect(textBox);
+                var rect = GetTextboxSelectionRect(textBox);
 
                 // show the menu and await command to be selected
                 var chosenCommand = await menu.ShowForSelectionAsync(rect, Placement.Below);

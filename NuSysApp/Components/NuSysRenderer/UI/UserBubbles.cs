@@ -36,9 +36,9 @@ namespace NuSysApp
         public UserBubbles(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
 
-            base.IsHitTestVisible = false;
-            base.BorderWidth = 0;
-            this.Background = Colors.Transparent;
+            IsHitTestVisible = false;
+            BorderWidth = 0;
+            Background = Colors.Transparent;
 
             _bubbles = new Dictionary<string, ButtonUIElement>();
 
@@ -93,7 +93,7 @@ namespace NuSysApp
             public Bubble(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, UserBubbles bubbles, NetworkUser user) : base(parent, resourceCreator)
             {
                 _bubbles = bubbles;
-                _textFormat = new CanvasTextFormat()
+                _textFormat = new CanvasTextFormat
                 {
                     HorizontalAlignment = CanvasHorizontalAlignment.Center,
                     VerticalAlignment = CanvasVerticalAlignment.Center
@@ -116,7 +116,7 @@ namespace NuSysApp
                 var color = _user?.Color ?? Colors.Aqua;
 
                 ds.FillEllipse(p, radius,radius,color);
-                var rect = new Rect((double)(p.X - radius), (double)(p.Y - radius), (double)radius * 2, (double)radius * 2);
+                var rect = new Rect(p.X - radius, p.Y - radius, (double)radius * 2, (double)radius * 2);
                 _textFormat.FontSize = (float) (radius*UIDefaults.ButtonTextSize*SessionController.Instance.SessionSettings.TextScale/origRadius);
                 ds.DrawText(_user?.DisplayName?.ToUpper()?.Substring(0,1) ?? "?", rect, Colors.Black,_textFormat);
                 ds.Transform = old;

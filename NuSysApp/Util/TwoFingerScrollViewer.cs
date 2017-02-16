@@ -17,7 +17,7 @@ namespace NuSysApp
 {
     public class TwoFingerScrollViewer : Canvas
     {
-        private int _numTouchPoints = 0;
+        private int _numTouchPoints;
 
         public TwoFingerScrollViewer()
         {
@@ -76,13 +76,13 @@ namespace NuSysApp
             foreach (var c in Children)
             {
                 var child = (FrameworkElement)c;
-                var currY = Canvas.GetTop(child);
+                var currY = GetTop(child);
 
                 // TODO: Read hardcoded margins from xaml property
                 var diff = -(child.Height - (Height - 60));
 
                 double ty = Math.Min(0, Math.Max(currY + speed * scrollDir, diff));
-                Canvas.SetTop(child, ty);
+                SetTop(child, ty);
             }
         }      
     }

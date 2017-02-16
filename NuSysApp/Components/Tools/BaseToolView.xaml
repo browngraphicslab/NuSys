@@ -20,7 +20,7 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Border Grid.Row="0" Visibility="Collapsed" Name="xParentOperatorGrid" Width="70" Height="40" CornerRadius="2,2,0,0" Background="{StaticResource color1}" Tapped="XParentOperatorText_OnTapped" Margin="100,0,100,0">
-                <TextBlock Text="OR" Name="xParentOperatorText" HorizontalAlignment="Center" FontSize="24"  VerticalAlignment="Center"></TextBlock>
+                <TextBlock Text="OR" Name="xParentOperatorText" HorizontalAlignment="Center" FontSize="24"  VerticalAlignment="Center" />
             </Border>
             <Grid Grid.Row="1"  VerticalAlignment="Stretch" Margin="0">
                 <Grid.ColumnDefinitions>
@@ -30,10 +30,9 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel>
                     <Button Grid.Column="0"  x:Name="xDeleteButton" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color1}" Margin="0,45,5,0"  Click ="Delete_Click" VerticalAlignment="Top">
-                        <Image Source="ms-appx:///Assets/node icons/delete.png" Height="20" Width="20"></Image>
+                        <Image Source="ms-appx:///Assets/node icons/delete.png" Height="20" Width="20" />
                     </Button>
-                    <Button Grid.Column="0"  x:Name="xRefreshButton" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color1}" Margin="0,15,5,0"  Click="xRefreshButton_Click"  VerticalAlignment="Top">
-                    </Button>
+                    <Button Grid.Column="0"  x:Name="xRefreshButton" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color1}" Margin="0,15,5,0"  Click="xRefreshButton_Click"  VerticalAlignment="Top" />
                 </StackPanel>
                 
                 <Grid Grid.Column="1" Width="{Binding Width}" VerticalAlignment="Stretch" Margin="0">
@@ -49,24 +48,23 @@
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
                                         <Grid HorizontalAlignment="Center">
-                                            <TextBlock Text="{Binding}" Foreground="{StaticResource color3}"></TextBlock>
+                                            <TextBlock Text="{Binding}" Foreground="{StaticResource color3}" />
                                         </Grid>
                                     </DataTemplate>
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
                         </Grid>
-                        <Grid Name="xViewTypeGrid" Grid.Row="1" VerticalAlignment="Stretch" Margin="0">
-                        </Grid>
+                        <Grid Name="xViewTypeGrid" Grid.Row="1" VerticalAlignment="Stretch" Margin="0" />
                         <Grid Name ="xbottompanel" Background="{StaticResource color1}" Padding="0,0,40,0"  Height="50" Grid.Row="2" VerticalAlignment="Center" ManipulationMode="All" ManipulationStarted="Tool_OnManipulationStarted" ManipulationDelta="Tool_OnManipulationDelta">
                             <StackPanel Orientation="Horizontal">
                                 <Button x:Name="xPieChartButton" Click="XPieChartButton_OnClick"  Margin="20,0,0,0" Background="Transparent">
-                                    <Image Source="ms-appx:///Assets/piegraph bluegreen.png" Height="30" Width="30"></Image>
+                                    <Image Source="ms-appx:///Assets/piegraph bluegreen.png" Height="30" Width="30" />
                                 </Button>
                                 <Button x:Name="xBarChartButton" Click="XBarChartButton_OnClick"  Margin="20,0,0,0" Background="Transparent">
-                                    <Image Source="ms-appx:///Assets/bar chart icon.png" Height="30" Width="30"></Image>
+                                    <Image Source="ms-appx:///Assets/bar chart icon.png" Height="30" Width="30" />
                                 </Button>
                                 <Button x:Name="xListViewButton" Click="XListViewButton_OnClick"  Margin="20,0,0,0" Background="Transparent">
-                                    <Image Source="ms-appx:///Assets/listview bluegreen.png" Height="30" Width="30"></Image>
+                                    <Image Source="ms-appx:///Assets/listview bluegreen.png" Height="30" Width="30" />
                                 </Button>
                             </StackPanel>
                         </Grid>
@@ -79,14 +77,14 @@
                 <StackPanel Grid.Column="2" Margin="0,40,0,0"  Orientation="Vertical">
                     <Button x:Name="xCollectionElement" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" ManipulationMode="All" HorizontalAlignment="Right" Margin="0,0,0,0">
                         <StackPanel>
-                            <Image Source="ms-appx:///Assets/collection icon bluegreen.png" Height="28" Width="28" Stretch="Uniform"></Image>
-                            <TextBlock Text="Collection" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="11"></TextBlock>
+                            <Image Source="ms-appx:///Assets/collection icon bluegreen.png" Height="28" Width="28" Stretch="Uniform" />
+                            <TextBlock Text="Collection" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="11" />
                         </StackPanel>
                     </Button>
                     <Button x:Name="xStackElement" Background="{Binding Color}" Style="{StaticResource NodeSubMenuRightItem}" ManipulationMode="All" HorizontalAlignment="Right" Margin="0,0,0,0">
                         <StackPanel>
-                            <Image Source="ms-appx:///Assets/collection icon bluegreen.png" Height="28" Width="28" Stretch="Uniform"></Image>
-                            <TextBlock Text="Stack" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="11"></TextBlock>
+                            <Image Source="ms-appx:///Assets/collection icon bluegreen.png" Height="28" Width="28" Stretch="Uniform" />
+                            <TextBlock Text="Stack" TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="11" />
                         </StackPanel>
                     </Button>
                 </StackPanel>

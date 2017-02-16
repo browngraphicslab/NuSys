@@ -12,27 +12,24 @@ namespace ReverseMarkdown.Converters
 		public Pre(Converter converter)
 			: base(converter)
 		{
-			this.Converter.Register("pre", this);
+			Converter.Register("pre", this);
 		}
 
 		public override string Convert(HtmlNode node)
 		{
-			if (this.Converter.Config.GithubFlavored)
+			if (Converter.Config.GithubFlavored)
 			{
 				return Environment.NewLine + string.Format("```{0}", GetLanguage(node)) + Environment.NewLine
 					+ node.InnerText.Trim() + Environment.NewLine
 					+ "```" + Environment.NewLine;
 			}
-			else
-			{
-				// get the lines based on carriage return and prefix four spaces to each line
-				var lines = node.InnerText.ReadLines().Select(item => "    " + item + Environment.NewLine);
+		    // get the lines based on carriage return and prefix four spaces to each line
+		    var lines = node.InnerText.ReadLines().Select(item => "    " + item + Environment.NewLine);
 
-				// join all the lines to a single line
-				var result = lines.Aggregate((curr, next) => curr + next);
+		    // join all the lines to a single line
+		    var result = lines.Aggregate((curr, next) => curr + next);
 
-				return Environment.NewLine + Environment.NewLine + result + Environment.NewLine;
-			}
+		    return Environment.NewLine + Environment.NewLine + result + Environment.NewLine;
 		}
 
 

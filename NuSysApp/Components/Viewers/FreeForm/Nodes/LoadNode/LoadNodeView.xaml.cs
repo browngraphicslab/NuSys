@@ -24,8 +24,8 @@ namespace NuSysApp
     {
         public LoadNodeView(LoadNodeViewModel vm)
         {
-            this.InitializeComponent();
-            this.DataContext = vm;
+            InitializeComponent();
+            DataContext = vm;
         }
 
 

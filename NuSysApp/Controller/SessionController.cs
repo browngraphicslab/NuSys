@@ -245,7 +245,7 @@ namespace NuSysApp
 
                 await EnterCollection(_capturedState.CollectionLibraryElementId);
 
-                var collection = SessionController.Instance.SessionView.FreeFormViewer.InitialCollection;
+                var collection = Instance.SessionView.FreeFormViewer.InitialCollection;
                 collection.Camera.LocalPosition = new Vector2(_capturedState.XLocation, _capturedState.YLocation);
                 collection.Camera.LocalScaleCenter = new Vector2(_capturedState.XCenter, _capturedState.YCenter);
                 collection.Camera.LocalScale = new Vector2(_capturedState.XZoomLevel, _capturedState.YZoomLevel);
@@ -279,7 +279,7 @@ namespace NuSysApp
         /// <returns></returns>
         public async Task<bool> AddElementAsync(ElementModel model)
         {
-            var parentLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(model.ParentCollectionId);
+            var parentLibraryElementController = Instance.ContentController.GetLibraryElementController(model.ParentCollectionId);
             if (parentLibraryElementController == null) //if the parent collection that this node will be in is null
             {
                 return false;///could happen naturally if someone adds an public element to a private collection
@@ -290,7 +290,7 @@ namespace NuSysApp
                 return false;
             }
 
-            var elementLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(model.LibraryId);
+            var elementLibraryElementController = Instance.ContentController.GetLibraryElementController(model.LibraryId);
             if (!ContentController.ContainsContentDataModel(elementLibraryElementController.LibraryElementModel.ContentDataModelId))//if the content data model isn't present
             {
                 await NuSysNetworkSession.FetchContentDataModelAsync(elementLibraryElementController.LibraryElementModel.ContentDataModelId);//load the content
@@ -304,7 +304,7 @@ namespace NuSysApp
                 CollectionIdsInUse.Add(controller.LibraryElementController.LibraryElementModel.LibraryElementId);
             }
 
-            SessionController.Instance.ElementModelIdToElementController[model.Id] = controller;
+            Instance.ElementModelIdToElementController[model.Id] = controller;
 
             controller.LibraryElementController.FireAliasAdded(model);
 
@@ -320,10 +320,10 @@ namespace NuSysApp
                     var existingChildren = ((CollectionLibraryElementModel) (controller.LibraryElementModel))?.Children;
                     foreach (var childId in existingChildren ?? new HashSet<string>())
                     {
-                        if (SessionController.Instance.ElementModelIdToElementController.ContainsKey(childId))
+                        if (Instance.ElementModelIdToElementController.ContainsKey(childId))
                         {
                             ((ElementCollectionController) controller).AddChild(
-                                SessionController.Instance.ElementModelIdToElementController[childId]);
+                                Instance.ElementModelIdToElementController[childId]);
                         }
                     }
                 }
@@ -475,12 +475,12 @@ namespace NuSysApp
                 request.GetReturnedContentDataModels()
                     .ForEach(
                         contentDataModel =>
-                                SessionController.Instance.ContentController.AddContentDataModel(contentDataModel));
+                                Instance.ContentController.AddContentDataModel(contentDataModel));
 
                 Task.Run(async delegate ///tell the server about the latest collection we're entering
                 {
                     await NuSysNetworkSession.ExecuteRequestAsync(
-                        new AddNewLastUsedCollectionRequest(new AddNewLastUsedCollectionServerRequestArgs()
+                        new AddNewLastUsedCollectionRequest(new AddNewLastUsedCollectionServerRequestArgs
                         {
                             CollectionLibraryId = collectionLibraryId,
                             UserId = WaitingRoomView.UserID
@@ -498,13 +498,13 @@ namespace NuSysApp
 
                 foreach (var presentationLink in presentationLinks) //add the presentation links
                 {
-                    await SessionController.Instance.LinksController.AddPresentationLinkToLibrary(presentationLink);
+                    await Instance.LinksController.AddPresentationLinkToLibrary(presentationLink);
                 }
 
                 foreach (var inkModel in request.GetReturnedInkModels())
                 {
                     var contentController = ContentController.GetContentDataController(inkModel.ContentId);
-                    contentController.AddInitialInkStrokes(new List<InkModel>() {inkModel}, false);
+                    contentController.AddInitialInkStrokes(new List<InkModel> {inkModel}, false);
                 }
                 var elementCollectionInstanceController = new ElementCollectionController(elementCollectionInstance);
                 ElementModelIdToElementController[elementCollectionInstance.Id] = elementCollectionInstanceController;
@@ -591,14 +591,14 @@ namespace NuSysApp
         private async Task MakeElement(HashSet<string> madeElementIds, Dictionary<string, ElementModel> elementsLeft, ElementModel element)
         {
             Debug.WriteLine("making element: " + element.Id);
-            var libraryModel = SessionController.Instance.ContentController.GetLibraryElementModel(element.LibraryId);
+            var libraryModel = Instance.ContentController.GetLibraryElementModel(element.LibraryId);
             if (libraryModel == null)
             {
                 elementsLeft.Remove(element.Id);
                 return;
             }
 
-            await SessionController.Instance.AddElementAsync(element);
+            await Instance.AddElementAsync(element);
 
             ///add element
             elementsLeft.Remove(element.Id);

@@ -237,8 +237,8 @@ namespace NuSysApp
 
                 metadata["node_type"] = elementType + "Node";
                 Random rd = new Random(); //TODO remove
-                metadata["random_id"] = (int)rd.Next(100, 200);
-                metadata["random_id2"] = (int)rd.Next(1, 100);
+                metadata["random_id"] = rd.Next(100, 200);
+                metadata["random_id2"] = rd.Next(1, 100);
 
                 dict = new Message();
                 dict["width"] = size.Width.ToString();

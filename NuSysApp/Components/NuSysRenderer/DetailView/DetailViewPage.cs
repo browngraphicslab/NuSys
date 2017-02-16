@@ -189,7 +189,7 @@ namespace NuSysApp
                 Width = 400,
                 Scrollable = false,
                 TextColor = Constants.DARK_BLUE,
-                Text = "this item had its origin deleted.",
+                Text = "this item had its origin deleted."
             };
             AddChild(_originWords);
 
@@ -219,7 +219,7 @@ namespace NuSysApp
         private async void WordButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             Debug.Assert(_controller.LibraryElementModel.Type == NusysConstants.ElementType.Word);
-            var request = new GetWordDocumentRequest(new GetWordDocumentRequestArgs() {ContentId =  _controller.LibraryElementModel.ContentDataModelId});
+            var request = new GetWordDocumentRequest(new GetWordDocumentRequestArgs {ContentId =  _controller.LibraryElementModel.ContentDataModelId});
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
 
             Debug.Assert(request.WasSuccessful() == true);
@@ -244,7 +244,7 @@ namespace NuSysApp
                         }
                     });
 
-                    var launcherOptions = new LauncherOptions() { UI = { PreferredPlacement = Placement.Right, InvocationPoint = new Point(SessionController.Instance.SessionView.ActualWidth / 2, 0.0) } };
+                    var launcherOptions = new LauncherOptions { UI = { PreferredPlacement = Placement.Right, InvocationPoint = new Point(SessionController.Instance.SessionView.ActualWidth / 2, 0.0) } };
                     launcherOptions.TreatAsUntrusted = false;
                     launcherOptions.PreferredApplicationDisplayName = "NUSYS";
                     launcherOptions.PreferredApplicationPackageFamilyName = "NuSys";
@@ -563,7 +563,7 @@ namespace NuSysApp
             regionRequestArgs.Medium_Thumbnail_Url = _controller.LibraryElementModel.MediumIconUrl;
             regionRequestArgs.Small_Thumbnail_Url = _controller.LibraryElementModel.SmallIconUrl;
             regionRequestArgs.AccessType = access;
-            regionRequestArgs.Origin = new LibraryElementOrigin() {Type =  LibraryElementOrigin.OriginType.Region,OriginId = _controller.LibraryElementModel.LibraryElementId };
+            regionRequestArgs.Origin = new LibraryElementOrigin {Type =  LibraryElementOrigin.OriginType.Region,OriginId = _controller.LibraryElementModel.LibraryElementId };
 
             var request = new CreateNewLibraryElementRequest(regionRequestArgs);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
@@ -610,7 +610,7 @@ namespace NuSysApp
                         NormalizedX = pdfLibraryElement.NormalizedX + .25 * pdfLibraryElement.NormalizedWidth,
                         NormalizedY = pdfLibraryElement.NormalizedY + .25 * pdfLibraryElement.NormalizedHeight,
                         NormalizedHeight = .5 * pdfLibraryElement.NormalizedHeight,
-                        NormalizedWidth = .5 * pdfLibraryElement.NormalizedWidth,
+                        NormalizedWidth = .5 * pdfLibraryElement.NormalizedWidth
                     };
                     return pdfArgs;
 

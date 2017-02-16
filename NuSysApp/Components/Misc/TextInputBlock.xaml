@@ -51,12 +51,9 @@
 
         <Canvas x:Name="InkBubble" Visibility="Collapsed">
 
-            <Image Name="bubble" Source="ms-appx:///Assets/menububble2.png" Width="200">
-            </Image>
+            <Image Name="bubble" Source="ms-appx:///Assets/menububble2.png" Width="200" />
             <!--{Binding Width, ElementName=bubble}-->
-            <Grid x:Name="Inker" Width="190" Height="71" Margin="5,0,0,0" Background="Transparent" VerticalAlignment="Stretch" HorizontalAlignment="Left">
-                
-            </Grid>
+            <Grid x:Name="Inker" Width="190" Height="71" Margin="5,0,0,0" Background="Transparent" VerticalAlignment="Stretch" HorizontalAlignment="Left" />
 
         </Canvas>
 
@@ -69,9 +66,9 @@
             </Grid>-->
             <Grid x:Name="Main" HorizontalAlignment="Stretch" Background="Transparent">
                 <Grid.Projection>
-                    <PlaneProjection RotationY="0"></PlaneProjection>
+                    <PlaneProjection RotationY="0" />
                 </Grid.Projection>
-                <TextBox x:Name="TextBox" Text="{Binding Text}" TextChanged="TextBox_OnTextChanged"  FontSize="27" CharacterSpacing="40" BorderThickness="0" HorizontalAlignment="Stretch"></TextBox>
+                <TextBox x:Name="TextBox" Text="{Binding Text}" TextChanged="TextBox_OnTextChanged"  FontSize="27" CharacterSpacing="40" BorderThickness="0" HorizontalAlignment="Stretch" />
             </Grid>
         </Grid>
 

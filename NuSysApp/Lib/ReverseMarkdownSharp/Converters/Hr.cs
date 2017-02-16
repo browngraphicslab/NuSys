@@ -10,7 +10,7 @@ namespace ReverseMarkdown.Converters
 		public Hr(Converter converter)
 			: base(converter)
 		{
-			this.Converter.Register("hr", this);
+			Converter.Register("hr", this);
 		}
 
 		public override string Convert(HtmlNode node)

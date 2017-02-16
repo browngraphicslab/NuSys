@@ -30,10 +30,10 @@ namespace ReverseMarkdown.Converters
 			this._escapedKeyChars.Add("!",@"\!");
 			 */
 
-			this._escapedKeyChars.Add("*", @"\*");
-			this._escapedKeyChars.Add("_", @"\_");
+			_escapedKeyChars.Add("*", @"\*");
+			_escapedKeyChars.Add("_", @"\_");
 
-			this.Converter.Register("#text", this);
+			Converter.Register("#text", this);
 		}
 
 		public override string Convert(HtmlNode node)
@@ -76,16 +76,16 @@ namespace ReverseMarkdown.Converters
 				content = content.Trim();
 			}
 
-			content =  this.EscapeKeyChars(content);
+			content =  EscapeKeyChars(content);
 			
-			content = this.PreserveKeyCharswithinBackTicks(content);
+			content = PreserveKeyCharswithinBackTicks(content);
 
 			return content;
 		}
 
 		private string EscapeKeyChars(string content)
 		{
-			foreach(var item in this._escapedKeyChars)
+			foreach(var item in _escapedKeyChars)
 			{
 				content = content.Replace(item.Key, item.Value);
 			}

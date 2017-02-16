@@ -374,13 +374,9 @@ namespace MarkdownDeep
 				// Join em
 				return strDomain + url;
 			}
-			else
-			{
-				if (!UrlBaseLocation.EndsWith("/"))
-					return UrlBaseLocation + "/" + url;
-				else
-					return UrlBaseLocation + url;
-			}
+		    if (!UrlBaseLocation.EndsWith("/"))
+		        return UrlBaseLocation + "/" + url;
+		    return UrlBaseLocation + url;
 		}
 
 		public Func<ImageInfo, bool> GetImageSize;
@@ -390,7 +386,7 @@ namespace MarkdownDeep
 		{
 			if (GetImageSize != null)
 			{
-				var info = new ImageInfo() { url = url, titled_image=TitledImage };
+				var info = new ImageInfo { url = url, titled_image=TitledImage };
 				if (GetImageSize(info))
 				{
 					width = info.width;
@@ -632,7 +628,7 @@ namespace MarkdownDeep
 		public static List<string> SplitUserSections(string markdown)
 		{
 			// Build blocks
-			var md = new MarkdownDeep.Markdown();
+			var md = new Markdown();
 			md.UserBreaks = true;
 
 			// Process blocks
@@ -701,7 +697,7 @@ namespace MarkdownDeep
 		public static List<string> SplitSections(string markdown)
 		{
 			// Build blocks
-			var md = new MarkdownDeep.Markdown();
+			var md = new Markdown();
 
 			// Process blocks
 			var blocks = md.ProcessBlocks(markdown);
@@ -779,8 +775,7 @@ namespace MarkdownDeep
 				// Return it's display index
 				return m_UsedFootnotes.Count-1;
 			}
-			else
-				return -1;
+		    return -1;
 		}
 
 		// Get a link definition
@@ -789,8 +784,7 @@ namespace MarkdownDeep
 			LinkDefinition link;
 			if (m_LinkDefinitions.TryGetValue(id, out link))
 				return link;
-			else
-				return null;
+		    return null;
 		}
 
 		internal void AddAbbreviation(string abbr, string title)
@@ -928,7 +922,7 @@ namespace MarkdownDeep
 			int counter=1;
 			while (m_UsedHeaderIDs.ContainsKey(strWithSuffix))
 			{
-				strWithSuffix = strBase + "-" + counter.ToString();
+				strWithSuffix = strBase + "-" + counter;
 				counter++;
 			}
 
@@ -973,13 +967,12 @@ namespace MarkdownDeep
 
 		internal Block CreateBlock()
 		{
-			if (m_SpareBlocks.Count!=0)
+		    if (m_SpareBlocks.Count!=0)
 				return m_SpareBlocks.Pop();
-			else
-				return new Block();
+		    return new Block();
 		}
 
-		internal void FreeBlock(Block b)
+	    internal void FreeBlock(Block b)
 		{
 			m_SpareBlocks.Push(b);
 		}

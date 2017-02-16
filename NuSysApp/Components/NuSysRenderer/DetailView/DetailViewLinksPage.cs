@@ -79,7 +79,7 @@ namespace NuSysApp
                         new List<LibraryElementModel>(
                             SessionController.Instance.ContentController.AllLibraryElementModels.Where(
                                 lem => lem.Title.ToLower().Contains(s.ToLower())));
-                },
+                }
             };
 
             _addLinkTagsBox = new ScrollableTextboxUIElement(this, Canvas, false, false)
@@ -130,7 +130,7 @@ namespace NuSysApp
             {
 
                 // get the tags from the tags box
-                var tag_strings = _addLinkTagsBox.Text.Split(new string[] {", ", " ", " ,", ",", " , "},
+                var tag_strings = _addLinkTagsBox.Text.Split(new[] {", ", " ", " ,", ",", " , "},
                     StringSplitOptions.RemoveEmptyEntries);
 
                 var keywords = new HashSet<Keyword>();

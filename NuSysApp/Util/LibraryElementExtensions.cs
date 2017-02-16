@@ -47,16 +47,13 @@ namespace NuSysApp
                     !(SessionController.Instance.ContentController.GetLibraryElementController(link.OutAtomId) != null &&
                       SessionController.Instance.ContentController.GetLibraryElementController(link.InAtomId) != null);
             }
-            else
+            if (model.Creator == WaitingRoomView.UserID)
             {
-                if (model.Creator == WaitingRoomView.UserID)
-                {
-                    return false;
-                }
-                if (model.AccessType == NusysConstants.AccessType.ReadOnly)
-                {
-                    return true;
-                }
+                return false;
+            }
+            if (model.AccessType == NusysConstants.AccessType.ReadOnly)
+            {
+                return true;
             }
             return false;
         }

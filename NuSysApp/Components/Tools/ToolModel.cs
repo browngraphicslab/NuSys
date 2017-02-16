@@ -18,7 +18,7 @@ namespace NuSysApp
             Creator,
             Date,
             LastEditedDate,
-            AllMetadata,
+            AllMetadata
             //MetadataKeys
         }
 

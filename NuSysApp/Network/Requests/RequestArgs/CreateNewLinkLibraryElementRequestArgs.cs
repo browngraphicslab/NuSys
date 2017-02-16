@@ -15,7 +15,7 @@ namespace NuSysApp
         /// </summary>
         public CreateNewLinkLibraryElementRequestArgs()
         {
-            base.LibraryElementType = NusysConstants.ElementType.Link;
+            LibraryElementType = NusysConstants.ElementType.Link;
         }
 
         /// <summary>

@@ -60,16 +60,16 @@ namespace NuSysApp
         public static bool IS_HUB = true;
 
         private static IEnumerable<ElementModel> _firstLoadList;
-        private bool _loggedIn = false;
-        private bool _isLoggingIn = false;
+        private bool _loggedIn;
+        private bool _isLoggingIn;
         //makes sure collection doesn't get added twice
-        private bool _collectionAdded = false;
+        private bool _collectionAdded;
 
         //list of all collections
         private List<LibraryElementModel> _collectionList;
 
         //selected collection by user
-        private LibraryElementModel _selectedCollection = null;
+        private LibraryElementModel _selectedCollection;
 
 
         private HashSet<string> _preloadedIDs = new HashSet<string>();
@@ -80,7 +80,7 @@ namespace NuSysApp
         public WaitingRoomView() //TODO make this private, like an actual singleton
         {
             Instance = this;
-            this.InitializeComponent();
+            InitializeComponent();
 
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.FullScreen;
 
@@ -270,8 +270,8 @@ namespace NuSysApp
         /// <param name="e"></param>
         private void NewButton_OnClick(object sender, RoutedEventArgs e)
         {
-            NewWorkspacePopup.HorizontalOffset = this.ActualWidth / 2 - 250;
-            NewWorkspacePopup.VerticalOffset = this.ActualHeight / 2 - 110;
+            NewWorkspacePopup.HorizontalOffset = ActualWidth / 2 - 250;
+            NewWorkspacePopup.VerticalOffset = ActualHeight / 2 - 110;
             NewWorkspacePopup.IsOpen = true;
         }
 
@@ -456,7 +456,7 @@ namespace NuSysApp
                 }
             }
 
-            if (valid == true)
+            if (valid)
             {
                 // to prevent multiple logins we must block logins, the call to allow more logins is after the server sends back and says that 
                 // the login was incorrect
@@ -640,7 +640,7 @@ namespace NuSysApp
                 validCredentials = bool.Parse(dict["valid"]);
                 if (dict.ContainsKey("user_id"))
                 {
-                    userID = dict["user_id"].ToString();
+                    userID = dict["user_id"];
                     HashedPass = cred["pass"];
                     UserID = userID;
                 }
@@ -789,7 +789,7 @@ namespace NuSysApp
         static byte[] GetBytes(string str)
         {
             byte[] bytes = new byte[str.Length * sizeof(char)];
-            System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
+            Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
             return bytes;
         }
 
@@ -912,7 +912,7 @@ namespace NuSysApp
                 case FilterType.RecentlyUsed:
                     await Task.Run(async delegate
                     {
-                        var request = new GetLastUsedCollectionsRequest(new GetLastUsedCollectionsServerRequestArgs() { UserId = UserID });
+                        var request = new GetLastUsedCollectionsRequest(new GetLastUsedCollectionsServerRequestArgs { UserId = UserID });
                         await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
 
                         Debug.Assert(request.WasSuccessful() == true);

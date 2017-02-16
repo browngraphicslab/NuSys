@@ -286,8 +286,7 @@ namespace MarkdownDeep
 						p.position = posLineEnd;
 						return r;
 					}
-					else
-						return null;
+			        return null;
 			}
 
 			// Skip the opening title delimiter

@@ -12,8 +12,8 @@
     Background="Blue">
     
     <Grid x:Name="xMainGrid" PointerEntered="XMainGrid_OnPointerEntered" PointerExited="XMainGrid_OnPointerExited">
-        <TextBlock x:Name="xTextBlock" Foreground="White" FontSize="25"  Margin="0,4,0,0"   HorizontalAlignment="Center" VerticalAlignment ="Center"></TextBlock>
-        <TextBlock x:Name="xSuperscriptTextBlock" Foreground="White"  HorizontalAlignment ="Center" VerticalAlignment ="Top"></TextBlock>
+        <TextBlock x:Name="xTextBlock" Foreground="White" FontSize="25"  Margin="0,4,0,0"   HorizontalAlignment="Center" VerticalAlignment ="Center" />
+        <TextBlock x:Name="xSuperscriptTextBlock" Foreground="White"  HorizontalAlignment ="Center" VerticalAlignment ="Top" />
         <ContentPresenter Content="{Binding AdditionalContent, ElementName=Self}" />
     </Grid>
 </UserControl>

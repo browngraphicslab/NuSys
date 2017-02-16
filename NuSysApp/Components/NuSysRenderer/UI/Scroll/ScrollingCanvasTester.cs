@@ -39,13 +39,13 @@ namespace NuSysApp
                         BorderColor = Colors.Red,
                         ButtonText = $"({i}, {j})",
                         ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center,
-                        ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center,
+                        ButtonTextHorizontalAlignment = CanvasHorizontalAlignment.Center
                     }, new Vector2(i * 100, j * 100));
                 }
             }
             AddChild(_sc);
 
-            _scLM = new StackLayoutManager()
+            _scLM = new StackLayoutManager
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch

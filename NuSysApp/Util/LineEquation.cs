@@ -5,8 +5,8 @@ namespace NuSysApp
 {
     public class LineEquation
     {
-        public double A = 0;
-        public double B = 0;
+        public double A;
+        public double B;
 
         public LineEquation(double a, double b)
         {

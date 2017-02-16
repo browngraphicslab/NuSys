@@ -31,11 +31,11 @@ namespace NuSysApp
         public string Date { set; get; }
         public string Access { set; get; }
 
-        public bool MadeByRosemary = false;
+        public bool MadeByRosemary;
 
         public CollectionListBox(LibraryElementModel libraryElementModel, WaitingRoomView w)
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
             _waitingRoom = w;
             LibraryElementModel = libraryElementModel;

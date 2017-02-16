@@ -8,7 +8,7 @@ namespace NuSysApp
     {
         public CortanaPopup()
         {
-            this.InitializeComponent();
+            InitializeComponent();
             
         }
     }

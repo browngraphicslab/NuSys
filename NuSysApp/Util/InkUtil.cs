@@ -25,7 +25,7 @@ namespace NuSysApp
         public static InkModel ToInkModel(this InkStroke inkStroke, string contentDataModelId, Color color, float thickness)
         {
             color.ToColorModel();
-            var model = new InkModel()
+            var model = new InkModel
             {
                 Color = color.ToColorModel(),
                 Thickness = thickness,

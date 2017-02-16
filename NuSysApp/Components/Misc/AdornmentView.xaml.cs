@@ -19,9 +19,9 @@ namespace NuSysApp
 {
     public sealed partial class AdornmentView : AnimatableUserControl
     {
-        public AdornmentView(List<Windows.Foundation.Point> shapePoints)
+        public AdornmentView(List<Point> shapePoints)
         {
-            this.InitializeComponent();
+            InitializeComponent();
             (Adornment.RenderTransform as CompositeTransform).TranslateX = 50000;
             (Adornment.RenderTransform as CompositeTransform).TranslateY = 50000;
 

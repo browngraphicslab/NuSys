@@ -38,7 +38,7 @@ namespace NuSysApp
 
             public object AdditionalContent
             {
-                get { return (object)GetValue(AdditionalContentProperty); }
+                get { return GetValue(AdditionalContentProperty); }
                 set { SetValue(AdditionalContentProperty, value); }
             }
 
@@ -94,7 +94,7 @@ namespace NuSysApp
                 _unhighlightTextColor = new SolidColorBrush(Colors.White);
 
 
-            this.InitializeComponent();
+            InitializeComponent();
                 SizeChanged += KeyboardKey_SizeChanged;
 
                 

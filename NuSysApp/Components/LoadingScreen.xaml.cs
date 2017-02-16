@@ -24,8 +24,8 @@ namespace NuSysApp
     {
         public LoadingScreen()
         {
-            this.InitializeComponent();
-            this.LoadingAnimation.Begin();
+            InitializeComponent();
+            LoadingAnimation.Begin();
         }
     }
 }

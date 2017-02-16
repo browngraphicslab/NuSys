@@ -28,7 +28,7 @@ namespace NuSysApp
         //public event LibraryElementDragEventHandler OnLibraryElementDrag;
 
         public ObservableCollection<LibraryElementModel> _items; // TODO Change this to LibraryItemTemplate
-        private int _count = 0;
+        private int _count;
 
         private LibraryElementPropertiesWindow _propertiesWindow;
 
@@ -40,8 +40,8 @@ namespace NuSysApp
 
         public LibraryGrid(LibraryView library, LibraryPageViewModel vm, LibraryElementPropertiesWindow propertiesWindow)
         {
-            this.InitializeComponent();
-            this.DataContext = vm;
+            InitializeComponent();
+            DataContext = vm;
             // _items = vm.PageElements; TODO
 
             _propertiesWindow = propertiesWindow;
@@ -78,7 +78,7 @@ namespace NuSysApp
 
         public async Task Search(string s)
         {
-            await ((LibraryPageViewModel)this.DataContext).Search(s);
+            await ((LibraryPageViewModel)DataContext).Search(s);
 
             var numCols = 3;
             _count = 0;
@@ -96,7 +96,7 @@ namespace NuSysApp
 
         public async Task Sort(string s, bool reverse = false)
         {
-            await ((LibraryPageViewModel)this.DataContext).Sort(s, reverse);
+            await ((LibraryPageViewModel)DataContext).Sort(s, reverse);
 
 
             var numCols = 3;

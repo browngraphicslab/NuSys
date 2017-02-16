@@ -39,8 +39,8 @@ namespace NuSysApp
         public LibraryFavorites(LibraryView library, LibraryFavoritesViewModel vm, LibraryElementPropertiesWindow propertiesWindow)
         {
 
-            this.DataContext = vm;
-            this.InitializeComponent();
+            DataContext = vm;
+            InitializeComponent();
             _library = library;
             _propertiesWindow = propertiesWindow;
 

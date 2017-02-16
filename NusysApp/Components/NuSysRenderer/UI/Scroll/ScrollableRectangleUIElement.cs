@@ -44,8 +44,8 @@ namespace NuSysApp
             _scrollBar = new ScrollBarUIElement(_parent, _resourceCreator, ScrollBarUIElement.Orientation.Vertical)
             {
                 Background = Constants.LIGHT_BLUE,
-                Height = this.Height,
-                Width = scrollbarwidth,
+                Height = Height,
+                Width = scrollbarwidth
             };
 
             _scrollBar.ScrollBarPositionChanged += ScrollBarPositionChanged;
@@ -55,7 +55,7 @@ namespace NuSysApp
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
             _scrollBar.Height = Height;
-            _scrollBar.Transform.LocalPosition = new Vector2((float)Width - _scrollBar.Width, 0);
+            _scrollBar.Transform.LocalPosition = new Vector2(Width - _scrollBar.Width, 0);
 
             base.Update(parentLocalToScreenTransform);
         }

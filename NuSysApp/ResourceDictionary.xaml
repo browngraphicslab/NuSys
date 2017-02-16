@@ -550,7 +550,7 @@
                                     <Storyboard>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Ellipse"
                                                                            Storyboard.TargetProperty="Opacity">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="1"></DiscreteObjectKeyFrame>
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="1" />
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -591,7 +591,7 @@
                                     <Storyboard>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Ellipse"
                                                                            Storyboard.TargetProperty="Opacity">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="1"></DiscreteObjectKeyFrame>
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="1" />
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -632,7 +632,7 @@
                                     <Storyboard>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Ellipse"
                                                                            Storyboard.TargetProperty="Opacity">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="1"></DiscreteObjectKeyFrame>
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="1" />
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -713,7 +713,7 @@
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Ellipse"
                                                                            Storyboard.TargetProperty="Opacity">
 
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="1"></DiscreteObjectKeyFrame>
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="1" />
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -755,7 +755,7 @@
                                     <Storyboard>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Ellipse"
                                                                            Storyboard.TargetProperty="Opacity">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="1"></DiscreteObjectKeyFrame>
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="1" />
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -994,7 +994,7 @@
                                             <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlBackgroundChromeWhiteBrush}"/>
                                         </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="BorderBrush" Storyboard.TargetName="BackgroundElement">
-                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource color2}"></DiscreteObjectKeyFrame>
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource color2}" />
                                         </ObjectAnimationUsingKeyFrames>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity" Storyboard.TargetName="BackgroundElement">
                                             <DiscreteObjectKeyFrame KeyTime="0" Value=".85"/>

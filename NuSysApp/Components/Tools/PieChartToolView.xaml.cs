@@ -35,7 +35,7 @@ namespace NuSysApp
 
         public PieChartToolView(BaseToolView baseTool)
         {
-            this.InitializeComponent();
+            InitializeComponent();
             
             _baseTool = baseTool;
             _dragItem = baseTool.Vm.InitializeDragFilterImage();

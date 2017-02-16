@@ -68,7 +68,7 @@ namespace NuSysApp
             {
                 _inkManager = new InkManager();
                 _dryStrokesTarget = new CanvasRenderTarget(ResourceCreator, _canvas.Size);
-                base.CreateResources();
+                CreateResources();
             });
         }
 
@@ -300,7 +300,7 @@ namespace NuSysApp
                     var s = _builder.CreateStrokeFromInkPoints(_currentInkPoints.ToArray(), Matrix3x2.Identity);
                     if (_isEraser)
                         s.DrawingAttributes = GetDrawingAttributes(Colors.DarkRed, InkSize);
-                    ds.DrawInk(new InkStroke[] {s});
+                    ds.DrawInk(new[] {s});
                 
             }
         }
@@ -321,7 +321,7 @@ namespace NuSysApp
 
         private IEnumerable<InkStroke> GetSelectedStrokes()
         {
-            return _inkManager.GetStrokes().ToArray().Where(stroke => stroke.Selected == true);
+            return _inkManager.GetStrokes().ToArray().Where(stroke => stroke.Selected);
         }
     }
 }

@@ -28,8 +28,8 @@ namespace NuSysApp
             double meanY = values.Sum() / n;
             for (int i = 0; i < values.Count; ++i)
             {
-                ssXX += (double)Math.Pow(i - meanX, 2);
-                ssYY += (double)Math.Pow(values[i] - meanY, 2);
+                ssXX += Math.Pow(i - meanX, 2);
+                ssYY += Math.Pow(values[i] - meanY, 2);
                 ssXY += (i - meanX)*(values[i] - meanY);
             }
 

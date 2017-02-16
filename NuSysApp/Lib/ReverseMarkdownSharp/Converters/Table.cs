@@ -10,12 +10,12 @@ namespace ReverseMarkdown.Converters
 		public Table(Converter converter)
 			: base(converter)
 		{
-			this.Converter.Register("table", this);
+			Converter.Register("table", this);
 		}
 
 		public override string Convert(HtmlNode node)
 		{
-			return Environment.NewLine + Environment.NewLine + this.TreatChildren(node) + Environment.NewLine;
+			return Environment.NewLine + Environment.NewLine + TreatChildren(node) + Environment.NewLine;
 		}
 	}
 }

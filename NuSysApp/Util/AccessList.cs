@@ -16,14 +16,14 @@ namespace NuSysApp
 
         public static async Task<StorageFolder> GetWorkspaceFolder()
         {
-            var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            var localSettings = ApplicationData.Current.LocalSettings;
             var workspaceToken = localSettings.Values[Constants.NuSysWorkspaceToken];
 
             StorageFolder workspaceFolder = null;
 
             if (workspaceToken == null)
             {
-                var FolderPicker = new Windows.Storage.Pickers.FolderPicker();
+                var FolderPicker = new FolderPicker();
                 FolderPicker.ViewMode = PickerViewMode.Thumbnail;
                 FolderPicker.SuggestedStartLocation = PickerLocationId.Desktop;
                 FolderPicker.FileTypeFilter.Add("*");
@@ -95,13 +95,13 @@ namespace NuSysApp
         private static async Task<StorageFile> GetNuSysFAL(String FALFileName)
         {
             StorageFile NuSysFAL = null;
-            StorageFolder appDataFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+            StorageFolder appDataFolder = ApplicationData.Current.LocalFolder;
 
             try
             {
                 StorageFile NuSysFALFiles = await appDataFolder.GetFileAsync(FALFileName);
             }
-            catch (System.IO.FileNotFoundException)
+            catch (FileNotFoundException)
             {
                 StorageFile NuSysFALFiles = await appDataFolder.CreateFileAsync(FALFileName);
             }

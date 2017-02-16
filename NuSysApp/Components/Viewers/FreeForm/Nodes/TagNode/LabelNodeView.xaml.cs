@@ -31,7 +31,7 @@ namespace NuSysApp
          
             Loaded += delegate
             {
-                Anim.FromTo(this, "Alpha", 0, 1, 350, new QuinticEase() { EasingMode = EasingMode.EaseIn });
+                Anim.FromTo(this, "Alpha", 0, 1, 350, new QuinticEase { EasingMode = EasingMode.EaseIn });
             };
             
             TitleBorder.PointerEntered += delegate

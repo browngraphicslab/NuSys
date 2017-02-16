@@ -26,9 +26,9 @@ namespace NuSysApp
 
         public RelatedListBox(string tag)
         {
-            this.InitializeComponent();
+            InitializeComponent();
             RelatedElements = new ObservableCollection<LibraryElementModel>();
-            this.UpdateRelatedElements(tag);
+            UpdateRelatedElements(tag);
         }
 
         private void XRootGrid_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
@@ -43,7 +43,7 @@ namespace NuSysApp
 
         public void UpdateTag(string tag)
         {
-            this.UpdateRelatedElements(tag);
+            UpdateRelatedElements(tag);
         }
 
         /// <summary>

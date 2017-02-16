@@ -41,10 +41,10 @@ namespace NuSysApp
         {
             TelemetryClient = new TelemetryClient();
 
-            this.InitializeComponent();
-            this.Suspending += OnSuspending;
+            InitializeComponent();
+            Suspending += OnSuspending;
 
-            Application.Current.UnhandledException += CurrentOnUnhandledException;
+            Current.UnhandledException += CurrentOnUnhandledException;
         }
 
         private void CurrentOnUnhandledException(object sender, UnhandledExceptionEventArgs unhandledExceptionEventArgs)

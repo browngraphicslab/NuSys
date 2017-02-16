@@ -301,10 +301,7 @@ namespace NuSysApp
             {
                 return _newWordAlternates[index].Alternates.ToList();
             }
-            else
-            {
-                return new List<string>();
-            }
+            return new List<string>();
         }
     }
 }

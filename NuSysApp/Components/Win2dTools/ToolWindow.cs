@@ -117,7 +117,7 @@ namespace NuSysApp
             _resizer = new ToolResizerRenderItem(this, ResourceCreator)
             {
                 Width = BUTTON_BAR_HEIGHT,
-                Height = BUTTON_BAR_HEIGHT,
+                Height = BUTTON_BAR_HEIGHT
             };
             //_resizer.
             _resizer.Dragged += _resizer_Dragged;
@@ -134,16 +134,16 @@ namespace NuSysApp
             var newY = Vm.Height + delta.Y / (transform.M22 * collection.Camera.S.M22);
             if (newX > MIN_WIDTH && newY > MIN_HEIGHT)
             {
-                this.Vm.Controller.SetSize(newX, newY);
+                Vm.Controller.SetSize(newX, newY);
 
             }
             else if (newX > MIN_WIDTH)
             {
-                this.Vm.Controller.SetSize(newX, Vm.Height);
+                Vm.Controller.SetSize(newX, Vm.Height);
             }
             else if (newY > MIN_HEIGHT)
             {
-                this.Vm.Controller.SetSize(Vm.Width, newY);
+                Vm.Controller.SetSize(Vm.Width, newY);
             }
             else
             {
@@ -335,7 +335,7 @@ namespace NuSysApp
                 icon = _stackDragIcon;
             }
             icon.IsVisible = true;
-            icon.Transform.LocalPosition = Vector2.Transform(pointer.CurrentPoint, this.Transform.ScreenToLocalMatrix);
+            icon.Transform.LocalPosition = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
 
         }
 
@@ -357,7 +357,7 @@ namespace NuSysApp
                 BorderWidth = 0,
                 Background = Constants.LIGHT_BLUE,
                 ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center,
-                ListBackground = Constants.LIGHT_BLUE,
+                ListBackground = Constants.LIGHT_BLUE
             };
             foreach (var filterType in Enum.GetValues(typeof(ToolModel.ToolFilterTypeTitle)).Cast<ToolModel.ToolFilterTypeTitle>())
             {
@@ -387,7 +387,7 @@ namespace NuSysApp
             var delta = pointer.CurrentPoint - pointer.StartPoint;
             var newX = _InitialVmDragPosition.X + delta.X / (transform.M11 * collection.Camera.S.M11);
             var newY = _InitialVmDragPosition.Y + delta.Y / (transform.M22 * collection.Camera.S.M22);
-            this.Vm.Controller.SetPosition(newX,newY);
+            Vm.Controller.SetPosition(newX,newY);
             SessionController.Instance.SessionView.FreeFormViewer.InvalidateMinimap();
         }
 
@@ -402,12 +402,12 @@ namespace NuSysApp
 
             if (filter == ToolModel.ToolFilterTypeTitle.AllMetadata) 
             {
-                await Vm.SwitchToAllMetadataTool((float)Transform.LocalX, (float)Transform.LocalY);
+                await Vm.SwitchToAllMetadataTool(Transform.LocalX, Transform.LocalY);
                 Delete();
             }
             else if (Vm.Filter == ToolModel.ToolFilterTypeTitle.AllMetadata)
             {
-                await Vm.SwitchToBasicTool(filter, (float)Transform.LocalX, (float)Transform.LocalY);
+                await Vm.SwitchToBasicTool(filter, Transform.LocalX, Transform.LocalY);
                 Delete();
             }
             else
@@ -510,7 +510,7 @@ namespace NuSysApp
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            _resizer.Transform.LocalPosition = new Vector2((float)(Width - _resizer.Width), (float)(Height - _resizer.Height));
+            _resizer.Transform.LocalPosition = new Vector2(Width - _resizer.Width, Height - _resizer.Height);
             Height = (float) Vm.Height;
             Width = (float) Vm.Width;
             //Make the width of the filter chooser and the button always fill the window
@@ -534,7 +534,7 @@ namespace NuSysApp
             if (ButtonBarRectangle != null)
             {
                 //Set up button bar at the bottom of tool
-                ButtonBarRectangle.Transform.LocalY = this.Height - BUTTON_BAR_HEIGHT;
+                ButtonBarRectangle.Transform.LocalY = Height - BUTTON_BAR_HEIGHT;
                 ButtonBarRectangle.Width = Width;
             }
 

@@ -29,15 +29,15 @@ namespace NuSysApp
         public GroupNodeDataGridView(GroupNodeDataGridViewModel viewModel)
         {
            DataContext = viewModel;
-           this.InitializeComponent();
+           InitializeComponent();
 
-            _releaseHandler = new PointerEventHandler(OnPointerReleased);
-            DataGrid.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true );
-            DataGrid.AddHandler(UIElement.ManipulationDeltaEvent, new ManipulationDeltaEventHandler(OnManipulationDelta), true);
-            DataGrid.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(OnPointerReleased), true);
+            _releaseHandler = OnPointerReleased;
+            DataGrid.AddHandler(PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true );
+            DataGrid.AddHandler(ManipulationDeltaEvent, new ManipulationDeltaEventHandler(OnManipulationDelta), true);
+            DataGrid.AddHandler(PointerReleasedEvent, new PointerEventHandler(OnPointerReleased), true);
             DataGrid.ManipulationMode = ManipulationModes.All;
-            SessionController.Instance.SessionView.MainCanvas.AddHandler(UIElement.PointerReleasedEvent, _releaseHandler, true);
-            DataGrid.AddHandler(UIElement.DoubleTappedEvent, new DoubleTappedEventHandler(OnDoubleTapped), true);
+            SessionController.Instance.SessionView.MainCanvas.AddHandler(PointerReleasedEvent, _releaseHandler, true);
+            DataGrid.AddHandler(DoubleTappedEvent, new DoubleTappedEventHandler(OnDoubleTapped), true);
             DataGrid.SelectedItem = null;
             DataGrid.SelectionChanged += DataGridOnSelectionChanged;
             viewModel.Controller.Disposed += ControllerOnDisposed;
@@ -51,7 +51,7 @@ namespace NuSysApp
         private void ControllerOnDisposed(object source, object args)
         {
             var vm = (ElementViewModel) DataContext;
-            SessionController.Instance.SessionView?.MainCanvas?.RemoveHandler(UIElement.PointerReleasedEvent, _releaseHandler);
+            SessionController.Instance.SessionView?.MainCanvas?.RemoveHandler(PointerReleasedEvent, _releaseHandler);
             if(vm.Controller != null)
             {
                 vm.Controller.Disposed -= ControllerOnDisposed;
@@ -88,7 +88,7 @@ namespace NuSysApp
         {
 
             var point = args.GetCurrentPoint(SessionController.Instance.SessionView.MainCanvas).Position;
-            if (!this.IsPointerInGroup(point))
+            if (!IsPointerInGroup(point))
             {
                 var newPos = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(point);
                 Debug.Assert(newPos != null);
@@ -112,7 +112,7 @@ namespace NuSysApp
         private bool IsPointerInGroup(Point point)
         {
             var hits = VisualTreeHelper.FindElementsInHostCoordinates(point, SessionController.Instance.SessionView);
-            var result = hits.Where((uiElem) => uiElem is GroupNodeDataGridView);
+            var result = hits.Where(uiElem => uiElem is GroupNodeDataGridView);
             return result.Any();
         }
         private FrameworkElement _el;

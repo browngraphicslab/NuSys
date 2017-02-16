@@ -30,7 +30,7 @@ namespace NuSysApp
 
             
 
-            _translateTransform = new TranslateTransform()
+            _translateTransform = new TranslateTransform
             {
                 X = 0,
                 Y= 0

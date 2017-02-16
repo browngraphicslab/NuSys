@@ -90,9 +90,8 @@
 
             <!--<Image Source="ms-appx:///Assets/icon_favorite.png" Tapped="Favorites_OnTapped" HorizontalAlignment="Right" Width="70" Margin="0,-210,10,210"> </Image>-->
             <Image x:Name="Favorite" Source="ms-appx:///Assets/icon_unfavorited.png" Tapped="Favorites_OnTapped" Width="100" Height="45" VerticalAlignment="Top" 
-                        HorizontalAlignment="Center" Margin="302,22,0,0">
-            </Image>
-            
+                        HorizontalAlignment="Center" Margin="302,22,0,0" />
+
 
             <StackPanel Padding="50" Orientation="Vertical" >
                 <Border Height="150" Width="150" BorderThickness="1" Margin="0,-30,0,0" BorderBrush="{StaticResource color1}" Visibility="Collapsed">
@@ -120,7 +119,7 @@
                         </Grid>
                     </ListView.Header>-->
 
-                <Rectangle Height="30"></Rectangle>
+                <Rectangle Height="30" />
                 <Grid x:Name="PropertiesGrid" VerticalAlignment="Center" Padding="0" Margin="0,30,0,0" Background="{StaticResource color6}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="100" />
@@ -150,36 +149,36 @@
                     <TextBlock VerticalAlignment="Bottom" x:Name="History" Grid.Column="1" Grid.Row="5" Text="--" FontSize="14" Foreground="Gray" FontFamily="ms-appx:/Assets/fonts/FiraSans-Light.ttf#Fira Sans Light"/>
 
                 </Grid>
-                <Rectangle Height="30"></Rectangle>
-                <TextBlock Text="Aliases" FontSize="14"  Foreground="Black" FontFamily="ms-appx:/Assets/fonts/FiraSans-Book.ttf#Fira Sans Book"></TextBlock>
-                <Rectangle Height="20"></Rectangle>
+                <Rectangle Height="30" />
+                <TextBlock Text="Aliases" FontSize="14"  Foreground="Black" FontFamily="ms-appx:/Assets/fonts/FiraSans-Book.ttf#Fira Sans Book" />
+                <Rectangle Height="20" />
                 <ScrollViewer HorizontalScrollMode="Disabled" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto">
                     <StackPanel>
 
                         <Grid x:Name="AliasGrid" >
                             <Grid.RowDefinitions>
-                                <RowDefinition></RowDefinition>
-                                <RowDefinition></RowDefinition>
-                                <RowDefinition></RowDefinition>
-                                <RowDefinition></RowDefinition>
-                                <RowDefinition></RowDefinition>
-                                <RowDefinition></RowDefinition>
-                                <RowDefinition></RowDefinition>
-                                <RowDefinition ></RowDefinition>
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition ></ColumnDefinition>
-                                <ColumnDefinition ></ColumnDefinition>
-                                <ColumnDefinition ></ColumnDefinition>
-                                <ColumnDefinition ></ColumnDefinition>
-                                <ColumnDefinition ></ColumnDefinition>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                                <ColumnDefinition />
                             </Grid.ColumnDefinitions>
                         </Grid>
                     </StackPanel>
                 </ScrollViewer>
                 <Button Width="25" Height="50" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,50,0,0" Foreground="{StaticResource foreground6}" Background="Transparent"
                     Padding="0" Name="deleteButton" Click="Delete_OnClick">
-                    <Image Source="ms-appx:///Assets/icon_delete_color.png" Height="25"></Image>
+                    <Image Source="ms-appx:///Assets/icon_delete_color.png" Height="25" />
                 </Button>
             </StackPanel>
             <Button Name="EnterCollectionButton" Style="{StaticResource EnterButton}" Padding="0" Click="EnterCollection_OnClick" Width="60" Height="20" VerticalAlignment="Top" 

@@ -17,8 +17,8 @@ namespace NuSysApp
         {
             get
             {
-                Debug.Assert(base.Model is BasicToolModel);
-                return base.Model as BasicToolModel;
+                Debug.Assert(Model is BasicToolModel);
+                return Model as BasicToolModel;
             }
         }
 

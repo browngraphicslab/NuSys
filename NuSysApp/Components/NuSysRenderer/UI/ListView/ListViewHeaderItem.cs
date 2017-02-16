@@ -22,7 +22,7 @@ namespace NuSysApp
         {
             Right,
             Left
-        };
+        }
 
         /// <summary>
         /// This is the edge that is being dragged. (either left or right). This is used by the listviewheader to see which other column should be resized. 
@@ -197,7 +197,6 @@ namespace NuSysApp
             if (currentX > BorderWidth && currentX < Width - BorderWidth)
             {
                 base.OnPressed(pointer);
-                return;
             }
         }
 

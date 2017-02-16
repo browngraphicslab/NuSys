@@ -21,7 +21,7 @@ namespace NuSysApp
     {
         public LoadingBar()
         {
-            this.InitializeComponent();
+            InitializeComponent();
         }
 
         public void Start()

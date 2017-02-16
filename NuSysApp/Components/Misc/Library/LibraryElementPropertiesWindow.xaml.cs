@@ -33,7 +33,7 @@ namespace NuSysApp
 
         public LibraryElementPropertiesWindow()
         {
-            this.InitializeComponent();
+            InitializeComponent();
             _count = 0;
         }
 
@@ -121,7 +121,7 @@ namespace NuSysApp
             ID.Text = element.LibraryElementId ?? "";
             Creator.Text = element.Creator ?? "";
 
-            this.UpdateFavoriteButton();
+            UpdateFavoriteButton();
 
             if (element.Type == NusysConstants.ElementType.Collection)
             {
@@ -155,7 +155,7 @@ namespace NuSysApp
 
         private void CollapseArrow_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            this.Visibility = Visibility.Collapsed;
+            Visibility = Visibility.Collapsed;
         }
 
         private void Favorites_OnTapped(object sender, TappedRoutedEventArgs e)
@@ -163,7 +163,7 @@ namespace NuSysApp
 
 
             AddedToFavorite?.Invoke(this, _currentElementModel);
-            this.UpdateFavoriteButton();
+            UpdateFavoriteButton();
 
 
         }

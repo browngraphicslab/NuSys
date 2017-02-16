@@ -319,20 +319,20 @@ namespace NuSysApp
         private IEnumerable<InkStroke> GetSelectedStrokes()
         {
             var selectedStrokes = new List<InkStroke>();
-            return _inkManager.GetStrokes().ToArray().Where(stroke => stroke.Selected == true);
+            return _inkManager.GetStrokes().ToArray().Where(stroke => stroke.Selected);
         }
     }
 }
 
 public static class Extensions {
-    public static GeoAPI.Geometries.ILineString GetLineString(this IEnumerable<Point> s)
+    public static ILineString GetLineString(this IEnumerable<Point> s)
     {
-        GeoAPI.Geometries.Coordinate[] coords;
-        coords = new GeoAPI.Geometries.Coordinate[s.Count()];
+        Coordinate[] coords;
+        coords = new Coordinate[s.Count()];
         int i = 0;
         foreach (Point pt in s)
         {
-            coords[i] = new GeoAPI.Geometries.Coordinate(pt.X, pt.Y);
+            coords[i] = new Coordinate(pt.X, pt.Y);
             i++;
         }
         if(coords.Count() < 2)

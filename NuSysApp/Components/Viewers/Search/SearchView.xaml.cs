@@ -38,9 +38,9 @@ namespace NuSysApp
 
         public SearchView()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
-            DataContextChanged += delegate (FrameworkElement sender, DataContextChangedEventArgs args)
+            DataContextChanged += delegate
             {
 
                 if (!(DataContext is SearchViewModel))
@@ -49,7 +49,7 @@ namespace NuSysApp
                 _openInfo = new HashSet<FrameworkElement>();
 
                 // set the view equal to the size of the window
-                this.ResizeView(true, true);
+                ResizeView(true, true);
                 // when the size of the winow changes reset the view
                 SessionController.Instance.SessionView.SizeChanged += SessionView_SizeChanged;
 
@@ -68,7 +68,7 @@ namespace NuSysApp
         private void SessionView_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             // resize the height only
-            this.ResizeView(false, true);
+            ResizeView(false, true);
         }
 
         // sets the view equal to the size of the window
@@ -83,18 +83,18 @@ namespace NuSysApp
             // resize width
             if (width)
             {
-                this.Width = SessionController.Instance.SessionView.ActualWidth / 4;
+                Width = SessionController.Instance.SessionView.ActualWidth / 4;
             }
             // resize height
             if (height)
             {
-                this.Height = SessionController.Instance.SessionView.ActualHeight;
+                Height = SessionController.Instance.SessionView.ActualHeight;
             }
 
             // do this every time
-            this.MaxHeight = SessionController.Instance.SessionView.ActualHeight;
-            this.MaxWidth = SessionController.Instance.SessionView.ActualWidth - resizer.ActualWidth - 30;
-            this.MinWidth = resizer.ActualWidth;
+            MaxHeight = SessionController.Instance.SessionView.ActualHeight;
+            MaxWidth = SessionController.Instance.SessionView.ActualWidth - resizer.ActualWidth - 30;
+            MinWidth = resizer.ActualWidth;
             Canvas.SetTop(this, 0);
             Canvas.SetLeft(this, 0);
         }
@@ -104,7 +104,7 @@ namespace NuSysApp
             var mainCanvas = SessionController.Instance.SessionView.MainCanvas;
             // return if the pointer is pressed inside the grid
             var position = e.GetCurrentPoint(mainCanvas).Position;
-            if (position.X <= this.Width)
+            if (position.X <= Width)
                 return;
 
             Visibility = Visibility.Collapsed;

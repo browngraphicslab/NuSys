@@ -37,10 +37,10 @@ namespace NuSysApp
         public string ButtonText {
             set
             {
-                this.SetValue(ButtonTextProperty, value);
+                SetValue(ButtonTextProperty, value);
                 xTextBox.Text = value;
             }
-            get { return this.GetValue(ButtonTextProperty) as string; }
+            get { return GetValue(ButtonTextProperty) as string; }
         }
         /// <summary>
         /// set and get icon of button
@@ -68,8 +68,8 @@ namespace NuSysApp
         /// </summary>
         public ReadonlyFloatingMenuButtonView()
         {
-            this.InitializeComponent();
-            this.Deactivate();
+            InitializeComponent();
+            Deactivate();
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace NuSysApp
         /// </summary>
         public void Activate()
         {
-            this.IsActive = true;
+            IsActive = true;
             xEllipse.StrokeThickness = 4;
             xEllipse.Stroke = new SolidColorBrush(Constants.color1);
         }
@@ -87,7 +87,7 @@ namespace NuSysApp
         /// </summary>
         public void Deactivate()
         {
-            this.IsActive = false;
+            IsActive = false;
             xEllipse.StrokeThickness = 0;
         }
     }

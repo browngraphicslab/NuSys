@@ -16,30 +16,30 @@ namespace NuSysApp
             }
 
             string file = fileName + ".txt";
-            Windows.Storage.StorageFolder storageFolder =
-                Windows.Storage.ApplicationData.Current.LocalFolder;
+            StorageFolder storageFolder =
+                ApplicationData.Current.LocalFolder;
 
             Debug.WriteLine(storageFolder.Path);
 
-            Windows.Storage.StorageFile sampleFile =
+            StorageFile sampleFile =
                 await storageFolder.CreateFileAsync(file,
-                    Windows.Storage.CreationCollisionOption.ReplaceExisting);
+                    CreationCollisionOption.ReplaceExisting);
                 
             // TODO : Exception Handling
-            await Windows.Storage.FileIO.WriteTextAsync(sampleFile, content);
+            await FileIO.WriteTextAsync(sampleFile, content);
         }
 
         public static async Task<string> readFile(string fileName)
         {
             string file = fileName + ".txt";
-            Windows.Storage.StorageFolder storageFolder =
-                Windows.Storage.ApplicationData.Current.LocalFolder;
-            Windows.Storage.StorageFile sampleFile =
+            StorageFolder storageFolder =
+                ApplicationData.Current.LocalFolder;
+            StorageFile sampleFile =
                 await storageFolder.GetFileAsync(file);
             
             // TODO : Exception Handling
 
-            string text = await Windows.Storage.FileIO.ReadTextAsync(sampleFile);
+            string text = await FileIO.ReadTextAsync(sampleFile);
 
             return text;
         }

@@ -81,7 +81,7 @@ namespace NuSysApp
                 text,
                 p,
                 Colors.Black,
-                new Microsoft.Graphics.Canvas.Text.CanvasTextFormat
+                new CanvasTextFormat
                 {
                     FontSize = 12,
                     HorizontalAlignment = CanvasHorizontalAlignment.Center

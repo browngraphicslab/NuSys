@@ -153,9 +153,9 @@ namespace NuSysApp
                 draggedView.Visibility = Visibility.Collapsed;
                 _hoveredView.Visibility  = Visibility.Collapsed;
 
-                var newContentRequestArgs = new CreateNewContentRequestArgs()
+                var newContentRequestArgs = new CreateNewContentRequestArgs
                 {
-                    LibraryElementArgs = new CreateNewLibraryElementRequestArgs()
+                    LibraryElementArgs = new CreateNewLibraryElementRequestArgs
                     {
                         LibraryElementId = newCollectionId,
                         AccessType = SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.AccessType,
@@ -245,7 +245,7 @@ namespace NuSysApp
         {
             var draggedItem = (FrameworkElement)e.OriginalSource;
             var hits = VisualTreeHelper.FindElementsInHostCoordinates(e.Position, SessionController.Instance.SessionView);
-            var result = hits.Where((uiElem) =>
+            var result = hits.Where(uiElem =>
             {
                 var fe = (FrameworkElement) uiElem;
                 var r = fe.DataContext is ElementViewModel &&

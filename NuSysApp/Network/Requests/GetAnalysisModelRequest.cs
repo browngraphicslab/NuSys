@@ -35,7 +35,7 @@ namespace NuSysApp
         public GetAnalysisModelRequest(string contentDataModelId) : base(NusysConstants.RequestType.GetAnalysisModelRequest)
         {
             Debug.Assert(!string.IsNullOrEmpty(contentDataModelId));
-            _message[NusysConstants.GET_ANALYSIS_MODEL_REQUEST_CONTENT_DATA_MODEL_IDS] = JsonConvert.SerializeObject(new List<string>() { contentDataModelId });
+            _message[NusysConstants.GET_ANALYSIS_MODEL_REQUEST_CONTENT_DATA_MODEL_IDS] = JsonConvert.SerializeObject(new List<string> { contentDataModelId });
         }
 
         /// <summary>

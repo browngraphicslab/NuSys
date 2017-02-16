@@ -38,8 +38,8 @@ namespace NuSysApp
 
 
         #region dicts
-            private static BiDictionary<string, VirtualKey> _charsToKeys = new BiDictionary<string, VirtualKey>()
-        {
+            private static BiDictionary<string, VirtualKey> _charsToKeys = new BiDictionary<string, VirtualKey>
+            {
             {"A", VirtualKey.A},
             {"B", VirtualKey.B},
             {"C", VirtualKey.C},
@@ -107,7 +107,7 @@ namespace NuSysApp
             {"LEFT", VirtualKey.Left},
             {"RIGHT", VirtualKey.Right},
             {"<", (VirtualKey) 188},
-            {">", (VirtualKey)190},
+            {">", (VirtualKey)190}
 
 
 
@@ -121,8 +121,8 @@ namespace NuSysApp
 
         };
 
-            public static BiDictionary<VirtualKey, string> NoShiftKeyToChars = new BiDictionary<VirtualKey, string>()
-        {
+            public static BiDictionary<VirtualKey, string> NoShiftKeyToChars = new BiDictionary<VirtualKey, string>
+            {
             {(VirtualKey) 191, "/"},
             {VirtualKey.Subtract, "-"},
             {VirtualKey.Add, "+"},
@@ -132,13 +132,13 @@ namespace NuSysApp
             {(VirtualKey) 186, ";"},
             {(VirtualKey) 222, "'"},
             {(VirtualKey) 219, "["},
-            {(VirtualKey) 221, "]"},
+            {(VirtualKey) 221, "]"}
 
 
         };
 
-            public static BiDictionary<VirtualKey, string> ShiftKeyToChars = new BiDictionary<VirtualKey, string>()
-        {
+            public static BiDictionary<VirtualKey, string> ShiftKeyToChars = new BiDictionary<VirtualKey, string>
+            {
             {VirtualKey.Number0, ")"},
             {VirtualKey.Number1, "!"},
             {VirtualKey.Number2, "@"},
@@ -158,7 +158,7 @@ namespace NuSysApp
             {(VirtualKey) 190, ">"},
             {(VirtualKey) 219, "{"},
             {(VirtualKey) 221, "}"},
-            {(VirtualKey) 222, "\""},
+            {(VirtualKey) 222, "\""}
 
 
 
@@ -199,7 +199,7 @@ namespace NuSysApp
         /// </summary>
         public Keyboard()
         {
-            this.InitializeComponent();
+            InitializeComponent();
             RenderTransform = new CompositeTransform();
 
             CurrentMode = KeyboardMode.LowerCaseAlphabetical;
@@ -290,7 +290,7 @@ namespace NuSysApp
 
         private void Keyboard_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            var compositeTransform = this.RenderTransform as CompositeTransform;
+            var compositeTransform = RenderTransform as CompositeTransform;
             Debug.Assert(compositeTransform != null);
 
 
@@ -306,7 +306,7 @@ namespace NuSysApp
 
         private void ReturnToScreen()
         {
-            var compositeTransform = this.RenderTransform as CompositeTransform;
+            var compositeTransform = RenderTransform as CompositeTransform;
 
             var x = compositeTransform.TranslateX;
             var y = compositeTransform.TranslateY;
@@ -474,7 +474,7 @@ namespace NuSysApp
                 }
                 //Gets virtual key corresponding to value and fires KeyboardKeyPressed event
                 key = _charsToKeys[value];
-                KeyboardKeyPressed?.Invoke(this, new KeyArgs() { Key = key, Pressed = true });
+                KeyboardKeyPressed?.Invoke(this, new KeyArgs { Key = key, Pressed = true });
 
             }
             //Cancel out of uppercase tapped mode if key clicked

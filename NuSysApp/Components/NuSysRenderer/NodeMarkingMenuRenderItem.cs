@@ -25,7 +25,7 @@ namespace NuSysApp
         private Rect _bounds = new Rect(0,0,170,160);
         private CanvasGeometry _triangle;
         private Vector2 _pointerPosition;
-        public int CurrentIndex { private set; get; } = 0;
+        public int CurrentIndex { private set; get; }
         private bool _isActive;
         private Vector2 _entryPoint;
 
@@ -34,7 +34,7 @@ namespace NuSysApp
             IsVisible = false;
 
             _txtLink = new CanvasTextLayout(resourceCreator, "Link",
-                new CanvasTextFormat()
+                new CanvasTextFormat
                 {
                 HorizontalAlignment = CanvasHorizontalAlignment.Center,
                 VerticalAlignment = CanvasVerticalAlignment.Center,
@@ -43,7 +43,7 @@ namespace NuSysApp
                 }, 150, 80);
 
             _txtTrail = new CanvasTextLayout(resourceCreator, "Trail",
-                new CanvasTextFormat()
+                new CanvasTextFormat
                 {
                     HorizontalAlignment = CanvasHorizontalAlignment.Center,
                     VerticalAlignment = CanvasVerticalAlignment.Center,
@@ -51,7 +51,7 @@ namespace NuSysApp
                     FontWeight = FontWeights.Bold
                 }, 150, 80);
 
-            _triangle = CanvasGeometry.CreatePolygon(ResourceCreator, new System.Numerics.Vector2[4]{
+            _triangle = CanvasGeometry.CreatePolygon(ResourceCreator, new Vector2[4]{
                 new Vector2(0, 0),
                 new Vector2(15, 10),
                 new Vector2(0, 20),
@@ -100,7 +100,7 @@ namespace NuSysApp
             {
                 if (!_isActive)
                 {
-                    Show((float) _entryPoint.X, (float) _entryPoint.Y);
+                    Show(_entryPoint.X, _entryPoint.Y);
                     _isActive = true;
                 }
                 else

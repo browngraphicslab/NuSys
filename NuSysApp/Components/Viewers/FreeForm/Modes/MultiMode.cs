@@ -15,12 +15,12 @@ namespace NuSysApp
 
         public override async Task Activate()
         {
-            _modes.ForEach(async (m) => await m.Activate());
+            _modes.ForEach(async m => await m.Activate());
         }
 
         public override async Task Deactivate()
         {
-            _modes.ForEach(async (m) => await m.Deactivate());
+            _modes.ForEach(async m => await m.Deactivate());
         }
     }
 }

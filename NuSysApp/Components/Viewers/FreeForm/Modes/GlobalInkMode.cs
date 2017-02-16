@@ -10,7 +10,7 @@ namespace NuSysApp
 
         public GlobalInkMode(FreeFormViewer view) : base(view)
         {
-            _cview = (FreeFormViewer)view;
+            _cview = view;
           //  _cview.InqCanvas.Mode = PhilInqCanvas.InqCanvasMode.Disabled;
 
             /*

@@ -34,7 +34,7 @@ namespace NuSysApp
         private bool _isEnabled;
         private uint _pointerId = uint.MaxValue;
         private IInqMode _mode;
-        public bool IsPressed = false;
+        public bool IsPressed;
         private InqCanvasViewModel _viewModel;
 
         private PointerEventHandler _pointerPressedHandler;
@@ -45,14 +45,14 @@ namespace NuSysApp
         private BiDictionary<InqLineModel, CanvasGeometry> _modelToGeometries = new BiDictionary<InqLineModel, CanvasGeometry>();
         public InqCanvasView(InqCanvasViewModel vm)
         {
-            this.InitializeComponent();
+            InitializeComponent();
             _viewModel = vm;
             DataContext = vm;
 
-            _pointerPressedHandler = new PointerEventHandler(OnPointerPressed);
-            _pointerMovedHandler = new PointerEventHandler(OnPointerMoved);
-            _pointerReleasedHandler = new PointerEventHandler(OnPointerReleased);
-            _pointerEnteredHandler = new PointerEventHandler(OnPointerEntered);
+            _pointerPressedHandler = OnPointerPressed;
+            _pointerMovedHandler = OnPointerMoved;
+            _pointerReleasedHandler = OnPointerReleased;
+            _pointerEnteredHandler = OnPointerEntered;
 
             IsEnabled = false;
             // Initally, set mode to Inq drawing.
@@ -97,7 +97,7 @@ namespace NuSysApp
 
         private void OnPointerEntered(object sender, PointerRoutedEventArgs e)
         {
-            if ((e.GetCurrentPoint(this) as PointerPoint).Properties.IsBarrelButtonPressed)
+            if (e.GetCurrentPoint(this).Properties.IsBarrelButtonPressed)
             {
 
             }
@@ -145,7 +145,7 @@ namespace NuSysApp
             RemoveHandler(PointerMovedEvent, _pointerMovedHandler);
             RemoveHandler(PointerReleasedEvent, _pointerReleasedHandler);
             _pointerId = uint.MaxValue;
-            if (this.PointerCaptures != null && this.PointerCaptures.Count != 0)
+            if (PointerCaptures != null && PointerCaptures.Count != 0)
             {
                 ReleasePointerCapture(e.Pointer);
             }

@@ -30,7 +30,7 @@ namespace NuSysApp
                     vm =new GroupNodeViewModel((ElementCollectionController)controller);
                     break;
                 case NusysConstants.ElementType.Tag:
-                    vm =new LabelNodeViewModel((ElementController)controller);
+                    vm =new LabelNodeViewModel(controller);
                     break;
                 case NusysConstants.ElementType.Image:
                     vm = new ImageElementViewModel(controller);

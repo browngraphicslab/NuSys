@@ -10,8 +10,8 @@ namespace ReverseMarkdown.Converters
 		public Ignore(Converter converter)
 			: base(converter)
 		{
-			this.Converter.Register("colgroup", this);
-			this.Converter.Register("col", this);
+			Converter.Register("colgroup", this);
+			Converter.Register("col", this);
 		}
 
 		public override string Convert(HtmlNode node)

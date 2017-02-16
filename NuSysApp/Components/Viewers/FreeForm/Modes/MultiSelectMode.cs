@@ -29,7 +29,7 @@ namespace NuSysApp
         private FreeFormViewer _cview;
         public MultiSelectMode(FreeFormViewer view) : base(view)
         {
-            _cview = (FreeFormViewer) view;//casted value
+            _cview = view;//casted value
         }
 
         public override async Task Activate()
@@ -71,7 +71,7 @@ namespace NuSysApp
             SessionController.Instance.SwitchMode(Options.SelectNode);
         }
 
-        private async void View_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
+        private async void View_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
                 _cview.MultiMenu.Delete.Click -= Delete_OnClick;
                 _cview.MultiMenu.Group.Click -= Group_OnClick;
@@ -178,33 +178,6 @@ namespace NuSysApp
                 _cview.MultiMenu.Visibility = Visibility.Visible;
                 _cview.MultiMenu.Delete.Click += Delete_OnClick;
                 _cview.MultiMenu.Group.Click += Group_OnClick;
-            }
-            else
-            {
-                //var selectedLines = new List<InqLineModel>();
-                //Point topLeft = new Point(r.X, r.Y);
-                //foreach (InqLineModel model in _view.InqCanvas.ViewModel.Model.Lines)
-                //{
-                //    InqLineModel newModel = new InqLineModel(DateTime.UtcNow.Ticks.ToString());
-                //    newModel.Stroke = model.Stroke;
-                //    newModel.StrokeThickness = model.StrokeThickness;
-                //    bool isContained = false;
-                //    foreach (var point in model.Points)
-                //    {
-                //        //we need to adjust the point so that it is in the correct place on the node's canvas
-                //        newModel.AddPoint(new Point2d(point.X - topLeft.X, point.Y - topLeft.Y));
-                //        if (!isContained && r.Contains(point))
-                //        {
-                //            isContained = true;
-                //            //NetworkConnector.Instance.RequestDeleteSendable(model.ContentId);
-                //            selectedLines.Add(newModel);
-                //        }
-                //    }
-                //}
-                //if (selectedLines.Count > 0)
-                //{
-                //    vm.PromoteInk(r, selectedLines);
-                //}
             }
         }
     }

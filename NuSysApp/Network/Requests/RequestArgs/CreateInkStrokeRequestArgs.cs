@@ -50,7 +50,7 @@ namespace NuSysApp
             message[NusysConstants.CREATE_INK_STROKE_REQUEST_POINTS_KEY] = JsonConvert.SerializeObject(InkPoints);
             message[NusysConstants.CREATE_INK_STROKE_REQUEST_STROKE_ID_KEY] = InkStrokeId;
             message[NusysConstants.CREATE_INK_STROKE_REQUEST_STROKE_THICKNESS_KEY] = Thickness ?? 1;
-            message[NusysConstants.CREATE_INK_STROKE_REQUEST_COLOR_KEY] = Color ?? new ColorModel() { A=1, B=1, G=1, R=1 };
+            message[NusysConstants.CREATE_INK_STROKE_REQUEST_COLOR_KEY] = Color ?? new ColorModel { A=1, B=1, G=1, R=1 };
             return message;
         }
     }

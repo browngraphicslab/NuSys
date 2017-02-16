@@ -14,7 +14,7 @@
     <Grid VerticalAlignment="Stretch">
         <Grid x:Name="resizer" HorizontalAlignment="Right" VerticalAlignment="Stretch" Background="{StaticResource color2}" Width="20">
             <Grid.RenderTransform>
-                <TranslateTransform X="20"></TranslateTransform>
+                <TranslateTransform X="20" />
             </Grid.RenderTransform>
         </Grid>
         <Grid x:Name="xContainer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White">
@@ -115,7 +115,7 @@
                 <Grid Grid.Row="1" VerticalAlignment="Bottom" Height="Auto" Background="{StaticResource color2}">
                     <Button  x:Name="ShowHelpButton" Content="Show Help" Foreground="White" HorizontalAlignment="Center" Background="{StaticResource color2}" Margin="10,0,10,5" Visibility="Collapsed" Tapped="ShowHelpButton_OnTapped"/>
                 <Border  HorizontalAlignment="Right" Visibility="{Binding SearchExportButtonVisibility}"  Background="Transparent" x:Name="xSearchExportButton" ManipulationMode="TranslateX,TranslateY" ManipulationStarted="XSearchExportButton_OnManipulationStarted" ManipulationDelta="XSearchExportButton_OnManipulationDelta" ManipulationCompleted="XSearchExportButton_OnManipulationCompleted" PointerPressed="XSearchExportButton_OnPointerPressed">
-                    <TextBlock Text="&#xE8AD;" FontFamily="Segoe MDL2 Assets" Margin="10,15,10,10" Foreground="{StaticResource color3}"></TextBlock>
+                    <TextBlock Text="&#xE8AD;" FontFamily="Segoe MDL2 Assets" Margin="10,15,10,10" Foreground="{StaticResource color3}" />
                 </Border>
                 </Grid>
             </Grid>

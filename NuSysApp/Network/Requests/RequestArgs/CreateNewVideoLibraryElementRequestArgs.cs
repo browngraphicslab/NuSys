@@ -13,7 +13,7 @@ namespace NuSysApp
     /// </summary>
     public class CreateNewVideoLibraryElementRequestArgs : CreateNewAudioLibraryElementRequestArgs
     {
-        public CreateNewVideoLibraryElementRequestArgs() : base()
+        public CreateNewVideoLibraryElementRequestArgs()
         {
             LibraryElementType =  NusysConstants.ElementType.Video;
         }

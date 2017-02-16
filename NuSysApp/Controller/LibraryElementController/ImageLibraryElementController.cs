@@ -123,7 +123,7 @@ namespace NuSysApp
         public override void Delete()
         {
             base.Delete();
-            SessionController.Instance.RegionsController.RemoveRegion(this.LibraryElementModel);
+            SessionController.Instance.RegionsController.RemoveRegion(LibraryElementModel);
         }
     }
 }

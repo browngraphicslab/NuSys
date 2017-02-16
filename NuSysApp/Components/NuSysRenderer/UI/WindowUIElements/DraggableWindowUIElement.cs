@@ -221,7 +221,7 @@ namespace NuSysApp
                 SnapPreviewRect = new RectangleUIElement(this, ResourceCreator)
                 {
                     Background = UIDefaults.SnapPreviewRectColor,
-                    IsHitTestVisible = false,
+                    IsHitTestVisible = false
                 };
                 AddChild(SnapPreviewRect);
             }

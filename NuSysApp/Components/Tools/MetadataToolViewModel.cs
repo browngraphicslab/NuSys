@@ -33,7 +33,7 @@ namespace NuSysApp
             var dictionaryWithWeight = (_controller as MetadataToolController).GetAllMetadata();
             AllMetadataDictionary = dictionaryWithWeight.ToDictionary(kvp => kvp.Key, v => v.Value.ToDictionary(k => k.Key, kvp =>  CalculateBarWidth(kvp.Value, v.Value.Max(q => q.Value))));
 
-            if ((_controller as MetadataToolController).MetadataToolModel.Selection != null && (_controller as MetadataToolController).MetadataToolModel.Selected == true)
+            if ((_controller as MetadataToolController).MetadataToolModel.Selection != null && (_controller as MetadataToolController).MetadataToolModel.Selected)
             {
                 if (!AllMetadataDictionary.ContainsKey((_controller as MetadataToolController).MetadataToolModel.Selection.Item1))
                 {
@@ -44,7 +44,7 @@ namespace NuSysApp
                     }
 
                 }
-                else if ((Selection.Item2 != null) && !Enumerable.Intersect(AllMetadataDictionary[Selection.Item1].Keys, Selection.Item2).Any() || Selection.Item2 == null)
+                else if ((Selection.Item2 != null) && !AllMetadataDictionary[Selection.Item1].Keys.Intersect(Selection.Item2).Any() || Selection.Item2 == null)
                 {
                     if (Selection.Item2.Any())
                     {
@@ -53,7 +53,7 @@ namespace NuSysApp
 
                     }
                 }
-                else if (Selection.Item2 != null && Enumerable.Intersect(AllMetadataDictionary[Selection.Item1].Keys, Selection.Item2).Any())
+                else if (Selection.Item2 != null && AllMetadataDictionary[Selection.Item1].Keys.Intersect(Selection.Item2).Any())
                 {
                     foreach (var item in new List<string>(Selection.Item2))
                     {
@@ -63,7 +63,7 @@ namespace NuSysApp
                             editedSelection = true;
                         }
                     }
-                    if(editedSelection == true)
+                    if(editedSelection)
                     {
                         Selection = Selection;
                     }
@@ -79,15 +79,12 @@ namespace NuSysApp
         private double CalculateBarWidth(double weight, double max)
         {
             return max <= 0 ? _minBarWidth : Math.Min(Math.Max((weight/max)*(_maxBarWidth-_minBarWidth),_minBarWidth),_maxBarWidth);
-            var width = (double)(Math.Log((double)weight/3) / (double)Math.Log((double)max/3) * _maxBarWidth);
+            var width = Math.Log(weight/3) / Math.Log(max/3) * _maxBarWidth;
             if(double.IsNaN(width) || width < _minBarWidth)
             {
                 return _minBarWidth;
             }
-            else
-            {
-                return width;
-            }
+            return width;
         }
 
 

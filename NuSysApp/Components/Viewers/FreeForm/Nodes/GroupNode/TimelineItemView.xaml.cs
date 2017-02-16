@@ -28,7 +28,7 @@ namespace NuSysApp.Components.Nodes.GroupNode
         public readonly NusysConstants.ElementType EType;
         public TimelineItemView(FrameworkElement image, Object sortElement, FrameworkElement atom, NusysConstants.ElementType type)
         {
-            this.InitializeComponent();
+            InitializeComponent();
             EType = type;
             _atom = atom;
 

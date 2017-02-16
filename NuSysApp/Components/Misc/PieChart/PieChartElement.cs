@@ -38,10 +38,6 @@
         /// </summary>
         public int Value { set; get; }
 
-        public PieChartElement()
-        {
-
-        }
         /// <summary>
         /// IsHit checks if the angle passed in is between the Start and End angles.
         /// </summary>

@@ -23,7 +23,7 @@ namespace NuSysApp
             {FilterCategory.Creator, "Creator"},
             {FilterCategory.CreationDate, "Creation Date"},
             {FilterCategory.LastEditedDate, "Last Edited Date"},
-            {FilterCategory.Type, "Type"},
+            {FilterCategory.Type, "Type"}
 
         };
 

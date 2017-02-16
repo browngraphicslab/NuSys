@@ -8,7 +8,7 @@ namespace NuSysApp
 {
     public enum DetailViewPageType
     {
-        Home, Metadata, Region, Aliases, Links,
+        Home, Metadata, Region, Aliases, Links
     }
 
 }

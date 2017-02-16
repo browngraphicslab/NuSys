@@ -32,10 +32,10 @@ namespace NuSysApp
         private CanvasAnimatedControl _canvas;
         private Size _elementSize;
         private CanvasGeometry _shape;
-        private ICanvasImage _shapeImage = null;
+        private ICanvasImage _shapeImage;
         private CanvasStrokeStyle _strokeStyle = new CanvasStrokeStyle
         {
-            TransformBehavior = CanvasStrokeTransformBehavior.Fixed,
+            TransformBehavior = CanvasStrokeTransformBehavior.Fixed
         };
 
         public event EventHandler<LibraryElementController> CameraOnCentered;
@@ -345,12 +345,12 @@ namespace NuSysApp
                 && controller?.CollectionModel?.Shape?.AspectRatio != 0 && _shapeImage != null)
             {
                 var bounds = _shapeImage.GetBounds(ResourceCreator);
-                pts = new Vector2[]
+                pts = new[]
                 {
                     new Vector2(50000,50000),
                     new Vector2((float)(50000+bounds.Width), 50000),
                     new Vector2((float)(50000+bounds.Width),50000+(float)bounds.Height),
-                    new Vector2(50000,50000+(float)bounds.Height),
+                    new Vector2(50000,50000+(float)bounds.Height)
                 };
             }
 
@@ -376,12 +376,12 @@ namespace NuSysApp
             if ((pts == null || pts.Count() == 0 )&& ViewModel.IsFinite && !ViewModel.IsShaped)
             {
                 var bounds = new Rect(50000,50000,5000,5000);
-                pts = new Vector2[]
+                pts = new[]
                 {
                     new Vector2(50000,50000),
                     new Vector2((float)(50000+bounds.Width), 50000),
                     new Vector2((float)(50000+bounds.Width),50000+(float)bounds.Height),
-                    new Vector2(50000,50000+(float)bounds.Height),
+                    new Vector2(50000,50000+(float)bounds.Height)
                 };
                 _shape = CanvasGeometry.CreateRectangle(ResourceCreator, bounds);
             }
@@ -428,7 +428,7 @@ namespace NuSysApp
             }
             if (this == initialCollection)
             {
-                this.DrawBackgroundShapeImage(ds, pts);
+                DrawBackgroundShapeImage(ds, pts);
             }
 
             using (ds.CreateLayer(1, Mask))

@@ -33,7 +33,7 @@ namespace NuSysApp
 
         public AreaNodeView(AreaNodeViewModel vm)
         {
-            this.InitializeComponent();
+            InitializeComponent();
             DataContext = vm;
             
 

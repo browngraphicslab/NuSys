@@ -22,7 +22,7 @@ namespace NuSysApp
         public GroupCircleView()
         {
             RenderTransform = new CompositeTransform();
-            this.InitializeComponent();
+            InitializeComponent();
             SizeChanged += delegate(object sender, SizeChangedEventArgs args)
             {
                 IC.Clip = new RectangleGeometry { Rect = new Rect(0, 50, args.NewSize.Width, Math.Max(1, args.NewSize.Height- 100)) };

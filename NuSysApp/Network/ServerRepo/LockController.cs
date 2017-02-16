@@ -71,7 +71,7 @@ namespace NuSysApp
         /// <returns></returns>
         private async Task<bool?> PrivateSenderUnSubscribeRequest(IEnumerable<string> idsToUnsubscribeFrom)
         {
-            var request = new UnSubscribeToLockRequest(new UnSubscribeToLockRequestArgs()
+            var request = new UnSubscribeToLockRequest(new UnSubscribeToLockRequestArgs
             {
                 LockableIds = new HashSet<string>(idsToUnsubscribeFrom)
             });
@@ -126,7 +126,7 @@ namespace NuSysApp
         {
             Debug.Assert(!string.IsNullOrEmpty(lockId));
 
-            var request = new SubscribeToLockRequest(new SubscribeToLockRequestArgs()
+            var request = new SubscribeToLockRequest(new SubscribeToLockRequestArgs
             {
                 LockableId =  lockId,
                 RequestLock =  requestLock
@@ -262,7 +262,7 @@ namespace NuSysApp
             if (_locksDictionary[lockable.LockId].ListenerCount == 0)
             {
                 _locksDictionary.Remove(lockable.LockId);
-                PrivateSenderUnSubscribeRequest(new List<string>() {lockable.LockId });
+                PrivateSenderUnSubscribeRequest(new List<string> {lockable.LockId });
             }
             return true;
         }
@@ -344,7 +344,7 @@ namespace NuSysApp
             Debug.Assert(!_locksDictionary.ContainsKey(lockId) || _locksDictionary[lockId].LockHolderId == null, 
                 "if this isn't null, we are requesting a lock that clearly is already taken.  WTF, bro?");
 
-            var request = new GetLockRequest(new GetLockRequestArgs()
+            var request = new GetLockRequest(new GetLockRequestArgs
             {
                 LockableId = lockId
             });
@@ -367,7 +367,7 @@ namespace NuSysApp
         {
             Debug.Assert(!string.IsNullOrEmpty(lockId));
             Debug.Assert(_locksDictionary.ContainsKey(lockId) && _locksDictionary[lockId].LockHolderId == WaitingRoomView.UserID);
-            var request = new ReturnLockRequest(new ReturnLockRequestArgs()
+            var request = new ReturnLockRequest(new ReturnLockRequestArgs
             {
                 LockableId = lockId
             });
@@ -410,7 +410,7 @@ namespace NuSysApp
             /// <summary>
             /// the string ID of the user who holds the lock, or null if nobody does
             /// </summary>
-            public string LockHolderId { get; set; } = null;
+            public string LockHolderId { get; set; }
 
             /// <summary>
             /// Hashset of listeners to the changes of this lock object

@@ -57,7 +57,7 @@ namespace NuSysApp
             var npoints = new List<Point>();
             for (int i = 0; i < 10; i++)
             {
-                npoints.Add(points[i * (int)(points.Count / 10)]);
+                npoints.Add(points[i * (points.Count / 10)]);
             }
             List<double> nangles = new List<double>();
             for (int i = 0; i < npoints.Count - 2; i++)

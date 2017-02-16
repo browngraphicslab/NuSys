@@ -29,24 +29,24 @@ namespace NuSysApp
             if (model == null) return;
 
             // default fields
-            this.Title = model.Title;
-            this.Type = model.Type;
-            this.TimeStamp = parseTimeStampToDDMMYYFormat(model.Timestamp);
-            this.Creator = SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(model.Creator) ?? "Unknown Author";
+            Title = model.Title;
+            Type = model.Type;
+            TimeStamp = parseTimeStampToDDMMYYFormat(model.Timestamp);
+            Creator = SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(model.Creator) ?? "Unknown Author";
 
             // extra info fields
             if (model.Keywords != null)
             {
-                this.Keywords = parseKeyWordsToCommaSeparatedList(model.Keywords);
+                Keywords = parseKeyWordsToCommaSeparatedList(model.Keywords);
             }
             if (model.Metadata != null)
             {
-                this.Metadata = parseMetaDataToHyphenBulletList(new Dictionary<string, MetadataEntry>(model.Metadata));
+                Metadata = parseMetaDataToHyphenBulletList(new Dictionary<string, MetadataEntry>(model.Metadata));
             }
 
             // unused
-            this.LibraryElementId = model.LibraryElementId;
-            this.Model = model;
+            LibraryElementId = model.LibraryElementId;
+            Model = model;
             //this.Data = controller.Data;
         }
 

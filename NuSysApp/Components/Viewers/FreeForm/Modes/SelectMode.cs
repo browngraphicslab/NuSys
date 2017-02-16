@@ -402,7 +402,6 @@ namespace NuSysApp
                             // disable opening the detail viewer for the pageRight and pageLeft buttons
                             if ((e.OriginalSource as FrameworkElement).Parent is Button)
                             {
-                                return;
                             } 
                         }
 

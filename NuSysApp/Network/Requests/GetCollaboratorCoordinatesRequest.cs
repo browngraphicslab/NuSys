@@ -34,7 +34,7 @@ namespace NuSysApp
         public override void ExecuteRequestFunction(GetCollaboratorCoordinatesRequestArgs senderArgs, ServerReturnArgsBase returnArgs)
         {
             try { 
-                var request = new SendCollaboratorCoordinatesRequest(new SendCollaboratorCoordinatesRequestArgs()
+                var request = new SendCollaboratorCoordinatesRequest(new SendCollaboratorCoordinatesRequestArgs
                 {
                     CollectionLibraryId = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId,
                     RecipientUserId = senderArgs.OriginalSenderId,
@@ -43,7 +43,7 @@ namespace NuSysApp
                     YLocalScaleCenter = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScaleCenter.Y,
                     XLocalScaleCenter = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScaleCenter.X,
                     CameraScaleX = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScale.X,
-                    CameraScaleY = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScale.Y,
+                    CameraScaleY = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScale.Y
                 });
                 SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
             }

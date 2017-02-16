@@ -43,7 +43,7 @@ namespace NuSysApp
         private Storyboard _timelineAnim;
 
         private bool _finite;
-        private List<Windows.Foundation.Point> _shapepoints;
+        private List<Point> _shapepoints;
         
 
         public GroupNodeView( GroupNodeViewModel vm)
@@ -53,7 +53,7 @@ namespace NuSysApp
             DataContext = vm;
             Resizer.ManipulationDelta += ResizerOnManipulationDelta;
 
-            Loaded += async delegate(object sender, RoutedEventArgs args)
+            Loaded += async delegate
             {
                 if (vm.ActiveCollectionViewType == CollectionElementModel.CollectionViewType.Timeline)
                     vm.ActiveCollectionViewType = CollectionElementModel.CollectionViewType.FreeForm;
@@ -119,7 +119,6 @@ namespace NuSysApp
             var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(sp, null);
             if (hitsStart.Contains(this))
             {
-                return;
             }
             //(DataContext as GroupNodeViewModel).FilterIconDropped(hitsStart, wvm, r.X, r.Y);
         }

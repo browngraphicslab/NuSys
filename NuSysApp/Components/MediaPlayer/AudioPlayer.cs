@@ -26,7 +26,7 @@ namespace NuSysApp
             if (controller != CurrentLibraryElementController)
             {
                 Children.OfType<BackgroundImage>().ToList().ForEach(item => Children.Remove(item));
-                Children.ForEach(child => Canvas.SetZIndex(child, 2));
+                Children.ForEach(child => SetZIndex(child, 2));
                 Children.Add(new BackgroundImage(controller, ProgressBar.Width, ProgressBar.Height));
             }
             base.SetLibraryElement(controller,autoStartWhenLoaded);
@@ -37,11 +37,11 @@ namespace NuSysApp
             private AudioLibraryElementController _controller;
             public BackgroundImage(AudioLibraryElementController controller, double width, double height)
             {
-                Canvas.SetZIndex(this,1);
+                SetZIndex(this,1);
                 Background = new SolidColorBrush(Colors.White);
                 _controller = controller;
                 var bitmap = new BitmapImage(_controller.LargeIconUri);
-                var image = new Image() { Source = bitmap, Width = width / _controller.AudioLibraryElementModel.NormalizedDuration, Height = height };
+                var image = new Image { Source = bitmap, Width = width / _controller.AudioLibraryElementModel.NormalizedDuration, Height = height };
                 image.Stretch = Stretch.Fill;
                 image.RenderTransform = new TranslateTransform();
                 Children.Add(image);
@@ -52,9 +52,9 @@ namespace NuSysApp
             {
                 Width = width;
                 Height = height;
-                Clip = new RectangleGeometry()
+                Clip = new RectangleGeometry
                 {
-                    Rect = new Rect()
+                    Rect = new Rect
                     {
                         Width = width,
                         Height = height

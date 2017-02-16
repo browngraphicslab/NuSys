@@ -207,14 +207,14 @@ namespace NuSysApp
             // Create some variables to help create the dictionary
             var thumbnails = new Dictionary<NusysConstants.ThumbnailSize, string>();
             var intSizes = new uint[] { 50, 150, 300 };
-            var thumbSizes = new NusysConstants.ThumbnailSize[] { NusysConstants.ThumbnailSize.Small, NusysConstants.ThumbnailSize.Medium, NusysConstants.ThumbnailSize.Large };
+            var thumbSizes = new[] { NusysConstants.ThumbnailSize.Small, NusysConstants.ThumbnailSize.Medium, NusysConstants.ThumbnailSize.Large };
 
             // Fill out the dictionary for every thumbnail size
             for (int i = 0; i < 3; i++)
             {
                 var thumbnail = new BitmapImage();
                 var source = await storageFile.GetThumbnailAsync(ThumbnailMode.SingleItem, intSizes[i]);
-                var byteArray = await MediaUtil.IRandomAcessStreamToByteArray(source);
+                var byteArray = await IRandomAcessStreamToByteArray(source);
                 thumbnails[thumbSizes[i]] = Convert.ToBase64String(byteArray);
             }
             if (storageFile.FileType == ".mp4")
@@ -223,7 +223,7 @@ namespace NuSysApp
                 var videoprops = await storageFile.Properties.GetVideoPropertiesAsync();
                 
                 var source = await storageFile.GetThumbnailAsync(ThumbnailMode.SingleItem,videoprops.Width);
-                var byteArray = await MediaUtil.IRandomAcessStreamToByteArray(source);
+                var byteArray = await IRandomAcessStreamToByteArray(source);
                 thumbnails[NusysConstants.ThumbnailSize.Large] = Convert.ToBase64String(byteArray);
             }
             // Return the completed dictionary
@@ -257,7 +257,7 @@ public static async Task<StorageFile> ConvertByteToAudio(byte[] byteArray)
 
                 var mod = 255;
 
-                int r = (int)Math.Abs(((int)number % mod));
+                int r = Math.Abs(((int)number % mod));
                 int b = (int)Math.Abs((r1 * number) % mod);
                 int g = (int)Math.Abs((r2 * number) % mod);
                 long a = ((r + g + b + number)%50) + 175;

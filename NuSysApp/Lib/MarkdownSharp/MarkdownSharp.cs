@@ -234,7 +234,7 @@ namespace MarkdownSharp
             get { return _strictBoldItalic; }
             set { _strictBoldItalic = value; }
         }
-        private bool _strictBoldItalic = false;
+        private bool _strictBoldItalic;
 
         /// <summary>
         /// when true, asterisks may be used for intraword emphasis
@@ -245,7 +245,7 @@ namespace MarkdownSharp
             get { return _asteriskIntraWordEmphasis; }
             set { _asteriskIntraWordEmphasis = value; }
         }
-        private bool _asteriskIntraWordEmphasis = false;
+        private bool _asteriskIntraWordEmphasis;
 
         /// <summary>
         /// when true, RETURN becomes a literal newline  
@@ -256,7 +256,7 @@ namespace MarkdownSharp
             get { return _autoNewlines; }
             set { _autoNewlines = value; }
         }
-        private bool _autoNewlines = false;
+        private bool _autoNewlines;
 
         /// <summary>
         /// when true, (most) bare plain URLs are auto-hyperlinked  
@@ -267,7 +267,7 @@ namespace MarkdownSharp
             get { return _autoHyperlink; }
             set { _autoHyperlink = value; }
         }
-        private bool _autoHyperlink = false;
+        private bool _autoHyperlink;
 
         #endregion
 
@@ -277,8 +277,8 @@ namespace MarkdownSharp
         {
             public Token(TokenType type, string value)
             {
-                this.Type = type;
-                this.Value = value;
+                Type = type;
+                Value = value;
             }
             public TokenType Type;
             public string Value;
@@ -325,7 +325,7 @@ namespace MarkdownSharp
             foreach (char c in @"\`*_{}[]()>#+-.!/:")
             {
                 string key = c.ToString();
-                string hash = GetHashKey(key, isHtmlBlock: false);
+                string hash = GetHashKey(key, false);
                 _escapeTable.Add(key, hash);
                 _invertedEscapeTable.Add(hash, key);
                 _backslashEscapeTable.Add(@"\" + key, hash);
@@ -390,7 +390,7 @@ namespace MarkdownSharp
             // <p> tags around block-level tags.
             text = HashHTMLBlocks(text);
 
-            text = FormParagraphs(text, unhash: unhash, createParagraphs: createParagraphs);
+            text = FormParagraphs(text, unhash, createParagraphs);
 
             return text;
         }
@@ -566,7 +566,7 @@ namespace MarkdownSharp
         /// </remarks>
         private string StripLinkDefinitions(string text)
         {
-            return _linkDef.Replace(text, new MatchEvaluator(LinkEvaluator));
+            return _linkDef.Replace(text, LinkEvaluator);
         }
 
         private string LinkEvaluator(Match match)
@@ -731,13 +731,13 @@ namespace MarkdownSharp
         /// </summary>
         private string HashHTMLBlocks(string text)
         {
-            return _blocksHtml.Replace(text, new MatchEvaluator(HtmlEvaluator));
+            return _blocksHtml.Replace(text, HtmlEvaluator);
         }
 
         private string HtmlEvaluator(Match match)
         {
             string text = match.Groups[1].Value;
-            string key = GetHashKey(text, isHtmlBlock: true);
+            string key = GetHashKey(text, true);
             _htmlBlocks[key] = text;
 
             return string.Concat("\n\n", key, "\n\n");
@@ -746,7 +746,7 @@ namespace MarkdownSharp
         private static string GetHashKey(string s, bool isHtmlBlock)
         {
             var delim = isHtmlBlock ? 'H' : 'E';
-            return "\x1A" + delim + Math.Abs(s.GetHashCode()).ToString() + delim;
+            return "\x1A" + delim + Math.Abs(s.GetHashCode()) + delim;
         }
 
         private static Regex _htmlTokens = new Regex(@"
@@ -844,15 +844,15 @@ namespace MarkdownSharp
                 return text;
 
             // First, handle reference-style links: [link text] [id]
-            text = _anchorRef.Replace(text, new MatchEvaluator(AnchorRefEvaluator));
+            text = _anchorRef.Replace(text, AnchorRefEvaluator);
 
             // Next, inline-style links: [link text](url "optional title") or [link text](url "optional title")
-            text = _anchorInline.Replace(text, new MatchEvaluator(AnchorInlineEvaluator));
+            text = _anchorInline.Replace(text, AnchorInlineEvaluator);
 
             //  Last, handle reference-style shortcuts: [link text]
             //  These must come last in case you've also got [link test][1]
             //  or [link test](/foo)
-            text = _anchorRefShortcut.Replace(text, new MatchEvaluator(AnchorRefShortcutEvaluator));
+            text = _anchorRefShortcut.Replace(text, AnchorRefShortcutEvaluator);
             return text;
         }
 
@@ -1001,11 +1001,11 @@ namespace MarkdownSharp
                 return text;
 
             // First, handle reference-style labeled images: ![alt text][id]
-            text = _imagesRef.Replace(text, new MatchEvaluator(ImageReferenceEvaluator));
+            text = _imagesRef.Replace(text, ImageReferenceEvaluator);
 
             // Next, handle inline images:  ![alt text](url "optional title")
             // Don't forget: encode * and _
-            text = _imagesInline.Replace(text, new MatchEvaluator(ImageInlineEvaluator));
+            text = _imagesInline.Replace(text, ImageInlineEvaluator);
 
             return text;
         }
@@ -1040,11 +1040,8 @@ namespace MarkdownSharp
 
                 return ImageTag(url, altText, title);
             }
-            else
-            {
-                // If there's no such link ID, leave intact:
-                return wholeMatch;
-            }
+            // If there's no such link ID, leave intact:
+            return wholeMatch;
         }
 
         private string ImageInlineEvaluator(Match match)
@@ -1109,8 +1106,8 @@ namespace MarkdownSharp
         /// </remarks>
         private string DoHeaders(string text)
         {
-            text = _headerSetext.Replace(text, new MatchEvaluator(SetextHeaderEvaluator));
-            text = _headerAtx.Replace(text, new MatchEvaluator(AtxHeaderEvaluator));
+            text = _headerSetext.Replace(text, SetextHeaderEvaluator);
+            text = _headerAtx.Replace(text, AtxHeaderEvaluator);
             return text;
         }
 
@@ -1188,9 +1185,9 @@ namespace MarkdownSharp
             // We use a different prefix before nested lists than top-level lists.
             // See extended comment in _ProcessListItems().
             if (_listLevel > 0)
-                text = _listNested.Replace(text, new MatchEvaluator(ListEvaluator));
+                text = _listNested.Replace(text, ListEvaluator);
             else
-                text = _listTopLevel.Replace(text, new MatchEvaluator(ListEvaluator));
+                text = _listTopLevel.Replace(text, ListEvaluator);
 
             return text;
         }
@@ -1267,13 +1264,13 @@ namespace MarkdownSharp
 
                 var loose = containsDoubleNewline || lastItemHadADoubleNewline;
                 // we could correct any bad indentation here..
-                item = RunBlockGamut(Outdent(item) + "\n", unhash: false, createParagraphs: loose);
+                item = RunBlockGamut(Outdent(item) + "\n", false, loose);
 
                 lastItemHadADoubleNewline = endsWithDoubleNewline;
                 return string.Format("<li>{0}</li>\n", item);
             };
 
-            list = Regex.Replace(list, pattern, new MatchEvaluator(ListItemEvaluator),
+            list = Regex.Replace(list, pattern, ListItemEvaluator,
                                   RegexOptions.IgnorePatternWhitespace | RegexOptions.Multiline);
             _listLevel--;
             return list;
@@ -1295,7 +1292,7 @@ namespace MarkdownSharp
         /// </summary>
         private string DoCodeBlocks(string text)
         {
-            text = _codeBlock.Replace(text, new MatchEvaluator(CodeBlockEvaluator));
+            text = _codeBlock.Replace(text, CodeBlockEvaluator);
             return text;
         }
 
@@ -1345,7 +1342,7 @@ namespace MarkdownSharp
             //          ... type <code>`bar`</code> ...         
             //
 
-            return _codeSpan.Replace(text, new MatchEvaluator(CodeSpanEvaluator));
+            return _codeSpan.Replace(text, CodeSpanEvaluator);
         }
 
         private string CodeSpanEvaluator(Match match)
@@ -1431,7 +1428,7 @@ namespace MarkdownSharp
         /// </summary>
         private string DoBlockQuotes(string text)
         {
-            return _blockquote.Replace(text, new MatchEvaluator(BlockQuoteEvaluator));
+            return _blockquote.Replace(text, BlockQuoteEvaluator);
         }
 
         private string BlockQuoteEvaluator(Match match)
@@ -1445,10 +1442,10 @@ namespace MarkdownSharp
             bq = Regex.Replace(bq, @"^", "  ", RegexOptions.Multiline);
 
             // These leading spaces screw with <pre> content, so we need to fix that:
-            bq = Regex.Replace(bq, @"(\s*<pre>.+?</pre>)", new MatchEvaluator(BlockQuoteEvaluator2), RegexOptions.IgnorePatternWhitespace | RegexOptions.Singleline);
+            bq = Regex.Replace(bq, @"(\s*<pre>.+?</pre>)", BlockQuoteEvaluator2, RegexOptions.IgnorePatternWhitespace | RegexOptions.Singleline);
 
             bq = string.Format("<blockquote>\n{0}\n</blockquote>", bq);
-            string key = GetHashKey(bq, isHtmlBlock: true);
+            string key = GetHashKey(bq, true);
             _htmlBlocks[key] = bq;
 
             return "\n\n" + key + "\n\n";
@@ -1531,7 +1528,7 @@ namespace MarkdownSharp
             }
 
             // Hyperlinks: <http://foo.com>
-            text = Regex.Replace(text, "<((https?|ftp):[^'\">\\s]+)>", new MatchEvaluator(HyperlinkEvaluator));
+            text = Regex.Replace(text, "<((https?|ftp):[^'\">\\s]+)>", HyperlinkEvaluator);
 
             if (_linkEmails)
             {
@@ -1545,7 +1542,7 @@ namespace MarkdownSharp
                         [-a-z0-9]+(\.[-a-z0-9]+)*\.[a-z]+
                       )
                       >";
-                text = Regex.Replace(text, pattern, new MatchEvaluator(EmailEvaluator), RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
+                text = Regex.Replace(text, pattern, EmailEvaluator, RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
             }
 
             return text;
@@ -1675,7 +1672,7 @@ namespace MarkdownSharp
         /// </summary>
         private string EscapeBackslashes(string s)
         {
-            return _backslashEscapes.Replace(s, new MatchEvaluator(EscapeBackslashesEvaluator));
+            return _backslashEscapes.Replace(s, EscapeBackslashesEvaluator);
         }
         private string EscapeBackslashesEvaluator(Match match)
         {
@@ -1689,7 +1686,7 @@ namespace MarkdownSharp
         /// </summary>
         private string Unescape(string s)
         {
-            return _unescapes.Replace(s, new MatchEvaluator(UnescapeEvaluator));
+            return _unescapes.Replace(s, UnescapeEvaluator);
         }
         private string UnescapeEvaluator(Match match)
         {

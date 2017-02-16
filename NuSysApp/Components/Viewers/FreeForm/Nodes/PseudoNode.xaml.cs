@@ -24,7 +24,7 @@ namespace NuSysApp
     {
         public PseudoNode()
         {
-            this.InitializeComponent();           
+            InitializeComponent();           
         }        
     }
 }

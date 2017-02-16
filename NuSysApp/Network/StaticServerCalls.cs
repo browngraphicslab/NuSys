@@ -143,9 +143,9 @@ namespace NuSysApp
                 args.Small_Thumbnail_Url = originalController.SmallIconUri.AbsoluteUri;
                 args.Medium_Thumbnail_Url = originalController.MediumIconUri.AbsoluteUri;
                 args.Large_Thumbnail_Url = originalController.LargeIconUri.AbsoluteUri;
-                args.Origin = new LibraryElementOrigin() {Type = LibraryElementOrigin.OriginType.Copy,OriginId = originalController.LibraryElementModel.LibraryElementId};
-                args.Metadata = new List<NusysIntermediate.MetadataEntry>(originalController.FullMetadata.Values);
-                args.Metadata.Add(new MetadataEntry("Origin",new List<string>() {"This library element was copied from "+originalController.LibraryElementModel.Title},MetadataMutability.IMMUTABLE ));
+                args.Origin = new LibraryElementOrigin {Type = LibraryElementOrigin.OriginType.Copy,OriginId = originalController.LibraryElementModel.LibraryElementId};
+                args.Metadata = new List<MetadataEntry>(originalController.FullMetadata.Values);
+                args.Metadata.Add(new MetadataEntry("Origin",new List<string> {"This library element was copied from "+originalController.LibraryElementModel.Title},MetadataMutability.IMMUTABLE ));
 
                 var newLibraryElementRequest = new CreateNewLibraryElementRequest(args);
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(newLibraryElementRequest);
@@ -153,33 +153,28 @@ namespace NuSysApp
                 SessionController.Instance.ContentController.GetLibraryElementController(newLibraryId)?.SetAccessType(access);
                 return newLibraryId;
             }
-            else
+            // For text elements, we make a copy of both the contnt data model and the library element model
+            // Create and execute a new content request that carries the same data as the content we are trying to make a 
+            // copy of.
+            var newContentRequestArgs = new CreateNewContentRequestArgs
             {
-                // For text elements, we make a copy of both the contnt data model and the library element model
-                // Create and execute a new content request that carries the same data as the content we are trying to make a 
-                // copy of.
-                var newContentRequestArgs = new CreateNewContentRequestArgs()
+                ContentId = newContentId,
+                DataBytes = originalController.Data,
+                LibraryElementArgs = new CreateNewLibraryElementRequestArgs
                 {
+                    Title = originalController.Title + " copy",
                     ContentId = newContentId,
-                    DataBytes = originalController.Data,
-                    LibraryElementArgs = new CreateNewLibraryElementRequestArgs()
-                    {
-                        Title = originalController.Title + " copy",
-                        ContentId = newContentId,
-                        AccessType = originalController.LibraryElementModel.AccessType,
-                        LibraryElementType = NusysConstants.ElementType.Text,
-                        LibraryElementId = newLibraryId
-                    }
-                };
+                    AccessType = originalController.LibraryElementModel.AccessType,
+                    LibraryElementType = NusysConstants.ElementType.Text,
+                    LibraryElementId = newLibraryId
+                }
+            };
 
-                var newContentRequest = new CreateNewContentRequest(newContentRequestArgs);
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(newContentRequest);
-                newContentRequest.AddReturnedLibraryElementToLibrary();
-                SessionController.Instance.ContentController.GetLibraryElementController(newLibraryId)?.SetAccessType(access);
-                return newLibraryId;
-                
-            }
-            
+            var newContentRequest = new CreateNewContentRequest(newContentRequestArgs);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(newContentRequest);
+            newContentRequest.AddReturnedLibraryElementToLibrary();
+            SessionController.Instance.ContentController.GetLibraryElementController(newLibraryId)?.SetAccessType(access);
+            return newLibraryId;
         }
 
         /// <summary>
@@ -244,7 +239,7 @@ namespace NuSysApp
                         {
                             var viewModel = new BasicToolViewModel(controller)
                             {
-                                Filter = ToolModel.ToolFilterTypeTitle.Title,
+                                Filter = ToolModel.ToolFilterTypeTitle.Title
                             };
                             controller.SetSize(500, 500);
                             controller.SetPosition(collectionPoint.X, collectionPoint.Y);
@@ -335,7 +330,7 @@ namespace NuSysApp
         /// <returns></returns>
         public static async Task InviteCollaboratorToCollection(string collaboratorId)
         {
-            var request = new SendCollaboratorCoordinatesRequest(new SendCollaboratorCoordinatesRequestArgs()
+            var request = new SendCollaboratorCoordinatesRequest(new SendCollaboratorCoordinatesRequestArgs
             {
                 CollectionLibraryId = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId,
                 RecipientUserId = collaboratorId,
@@ -360,7 +355,7 @@ namespace NuSysApp
         /// <returns></returns>
         public static async Task JoinCollaborator(string collaboratorId)
         {
-            var request = new GetCollaboratorCoordinatesRequest(new GetCollaboratorCoordinatesRequestArgs()
+            var request = new GetCollaboratorCoordinatesRequest(new GetCollaboratorCoordinatesRequestArgs
             {
                 UserId = collaboratorId
             });
@@ -403,7 +398,7 @@ namespace NuSysApp
 
                             var viewModel = new BasicToolViewModel(controller)
                             {
-                                Filter = ToolModel.ToolFilterTypeTitle.Title,
+                                Filter = ToolModel.ToolFilterTypeTitle.Title
                             };
                             controller.SetSize(500,500);
                             controller.SetPosition(collectionPoint.X, collectionPoint.Y);

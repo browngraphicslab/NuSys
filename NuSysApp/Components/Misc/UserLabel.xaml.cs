@@ -31,7 +31,7 @@ namespace NuSysApp
         {
             UITask.Run(delegate
             {
-                this.InitializeComponent();
+                InitializeComponent();
                 _user = user;
                 UserButton.Background = new SolidColorBrush(_user.Color);
                 var content = _user.DisplayName ?? _user.UserID;

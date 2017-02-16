@@ -33,8 +33,8 @@ namespace NuSysApp
 
                 // whenever the element which this property is attached to is loaded
                 // or re-sizes, we need to update its clipping geometry
-                fe.Loaded += new RoutedEventHandler(fe_Loaded);
-                fe.SizeChanged += new SizeChangedEventHandler(fe_SizeChanged);
+                fe.Loaded += fe_Loaded;
+                fe.SizeChanged += fe_SizeChanged;
             }
         }
 
@@ -46,7 +46,7 @@ namespace NuSysApp
         {
             if (GetToBounds(fe))
             {
-                fe.Clip = new RectangleGeometry()
+                fe.Clip = new RectangleGeometry
                 {
                     Rect = new Rect(0, 0, fe.ActualWidth, fe.ActualHeight)
                 };

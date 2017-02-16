@@ -537,7 +537,6 @@ namespace NuSysApp
             if (_mode == Mode.Ink)
             {
                 InkDrawing?.Invoke(pointer);
-                return;
             }
         }
 

@@ -28,7 +28,7 @@ namespace NuSysApp
 
         public ChatBoxView()
         {
-            this.InitializeComponent();
+            InitializeComponent();
             chatInputBox.KeyDown += ChatInputBox_KeyDown;
 
 
@@ -36,7 +36,7 @@ namespace NuSysApp
             _unseenChatMessagesNum = 0;
 
 
-            DataContextChanged += delegate (FrameworkElement sender, DataContextChangedEventArgs args)
+            DataContextChanged += delegate
             {
                 if (!(DataContext is ChatBoxViewModel))
                     return;
@@ -89,7 +89,6 @@ namespace NuSysApp
                 var result = GetScrollViewer(child);
                 if (result == null)
                 {
-                    continue;
                 }
                 else
                 {

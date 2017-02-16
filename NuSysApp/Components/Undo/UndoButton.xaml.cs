@@ -53,7 +53,7 @@ namespace NuSysApp
         /// <param name="state"></param>
         public UndoButton()
         {
-            this.InitializeComponent();
+            InitializeComponent();
             _state=UndoButtonState.Inactive;
             ActionExecuted = false;
 
@@ -65,8 +65,8 @@ namespace NuSysApp
         /// <param name="point"></param>
         public void MoveTo(Point point)
         {
-            var transform = new TranslateTransform() {X=point.X, Y = point.Y};
-            this.RenderTransform = transform;
+            var transform = new TranslateTransform {X=point.X, Y = point.Y};
+            RenderTransform = transform;
         }
 
         /// <summary>
@@ -78,10 +78,9 @@ namespace NuSysApp
         private void UndoButton_Loaded(object sender, RoutedEventArgs e)
         {
             // Weird syntax since TimerCallback can't directly take in Dispose().
-            _timer = new Timer(new TimerCallback(delegate(object state)
-            {
-                Dispose();
-            }), null, 6000, Timeout.Infinite);
+            _timer = new Timer(delegate {
+                                            Dispose();
+            }, null, 6000, Timeout.Infinite);
         }
 
         /// <summary>
@@ -101,10 +100,9 @@ namespace NuSysApp
             OriginalAction = action;
 
             // Weird syntax since TimerCallback can't directly take in Dispose().
-            _timer = new Timer(new TimerCallback(delegate (object state)
-            {
-                Dispose();
-            }), null, 6000, Timeout.Infinite);
+            _timer = new Timer(delegate {
+                                            Dispose();
+            }, null, 6000, Timeout.Infinite);
 
            
         }
@@ -160,7 +158,7 @@ namespace NuSysApp
                     }
                     else
                     {
-                       this.Deactivate();
+                       Deactivate();
                     }
                    
                 });

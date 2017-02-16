@@ -95,7 +95,7 @@ namespace NuSysApp
                 headerItem.BorderColor = Constants.LIGHT_BLUE;
                 headerItem.Transform.LocalPosition = new Vector2(indexPointer, 0);
                 AddHeaderHandlers(headerItem);
-                this.AddChild(headerItem);
+                AddChild(headerItem);
                 indexPointer += headerItem.Width;
             }
         }
@@ -146,7 +146,7 @@ namespace NuSysApp
             {
                 return -1;
             }
-            else if (columnIndex >= _children.Count)
+            if (columnIndex >= _children.Count)
             {
                 return float.PositiveInfinity;
             }

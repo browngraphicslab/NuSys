@@ -62,7 +62,7 @@ namespace NuSysApp
             LockId = lockId;
             _overlay = new RectangleUIElement(this, resourceCreator)
             {
-                Background = UIDefaults.ScrollableTextboxOverlayColor,
+                Background = UIDefaults.ScrollableTextboxOverlayColor
             };
             _overlay.Transform.LocalPosition = new Vector2(0, 0);
             AddChild(_overlay);

@@ -21,7 +21,7 @@ namespace NuSysApp
         {
             get
             {
-                return base.LibraryElementModel as PdfLibraryElementModel;
+                return LibraryElementModel as PdfLibraryElementModel;
             }
         }
 

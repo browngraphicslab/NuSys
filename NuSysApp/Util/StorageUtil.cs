@@ -28,8 +28,8 @@ namespace NuSysApp
         public static async Task SaveAsStorageFile(string data, string filepath)
         {
             var bytes = Convert.FromBase64String(data);
-            Windows.Storage.StorageFolder storageFolder =
-    Windows.Storage.ApplicationData.Current.LocalFolder;
+            StorageFolder storageFolder =
+    ApplicationData.Current.LocalFolder;
             StorageFile file = await StorageFile.GetFileFromPathAsync(filepath);
             await FileIO.WriteBytesAsync(file, bytes);
         }
@@ -69,7 +69,6 @@ namespace NuSysApp
             }
             catch(Exception e)
             {
-                return;
             }
         }
 

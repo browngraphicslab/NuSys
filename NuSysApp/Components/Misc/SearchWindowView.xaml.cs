@@ -30,7 +30,7 @@ namespace NuSysApp
 
         public SearchWindowView()
         {
-            this.InitializeComponent();
+            InitializeComponent();
             searchBox.TextChanged += SearchBoxOnTextChanged;
             DataContext = new SearchWindowViewModel();
             _instance = this;

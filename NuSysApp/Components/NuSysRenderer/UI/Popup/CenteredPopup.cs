@@ -37,7 +37,7 @@ namespace NuSysApp
             _message.FontFamily = UIDefaults.TextFont;
             _message.Background = Colors.White;
             _message.TextHorizontalAlignment = CanvasHorizontalAlignment.Center;
-            _message.Transform.LocalPosition = new Vector2(this.Width/2 - _message.Width/2, 10);
+            _message.Transform.LocalPosition = new Vector2(Width/2 - _message.Width/2, 10);
             AddChild(_message);
 
             Transform.LocalPosition = new Vector2(SessionController.Instance.NuSessionView.Width / 2 - Width/2, SessionController.Instance.NuSessionView.Height / 2 - Height/2);

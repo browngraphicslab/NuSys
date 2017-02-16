@@ -25,7 +25,7 @@ namespace NuSysApp
         private bool _isBuffering;
         private uint _bufferLength;
         private int _bufferIndex;
-        public bool IsEraser = false;
+        public bool IsEraser;
         /// <summary>
         /// since the PointerPoint is a XAML element, we cannot access the pointer's properties from the regular thread.
         /// So we have this IsRightButtonPressed getter.

@@ -32,7 +32,7 @@ namespace NuSysApp
                     });
                     if (storageFile != null)
                     {
-                        storageFiles = new List<StorageFile>() {storageFile};
+                        storageFiles = new List<StorageFile> {storageFile};
                     }
                 }
                 else

@@ -24,7 +24,7 @@ namespace NuSysApp.Tools
         private Image _dragItem;
 
 
-        private enum DragMode { Filter, Scroll };
+        private enum DragMode { Filter, Scroll }
 
         private DragMode _currentDragMode = DragMode.Filter;
 
@@ -42,7 +42,7 @@ namespace NuSysApp.Tools
         public ListToolView(BaseToolView baseTool)
         {
             PropertiesToDisplayUnique = new ObservableCollection<string>();
-            this.InitializeComponent();
+            InitializeComponent();
             _dragItem = baseTool.Vm.InitializeDragFilterImage();
             _baseTool = baseTool;
         }

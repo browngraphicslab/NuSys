@@ -1059,10 +1059,7 @@ namespace NuSysApp
                 return Math.Abs(_textLayoutWidth - (Width - 2 * (BorderWidth + UIDefaults.XTextPadding) -
                                                     (_verticalScrollbar.IsVisible ? _verticalScrollbar.Width : 0))) < .005;
             }
-            else
-            {
-                return Math.Abs(_textLayoutHeight - (Height - 2 * (BorderWidth + UIDefaults.YTextPadding))) < .005;
-            }
+            return Math.Abs(_textLayoutHeight - (Height - 2 * (BorderWidth + UIDefaults.YTextPadding))) < .005;
         }
 
         /// <summary>
@@ -1600,10 +1597,7 @@ namespace NuSysApp
             {
                 return _newLineRegex.Replace(text, Newline);
             }
-            else
-            {
-                return _newLineRegex.Replace(text, " ");
-            }
+            return _newLineRegex.Replace(text, " ");
         }
 
         #endregion data-operations-copy-cut-paste
@@ -1780,10 +1774,7 @@ namespace NuSysApp
             {
                 return KeyCodeToUnicodeShift(key);
             }
-            else
-            {
-                return KeyCodeToUnicodeUnshift(key);
-            }
+            return KeyCodeToUnicodeUnshift(key);
         }
 
         private string KeyCodeToUnicodeUnshift(VirtualKey key)

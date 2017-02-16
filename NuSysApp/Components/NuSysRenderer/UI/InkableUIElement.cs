@@ -119,7 +119,7 @@ namespace NuSysApp
 
         public async override Task Load()
         {
-            base.CreateResources();
+            CreateResources();
         }
 
         public void StartInkByEvent(CanvasPointer e)
@@ -357,7 +357,7 @@ namespace NuSysApp
                         {
                             s.DrawingAttributes = GetDrawingAttributes(Colors.DarkRed, InkSize);
                         }
-                        ds.DrawInk(new InkStroke[] { s });
+                        ds.DrawInk(new[] { s });
                     }
                 }
             }
@@ -392,7 +392,7 @@ namespace NuSysApp
         /// <returns></returns>
         private IEnumerable<InkStroke> GetSelectedStrokes()
         {
-            return _inkManager.GetStrokes().ToArray().Where(stroke => stroke.Selected == true);
+            return _inkManager.GetStrokes().ToArray().Where(stroke => stroke.Selected);
         }
 
         private void OnPenPointerPressed_Callback(InteractiveBaseRenderItem item, CanvasPointer pointer)

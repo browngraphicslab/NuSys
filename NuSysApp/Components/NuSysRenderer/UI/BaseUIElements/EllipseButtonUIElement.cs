@@ -24,7 +24,7 @@ namespace NuSysApp
         {
             get
             {
-                Debug.Assert(base.Shape.GetType() == typeof(EllipseUIElement));
+                Debug.Assert(Shape.GetType() == typeof(EllipseUIElement));
                 return (EllipseUIElement)Shape;
             }
         }
@@ -93,10 +93,7 @@ namespace NuSysApp
                 // this math returns a rect that is centered and around half the size of the circle.
                 return new Rect(Width/4, 5, Width/2, Height/2);
             }
-            else
-            {
-                return new Rect(0, Height, Width - 2*BorderWidth, Height - 2*BorderWidth);
-            }
+            return new Rect(0, Height, Width - 2*BorderWidth, Height - 2*BorderWidth);
         }
 
         /// <summary>

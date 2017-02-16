@@ -37,26 +37,26 @@
                 Style="{StaticResource NodeSubMenuItem}" Visibility="{Binding RecordButtonVisibility}"
                 HorizontalAlignment="Center"
                 Tapped="Record_OnTapped">
-            <Image Source="ms-appx:///Assets/node icons/record.png" Height="25" Width="25" IsHitTestVisible="False"></Image>
+            <Image Source="ms-appx:///Assets/node icons/record.png" Height="25" Width="25" IsHitTestVisible="False" />
         </Button>
         <Button Background="{StaticResource color2}" Margin="0,2,0,2" x:Name="Stop" 
                 Style="{StaticResource NodeSubMenuItem}" Visibility="{Binding StopButtonVisibility}"
                 HorizontalAlignment="Center"
                 Tapped="Stop_OnTapped">
-            <Image Source="ms-appx:///Assets/node icons/icon_stop.png" Height="25" Width="25" IsHitTestVisible="False"></Image>
+            <Image Source="ms-appx:///Assets/node icons/icon_stop.png" Height="25" Width="25" IsHitTestVisible="False" />
         </Button>
         <Button Background="{StaticResource color2}" Margin="0,2,0,2" x:Name="Error" 
                 Style="{StaticResource NodeSubMenuItem}" Visibility="{Binding ErrorButtonVisibility}"
                 HorizontalAlignment="Center">
-            <Image Source="ms-appx:///Assets/icon_delete_color.png" Height="25" Width="25" IsHitTestVisible="False"></Image>
+            <Image Source="ms-appx:///Assets/icon_delete_color.png" Height="25" Width="25" IsHitTestVisible="False" />
         </Button>
         <StackPanel Grid.Row="1">
-            <TextBlock Text="{Binding StatusText}" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"></TextBlock>
-            <TextBlock Text="Continuous, multi-sentence dictation" FontSize="12" TextWrapping="Wrap" TextAlignment="Center"></TextBlock>
+            <TextBlock Text="{Binding StatusText}" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" />
+            <TextBlock Text="Continuous, multi-sentence dictation" FontSize="12" TextWrapping="Wrap" TextAlignment="Center" />
         </StackPanel>
         <TextBox x:Name="DictationTextbox" Text="{Binding Text}"  Grid.Row="2" Background="White" BorderBrush="SlateGray" BorderThickness="2" AcceptsReturn="True" TextWrapping="Wrap" IsEnabled="{Binding IsTextBoxEnabled}"
-                 TextChanged="DictationTextbox_OnTextChanged" ManipulationDelta="DictationTextBox_OnManipulationDelta" ManipulationMode="All" ContextMenuOpening="DictationTextBox_OnContextMenuOpening"></TextBox>
-        <TextBlock Grid.Row="3" Text="Tapping outside the box will minimize it" FontSize="12" TextWrapping="Wrap" TextAlignment="Center"></TextBlock>
+                 TextChanged="DictationTextbox_OnTextChanged" ManipulationDelta="DictationTextBox_OnManipulationDelta" ManipulationMode="All" ContextMenuOpening="DictationTextBox_OnContextMenuOpening" />
+        <TextBlock Grid.Row="3" Text="Tapping outside the box will minimize it" FontSize="12" TextWrapping="Wrap" TextAlignment="Center" />
 
     </Grid>
 </UserControl>

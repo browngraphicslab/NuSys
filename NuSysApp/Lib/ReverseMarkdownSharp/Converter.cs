@@ -19,7 +19,7 @@ namespace ReverseMarkdown
 
 		public Converter(Config config)
 		{
-			this._config = config;
+			_config = config;
 
 			foreach (Type ctype in typeof(Converter).GetTypeInfo().Assembly.GetTypes().Where(t => t.GetInterfaces().Contains(typeof(IConverter))))
 			{try {
@@ -33,7 +33,7 @@ namespace ReverseMarkdown
 
 		public Config Config 
 		{
-			get { return this._config; }
+			get { return _config; }
 		}
 
 		public string Convert(string html)
@@ -47,7 +47,7 @@ namespace ReverseMarkdown
 
 			var root = doc.DocumentNode;
 
-			string result = this.Lookup(root.Name).Convert(root);
+			string result = Lookup(root.Name).Convert(root);
 
 			return result;
 		}
@@ -64,12 +64,12 @@ namespace ReverseMarkdown
 
 		public IConverter Lookup(string tagName)
 		{
-			return this._converters.ContainsKey(tagName) ? this._converters[tagName] : GetDefaultConverter(tagName);
+			return _converters.ContainsKey(tagName) ? _converters[tagName] : GetDefaultConverter(tagName);
 		}
 
 		protected IConverter GetDefaultConverter(string tagName)
 		{
-			switch (this._config.UnknownTagsConverter)
+			switch (_config.UnknownTagsConverter)
 			{
 				case "pass_through":
 					return new PassThrough(this);

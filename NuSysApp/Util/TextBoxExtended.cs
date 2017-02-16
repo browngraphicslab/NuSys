@@ -20,11 +20,6 @@ namespace NuSysApp
         //public static readonly DependencyProperty RtfProperty = DependencyProperty.RegisterAttached("Rtf", typeof(string), typeof(TextBoxExtended), new PropertyMetadata(null, RtfTextPropertyChanged));
 
 
-        public TextBoxExtended()
-        {
-
-        }
-
         public double ComputeRtfHeight()
         {
             string str;

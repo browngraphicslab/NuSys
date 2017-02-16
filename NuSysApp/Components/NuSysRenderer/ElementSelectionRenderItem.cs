@@ -114,7 +114,7 @@ namespace NuSysApp
             {
                 Height = 20,
                 Width = 20,
-                Background = Colors.Transparent,
+                Background = Colors.Transparent
             };
             DragToolsRect.IsVisible = false;
             AddChild(DragToolsRect);
@@ -130,7 +130,7 @@ namespace NuSysApp
         private void BtnTools_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             DragToolsRect.IsVisible = true;
-            DragToolsRect.Transform.LocalPosition = Vector2.Transform(pointer.CurrentPoint, this.Transform.ScreenToLocalMatrix);
+            DragToolsRect.Transform.LocalPosition = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
         }
 
         /// <summary>
@@ -143,7 +143,7 @@ namespace NuSysApp
             DragToolsRect.IsVisible = false;
 
             Debug.Assert(_isSingleCollectionSelected);
-            var collectionVm = (_selectedItems.First()?.ViewModel as ElementViewModel)?.Controller as ElementCollectionController;
+            var collectionVm = _selectedItems.First()?.ViewModel?.Controller as ElementCollectionController;
             Debug.Assert(collectionVm != null);
             collectionVm.CreateToolFromCollection(pointer.CurrentPoint.X, pointer.CurrentPoint.Y);
         }

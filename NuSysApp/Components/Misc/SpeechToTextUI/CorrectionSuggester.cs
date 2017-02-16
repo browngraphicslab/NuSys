@@ -15,7 +15,7 @@ namespace NuSysApp.Misc.SpeechToTextUI
 
         public CorrectionSuggester()
         {
-            this._correctionsByIndex = new List<HashSet<string>>();
+            _correctionsByIndex = new List<HashSet<string>>();
         }
 
         internal List<string> GetAlternatesByIndex(int index)
@@ -67,7 +67,7 @@ namespace NuSysApp.Misc.SpeechToTextUI
                     if (nextSentenceWordCount < currWordCount)
                     {
                         // combines the extra words in hypothesisWords into a single string
-                        hypothesisWords = hypothesesList[i].Split(new char[] { ' ' }, nextSentenceWordCount);
+                        hypothesisWords = hypothesesList[i].Split(new[] { ' ' }, nextSentenceWordCount);
                     }
                 }
 

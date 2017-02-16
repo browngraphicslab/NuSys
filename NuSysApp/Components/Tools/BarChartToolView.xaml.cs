@@ -44,17 +44,17 @@ namespace NuSysApp
         private double _x;
         private double _y;
         private Image _dragItem;
-        private enum DragMode { Filter, Scroll };
-        private BarChartToolView.DragMode _currentDragMode = BarChartToolView.DragMode.Filter;
+        private enum DragMode { Filter, Scroll }
+        private DragMode _currentDragMode = DragMode.Filter;
 
         public BarChartToolView(BaseToolView baseTool)
         {
-            this.InitializeComponent();
+            InitializeComponent();
             _baseTool = baseTool;
             _barChartItemDictionary = new Dictionary<string, BarChartItem>();
             BarChartLegendItems = new ObservableCollection<BarChartItemViewModel>();
             _dragItem = baseTool.Vm.InitializeDragFilterImage();
-            xInkCanvas.InkPresenter.InputDeviceTypes = Windows.UI.Core.CoreInputDeviceTypes.Pen;
+            xInkCanvas.InkPresenter.InputDeviceTypes = CoreInputDeviceTypes.Pen;
             xInkCanvas.InkPresenter.InputProcessingConfiguration.RightDragAction = InkInputRightDragAction.LeaveUnprocessed;
             xInkCanvas.InkPresenter.StrokesCollected += InkPresenter_StrokesCollected;
         }
@@ -121,7 +121,7 @@ namespace NuSysApp
                 }
             }
             //deselect all the bars that were hit
-            if (allSelected == true)
+            if (allSelected)
             {
                 foreach (var bar in listOfBarsHit)
                 {

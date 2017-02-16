@@ -59,8 +59,8 @@ namespace NuSysApp
             Debug.Assert(vm.InAnchor != null);
             Debug.Assert(vm.OutAnchor != null);
 
-            this.UpdateEndPoints();
-            this.UpdateArrow();
+            UpdateEndPoints();
+            UpdateArrow();
 
             var anchor1 = new Point(vm.InAnchor.X, vm.InAnchor.Y);
             var anchor2 = new Point(vm.OutAnchor.X, vm.OutAnchor.Y);

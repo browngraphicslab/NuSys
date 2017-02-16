@@ -11,14 +11,14 @@ namespace ReverseMarkdown.Converters
 
 		public ConverterBase(Converter converter) 
 		{
-			this._converter = converter;
+			_converter = converter;
 		}
 
 		protected Converter Converter 
 		{
 			get 
 			{
-				return this._converter;
+				return _converter;
 			}
 		}
 
@@ -30,7 +30,7 @@ namespace ReverseMarkdown.Converters
 			{
 				foreach(HtmlNode nd in node.ChildNodes)
 				{
-					result+=this.Treat(nd);
+					result+=Treat(nd);
 				}
 			}
 
@@ -38,7 +38,7 @@ namespace ReverseMarkdown.Converters
 		}
 
 		public string Treat(HtmlNode node){
-			return this.Converter.Lookup(node.Name).Convert(node); 
+			return Converter.Lookup(node.Name).Convert(node); 
 		}
 
 		public string ExtractTitle(HtmlNode node)

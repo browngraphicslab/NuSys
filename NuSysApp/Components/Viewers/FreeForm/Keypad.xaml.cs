@@ -21,7 +21,7 @@ namespace NuSysApp
     {
         public Keypad()
         {
-            this.InitializeComponent();
+            InitializeComponent();
             Button a = new Button();
         }
 

@@ -269,8 +269,8 @@
 
     <Grid Width="300">
         <Grid.RowDefinitions>
-            <RowDefinition Height="375"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="375" />
+            <RowDefinition Height="Auto" />
 
         </Grid.RowDefinitions>
 
@@ -280,13 +280,12 @@
                     <ListView x:Name="chatDisplayListView" ItemsSource="{Binding Messages}" Height="300" Width="300" Background ="White" Opacity="1" Padding ="0">
                         <ListView.ItemContainerStyle>
                             <Style TargetType="ListViewItem">
-                                <Setter Property="IsHitTestVisible" Value="False"></Setter>
-                                
+                                <Setter Property="IsHitTestVisible" Value="False" />
+
                             </Style>
                         </ListView.ItemContainerStyle>
                         <ListView.ItemContainerTransitions>
-                            <TransitionCollection>
-                            </TransitionCollection>
+                            <TransitionCollection />
                         </ListView.ItemContainerTransitions>
 
 
@@ -294,11 +293,10 @@
                             <DataTemplate x:DataType="local:ChatMessageTemplate">
                                 <StackPanel Width="280" Margin="0,2,0,0">
                                     <StackPanel Orientation="Horizontal" >
-                                        <TextBlock Text="{Binding UserName}" FontWeight="Bold" Foreground="{Binding UserColor}"></TextBlock>
-                                        <TextBlock Text="{Binding TimeStamp}" FontSize="8" FontWeight="ExtraLight" Foreground="Gray" VerticalAlignment="Center" Margin="5, 0,0,0"></TextBlock>
+                                        <TextBlock Text="{Binding UserName}" FontWeight="Bold" Foreground="{Binding UserColor}" />
+                                        <TextBlock Text="{Binding TimeStamp}" FontSize="8" FontWeight="ExtraLight" Foreground="Gray" VerticalAlignment="Center" Margin="5, 0,0,0" />
                                     </StackPanel>
-                                    <TextBlock Text="{Binding MessageText}" TextWrapping="Wrap">
-                                        </TextBlock>
+                                    <TextBlock Text="{Binding MessageText}" TextWrapping="Wrap" />
                                 </StackPanel>
                             </DataTemplate>
                         </ListView.ItemTemplate>
@@ -310,7 +308,7 @@
         </Canvas>
         <Grid Grid.Row="1" Margin="0,15,0,0" HorizontalAlignment="Left">
             <Button x:Name="ChatBoxButton" Click="ChatBoxButton_OnClick" Style="{StaticResource CircleButton}" Background="{StaticResource color4}" Width="50" Height="50">
-                <Image Source="ms-appx:///Assets/icon_chat.png" Width="25" Height="25"></Image>
+                <Image Source="ms-appx:///Assets/icon_chat.png" Width="25" Height="25" />
             </Button>
             <Button x:Name="ChatNotifs" Margin="-10,-35,0,0" Style="{StaticResource CircleButton}" Visibility="Collapsed" Background="Red" Width="30" Height="30" Opacity="1">
                 <TextBlock x:Name="NotifNumber" Text="0"/>

@@ -440,7 +440,7 @@ namespace NuSysApp
 
                 var point = new Vector2((float)(midx + (r / 4) * Math.Sin(midAngle)), (float)(midy - (r / 4) * Math.Cos(midAngle)));
 
-                var text = element.Item + " " + element.Value.ToString();
+                var text = element.Item + " " + element.Value;
                 ds.DrawText(
                     text,
                     p1,

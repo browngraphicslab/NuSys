@@ -173,7 +173,7 @@ namespace NuSysApp
                 {
                     var filteredList = FilterValuesList(_searchBar.Text); //FilterValuesList(xSearchBox.Text);
 
-                    if (!ScrambledEquals(_metadataValuesList.GetItems().Select(item => ((KeyValuePair<string, double>)item).Key), filteredList.Select(item => ((KeyValuePair<string, double>)item).Key)))
+                    if (!ScrambledEquals(_metadataValuesList.GetItems().Select(item => item.Key), filteredList.Select(item => item.Key)))
                     {
                         //if new filtered list is different from old filtered list, set new list as item source, set the visual selection, and 
                         //scroll into view if necessary.
@@ -230,7 +230,7 @@ namespace NuSysApp
                     {
                         foreach (var item in vm.Selection.Item2)
                         {
-                            var toAdd = _metadataValuesList.GetItems().Where(kvp => ((KeyValuePair<string, double>)kvp).Key.Equals(item)).FirstOrDefault();
+                            var toAdd = _metadataValuesList.GetItems().Where(kvp => kvp.Key.Equals(item)).FirstOrDefault();
 
                             _metadataValuesList.SelectItem(toAdd);
                         }
@@ -275,12 +275,12 @@ namespace NuSysApp
             keysColumn.RelativeWidth = 1;
             keysColumn.ColumnFunction = model => model;
 
-            _metadataKeysList.AddColumns(new List<ListColumn<string>>() { keysColumn });
+            _metadataKeysList.AddColumns(new List<ListColumn<string>> { keysColumn });
             _metadataKeysList.RowTapped += metadataKeysList_RowTapped; ;
             _metadataKeysList.RowDragged += _metadataKeysList_RowDragged; ;
             _metadataKeysList.RowDragCompleted += _metadataKeysList_RowDragCompleted; ;
 
-            _metadataKeysList.AddItems(new List<string>() { "1", "2", "3", "4", "5", "6", "7", "9", "10", });
+            _metadataKeysList.AddItems(new List<string> { "1", "2", "3", "4", "5", "6", "7", "9", "10" });
             _metadataKeysList.Transform.LocalPosition = new Vector2(0, SEARCHBAR_HEIGHT + FILTER_CHOOSER_HEIGHT);
             _metadataKeysList.AddItems((Vm as MetadataToolViewModel)?.AllMetadataDictionary.Keys.ToList());
 
@@ -298,7 +298,7 @@ namespace NuSysApp
             listColumn.RelativeWidth = 1;
             listColumn.ColumnFunction = model => model.Key;
 
-            _metadataValuesList.AddColumns(new List<ListColumn<KeyValuePair<string, double>>>() { listColumn });
+            _metadataValuesList.AddColumns(new List<ListColumn<KeyValuePair<string, double>>> { listColumn });
             _metadataValuesList.RowTapped += _metadataValuesList_RowTapped;
             _metadataValuesList.RowDragged += _metadataValuesList_RowDragged; ;
             _metadataValuesList.RowDragCompleted += _metadataValuesList_RowDragCompleted; ;
@@ -359,7 +359,7 @@ namespace NuSysApp
                 else
                 {
                     vm.Selection = new Tuple<string, HashSet<string>>(vm.Selection.Item1,
-                        new HashSet<string>() { item.Key });
+                        new HashSet<string> { item.Key });
                 }
                 var dragDestination = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, null, 2) as ToolWindow; //maybe replace null w render engine.root
                 var canvasCoordinate = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(new Vector2(pointer.CurrentPoint.X, pointer.CurrentPoint.Y), SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection);
@@ -374,7 +374,7 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         public void DragFilterIcon(CanvasPointer pointer)
         {
-            _dragFilterItem.Transform.LocalPosition = Vector2.Transform(pointer.CurrentPoint, this.Transform.ScreenToLocalMatrix);
+            _dragFilterItem.Transform.LocalPosition = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
             if (_dragFilterItem.Transform.LocalX > 0 && _dragFilterItem.Transform.LocalX < Width &&
                 _dragFilterItem.Transform.LocalY < Height && _dragFilterItem.Transform.LocalY > 0)
             {
@@ -407,7 +407,7 @@ namespace NuSysApp
             if (!vm.Selection.Item2.Contains(textTapped) && vm.Selection.Item2.Count == 0)
             {
                 vm.Selection = new Tuple<string, HashSet<string>>(vm.Selection.Item1,
-                            new HashSet<string>() { textTapped });
+                            new HashSet<string> { textTapped });
             }
             if (vm.Selection.Item2.Count == 1 &&
                 vm.Selection.Item2.First().Equals(textTapped))
@@ -458,14 +458,14 @@ namespace NuSysApp
                         else
                         {
                             vm.Selection = new Tuple<string, HashSet<string>>(vm.Selection.Item1,
-                            new HashSet<string>() { item.Key });
+                            new HashSet<string> { item.Key });
                         }
                     }
                     else
                     {
                         //if tapped item is not selected and in single mode, set the item as the only selection
                         vm.Selection = new Tuple<string, HashSet<string>>(vm.Selection.Item1,
-                             new HashSet<string>() { item.Key });
+                             new HashSet<string> { item.Key });
                     }
                 }
             }

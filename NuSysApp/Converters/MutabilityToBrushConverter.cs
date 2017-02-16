@@ -29,9 +29,9 @@ namespace NuSysApp.Converters
         {
             if ((MetadataMutability) value == MetadataMutability.IMMUTABLE)
             {
-                return new SolidColorBrush() {Color = Colors.LightGray, Opacity = .5};
+                return new SolidColorBrush {Color = Colors.LightGray, Opacity = .5};
             }
-           return new SolidColorBrush() { Color = Colors.White, Opacity=.4};
+           return new SolidColorBrush { Color = Colors.White, Opacity=.4};
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

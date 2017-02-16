@@ -16,7 +16,7 @@
         
         <Canvas x:Name="xCanvas" Width="{Binding Width}" Height="{Binding Height}" Background="Transparent" HorizontalAlignment="Left" VerticalAlignment="Top">
             <Canvas.Clip>
-                <RectangleGeometry Rect="{Binding ClipRect}"></RectangleGeometry>
+                <RectangleGeometry Rect="{Binding ClipRect}" />
             </Canvas.Clip>
             <Canvas x:Name="xAtomContainer" HorizontalAlignment="Center" Width="100000" Height="100000" Background="Transparent"  RenderTransform="{Binding CompositeTransform}">
 

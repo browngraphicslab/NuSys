@@ -80,14 +80,14 @@
             <Grid>
                 <Rectangle x:Name="Rect" Fill="LightGray" Width="260"  HorizontalAlignment="Left" Visibility="Collapsed"/>
                 <Button Background="{StaticResource color2}" Margin="0,2,0,2" x:Name="DeleteButton" Visibility="{Binding IsSelected, Converter={StaticResource vConverter}}" Click="DeleteButton_OnClick" Style="{StaticResource NodeSubMenuItem}" HorizontalAlignment="Stretch">
-                    <Image Name ="DeleteImg" Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25"></Image>
+                    <Image Name ="DeleteImg" Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" />
                 </Button>
                 <StackPanel Orientation="Horizontal" Visibility ="Collapsed">
                     <StackPanel Orientation="Horizontal" IsHitTestVisible="{Binding IsSelected}" >
                         <TextBox x:Name ="Title" HorizontalAlignment="Stretch" Height="32" VerticalAlignment="Top" Text="{Binding Title}" TextAlignment="Center" GotFocus="Title_GotFocus" LostFocus="Title_LostFocus"/>
                     </StackPanel>
                     <Button x:Name="LinkDirectionButton" Padding ="0" Click="LinkDirectionButton_OnClick" Style="{StaticResource CircleButton}" Background="{StaticResource color4}" Width="32" Height="32">
-                        <Image x:Name="image" Source="ms-appx:///Assets/mono1.png" Width="32" Height="32" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
+                        <Image x:Name="image" Source="ms-appx:///Assets/mono1.png" Width="32" Height="32" VerticalAlignment="Center" HorizontalAlignment="Center" />
                     </Button>
                 </StackPanel>
             </Grid>

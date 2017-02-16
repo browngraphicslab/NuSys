@@ -30,14 +30,14 @@
         <local:NodeTemplate.TopMenu>
             <StackPanel Orientation="Horizontal">
                 <Button x:Name="OptionsButton" Height="35" Click="OnOptionsClick">
-                    <TextBlock Text="Options"></TextBlock>
+                    <TextBlock Text="Options" />
                 </Button>
                 <StackPanel x:Name="OptionsPanel" Visibility="Collapsed" Orientation="Vertical"  Height="60" Width="120">
                     <StackPanel.RenderTransform>
-                        <TranslateTransform X="-15"  Y="5"></TranslateTransform>
+                        <TranslateTransform X="-15"  Y="5" />
                     </StackPanel.RenderTransform>
                     <Button Click="OnFiniteClick">
-                        <TextBlock x:Name="FiniteText"></TextBlock>
+                        <TextBlock x:Name="FiniteText" />
                     </Button>
                 </StackPanel>
             </StackPanel>
@@ -46,22 +46,22 @@
         <local:NodeTemplate.SubMenu>
             <StackPanel Orientation="Vertical">
                 <Button Margin="0,0,0,0" x:Name="ListButton" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}">
-                <Image Source="ms-appx:///Assets/node icons/icon_list.png" Width="20" Stretch="Uniform"></Image>
-            </Button>
+                <Image Source="ms-appx:///Assets/node icons/icon_list.png" Width="20" Stretch="Uniform" />
+                </Button>
             <Button Margin="0,0,0,0" x:Name="FreeFormButton"  Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}">
-                <Image Source="ms-appx:///Assets/node icons/icon_freeform.png" Height="23" Stretch="Uniform"></Image>
+                <Image Source="ms-appx:///Assets/node icons/icon_freeform.png" Height="23" Stretch="Uniform" />
             </Button>
 
             <Button Margin="0,0,0,0" x:Name="TimeLineButton" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}">
-                <Image Source="ms-appx:///Assets/node icons/icon_line.png"  Width="25" Stretch="Uniform"></Image>
+                <Image Source="ms-appx:///Assets/node icons/icon_line.png"  Width="25" Stretch="Uniform" />
             </Button>
 
             <Button Margin="0,0,0,0" x:Name="EnterButton" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}">
-                <Image Source="ms-appx:///Assets/node icons/icon_enter.png"  Height="28" Stretch="Uniform"></Image>
+                <Image Source="ms-appx:///Assets/node icons/icon_enter.png"  Height="28" Stretch="Uniform" />
             </Button>
             <Grid x:Name="xBtnTools" Width="60" Height="60" Margin="10,0,10,0" Background="Transparent">
-                    <TextBlock Margin="0,0,0,12" Text="Tools" TextAlignment="Center" FontSize="12" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" Foreground="{StaticResource color3}" ></TextBlock>
-                    <Image Height="30" Margin="0,5,0,0"   Source="ms-appx:///Assets/tools icon.png" ></Image>
+                    <TextBlock Margin="0,0,0,12" Text="Tools" TextAlignment="Center" FontSize="12" FontFamily="ms-appx:/Assets/fonts/FiraSans-UltraLight.ttf#Fira Sans UltraLight" Foreground="{StaticResource color3}" />
+                <Image Height="30" Margin="0,5,0,0"   Source="ms-appx:///Assets/tools icon.png" />
             </Grid>
 
             </StackPanel>
@@ -76,9 +76,7 @@
             <Button x:Name="btnDelete" Visibility="Collapsed">X</Button>
         </Grid>
 
-                <Grid x:Name="ExpandedGrid" Background="Transparent" Width="{Binding Width}" Height="{Binding Height}" VerticalAlignment="Top" HorizontalAlignment="Left">
-
-        </Grid>
+                <Grid x:Name="ExpandedGrid" Background="Transparent" Width="{Binding Width}" Height="{Binding Height}" VerticalAlignment="Top" HorizontalAlignment="Left" />
 
         <Path x:Name="Resizer" Visibility="Collapsed" Fill="Black" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
               Height="59.862" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="61"

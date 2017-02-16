@@ -57,7 +57,7 @@ namespace NuSysApp
             _linkIconDisplayElement = new RectangleUIElement(this, resourceCreator)
             {
                 Height = 50,
-                Width = 50,
+                Width = 50
             };
             AddChild(_linkIconDisplayElement);
 
@@ -239,12 +239,9 @@ namespace NuSysApp
                 base.Update(parentLocalToScreenTransform);
                 return;
             }
-            else
-            {
-                _linkAnnotationsInputBox.IsVisible = true;
-                _toggleDirectionButton.IsVisible = true;
-                _reverseDirectionButton.IsVisible = true;
-            }
+            _linkAnnotationsInputBox.IsVisible = true;
+            _toggleDirectionButton.IsVisible = true;
+            _reverseDirectionButton.IsVisible = true;
 
             _linkAnnotationsInputBox.Width = Width - 2 * horizontal_spacing;
             _linkAnnotationsInputBox.Height = Height - vertical_spacing - 20 - linkDirectionVerticalSpace;

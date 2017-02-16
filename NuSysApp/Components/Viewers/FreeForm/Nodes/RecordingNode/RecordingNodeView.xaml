@@ -18,7 +18,7 @@
         </Grid.RenderTransform>
         <Button Margin="0,2,5,2" x:Name="btnDelete" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color2}" Tapped="btnDelete_Tapped" Visibility="Visible" VerticalAlignment="Top" >
 
-            <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform"></Image>
+            <Image Source="ms-appx:///Assets/node icons/delete.png" Height="25" Width="25" Stretch="Uniform" />
         </Button>
         <Border x:Name="xRootBorder" BorderThickness="1" BorderBrush="Black" Width="{Binding Width}" Height="{Binding Height}" 
                ManipulationMode="TranslateX, TranslateY" Grid.Column="1">

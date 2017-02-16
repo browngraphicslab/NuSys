@@ -25,7 +25,7 @@ namespace NuSysApp
     public sealed partial class ChatPopupView : UserControl
     {
         private ObservableCollection<DialogBlock> _texts = new ObservableCollection<DialogBlock>();
-        private bool _touching = false;
+        private bool _touching;
         private int _newTextNum;
 
         public delegate void NewTextsChangedHandler(int newTextNumber);
@@ -34,7 +34,7 @@ namespace NuSysApp
         //private Dictionary<DialogBlock,long> _textTimes = new Dictionary<DialogBlock, long>(); 
         public ChatPopupView()
         {
-            this.InitializeComponent();
+            InitializeComponent();
             Texts.ItemsSource = _texts;
             KeyUp += ChatPopupView_KeyUp;
         }

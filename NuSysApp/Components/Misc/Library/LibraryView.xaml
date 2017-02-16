@@ -90,33 +90,30 @@
     <Grid x:Name="Container" Width="490" Height="500" BorderBrush="{StaticResource color3}">
         <Grid x:Name="Pivot" Background="{StaticResource color1}" BorderBrush="{StaticResource color3}" BorderThickness="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.RowDefinitions>
-                <RowDefinition Height="42"></RowDefinition>
-                <RowDefinition Height="*"></RowDefinition>
-                <RowDefinition Height="42"></RowDefinition>
+                <RowDefinition Height="42" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="42" />
             </Grid.RowDefinitions>
             <Grid x:Name="xHeaderRow" Grid.Row="0" HorizontalAlignment="Stretch"  Background="Transparent">
                 <Grid>
-                    <TextBlock Text="Library" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" Foreground="{StaticResource color3}" FontSize="24" Margin="5,5,5,5"></TextBlock>
-                    
+                    <TextBlock Text="Library" FontFamily="ms-appx:/Assets/Orator-Std-Medium_34151.ttf#Orator Std" Foreground="{StaticResource color3}" FontSize="24" Margin="5,5,5,5" />
+
                     <StackPanel HorizontalAlignment="Right" VerticalAlignment="Bottom" Orientation="Horizontal">
-                        <local:UndoButton x:Name="xUndoButton">
-                        </local:UndoButton>
+                        <local:UndoButton x:Name="xUndoButton" />
                         <Button HorizontalAlignment="Right" Margin="0,0,0,3"  Height="40" Width="50"  Tapped="Folder_Tapped" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Bottom">
-                            <Image Source="ms-appx:/Assets/add from file dark.png"></Image>
+                            <Image Source="ms-appx:/Assets/add from file dark.png" />
                         </Button>
                     </StackPanel>
                     
                 </Grid>
             </Grid>
 
-            <Grid x:Name="ListContainer" Grid.Row="1" Background="{StaticResource color6}">
-                
-            </Grid>
+            <Grid x:Name="ListContainer" Grid.Row="1" Background="{StaticResource color6}" />
 
             <Grid Grid.Row="2">
-                <local:TextInputBlock x:Name ="Searchfield"  Width="440"  BubbleTop="False" TextChanged="TextBox_OnTextChanging"  LeftJustified="True" Margin="-40,2,0,2"></local:TextInputBlock>
+                <local:TextInputBlock x:Name ="Searchfield"  Width="440"  BubbleTop="False" TextChanged="TextBox_OnTextChanging"  LeftJustified="True" Margin="-40,2,0,2" />
                 <Image Source="/Assets/search as collection.png" HorizontalAlignment="Right" Margin="10,12,10,10" x:Name="xSearchExportButton" ManipulationMode="TranslateX, TranslateY" ManipulationStarted="XSearchExportButton_OnManipulationStarted"
-                       ManipulationDelta="XSearchExportButton_OnManipulationDelta" ManipulationCompleted="XSearchExportButton_OnManipulationCompleted" PointerPressed="XSearchExportButton_OnPointerPressed"></Image>
+                       ManipulationDelta="XSearchExportButton_OnManipulationDelta" ManipulationCompleted="XSearchExportButton_OnManipulationCompleted" PointerPressed="XSearchExportButton_OnPointerPressed" />
 
             </Grid>
         </Grid>

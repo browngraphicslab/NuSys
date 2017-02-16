@@ -10,13 +10,13 @@ namespace ReverseMarkdown.Converters
 		public Td(Converter converter)
 			: base(converter)
 		{
-			this.Converter.Register("td", this);
-			this.Converter.Register("th", this);
+			Converter.Register("td", this);
+			Converter.Register("th", this);
 		}
 
 		public override string Convert(HtmlNode node)
 		{
-			string content = this.TreatChildren(node);
+			string content = TreatChildren(node);
 			return string.Format(" {0} |", content);
 		}
 	}

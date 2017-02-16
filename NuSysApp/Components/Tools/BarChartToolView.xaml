@@ -20,7 +20,7 @@
                 <RowDefinition Height="50"/>
             </Grid.RowDefinitions>
         </Grid>
-        <InkCanvas x:Name="xInkCanvas" IsHitTestVisible="False"></InkCanvas>
+        <InkCanvas x:Name="xInkCanvas" IsHitTestVisible="False" />
         <ListView x:Name="xBarChartLegend" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" MinWidth="100"
                   BorderThickness="2,0,0,0" BorderBrush="{StaticResource color1}"
                   ManipulationMode="TranslateX, TranslateY" Width="Auto" Background="White" SelectionMode="Multiple"  ItemsSource="{x:Bind BarChartLegendItems}" >

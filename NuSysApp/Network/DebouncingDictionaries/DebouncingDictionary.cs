@@ -44,7 +44,7 @@ namespace NuSysApp
         /// <summary>
         /// the static boolean indicating if the debouncing timer is currently timing.  
         /// </summary>
-        private static bool _timing = false;
+        private static bool _timing;
 
         /// <summary>
         /// this dictionary will store properties that need to be updated not but necessarily stored on the server.  
@@ -59,7 +59,7 @@ namespace NuSysApp
         /// <summary>
         /// bool representing whether the debouncing dict is already mid-tick
         /// </summary>
-        private static bool _alreadyTicking = false;
+        private static bool _alreadyTicking;
 
         /// <summary>
         /// the id of the object this debouncing dictionary updates

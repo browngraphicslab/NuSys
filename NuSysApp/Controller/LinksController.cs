@@ -614,10 +614,7 @@ namespace NuSysApp
                 }
                 return new HashSet<ILinkable>();
             }
-            else
-            {
-                return new HashSet<ILinkable>();
-            }
+            return new HashSet<ILinkable>();
         }
 
         private void LinkableOnDisposed(object sender, object args)

@@ -347,7 +347,7 @@ namespace NuSysApp
                 element.Width = barWidth;
                 element.Height = element.Value / maxYval * h;
 
-                element.Transform.LocalPosition = new System.Numerics.Vector2(offset, Height - InnerPadding - element.Height);
+                element.Transform.LocalPosition = new Vector2(offset, Height - InnerPadding - element.Height);
                 offset += barWidth + spacing;
             }
 

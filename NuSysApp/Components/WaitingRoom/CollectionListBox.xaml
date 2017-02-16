@@ -11,14 +11,14 @@
 
     <Grid Height="40" DoubleTapped="Collection_OnDoubleTapped">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="320"></ColumnDefinition>
-            <ColumnDefinition Width="100"></ColumnDefinition>
-            <ColumnDefinition Width="200"></ColumnDefinition>
-            <ColumnDefinition Width="300"></ColumnDefinition>
+            <ColumnDefinition Width="320" />
+            <ColumnDefinition Width="100" />
+            <ColumnDefinition Width="200" />
+            <ColumnDefinition Width="300" />
         </Grid.ColumnDefinitions>
         <TextBlock x:Name="TitleBox" Grid.Column="0" FontSize="16" VerticalAlignment="Bottom" Foreground="{StaticResource color3}">asdf</TextBlock>
         <TextBlock x:Name="AccessBox" Grid.Column="1" FontSize="16" VerticalAlignment="Bottom" Foreground="{StaticResource color3}">asdf</TextBlock>
         <TextBlock x:Name="DateBox" Grid.Column="2" FontSize="16" VerticalAlignment="Bottom" Foreground="{StaticResource color3}">asdf</TextBlock>
-        <StackPanel x:Name="UsersBox" Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Bottom"></StackPanel>
+        <StackPanel x:Name="UsersBox" Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Bottom" />
     </Grid>
 </UserControl>

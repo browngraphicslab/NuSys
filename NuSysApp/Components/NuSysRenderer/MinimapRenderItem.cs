@@ -166,7 +166,7 @@ namespace NuSysApp
                 var cp = Win2dUtil.Invert(c);
 
                 var scale = Math.Min(newW / (float)_bb.Width, newH / (float)_bb.Height);
-                var s = Matrix3x2.CreateScale((float)scale);
+                var s = Matrix3x2.CreateScale(scale);
 
                 
 

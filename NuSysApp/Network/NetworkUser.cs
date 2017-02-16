@@ -38,9 +38,9 @@ namespace NuSysApp
 
         #region Private Variables
         private Color _color;
-        private bool _colorSet = false;
-        private LibraryElementController _controller = null;
-        private string _currEditingControllerId = null;
+        private bool _colorSet;
+        private LibraryElementController _controller;
+        private string _currEditingControllerId;
         #endregion Private Variables
 
 
@@ -80,11 +80,11 @@ namespace NuSysApp
             {
                 if (_currEditingControllerId != null)
                 {
-                    SessionController.Instance.UserController.RemoveUser(_currEditingControllerId, this.UserID);
+                    SessionController.Instance.UserController.RemoveUser(_currEditingControllerId, UserID);
                 }
                 if (controllerId != null)
                 {
-                    SessionController.Instance.UserController.AddUser(controllerId, this.UserID);
+                    SessionController.Instance.UserController.AddUser(controllerId, UserID);
                 }
                 _currEditingControllerId = controllerId;
             }

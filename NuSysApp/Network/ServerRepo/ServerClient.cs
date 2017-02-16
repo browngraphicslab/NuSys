@@ -26,7 +26,7 @@ namespace NuSysApp
             Terrible = 1000,
             Bad = 275,
             Okay = 120,
-            Good = 80,
+            Good = 80
         }
 
         private MessageWebSocket _socket;
@@ -126,7 +126,7 @@ namespace NuSysApp
 
         private string GetUserCredentials()
         {
-            return WaitingRoomView.ServerSessionID?.ToString();
+            return WaitingRoomView.ServerSessionID;
         }
 
         private Uri GetUri(string additionToBase, bool useWebSocket = false)
@@ -277,7 +277,7 @@ namespace NuSysApp
                 {
                     ConnectionStrenthChanged?.Invoke(this, ConnectionStrength.UnResponsive);
                     _currentStrength = ConnectionStrength.UnResponsive;
-                    _returnMessages.TryAdd(mreId,new Message()
+                    _returnMessages.TryAdd(mreId,new Message
                     {
                         {NusysConstants.REQUEST_SUCCESS_BOOL_KEY,false.ToString() }
                     });

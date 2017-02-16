@@ -13,10 +13,10 @@ namespace NuSysApp
         {
             Id = id;
 
-            this._timeStamp = time;
-            this._creator = name; 
-            this._nodetype = nodetype;
-            this._title = title;
+            _timeStamp = time;
+            _creator = name; 
+            _nodetype = nodetype;
+            _title = title;
 
             // The list item needs to update live as the title of the item is changed elsewhere.
             var itemController = SessionController.Instance.ElementModelIdToElementController[id].LibraryElementController;

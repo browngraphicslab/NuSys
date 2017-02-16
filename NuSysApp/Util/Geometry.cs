@@ -83,7 +83,7 @@ namespace NuSysApp
         public static Line[] NodeToLineSegment(ElementViewModel node)
         {
             var lines = new Line[4];
-            var nodeModel = (ElementModel) node.Model;
+            var nodeModel = node.Model;
             var x = nodeModel.X + node.Transform.TranslateX;
             var y = nodeModel.Y + node.Transform.TranslateY;
 
@@ -172,12 +172,12 @@ namespace NuSysApp
 
         public static Rect NodeToBoudingRect(ElementViewModel nodeVm)
         {
-            return new Rect()
+            return new Rect
             {
-                Height = ((ElementModel)(nodeVm.Model)).Height,
-                Width = ((ElementModel)(nodeVm.Model)).Width,
-                X = ((ElementModel)(nodeVm.Model)).X,
-                Y = ((ElementModel)(nodeVm.Model)).Y
+                Height = nodeVm.Model.Height,
+                Width = nodeVm.Model.Width,
+                X = nodeVm.Model.X,
+                Y = nodeVm.Model.Y
             };
         }
 
@@ -274,12 +274,12 @@ namespace NuSysApp
                 }
             }
 
-            return new Rect()
+            return new Rect
             {
-                Height = (max.X - min.X) * ((double)Constants.MaxCanvasSize),
-                Width = (max.Y - min.Y) * ((double)Constants.MaxCanvasSize),
-                X = min.X * ((double)Constants.MaxCanvasSize),
-                Y = min.Y *((double)Constants.MaxCanvasSize) 
+                Height = (max.X - min.X) * Constants.MaxCanvasSize,
+                Width = (max.Y - min.Y) * Constants.MaxCanvasSize,
+                X = min.X * Constants.MaxCanvasSize,
+                Y = min.Y *Constants.MaxCanvasSize 
             };
         }
     }

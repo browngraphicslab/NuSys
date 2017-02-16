@@ -19,7 +19,7 @@
     <Canvas x:Name="xCanvas">
         <StackPanel Orientation="Horizontal">
             <Button x:Name="xDeleteButton" Style="{StaticResource NodeSubMenuItem}" Background="{StaticResource color1}" Margin="0,45,5,0"  Click ="Delete_Click" VerticalAlignment="Top">
-                <Image Source="ms-appx:///Assets/node icons/delete.png" Height="20" Width="20"></Image>
+                <Image Source="ms-appx:///Assets/node icons/delete.png" Height="20" Width="20" />
             </Button>
             <Grid Name="Grid1"  MinHeight="100" MinWidth="100" BorderBrush="CadetBlue" Background="White"  BorderThickness="1">
                 <Grid x:Name ="xGrid" >

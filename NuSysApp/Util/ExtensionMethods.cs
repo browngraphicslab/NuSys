@@ -11,7 +11,7 @@ namespace NuSysApp
         public static string Limit(this string str, int characterCount)
         {
             if (str.Length <= characterCount) return str;
-            else return str.Substring(0, characterCount).TrimEnd(' ');
+            return str.Substring(0, characterCount).TrimEnd(' ');
         }
 
         /// <summary>
@@ -22,8 +22,7 @@ namespace NuSysApp
             if (characterCount < 5) return str.Limit(characterCount); // Can’t do much with such a short limit
             if (str.Length <= characterCount - 3)
                 return str;
-            else
-                return str.Substring(0, characterCount - 3) + "...";
+            return str.Substring(0, characterCount - 3) + "...";
         }
 
         public static string LimitWithElipsesOnWordBoundary(this string str, int characterCount)
@@ -31,19 +30,13 @@ namespace NuSysApp
             if (characterCount < 5) return str.Limit(characterCount); // Can’t do much with such a short limit
             if (str.Length <= characterCount - 3)
                 return str;
-            else
+            int lastspace = str.Substring(0, characterCount - 3).LastIndexOf(' ');
+            if (lastspace > 0 && lastspace > characterCount - 10)
             {
-                int lastspace = str.Substring(0, characterCount - 3).LastIndexOf(' ');
-                if (lastspace > 0 && lastspace > characterCount - 10)
-                {
-                    return str.Substring(0, lastspace) + "...";
-                }
-                else
-                {
-                    // No suitable space was found
-                    return str.Substring(0, characterCount - 3) + "...";
-                }
+                return str.Substring(0, lastspace) + "...";
             }
+            // No suitable space was found
+            return str.Substring(0, characterCount - 3) + "...";
         }
     }
 }

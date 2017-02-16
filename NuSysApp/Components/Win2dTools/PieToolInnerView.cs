@@ -71,8 +71,8 @@ namespace NuSysApp
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            _pieChart.Width = this.Width;
-            _pieChart.Height = this.Height;
+            _pieChart.Width = Width;
+            _pieChart.Height = Height;
             base.Update(parentLocalToScreenTransform);
 
         }

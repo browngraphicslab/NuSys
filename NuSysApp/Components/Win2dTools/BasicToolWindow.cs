@@ -196,7 +196,7 @@ namespace NuSysApp
             //AddChild(_toolView);
 
             _vm.ReloadPropertiesToDisplay();
-            _toolView.SetProperties((_vm as BasicToolViewModel).PropertiesToDisplay);
+            _toolView.SetProperties(_vm.PropertiesToDisplay);
             _currentViewMode = ViewMode.List;
 
         }
@@ -214,7 +214,7 @@ namespace NuSysApp
             _toolView = _pieInnerView;
 
             _vm.ReloadPropertiesToDisplay();
-            _toolView.SetProperties((_vm as BasicToolViewModel).PropertiesToDisplay);
+            _toolView.SetProperties(_vm.PropertiesToDisplay);
             _currentViewMode = ViewMode.PieChart;
 
         }
@@ -233,7 +233,7 @@ namespace NuSysApp
             _toolView = _barInnerView;
 
             _vm.ReloadPropertiesToDisplay();
-            _toolView.SetProperties((_vm as BasicToolViewModel).PropertiesToDisplay);
+            _toolView.SetProperties(_vm.PropertiesToDisplay);
             _currentViewMode = ViewMode.BarChart;
 
         }

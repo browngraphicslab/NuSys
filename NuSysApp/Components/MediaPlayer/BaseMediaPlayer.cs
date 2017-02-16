@@ -37,12 +37,12 @@ namespace NuSysApp
 
         protected bool AutoStartMedia = true;
 
-        protected Button PlayPauseButton = new Button()
+        protected Button PlayPauseButton = new Button
         {
             Content = new Image {Source = new BitmapImage(new Uri("ms-appx:///Assets/icon_audionode_play.png"))
         },
             Width = 80,
-            Height = 35,
+            Height = 35
         };
 
         private readonly static int TimerMillisecondDelay = 10;
@@ -61,7 +61,7 @@ namespace NuSysApp
             MediaElement.MediaOpened += MediaElementOnLoaded;
             PlayPauseButton.Tapped += PlayPauseButtonOnTapped;
             PlayPauseButton.RenderTransform = new TranslateTransform();
-            Canvas.SetZIndex(PlayPauseButton,10);
+            SetZIndex(PlayPauseButton,10);
             ProgressBar.RenderTransform = new TranslateTransform();
             ProgressBar.Scrubbed += ProgressBarScrubbed;
         }

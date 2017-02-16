@@ -28,7 +28,7 @@ namespace NuSysApp
 
         public LibraryFavoritesViewModel(ObservableCollection<LibraryElementController> controllers)
         {
-            SessionController.Instance.ContentController.ContentValues.Where(item => item.Favorited == true);
+            SessionController.Instance.ContentController.ContentValues.Where(item => item.Favorited);
             ItemList = new ObservableCollection<LibraryItemTemplate>();
             //PageElements = elements.Where(item => item.Favorited == true);
             _controllerList = new List<LibraryElementController>(controllers);

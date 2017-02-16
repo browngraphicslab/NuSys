@@ -77,7 +77,7 @@ namespace NuSysApp
 
         private async Task CreatePdfNode(StorageFile pdfFile)
         {
-            var wordModel = ((PowerpointNodeModel)this.Model);
+            var wordModel = ((PowerpointNodeModel)Model);
             var wordId = wordModel.Id;
 
             var contentId = SessionController.Instance.GenerateId();

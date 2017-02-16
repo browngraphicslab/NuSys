@@ -41,7 +41,7 @@ namespace NuSysApp
 
         public MultiSelectMenuView()
         {
-            this.InitializeComponent();
+            InitializeComponent();
             DataContext = new object();
             DeleteButton.Click += DeleteButtonOnClick;
             GroupButton.Click += GroupButtonOnClick;
@@ -185,10 +185,8 @@ namespace NuSysApp
             if (FiniteCheck.IsOn)
             {
                 Finite = true;
-            } else
-            {
-                Finite = false;
             }
+            Finite = false;
 
             if (!ShapeCheck.IsOn)
             {

@@ -101,7 +101,7 @@ namespace NuSysApp
                 BorderColor = Constants.DARK_BLUE,
                 Background = Colors.White,
                 PlaceHolderText = "This is a markdown editor.\n\nSyntax:\n\n**bold**\n*italics*\n__underline__\n# Heading 1\n## Heading 2\n\nlist\n* line1\n* line2\n* line3\n\n\n",
-                Text = _controller.ContentDataController.ContentDataModel.Data,
+                Text = _controller.ContentDataController.ContentDataModel.Data
             };
             AddChild(_mainTextBox);
 
@@ -134,7 +134,7 @@ namespace NuSysApp
             HideOverlay();
 
             // add the main textbox to a new layout manager
-            _mainTextboxLayoutManager = new StackLayoutManager()
+            _mainTextboxLayoutManager = new StackLayoutManager
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,
@@ -396,7 +396,7 @@ namespace NuSysApp
             }
             else //current controlling user is null or not the local user
             {
-                _overlay.Background = new Color() {A=5,B=_overlay.Background.B, G = _overlay.Background.G , R = _overlay.Background.R };
+                _overlay.Background = new Color {A=5,B=_overlay.Background.B, G = _overlay.Background.G , R = _overlay.Background.R };
                 _isEditing.IsVisible = true;
                 _isEditing.Text = currentUser.DisplayName + " is editing...";
                 _mainTextBox.IsFocusable = false;

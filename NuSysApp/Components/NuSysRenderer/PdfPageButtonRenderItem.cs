@@ -26,7 +26,7 @@ namespace NuSysApp
         public PdfPageButtonRenderItem(int direction, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             var x = (float)(direction*15);
-            _triangle = CanvasGeometry.CreatePolygon(ResourceCreator, new System.Numerics.Vector2[4]{
+            _triangle = CanvasGeometry.CreatePolygon(ResourceCreator, new Vector2[4]{
                 new Vector2(x, -20),
                 new Vector2(x + direction * 25, 0),
                 new Vector2(x, 20),

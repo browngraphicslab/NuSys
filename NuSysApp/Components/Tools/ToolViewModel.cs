@@ -37,7 +37,7 @@ namespace NuSysApp
         private double _y;
         private CompositeTransform _transform = new CompositeTransform();
         private Point2d _anchor;
-        public ObservableCollection<ToolModel.ParentOperatorType> ParentOperatorList = new ObservableCollection<ToolModel.ParentOperatorType>() {ToolModel.ParentOperatorType.And, ToolModel.ParentOperatorType.Or};
+        public ObservableCollection<ToolModel.ParentOperatorType> ParentOperatorList = new ObservableCollection<ToolModel.ParentOperatorType> {ToolModel.ParentOperatorType.And, ToolModel.ParentOperatorType.Or};
        
         public ToolController Controller { get { return _controller; } }
         public ToolViewModel(ToolController toolController):base(toolController)

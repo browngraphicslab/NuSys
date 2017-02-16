@@ -25,9 +25,9 @@ namespace NuSysApp
 
         public BarChartItem(BarChartItemViewModel vm)
         {
-            this.InitializeComponent();
+            InitializeComponent();
             _vm = vm;
-            this.DataContext = _vm;
+            DataContext = _vm;
             _vm.IsSelected = false;
 
         }

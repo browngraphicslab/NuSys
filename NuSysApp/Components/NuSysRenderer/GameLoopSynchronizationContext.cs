@@ -27,7 +27,7 @@ namespace NuSysApp
             {
                 // Re-register ourselves as the current synchronization context,
                 // to work around CLR issues where this state can sometimes get nulled out.
-                SynchronizationContext.SetSynchronizationContext(this);
+                SetSynchronizationContext(this);
 
                 callback(state);
             });
@@ -48,7 +48,7 @@ namespace NuSysApp
             {
                 try
                 {
-                    SynchronizationContext.SetSynchronizationContext(new GameLoopSynchronizationContext(control));
+                    SetSynchronizationContext(new GameLoopSynchronizationContext(control));
 
                     await callback();
 
@@ -62,5 +62,5 @@ namespace NuSysApp
 
             await completedSignal.Task;
         }
-    };
+    }
 }

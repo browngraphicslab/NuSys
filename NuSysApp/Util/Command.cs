@@ -11,7 +11,7 @@ namespace NuSysApp
 
         public bool CanExecute(object parameter)
         {
-            return this.canExecute != null && this.canExecute(parameter);
+            return canExecute != null && canExecute(parameter);
         }
 
         public void Execute(object parameter)

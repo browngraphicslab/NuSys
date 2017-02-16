@@ -241,7 +241,7 @@ namespace NuSysApp
             _checkBoxButton = new ButtonUIElement(this, ResourceCreator, new RectangleUIElement(this, ResourceCreator))
             {
                 BorderWidth = 1,
-                IsHitTestVisible = false,
+                IsHitTestVisible = false
             };
             AddChild(_checkBoxButton);
 
@@ -255,7 +255,7 @@ namespace NuSysApp
             // we'll just accept all the default TextBoxUIElementValuesforNow
             _labelElement = new TextboxUIElement(this, ResourceCreator)
             {
-                IsHitTestVisible = false,
+                IsHitTestVisible = false
             };
             LabelTextHorizontalAlignment = UIDefaults.CheckBoxLabelTextHorizontalAlignmentAlignment;
             AddChild(_labelElement);

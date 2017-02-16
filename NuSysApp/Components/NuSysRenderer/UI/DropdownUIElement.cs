@@ -167,10 +167,10 @@ namespace NuSysApp
             RowHeight = 30;
             MaxListHeight = 300;
 
-            _dropDownItems = new ListTextColumn<string>()
+            _dropDownItems = new ListTextColumn<string>
             {
                 ColumnFunction = text => text,
-                RelativeWidth = 1,
+                RelativeWidth = 1
             };
             _dropDownList.AddColumn(_dropDownItems);          
 

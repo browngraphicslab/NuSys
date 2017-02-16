@@ -33,7 +33,7 @@ namespace NuSysApp
         public static Tuple<RemoveInkRequest,string> CreateRemoveInkRequest(InkWrapper wrapper)
         {
             var foundId = string.Empty;
-            foreach (var inkStroke in InkStorage._inkStrokes)
+            foreach (var inkStroke in _inkStrokes)
             {
                 if (inkStroke.Value.Equals(wrapper))
                 {

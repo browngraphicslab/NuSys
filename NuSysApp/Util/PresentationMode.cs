@@ -283,7 +283,7 @@ namespace NuSysApp
             var centerAnimationY = MakeAnimationElement(y, "CenterY", duration);
             var translateAnimationX = MakeAnimationElement(translateX, "TranslateX", duration);
             var translateAnimationY = MakeAnimationElement(translateY, "TranslateY", duration);
-            var animationList = new List<DoubleAnimation>(new DoubleAnimation[] { translateAnimationX, translateAnimationY, centerAnimationX, centerAnimationY, scaleAnimationX, scaleAnimationY });
+            var animationList = new List<DoubleAnimation>(new[] { translateAnimationX, translateAnimationY, centerAnimationX, centerAnimationY, scaleAnimationX, scaleAnimationY });
 
             // Add each animation to the storyboard
             foreach (var anim in animationList)
@@ -410,7 +410,7 @@ namespace NuSysApp
             var elementViewModels = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.Elements.Where(elementVM => elementVM.Id == elementViewModelId).ToList();
             Debug.Assert(elementViewModels != null);
             Debug.Assert(elementViewModels.Count == 1); // we shouldn't have multiple
-            return elementViewModels.First() as ElementViewModel;
+            return elementViewModels.First();
         }
     }
 }

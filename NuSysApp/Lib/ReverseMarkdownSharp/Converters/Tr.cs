@@ -10,12 +10,12 @@ namespace ReverseMarkdown.Converters
 		public Tr(Converter converter)
 			: base(converter)
 		{
-			this.Converter.Register("tr", this);
+			Converter.Register("tr", this);
 		}
 
 		public override string Convert(HtmlNode node)
 		{
-			string content = this.TreatChildren(node).TrimEnd();
+			string content = TreatChildren(node).TrimEnd();
 
 			string result = string.Format("|{0}{1}", content, Environment.NewLine);
 
