@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="7098BrownGraphicsGroup.NuSys" Publisher="CN=96A4347E-F2AF-4B20-AE3B-B28736F67849" Version="1.1.14.0" />
+  <Identity Name="7098BrownGraphicsGroup.NuSys" Publisher="CN=96A4347E-F2AF-4B20-AE3B-B28736F67849" Version="1.1.16.0" />
   <mp:PhoneIdentity PhoneProductId="151be203-7bd2-4ce5-80d2-fe29687cfa91" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>NuSys</DisplayName>
@@ -30,25 +30,6 @@
       </uap:VisualElements>
       <Extensions>
         <uap:Extension Category="windows.fileTypeAssociation">
-          <uap:FileTypeAssociation Name="nusys">
-            <uap:SupportedFileTypes>
-              <uap:FileType>.nusys</uap:FileType>
-              <uap:FileType>.txt</uap:FileType>
-              <uap:FileType>.png</uap:FileType>
-              <uap:FileType>.jpg</uap:FileType>
-              <uap:FileType>.pptx#3</uap:FileType>
-              <uap:FileType>.pptx</uap:FileType>
-            </uap:SupportedFileTypes>
-          </uap:FileTypeAssociation>
-        </uap:Extension>
-        <uap:Extension Category="windows.fileTypeAssociation">
-          <uap:FileTypeAssociation Name="mp3">
-            <uap:SupportedFileTypes>
-              <uap:FileType>.mp3</uap:FileType>
-            </uap:SupportedFileTypes>
-          </uap:FileTypeAssociation>
-        </uap:Extension>
-        <uap:Extension Category="windows.fileTypeAssociation">
           <uap:FileTypeAssociation Name="pdf">
             <uap:SupportedFileTypes>
               <uap:FileType>.pdf</uap:FileType>
@@ -60,6 +41,25 @@
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
         </uap:Extension>
+        <uap:Extension Category="windows.fileTypeAssociation">
+          <uap:FileTypeAssociation Name="mp3">
+            <uap:SupportedFileTypes>
+              <uap:FileType>.mp3</uap:FileType>
+            </uap:SupportedFileTypes>
+          </uap:FileTypeAssociation>
+        </uap:Extension>
+        <uap:Extension Category="windows.fileTypeAssociation">
+          <uap:FileTypeAssociation Name="nusys">
+            <uap:SupportedFileTypes>
+              <uap:FileType>.nusys</uap:FileType>
+              <uap:FileType>.txt</uap:FileType>
+              <uap:FileType>.png</uap:FileType>
+              <uap:FileType>.jpg</uap:FileType>
+              <uap:FileType>.pptx#3</uap:FileType>
+              <uap:FileType>.pptx</uap:FileType>
+            </uap:SupportedFileTypes>
+          </uap:FileTypeAssociation>
+        </uap:Extension>
       </Extensions>
     </Application>
   </Applications>
@@ -68,7 +68,6 @@
     <Capability Name="privateNetworkClientServer" />
     <Capability Name="internetClientServer" />
     <Capability Name="allJoyn" />
-    <uap:Capability Name="documentsLibrary" />
     <uap:Capability Name="userAccountInformation" />
     <DeviceCapability Name="microphone" />
     <DeviceCapability Name="webcam" />
