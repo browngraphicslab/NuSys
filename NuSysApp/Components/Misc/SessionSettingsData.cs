@@ -56,6 +56,11 @@ namespace NuSysApp
         public event EventHandler<bool> MinimapVisiblityChanged;
 
         /// <summary>
+        /// event fired whenever the visibility of the touch keyboard changes
+        /// </summary>
+        public event EventHandler<bool> TouchKeyboardVisiblityChanged;
+
+        /// <summary>
         /// event fired whenever the visibility of the minimap changes
         /// </summary>
         public event EventHandler<double> TextScaleChanged;
@@ -85,6 +90,11 @@ namespace NuSysApp
         /// private version of the ResizeElementTitles.
         /// </summary>
         private bool _resizeElementTitles = false;
+
+        /// <summary>
+        /// private version of the TouchKeyboardVisible.
+        /// </summary>
+        private bool _touchKeyboardVisible = true;
 
         /// <summary>
         /// The private version of LinksVisible. 
@@ -247,6 +257,17 @@ namespace NuSysApp
             set {
                 _minimapVisible = value;
                 MinimapVisiblityChanged?.Invoke(this, value);
+                SaveToFile();
+            }
+        }
+
+        public bool TouchKeyboardVisible
+        {
+            get { return _touchKeyboardVisible;}
+            set
+            {
+                _touchKeyboardVisible = value;
+                TouchKeyboardVisiblityChanged?.Invoke(this, value);
                 SaveToFile();
             }
         }

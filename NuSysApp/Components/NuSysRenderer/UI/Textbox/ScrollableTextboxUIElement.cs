@@ -861,7 +861,7 @@ namespace NuSysApp
                 UITask.Run(delegate
                 {
                     var keyboardCaps = new KeyboardCapabilities();
-                    if (keyboardCaps.KeyboardPresent == 0)
+                    if (SessionController.Instance.SessionSettings.TouchKeyboardVisible)
                     {
                         if (
                             SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager
