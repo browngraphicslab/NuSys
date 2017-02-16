@@ -448,6 +448,7 @@ namespace NuSysApp
         {
             _yOffset = (float)(-newPosition * _canvasTextLayout.LayoutBoundsIncludingTrailingWhitespace.Height);
             BoundYOffset();
+            _textLayoutIsDirty = true;
         }
 
 

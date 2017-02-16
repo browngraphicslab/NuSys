@@ -186,10 +186,11 @@ namespace NuSysApp
             {
                 Background = Colors.Transparent,
                 Height = 40,
-                Width = 400,
+                Width = 500,
                 Scrollable = false,
                 TextColor = Constants.DARK_BLUE,
                 Text = "this item had its origin deleted.",
+                TextHorizontalAlignment = CanvasHorizontalAlignment.Center,
             };
             AddChild(_originWords);
 

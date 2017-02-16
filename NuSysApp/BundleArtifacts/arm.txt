@@ -1,5 +1,5 @@
-MainPackage=C:\Users\Trent\Documents\nusys_repo\main\nusys\NuSysApp\bin\ARM\Release\NuSysApp_1.1.15.0_ARM.appx
-ResourcePack=C:\Users\Trent\Documents\nusys_repo\main\nusys\NuSysApp\bin\ARM\Release\NuSysApp_1.1.15.0_scale-100.appx
-ResourcePack=C:\Users\Trent\Documents\nusys_repo\main\nusys\NuSysApp\bin\ARM\Release\NuSysApp_1.1.15.0_scale-125.appx
-ResourcePack=C:\Users\Trent\Documents\nusys_repo\main\nusys\NuSysApp\bin\ARM\Release\NuSysApp_1.1.15.0_scale-150.appx
-ResourcePack=C:\Users\Trent\Documents\nusys_repo\main\nusys\NuSysApp\bin\ARM\Release\NuSysApp_1.1.15.0_scale-400.appx
+MainPackage=C:\Users\Trent\Documents\nusys_repo\main\nusys\NuSysApp\bin\ARM\Release\NuSysApp_1.1.17.0_ARM.appx
+ResourcePack=C:\Users\Trent\Documents\nusys_repo\main\nusys\NuSysApp\bin\ARM\Release\NuSysApp_1.1.17.0_scale-100.appx
+ResourcePack=C:\Users\Trent\Documents\nusys_repo\main\nusys\NuSysApp\bin\ARM\Release\NuSysApp_1.1.17.0_scale-125.appx
+ResourcePack=C:\Users\Trent\Documents\nusys_repo\main\nusys\NuSysApp\bin\ARM\Release\NuSysApp_1.1.17.0_scale-150.appx
+ResourcePack=C:\Users\Trent\Documents\nusys_repo\main\nusys\NuSysApp\bin\ARM\Release\NuSysApp_1.1.17.0_scale-400.appx
