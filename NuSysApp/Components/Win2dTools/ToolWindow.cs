@@ -7,9 +7,6 @@ using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
-using Microsoft.Graphics.Canvas.UI.Xaml;
-using MyToolkit.Converters;
-using SharpDX.Direct2D1.Effects;
 
 namespace NuSysApp
 {

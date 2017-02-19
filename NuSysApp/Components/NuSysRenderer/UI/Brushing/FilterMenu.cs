@@ -3,13 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
-using Microsoft.Graphics.Canvas.Text;
-using NusysIntermediate;
-using SharpDX.Direct2D1;
 
 namespace NuSysApp
 {

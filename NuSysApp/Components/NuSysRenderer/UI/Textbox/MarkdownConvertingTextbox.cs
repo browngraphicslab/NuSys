@@ -14,7 +14,6 @@ using CommonMark;
 using CommonMark.Syntax;
 using Microsoft.Graphics.Canvas.Geometry;
 using NuSysApp.Components.NuSysRenderer.UI.Textbox.Markdown;
-using SharpDX.Direct2D1;
 
 namespace NuSysApp
 {

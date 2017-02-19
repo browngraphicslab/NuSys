@@ -10,18 +10,14 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
-using Windows.ApplicationModel.Core;
 using Windows.Storage;
 using Windows.UI;
 using Windows.UI.Xaml.Input;
-using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using NetTopologySuite.Geometries;
 using NusysIntermediate;
 using NuSysApp.Components.NuSysRenderer.UI;
-using WinRTXamlToolkit.IO.Extensions;
-using PathGeometry = SharpDX.Direct2D1.PathGeometry;
-using Point = Windows.Foundation.Point;
+
 
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409

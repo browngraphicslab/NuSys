@@ -860,7 +860,6 @@ namespace NuSysApp
                 _caret.IsVisible = true;
                 UITask.Run(delegate
                 {
-                    var keyboardCaps = new KeyboardCapabilities();
                     if (SessionController.Instance.SessionSettings.TouchKeyboardVisible)
                     {
                         if (

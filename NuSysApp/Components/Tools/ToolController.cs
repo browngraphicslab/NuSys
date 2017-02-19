@@ -6,11 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MyToolkit.Utilities;
-using NetTopologySuite.Utilities;
 using NusysIntermediate;
 using NuSysApp.Tools;
-using SharpDX.DirectWrite;
-using Wintellect.PowerCollections;
 
 namespace NuSysApp
 {
