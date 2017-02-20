@@ -93,7 +93,7 @@ namespace NuSysApp
             {"BACK", VirtualKey.Back},
             {"ENTER", VirtualKey.Enter},
             {"CONTROL", VirtualKey.Control},
-            {"-", VirtualKey.Subtract},
+            {"-", (VirtualKey)189},
             {"+", VirtualKey.Add},
             {"/", (VirtualKey) 191},
             {"=", VirtualKey.Add},
@@ -124,15 +124,21 @@ namespace NuSysApp
             public static BiDictionary<VirtualKey, string> NoShiftKeyToChars = new BiDictionary<VirtualKey, string>()
         {
             {(VirtualKey) 191, "/"},
-            {VirtualKey.Subtract, "-"},
             {VirtualKey.Add, "+"},
             {(VirtualKey) 188, ","},
+            {(VirtualKey) 189, "-"},
+            {VirtualKey.Subtract, "-"},
+            {VirtualKey.Divide, "/"},
             {(VirtualKey) 190, "."},
+            {(VirtualKey) 192, "`"},
             {(VirtualKey) 220, "\\"},
             {(VirtualKey) 186, ";"},
             {(VirtualKey) 222, "'"},
             {(VirtualKey) 219, "["},
             {(VirtualKey) 221, "]"},
+            {VirtualKey.Decimal, "."},
+
+
 
 
         };
@@ -149,9 +155,10 @@ namespace NuSysApp
             {VirtualKey.Number7, "&"},
             {VirtualKey.Number8, "*"},
             {VirtualKey.Number9, "("},
-            {VirtualKey.Subtract, "_"},
-            {VirtualKey.Add, "="},
+            {(VirtualKey) 189, "_"},
+            { VirtualKey.Add, "="},
             {(VirtualKey) 191, "?"},
+            {(VirtualKey) 192, "~"},
             {(VirtualKey) 220, "|"},
             {(VirtualKey) 186, ":"},
             {(VirtualKey) 188, "<"},

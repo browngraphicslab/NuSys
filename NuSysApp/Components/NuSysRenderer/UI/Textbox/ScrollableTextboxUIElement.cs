@@ -807,10 +807,12 @@ namespace NuSysApp
             {
                 var s = KeyCodeToUnicode(args.Key);
 
+                /*
                 if (s.Length == 0)
                 {
                     s = FinalKeyCodeToUnicode(args.Key);
                 }
+                */
 
                 //Regardless of the keyboard state, se
                 if (s.Length > 0)
@@ -1774,6 +1776,7 @@ namespace NuSysApp
                 return "*";
             }
 
+            Debug.WriteLine(key);
             //For characters that share the same virtualkey (depending on shift)
             if (shift)
             {
