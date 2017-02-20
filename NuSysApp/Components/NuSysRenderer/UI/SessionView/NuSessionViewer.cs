@@ -540,7 +540,10 @@ namespace NuSysApp
             _readOnlyLinksWindow.Transform.LocalPosition = new Vector2(SessionController.Instance.NuSessionView.Width - _readOnlyLinksWindow.Width - 20, 100);
             SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned += CanvasPanned;
             SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CameraOnCentered += CameraCenteredOnElement;
-            Library.IsVisible = false;
+            if (Library != null)
+            {
+                Library.IsVisible = false;
+            }
         }
 
         /// <summary>
