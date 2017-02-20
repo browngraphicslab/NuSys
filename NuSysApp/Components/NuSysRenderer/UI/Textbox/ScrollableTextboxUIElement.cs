@@ -1846,32 +1846,7 @@ namespace NuSysApp
             }
             return "";
         }
-
-        /// <summary>
-        /// Convert key code to its ascii character/string
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public string FinalKeyCodeToUnicode(VirtualKey key)
-        {
-            var keyboardState = new byte[255];
-            var keyboardStateStatus = GetKeyboardState(keyboardState);
-
-            if (!keyboardStateStatus)
-            {
-                return "";
-            }
-
-            var virtualKeyCode = (uint)key;
-            var scanCode = MapVirtualKey(virtualKeyCode, 0);
-            var inputLocaleIdentifier = GetKeyboardLayout(0);
-
-            var result = new StringBuilder();
-            ToUnicodeEx(virtualKeyCode, scanCode, keyboardState, result, 5, 0, inputLocaleIdentifier);
-
-            return result.ToString();
-        }
-
+        
 
 
         public float GetTextHeight()
@@ -1883,21 +1858,6 @@ namespace NuSysApp
             return float.MinValue;
         }
 
-        // FUNCTIONS TO CONVERT KEYCODE TO STRING UNICODE CHARACTER
-        [DllImport("user32.dll")]
-        static extern bool GetKeyboardState(byte[] lpKeyState);
-
-        [DllImport("user32.dll")]
-        static extern uint MapVirtualKey(uint uCode, uint uMapType);
-
-        [DllImport("user32.dll")]
-        static extern IntPtr GetKeyboardLayout(uint idThread);
-
-        [DllImport("user32.dll")]
-        static extern int ToUnicodeEx(uint wVirtKey,
-            uint wScanCode, byte[] lpKeyState,
-            [Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder pwszBuff,
-            int cchBuff, uint wFlags, IntPtr dwhkl);
 
     }
 }
