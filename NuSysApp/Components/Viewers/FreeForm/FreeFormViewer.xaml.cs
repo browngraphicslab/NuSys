@@ -200,15 +200,6 @@ namespace NuSysApp
                 vm.Controller.Disposed -= ControllerOnDisposed;
                 vm.Elements.CollectionChanged -= ElementsOnCollectionChanged;
             }
-            /*
-            if(_minimap == null)
-            {
-                _minimap = new MinimapUIElement(null, xRenderCanvas, InitialCollection);
-                _minimap.Transform.LocalX = (float)Width - 300;
-                _minimap.Transform.LocalY = (float)Height - 170;
-                
-            }
-            */
             
 
             vm.Controller.Disposed += ControllerOnDisposed;
@@ -224,7 +215,6 @@ namespace NuSysApp
             InitialCollection.Transform.SetParent(RenderEngine.Root.Transform);
 
             RenderEngine.Root.AddChild(InitialCollection);
-            //RenderEngine.Root.AddChild(_minimap);
 
             RenderEngine.Start();
 
@@ -234,7 +224,6 @@ namespace NuSysApp
             RenderEngine.BtnExportTrail.Tapped -= BtnExportTrailOnTapped;
             RenderEngine.BtnExportTrail.Tapped += BtnExportTrailOnTapped;
 
-            //_minimap = new MinimapRenderItem(InitialCollection, null, xMinimapCanvas);
         }
 
         /// <summary>
@@ -320,8 +309,6 @@ namespace NuSysApp
 
         private void ElementsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
         {
-            //_minimap?.Invalidate();
-            //_minimap.IsDirty = true;
             SessionController.Instance.NuSessionView.Minimap.IsDirty = true;
         }
 
@@ -413,7 +400,6 @@ namespace NuSysApp
 
         public void InvalidateMinimap()
         {
-            //_minimap.Invalidate();
             SessionController.Instance.NuSessionView.Minimap.IsDirty = true;
         }
 
@@ -1141,7 +1127,6 @@ namespace NuSysApp
             
             ActivateUndo(action, oldLocationScreen);
 
-            //_minimap.Invalidate();
             SessionController.Instance.NuSessionView.Minimap.IsDirty = true;
         }
 
