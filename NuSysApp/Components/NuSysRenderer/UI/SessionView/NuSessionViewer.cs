@@ -310,17 +310,19 @@ namespace NuSysApp
             };
             AddChild(_readOnlyAliasesWindow);
 
+            _readOnlyAliasesWindow.Transform.LocalPosition = new Vector2(60, 100);
 
 
 
-            _minimap = new MinimapUIElement(this, Canvas, null);
-            _minimap.Transform.LocalX = Width - 300f;
-            _minimap.Transform.LocalY = Height - 170f;
-
-            
+            _minimap = new MinimapUIElement(this, Canvas)
+            {
+                Height = UIDefaults.MaxMinimapHeight,
+                Width = UIDefaults.MaxMinimapWidth
+                
+            };
+            _minimap.Transform.LocalPosition = new Vector2(Width - 300f, Height - 170f);
 
             AddChild(_minimap);
-            _readOnlyAliasesWindow.Transform.LocalPosition = new Vector2(60, 100);
 
 
             Canvas.SizeChanged += OnMainCanvasSizeChanged;

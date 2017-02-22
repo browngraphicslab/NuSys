@@ -210,7 +210,6 @@ namespace NuSysApp
             }
             */
             
-            SessionController.Instance.NuSessionView.Minimap.SwitchCollection(InitialCollection);
 
             vm.Controller.Disposed += ControllerOnDisposed;
             vm.Elements.CollectionChanged += ElementsOnCollectionChanged;
@@ -218,6 +217,7 @@ namespace NuSysApp
          
             InitialCollection = new CollectionRenderItem(_vm, null, xRenderCanvas, true);
             SwitchCollection(InitialCollection);
+            SessionController.Instance.NuSessionView.Minimap.SwitchCollection(InitialCollection);
 
             RenderEngine.Root.ClearChildren();
 

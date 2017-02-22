@@ -28,9 +28,9 @@ namespace NuSysApp
 
         private RectangleUIElement _zoomRectangle;
 
-        public MinimapUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, CollectionRenderItem collection) : base(parent, resourceCreator)
+        public MinimapUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
-            SwitchCollection(collection);
+            //SwitchCollection(collection);
             Background = Colors.Transparent;
             Width = UIDefaults.MaxMinimapWidth;
             Height = UIDefaults.MaxMinimapHeight;
@@ -291,16 +291,18 @@ _collection.ViewModel.Height);
                 return;
             }
 
-            if (_renderTarget == null)
-            {
-                CreateResources();
-            }
-
             Debug.Assert(_collection?.ViewModel != null, "this shouldn't be null");
             if (_collection?.ViewModel == null)
             {
                 return;
             }
+
+
+            if (_renderTarget == null)
+            {
+                CreateResources();
+            }
+
 
 
             float rh = (float)_collection.ViewModel.Height / (float)_collection.ViewModel.Width;
