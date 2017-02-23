@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
@@ -21,12 +22,20 @@ namespace NuSysApp
         private Dictionary<T, ICanvasImage> _dict;
 
 
+        private Dictionary<T, CancellationTokenSource> _tokenDict;
+        private List<T> _currentlyVisibleItems;
+        private int _maximumLoadTasks;
+
+
         public ICanvasImage DefaultImage => _image;
         private ICanvasImage _image;
         public ListImageColumn(ICanvasResourceCreatorWithDpi resourceCreator)
         {
             _dict = new Dictionary<T, ICanvasImage>();
             LoadDefaultImageAsync(resourceCreator);
+
+            _tokenDict = new Dictionary<T, CancellationTokenSource>();
+            _maximumLoadTasks = 5;
         }
 
         private async void LoadDefaultImageAsync(ICanvasResourceCreatorWithDpi resourceCreator)

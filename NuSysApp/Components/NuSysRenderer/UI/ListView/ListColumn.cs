@@ -46,6 +46,7 @@ namespace NuSysApp
 
         public abstract void UpdateColumnCellFromItem(T item, RectangleUIElement rectangleUIElement, bool isSelected );
 
+        public abstract void UpdateColumnCellsFromItems(T item, RectangleUIElement rectangleUiElement, bool isSelected);
         /// <summary>
         /// This function will return the cell based on the column function you you give. It will first run the column function,
         /// then set the width, heigh, and transparancy appropriately. Use this function when creating the cell to place in the row.You must pass in the total sum of all 

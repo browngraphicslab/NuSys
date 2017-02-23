@@ -195,7 +195,7 @@ namespace NuSysApp
             }
 
             var others = SessionController.Instance.ContentController.AllLibraryElementModels.Where(l => l.ContentDataModelId == _controller.ContentDataController.ContentDataModel.ContentId).Cast<ImageLibraryElementModel>();
-            others = others.Where(l => l.LibraryElementId != _controller.LibraryElementModel.LibraryElementId);
+            others = others.Where(l => l.LibraryElementId == _controller.LibraryElementModel.LibraryElementId);
             foreach (var l in others)
             {
                 var region = new ImageDetailRegionRenderItem(l, _normalizedCroppedRect, _bmp.Bounds, _scaleDisplayToCrop * _scaleOrgToDisplay, this, ResourceCreator, IsRegionsModifiable);
