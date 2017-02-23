@@ -344,10 +344,7 @@ namespace NuSysApp
                 _collectionInteractionManager.TrailCreated -= CollectionInteractionManagerOnTrailCreated;
                 _collectionInteractionManager.ElementAddedToCollection -= CollectionInteractionManagerOnElementAddedToCollection;
                 _collectionInteractionManager.MultimediaElementActivated -= CollectionInteractionManagerOnMultimediaElementActivated;
-                _canvasInteractionManager.PointerPressed -= CanvasInteractionManagerOnPointerPressed;
-                _canvasInteractionManager.AllPointersReleased -= CanvasInteractionManagerOnAllPointersReleased;
                 multiMenu.CreateCollection -= MultiMenuOnCreateCollection;
-                _canvasInteractionManager.ItemTapped -= CanvasInteractionManagerOnItemTapped;
 
                 _collectionInteractionManager.Dispose();
                 //Remove focus from FocusManager
@@ -395,9 +392,6 @@ namespace NuSysApp
             _collectionInteractionManager.ItemSelected += CollectionInteractionManagerOnItemTapped;
             _collectionInteractionManager.SelectionsCleared += CollectionInteractionManagerOnSelectionsCleared;
             _collectionInteractionManager.MultimediaElementActivated += CollectionInteractionManagerOnMultimediaElementActivated;
-            _canvasInteractionManager.ItemTapped += CanvasInteractionManagerOnItemTapped;
-            _canvasInteractionManager.PointerPressed += CanvasInteractionManagerOnPointerPressed;
-            _canvasInteractionManager.AllPointersReleased += CanvasInteractionManagerOnAllPointersReleased;
 
 
             _minimap?.SwitchCollection(collection);
@@ -834,87 +828,87 @@ namespace NuSysApp
             ClearSelections();
         }
 
-        private async void CanvasInteractionManagerOnItemTapped(CanvasPointer pointer)
-        {
-            var item = RenderEngine.GetRenderItemAt(pointer.CurrentPoint);
-            if (Selections.Count == 0)
-                return;
-            if (item == RenderEngine.ElementSelectionRect.BtnDelete)
-            {
-                foreach (var elementRenderItem in Selections)
-                {
-                    if (elementRenderItem is AudioElementRenderItem || elementRenderItem is VideoElementRenderItem)
-                        xMultimediaCanvas.Visibility = Visibility.Collapsed;
+        //private async void CanvasInteractionManagerOnItemTapped(CanvasPointer pointer)
+        //{
+        //    var item = RenderEngine.GetRenderItemAt(pointer.CurrentPoint);
+        //    if (Selections.Count == 0)
+        //        return;
+        //    if (item == RenderEngine.ElementSelectionRect.BtnDelete)
+        //    {
+        //        foreach (var elementRenderItem in Selections)
+        //        {
+        //            if (elementRenderItem is AudioElementRenderItem || elementRenderItem is VideoElementRenderItem)
+        //                xMultimediaCanvas.Visibility = Visibility.Collapsed;
 
-                    var removeElementAction = new DeleteElementAction(elementRenderItem.ViewModel.Controller);
+        //            var removeElementAction = new DeleteElementAction(elementRenderItem.ViewModel.Controller);
 
-                    //Creates an undo button and places it in the correct position.
-                    var screenCenter = elementRenderItem.GetCenterOnScreen();
-                    ActivateUndo(removeElementAction, new Point2d(screenCenter.X - xUndoButton.ActualWidth/2, screenCenter.Y - xUndoButton.ActualHeight / 2));
+        //            //Creates an undo button and places it in the correct position.
+        //            var screenCenter = elementRenderItem.GetCenterOnScreen();
+        //            ActivateUndo(removeElementAction, new Point2d(screenCenter.X - xUndoButton.ActualWidth/2, screenCenter.Y - xUndoButton.ActualHeight / 2));
 
-                    elementRenderItem.ViewModel.Controller?.RequestDelete();
-                }
-                ClearSelections();
+        //            elementRenderItem.ViewModel.Controller?.RequestDelete();
+        //        }
+        //        ClearSelections();
                 
-            }
-            if (item == RenderEngine.ElementSelectionRect.BtnGroup)
-            {
-                multiMenu.Show(pointer.CurrentPoint.X + 50, pointer.CurrentPoint.Y, _latestStroke != null);
-            }
-            if (item == RenderEngine.ElementSelectionRect.BtnPresent)
-            {
-                //SessionController.Instance.SessionView.EnterPresentationMode(Selections[0].ViewModel);
-                SessionController.Instance.NuSessionView.EnterPresentationMode(Selections[0].ViewModel);
-                ClearSelections();
-            }
+        //    }
+        //    if (item == RenderEngine.ElementSelectionRect.BtnGroup)
+        //    {
+        //        multiMenu.Show(pointer.CurrentPoint.X + 50, pointer.CurrentPoint.Y, _latestStroke != null);
+        //    }
+        //    if (item == RenderEngine.ElementSelectionRect.BtnPresent)
+        //    {
+        //        //SessionController.Instance.SessionView.EnterPresentationMode(Selections[0].ViewModel);
+        //        SessionController.Instance.NuSessionView.EnterPresentationMode(Selections[0].ViewModel);
+        //        ClearSelections();
+        //    }
 
-            if (item == RenderEngine.ElementSelectionRect.BtnEnterCollection)
-            {
-                var id = Selections[0].ViewModel.LibraryElementId;
-                await SessionController.Instance.EnterCollection(id);
-            }
+        //    if (item == RenderEngine.ElementSelectionRect.BtnEnterCollection)
+        //    {
+        //        var id = Selections[0].ViewModel.LibraryElementId;
+        //        await SessionController.Instance.EnterCollection(id);
+        //    }
 
-            if (item == RenderEngine.ElementSelectionRect.BtnPdfLeft)
-            {
-                var selection = (PdfElementRenderItem) Selections[0];
-                selection.GotoPage(selection.CurrentPage - 1);
-            }
-            if (item == RenderEngine.ElementSelectionRect.BtnPdfRight)
-            {
-                var selection = (PdfElementRenderItem)Selections[0];
-                selection.GotoPage(selection.CurrentPage + 1);
-            }
-            if (item == RenderEngine.ElementSelectionRect.BtnLayoutTool)
-            {
-                // Show the layout panel
-                if (_layoutWindow != null)
-                {
-                    RenderEngine.Root.RemoveChild(_layoutWindow);
-                    _layoutWindow = null;
-                }
+        //    if (item == RenderEngine.ElementSelectionRect.BtnPdfLeft)
+        //    {
+        //        var selection = (PdfElementRenderItem) Selections[0];
+        //        selection.GotoPage(selection.CurrentPage - 1);
+        //    }
+        //    if (item == RenderEngine.ElementSelectionRect.BtnPdfRight)
+        //    {
+        //        var selection = (PdfElementRenderItem)Selections[0];
+        //        selection.GotoPage(selection.CurrentPage + 1);
+        //    }
+        //    if (item == RenderEngine.ElementSelectionRect.BtnLayoutTool)
+        //    {
+        //        // Show the layout panel
+        //        if (_layoutWindow != null)
+        //        {
+        //            RenderEngine.Root.RemoveChild(_layoutWindow);
+        //            _layoutWindow = null;
+        //        }
 
-                _layoutWindow = new LayoutWindowUIElement(RenderEngine.Root, RenderEngine.CanvasAnimatedControl);
-                _layoutWindow.DoLayout += ArrangeCallback;
-                _layoutWindow.Transform.LocalPosition = RenderEngine.ElementSelectionRect.Transform.LocalPosition;
-                RenderEngine.Root.AddChild(_layoutWindow);
-            }
-            if (item == RenderEngine.ElementSelectionRect.BtnEditTags)
-            {
-                // edit tags
-                if (_editTagsElement != null)
-                {
-                    RenderEngine.ElementSelectionRect.RemoveChild(_editTagsElement);
-                    _editTagsElement = null;
-                }
+        //        _layoutWindow = new LayoutWindowUIElement(RenderEngine.Root, RenderEngine.CanvasAnimatedControl);
+        //        _layoutWindow.DoLayout += ArrangeCallback;
+        //        _layoutWindow.Transform.LocalPosition = RenderEngine.ElementSelectionRect.Transform.LocalPosition;
+        //        RenderEngine.Root.AddChild(_layoutWindow);
+        //    }
+        //    if (item == RenderEngine.ElementSelectionRect.BtnEditTags)
+        //    {
+        //        // edit tags
+        //        if (_editTagsElement != null)
+        //        {
+        //            RenderEngine.ElementSelectionRect.RemoveChild(_editTagsElement);
+        //            _editTagsElement = null;
+        //        }
 
-                _editTagsElement = new EditTagsUIElement(RenderEngine.Root, RenderEngine.CanvasAnimatedControl);
-                RenderEngine.ElementSelectionRect.ElementSelectionRenderItemSizeChanged +=
-                    _editTagsElement.UpdatePositionWithSize;
-                Rect rect = RenderEngine.ElementSelectionRect.GetLocalBounds();
-                RenderEngine.ElementSelectionRect.AddChild(_editTagsElement);
-                _editTagsElement.Load();
-            }
-        }
+        //        _editTagsElement = new EditTagsUIElement(RenderEngine.Root, RenderEngine.CanvasAnimatedControl);
+        //        RenderEngine.ElementSelectionRect.ElementSelectionRenderItemSizeChanged +=
+        //            _editTagsElement.UpdatePositionWithSize;
+        //        Rect rect = RenderEngine.ElementSelectionRect.GetLocalBounds();
+        //        RenderEngine.ElementSelectionRect.AddChild(_editTagsElement);
+        //        _editTagsElement.Load();
+        //    }
+        //}
 
         /// <summary>
         /// Does the layout for a custom layout by arranging the selected nodes along a stroke.
@@ -1097,11 +1091,11 @@ namespace NuSysApp
             _inkPressed = false;
         }
 
-        private void CanvasInteractionManagerOnAllPointersReleased()
-        {
-            //_transform = CurrentCollection.Camera.LocalToScreenMatrix;
-            _transformables.Clear();
-        }
+        //private void CanvasInteractionManagerOnAllPointersReleased()
+        //{
+        //    //_transform = CurrentCollection.Camera.LocalToScreenMatrix;
+        //    _transformables.Clear();
+        //}
 
         private async void CollectionInteractionManagerOnElementAddedToCollection(ElementRenderItem element,
             CollectionRenderItem collection, CanvasPointer pointer)
@@ -1229,18 +1223,18 @@ namespace NuSysApp
             UpdateMediaPlayer();
         }
 
-        private void CanvasInteractionManagerOnPointerPressed(CanvasPointer pointer)
-        {
-            _transform = CurrentCollection.Transform.LocalToScreenMatrix;
-            if (ActiveAudioRenderItem?.HitTest(pointer.CurrentPoint) == null ||
-                ActiveVideoRenderItem?.HitTest(pointer.CurrentPoint) == null)
-            {
-                xAudioPlayer.Visibility = Visibility.Collapsed;
-                xAudioPlayer.Pause();
-                xVideoPlayer.Visibility = Visibility.Collapsed;
-                xVideoPlayer.Pause();
-            }
-        }
+        //private void CanvasInteractionManagerOnPointerPressed(CanvasPointer pointer)
+        //{
+        //    _transform = CurrentCollection.Transform.LocalToScreenMatrix;
+        //    if (ActiveAudioRenderItem?.HitTest(pointer.CurrentPoint) == null ||
+        //        ActiveVideoRenderItem?.HitTest(pointer.CurrentPoint) == null)
+        //    {
+        //        xAudioPlayer.Visibility = Visibility.Collapsed;
+        //        xAudioPlayer.Pause();
+        //        xVideoPlayer.Visibility = Visibility.Collapsed;
+        //        xVideoPlayer.Pause();
+        //    }
+        //}
 
         private void CollectionInteractionManagerOnPanZoomed(Vector2 center, Vector2 deltaTranslation, float deltaZoom)
         {
@@ -1497,19 +1491,6 @@ namespace NuSysApp
                 target.LocalScale = new Vector2(nsx, nsy);
             }
         }
-
-
-        public void Freeze()
-        {
-            _canvasInteractionManager.SetEnabled(false);
-        }
-
-        public void Unfreeze()
-        {
-            _canvasInteractionManager.SetEnabled(true);
-        }
-
-
 
         private void ControllerOnDisposed(object source, object args)
         {

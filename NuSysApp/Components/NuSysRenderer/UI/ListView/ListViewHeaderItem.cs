@@ -6,6 +6,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
+using Windows.UI.Input;
 using Windows.UI.Text;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
@@ -152,7 +153,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        public override void OnDragged(CanvasPointer pointer)
+        public override void OnDragging(GestureRecognizer sender, DraggingEventArgs args)
         {
             if (_borderBeingDragged)
             {
@@ -161,7 +162,7 @@ namespace NuSysApp
             }
             else
             {
-                base.OnDragged(pointer);
+                base.OnDragging(sender, args);
 
             }
 

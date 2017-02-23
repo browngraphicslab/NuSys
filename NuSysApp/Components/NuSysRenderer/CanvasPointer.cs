@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.UI.Input;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 
 namespace NuSysApp
@@ -26,6 +27,8 @@ namespace NuSysApp
         private uint _bufferLength;
         private int _bufferIndex;
         public bool IsEraser = false;
+        public FrameworkElement SourceElement;
+        public PointerRoutedEventArgs PointerRoutedEventArgs;
         /// <summary>
         /// since the PointerPoint is a XAML element, we cannot access the pointer's properties from the regular thread.
         /// So we have this IsRightButtonPressed getter.

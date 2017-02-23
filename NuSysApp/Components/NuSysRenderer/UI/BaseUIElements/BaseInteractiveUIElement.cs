@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Input;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 
@@ -83,51 +85,19 @@ namespace NuSysApp
         /// <param name="ds"></param>
         protected abstract void DrawImage(CanvasDrawingSession ds);
 
-        public override void OnPressed(CanvasPointer pointer)
+        public override void OnPressed(FrameworkElement canvas, PointerRoutedEventArgs args)
         {
             GameLoopSynchronizationContext.RunOnGameLoopThreadAsync(Canvas, async () =>
             {
-                base.OnPressed(pointer);
+                base.OnPressed(canvas, args);
             });
         }
 
-        public override void OnReleased(CanvasPointer pointer)
+        public override void OnReleased(FrameworkElement canvas, PointerRoutedEventArgs args)
         {
             GameLoopSynchronizationContext.RunOnGameLoopThreadAsync(Canvas, async () =>
             {
-                base.OnReleased(pointer);
-            });
-        }
-
-        public override void OnDoubleTapped(CanvasPointer pointer)
-        {
-            GameLoopSynchronizationContext.RunOnGameLoopThreadAsync(Canvas, async () =>
-            {
-                base.OnDoubleTapped(pointer);
-            });
-        }
-
-        public override void OnTapped(CanvasPointer pointer)
-        {
-            GameLoopSynchronizationContext.RunOnGameLoopThreadAsync(Canvas, async () =>
-            {
-                base.OnTapped(pointer);
-            });
-        }
-
-        public override void OnDragged(CanvasPointer pointer)
-        {
-            GameLoopSynchronizationContext.RunOnGameLoopThreadAsync(Canvas, async () =>
-            {
-                base.OnDragged(pointer);
-            });
-        }
-
-        public override void OnHolding(Vector2 point)
-        {
-            GameLoopSynchronizationContext.RunOnGameLoopThreadAsync(Canvas, async () =>
-            {
-                base.OnHolding(point);
+                base.OnReleased(canvas, args);
             });
         }
 

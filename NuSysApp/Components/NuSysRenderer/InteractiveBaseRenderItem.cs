@@ -63,46 +63,46 @@ namespace NuSysApp
         {
             _gestureRecognizer = new GestureRecognizer();
             _gestureRecognizer.GestureSettings = GestureSettings.None;
-            _gestureRecognizer.Dragging += GestureRecognizerOnDragging;
-            _gestureRecognizer.Tapped += GestureRecognizerOnTapped;
-            _gestureRecognizer.RightTapped += GestureRecognizerOnRightTapped;
-            _gestureRecognizer.Holding += GestureRecognizerOnHolding;
-            _gestureRecognizer.ManipulationStarted += GestureRecognizerOnManipulationStarted;
-            _gestureRecognizer.ManipulationUpdated += GestureRecognizerOnManipulationUpdated;
-            _gestureRecognizer.ManipulationCompleted += GestureRecognizerOnManipulationCompleted;
+            _gestureRecognizer.Dragging += OnDragging;
+            _gestureRecognizer.Tapped += OnTapped;
+            _gestureRecognizer.RightTapped += OnRightTapped;
+            _gestureRecognizer.Holding += OnHolding;
+            _gestureRecognizer.ManipulationStarted += OnManipulationStarted;
+            _gestureRecognizer.ManipulationUpdated += OnManipulationUpdated;
+            _gestureRecognizer.ManipulationCompleted += OnManipulationCompleted;
         }
 
-        public virtual void GestureRecognizerOnDragging(GestureRecognizer sender, DraggingEventArgs args)
+        public virtual void OnDragging(GestureRecognizer sender, DraggingEventArgs args)
         {
 
         }
 
-        public virtual void GestureRecognizerOnManipulationCompleted(GestureRecognizer sender, ManipulationCompletedEventArgs args)
+        public virtual void OnManipulationCompleted(GestureRecognizer sender, ManipulationCompletedEventArgs args)
         {
 
         }
 
-        public virtual void GestureRecognizerOnManipulationUpdated(GestureRecognizer sender, ManipulationUpdatedEventArgs args)
+        public virtual void OnManipulationUpdated(GestureRecognizer sender, ManipulationUpdatedEventArgs args)
         {
 
         }
 
-        public virtual void GestureRecognizerOnManipulationStarted(GestureRecognizer sender, ManipulationStartedEventArgs args)
+        public virtual void OnManipulationStarted(GestureRecognizer sender, ManipulationStartedEventArgs args)
         {
 
         }
 
-        public virtual void GestureRecognizerOnHolding(GestureRecognizer sender, HoldingEventArgs args)
+        public virtual void OnHolding(GestureRecognizer sender, HoldingEventArgs args)
         {
 
         }
 
-        public virtual void GestureRecognizerOnRightTapped(GestureRecognizer sender, RightTappedEventArgs args)
+        public virtual void OnRightTapped(GestureRecognizer sender, RightTappedEventArgs args)
         {
 
         }
 
-        public virtual void GestureRecognizerOnTapped(GestureRecognizer sender, TappedEventArgs args)
+        public virtual void OnTapped(GestureRecognizer sender, TappedEventArgs args)
         {
 
         }
