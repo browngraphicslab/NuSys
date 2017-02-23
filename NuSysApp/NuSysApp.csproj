@@ -922,7 +922,6 @@
     <Compile Include="Util\EventUtil.cs" />
     <Compile Include="Util\ExplorationMode.cs" />
     <Compile Include="Util\ExtensionMethods.cs" />
-    <Compile Include="Util\GestureRecognizer.cs" />
     <Compile Include="Util\GestureType.cs" />
     <Compile Include="Util\IInkController.cs" />
     <Compile Include="Util\InkUtil.cs" />

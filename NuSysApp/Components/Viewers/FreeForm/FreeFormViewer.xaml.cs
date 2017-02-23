@@ -31,12 +31,12 @@ namespace NuSysApp
     {
         private static float ARRANGE_BORDER = 55.0f;
         private List<PointModel> _latestStroke;
-        private RenderItemInteractionManager _canvasInteractionManager;
+        private CanvasInteractionManager _canvasInteractionManager;
 
         /// <summary>
         /// getter for canvasinteractionmanager
         /// </summary>
-        public RenderItemInteractionManager CanvasInteractionManager
+        public CanvasInteractionManager CanvasInteractionManager
         {
             get { return _canvasInteractionManager; }
         }
@@ -181,7 +181,7 @@ namespace NuSysApp
             // Make sure the _canvasInteractionManager is only implemented once
             if (_canvasInteractionManager == null)
             {
-                _canvasInteractionManager = new RenderItemInteractionManager(RenderEngine, xWrapper);
+                _canvasInteractionManager = new CanvasInteractionManager(RenderEngine, xWrapper);
             }
 
             // Make sure the FocusManager is only implemented once

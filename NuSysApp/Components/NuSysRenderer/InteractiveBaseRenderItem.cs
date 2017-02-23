@@ -11,6 +11,8 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Core;
 using System.Numerics;
 using Windows.System;
+using Windows.UI.Input;
+using Windows.UI.Xaml;
 
 namespace NuSysApp
 {
@@ -30,11 +32,7 @@ namespace NuSysApp
         public event PointerHandler PenPointerDragged;
         public event PointerHandler PenPointerCompleted;
         public event PointerHandler PenPointerDragStarted;
-
-
-
-
-
+        
 
         private bool _isDragging;
         private bool _isPenDragging;
@@ -59,86 +57,74 @@ namespace NuSysApp
         public delegate void HoldingHandler(InteractiveBaseRenderItem item, Vector2 point);
         //Event that fires when holding a render item with your fingers
         public HoldingHandler Holding;
-
+        private GestureRecognizer _gestureRecognizer;
 
         public InteractiveBaseRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
-            
-        }
-        public virtual void OnPressed(CanvasPointer pointer)
-        {
-            Pressed?.Invoke(this, pointer);
-
-            if (pointer.DeviceType == PointerDeviceType.Pen)
-            {
-                PenPointerPressed?.Invoke(this, pointer);
-            }
-        }
-
-        public virtual void OnReleased(CanvasPointer pointer)
-        {
-            // if we are currently dragging fire drag completed and make sure we are no longer dragging
-            if (_isDragging)
-            {
-                OnDragCompleted(pointer);
-                _isDragging = false;
-            }
-
-            Released?.Invoke(this, pointer);
-
-            if (pointer.DeviceType == PointerDeviceType.Pen)
-            {
-                if (_isPenDragging)
-                {
-                    PenPointerCompleted?.Invoke(this, pointer);
-                    _isPenDragging = false;
-                }
-
-                PenPointerReleased?.Invoke(this, pointer);
-            }
+            _gestureRecognizer = new GestureRecognizer();
+            _gestureRecognizer.GestureSettings = GestureSettings.None;
+            _gestureRecognizer.Dragging += GestureRecognizerOnDragging;
+            _gestureRecognizer.Tapped += GestureRecognizerOnTapped;
+            _gestureRecognizer.RightTapped += GestureRecognizerOnRightTapped;
+            _gestureRecognizer.Holding += GestureRecognizerOnHolding;
+            _gestureRecognizer.ManipulationStarted += GestureRecognizerOnManipulationStarted;
+            _gestureRecognizer.ManipulationUpdated += GestureRecognizerOnManipulationUpdated;
+            _gestureRecognizer.ManipulationCompleted += GestureRecognizerOnManipulationCompleted;
         }
 
-        public virtual void OnPointerWheelChanged(CanvasPointer pointer, float delta)
+        public virtual void GestureRecognizerOnDragging(GestureRecognizer sender, DraggingEventArgs args)
         {
-            PointerWheelChanged?.Invoke(this, pointer, delta);
+
         }
 
-        public virtual void OnDoubleTapped(CanvasPointer pointer)
+        public virtual void GestureRecognizerOnManipulationCompleted(GestureRecognizer sender, ManipulationCompletedEventArgs args)
         {
-            DoubleTapped?.Invoke(this, pointer);
+
         }
 
-        public virtual void OnTapped(CanvasPointer pointer)
+        public virtual void GestureRecognizerOnManipulationUpdated(GestureRecognizer sender, ManipulationUpdatedEventArgs args)
         {
-            Tapped?.Invoke(this, pointer);
+
         }
 
-        public virtual void OnDragged(CanvasPointer pointer)
+        public virtual void GestureRecognizerOnManipulationStarted(GestureRecognizer sender, ManipulationStartedEventArgs args)
         {
-            // if we are not currently dragging, call the drag started method
-            if (!_isDragging)
-            {
-                OnDragStarted(pointer);
-                _isDragging = true;
-            }
 
-            Dragged?.Invoke(this, pointer);
-
-
-            if (pointer.DeviceType == PointerDeviceType.Pen)
-            {
-                if (!_isPenDragging)
-                {
-                    PenPointerDragStarted?.Invoke(this, pointer);
-                    _isPenDragging = true;
-                }
-                PenPointerDragged?.Invoke(this, pointer);
-            }       
         }
 
-        public virtual void OnHolding(Vector2 point)
+        public virtual void GestureRecognizerOnHolding(GestureRecognizer sender, HoldingEventArgs args)
         {
-            Holding?.Invoke(this, point);
+
+        }
+
+        public virtual void GestureRecognizerOnRightTapped(GestureRecognizer sender, RightTappedEventArgs args)
+        {
+
+        }
+
+        public virtual void GestureRecognizerOnTapped(GestureRecognizer sender, TappedEventArgs args)
+        {
+
+        }
+
+        public virtual void OnPressed(FrameworkElement canvas, PointerRoutedEventArgs args)
+        {
+            _gestureRecognizer.ProcessDownEvent(args.GetCurrentPoint(canvas));
+        }
+
+        public virtual void OnMoved(FrameworkElement canvas, PointerRoutedEventArgs args)
+        {
+            _gestureRecognizer.ProcessMoveEvents(args.GetIntermediatePoints(canvas));
+        }
+
+        public virtual void OnReleased(FrameworkElement canvas, PointerRoutedEventArgs args)
+        {
+            _gestureRecognizer.ProcessUpEvent(args.GetCurrentPoint(canvas));
+        }
+
+        public virtual void OnPointerWheelChanged(FrameworkElement canvas, PointerRoutedEventArgs args)
+        {
+            _gestureRecognizer.ProcessMouseWheelEvent(args.GetCurrentPoint(canvas), false, false);
         }
 
         // Function fired when key is pressed on this render item
@@ -154,9 +140,6 @@ namespace NuSysApp
         {
             KeyReleased?.Invoke(args);
         }
-
- 
-
 
         // Partial override of BaseRenderItem GotFocus in order to add KeyPressed event
         public override void GotFocus()
