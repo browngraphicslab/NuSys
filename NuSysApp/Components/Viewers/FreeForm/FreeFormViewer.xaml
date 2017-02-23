@@ -73,10 +73,10 @@
                     </Button>
                 </StackPanel>
             </Grid>
-            
+            <local:WebPreviewUserControl x:Name="xWebView" HorizontalAlignment="Stretch" Visibility="Collapsed" VerticalAlignment="Stretch"  Height="200" Width="400"  Margin="0,0,0,0"/>
+
         </Canvas>
-        <local:Keyboard x:Name="xKeyboard" Visibility="Collapsed"  ></local:Keyboard>
-        <local:WebPreviewUserControl x:Name="xWebView" Height="2000" Width="2000"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Loaded="XWebView_OnLoaded" Margin="0,0,0,0" />
+        <local:Keyboard x:Name="xKeyboard" Visibility="Collapsed"></local:Keyboard>
 
         <local:DetailViewFullScreenImageViewer VerticalAlignment="Stretch" HorizontalAlignment="Stretch" x:Name="xFullScreenImageViewer"></local:DetailViewFullScreenImageViewer>
 

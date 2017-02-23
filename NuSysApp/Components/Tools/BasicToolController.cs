@@ -11,7 +11,9 @@ namespace NuSysApp
 {
     public class BasicToolController : ToolController
     {
-        public BasicToolController(BasicToolModel model) : base(model){}
+        public BasicToolController(BasicToolModel model) : base(model)
+        {
+        }
 
         public BasicToolModel BasicToolModel
         {

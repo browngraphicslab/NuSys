@@ -22,12 +22,42 @@ namespace NuSysApp
         public WebPreviewUserControl()
         {
             this.InitializeComponent();
+            
         }
+        
 
         public void Navigate(String urlString)
         {
-            Uri uri = new Uri("http://www.google.com");
+            Uri uri = new Uri(urlString);
             xWebView.Navigate(uri);
+        }
+
+        private void XTopBar_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            Canvas.SetLeft(this, Canvas.GetLeft(this) + e.Delta.Translation.X);
+            Canvas.SetTop(this, Canvas.GetTop(this) + e.Delta.Translation.Y);
+        }
+
+        private void XResizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            var newHeight = Height + e.Delta.Translation.Y;
+            var newWidth = Width + e.Delta.Translation.X;
+            Height = newHeight;
+            Width = newWidth;
+            e.Handled = true;
+            
+        }
+
+        private void XGrid_OnPointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            CapturePointer(e.Pointer);
+            e.Handled = true;
+        }
+
+        private void XGrid_OnPointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            ReleasePointerCapture(e.Pointer);
+            e.Handled = true;
         }
     }
 }

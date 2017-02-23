@@ -7,11 +7,19 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignHeight="300"
-    d:DesignWidth="400">
-
-    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
-        <Canvas Name="xCanvas" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="BlueViolet">
-            <WebView x:Name="xWebView" Height="600" Width="600" HorizontalAlignment="Right" VerticalAlignment="Bottom" IsHitTestVisible ="False" Margin="0,0,0,0" />
-        </Canvas>
+    d:DesignWidth="400"
+    
+    >
+    <Grid Name="xGrid" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Pink" PointerPressed="XGrid_OnPointerPressed" PointerReleased="XGrid_OnPointerReleased" BorderBrush="Black" BorderThickness="1">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Rectangle x:Name="xTopBar" HorizontalAlignment="Stretch" Height="40" Grid.Row="0" Fill="Gray" ManipulationDelta="XTopBar_OnManipulationDelta" ManipulationMode="All"></Rectangle>
+        <WebView x:Name="xWebView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible ="True" Margin="0,0,0,0" Opacity="1.5" Grid.Row="1"/>
+        <Path x:Name="xResizer" Grid.Row="1" Fill="{StaticResource color3}" Data="M283,251 L283,283 L251,283 z" HorizontalAlignment="Right"
+                      Height="59.862" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="61"
+                      Opacity=".35"  Canvas.ZIndex="20" ManipulationMode="All" ManipulationDelta="XResizer_OnManipulationDelta"/>
     </Grid>
+
 </UserControl>

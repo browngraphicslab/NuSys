@@ -1688,11 +1688,23 @@ namespace NuSysApp
             xAddRegionMenu.Visibility = Visibility.Collapsed;
         }
 
-
-        private void XWebView_OnLoaded(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Displays a small webpreview at the location passed in
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        public void ShowWebPreview(String url, double x, double y)
         {
-            Canvas.SetLeft(xWebView, 400);
-            xWebView.Navigate("http://www.google.com");
+            UITask.Run(() =>
+            {
+                xWebView.Visibility = Visibility.Visible;
+                Canvas.SetLeft(xWebView, x);
+                Canvas.SetTop(xWebView, y);
+                xWebView.Navigate(url);
+            });
         }
+
+ 
     }
 }
