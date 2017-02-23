@@ -59,5 +59,10 @@ namespace NuSysApp
             ReleasePointerCapture(e.Pointer);
             e.Handled = true;
         }
+
+        private void XCloseButton_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            Visibility = Visibility.Collapsed;
+        }
     }
 }
