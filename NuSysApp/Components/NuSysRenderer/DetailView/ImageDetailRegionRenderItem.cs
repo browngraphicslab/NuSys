@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
+using Windows.UI.Input;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
 using NetTopologySuite.Geometries;
@@ -173,11 +174,11 @@ namespace NuSysApp
             ds.Transform = orgTransform;
         }
 
-        public override void OnDragged(CanvasPointer pointer)
+        public override void OnDragging(GestureRecognizer sender, DraggingEventArgs args)
         {
             if (!IsModifiable)
                 return;         
-            RegionMoved?.Invoke(this, pointer.DeltaSinceLastUpdate);
+            RegionMoved?.Invoke(this, args.Position);
         }
 
         public override void OnPressed(CanvasPointer pointer)
