@@ -107,24 +107,24 @@ namespace NuSysApp
 
         }
 
-        public virtual void OnPressed(FrameworkElement canvas, PointerRoutedEventArgs args)
+        public virtual void OnPressed(CanvasPointer pointer)
         {
-            _gestureRecognizer.ProcessDownEvent(args.GetCurrentPoint(canvas));
+            _gestureRecognizer.ProcessDownEvent(pointer.PointerRoutedEventArgs.GetCurrentPoint(pointer.SourceElement));
         }
 
-        public virtual void OnMoved(FrameworkElement canvas, PointerRoutedEventArgs args)
+        public virtual void OnMoved(CanvasPointer pointer)
         {
-            _gestureRecognizer.ProcessMoveEvents(args.GetIntermediatePoints(canvas));
+            _gestureRecognizer.ProcessMoveEvents(pointer.PointerRoutedEventArgs.GetIntermediatePoints(pointer.SourceElement));
         }
 
-        public virtual void OnReleased(FrameworkElement canvas, PointerRoutedEventArgs args)
+        public virtual void OnReleased(CanvasPointer pointer)
         {
-            _gestureRecognizer.ProcessUpEvent(args.GetCurrentPoint(canvas));
+            _gestureRecognizer.ProcessUpEvent(pointer.PointerRoutedEventArgs.GetCurrentPoint(pointer.SourceElement));
         }
 
-        public virtual void OnPointerWheelChanged(FrameworkElement canvas, PointerRoutedEventArgs args)
+        public virtual void OnPointerWheelChanged(CanvasPointer pointer)
         {
-            _gestureRecognizer.ProcessMouseWheelEvent(args.GetCurrentPoint(canvas), false, false);
+            _gestureRecognizer.ProcessMouseWheelEvent(pointer.PointerRoutedEventArgs.GetCurrentPoint(pointer.SourceElement), false, false);
         }
 
         // Function fired when key is pressed on this render item
