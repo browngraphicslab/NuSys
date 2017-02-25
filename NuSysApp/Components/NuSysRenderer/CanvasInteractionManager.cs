@@ -8,6 +8,7 @@ using Windows.Foundation;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
+using ReverseMarkdown.Converters;
 
 namespace NuSysApp
 {
@@ -53,31 +54,36 @@ namespace NuSysApp
             InteractiveBaseRenderItem e = _renderEngine.GetRenderItemAt(args.GetCurrentPoint(_canvas).Position.ToSystemVector2(),
                 _renderEngine.Root) as InteractiveBaseRenderItem;
             _renderItems[args.Pointer.PointerId] = e;
-            e.OnPressed(_canvas, args);
+            CanvasPointer p = new CanvasPointer(args.GetCurrentPoint(_canvas), _canvas, args);
+            e.OnPressed(p);
         }
 
         private void OnPointerMoved(object sender, PointerRoutedEventArgs args)
         {
             InteractiveBaseRenderItem e = _renderItems[args.Pointer.PointerId];
-            e.OnMoved(_canvas, args);
+            CanvasPointer p = new CanvasPointer(args.GetCurrentPoint(_canvas), _canvas, args);
+            e.OnMoved(p);
         }
 
         private void OnPointerReleased(object sender, PointerRoutedEventArgs args)
         {
             InteractiveBaseRenderItem e = _renderItems[args.Pointer.PointerId];
-            e.OnReleased(_canvas, args);
+            CanvasPointer p = new CanvasPointer(args.GetCurrentPoint(_canvas), _canvas, args);
+            e.OnReleased(p);
         }
 
         private void OnPointerExited(object sender, PointerRoutedEventArgs args)
         {
             InteractiveBaseRenderItem e = _renderItems[args.Pointer.PointerId];
-            e.OnReleased(_canvas, args);
+            CanvasPointer p = new CanvasPointer(args.GetCurrentPoint(_canvas), _canvas, args);
+            e.OnReleased(p);
         }
 
         private void OnPointerWheelChanged(object sender, PointerRoutedEventArgs args)
         {
             InteractiveBaseRenderItem e = _renderItems[args.Pointer.PointerId];
-            e.OnPointerWheelChanged(_canvas, args);
+            CanvasPointer p = new CanvasPointer(args.GetCurrentPoint(_canvas), _canvas, args);
+            e.OnPointerWheelChanged(p);
         }
     }
 }

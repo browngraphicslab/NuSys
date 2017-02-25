@@ -56,6 +56,13 @@ namespace NuSysApp
             IsEraser = pointerpoint.Properties.IsEraser;
         }
 
+        public CanvasPointer(PointerPoint pointerPoint, FrameworkElement element, PointerRoutedEventArgs args)
+            : this(pointerPoint)
+        {
+            SourceElement = element;
+            PointerRoutedEventArgs = args;
+        }
+
         public override bool Equals(object obj)
         {
             var other = (CanvasPointer) obj;
