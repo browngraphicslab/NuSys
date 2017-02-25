@@ -33,6 +33,7 @@ namespace NuSysApp
         private Rect _bitmap;
         private double _totalScale;
         private Rect _imageRegionRect;
+        private Vector2 _lastPosition;
         public ImageLibraryElementModel LibraryElementModel { get; set; }
 
         private CanvasStrokeStyle _strokeStyle = new CanvasStrokeStyle
@@ -89,6 +90,7 @@ namespace NuSysApp
 
         private void ResizerOnResizerDragStarted()
         {
+            _lastPosition = new Vector2((float)LibraryElementModel.NormalizedX, (float)LibraryElementModel.NormalizedY);
             RegionPressed?.Invoke(this);
         }
 
@@ -177,8 +179,12 @@ namespace NuSysApp
         public override void OnDragging(GestureRecognizer sender, DraggingEventArgs args)
         {
             if (!IsModifiable)
-                return;         
-            RegionMoved?.Invoke(this, args.Position);
+            {
+                return;
+            }
+            Vector2 p = args.Position.ToSystemVector2();
+            RegionMoved?.Invoke(this, p - _lastPosition);
+            _lastPosition = p;
         }
 
         public override void OnPressed(CanvasPointer pointer)
