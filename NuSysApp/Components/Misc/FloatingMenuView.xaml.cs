@@ -234,7 +234,6 @@ namespace NuSysApp
         /// <param name="args"></param>
         private void BtnAddNodeOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs args)
         {
-            SessionController.Instance.SessionView.FreeFormViewer.Unfreeze();
             Debug.WriteLine("starting request");
 
             // Hide the library dragging rect

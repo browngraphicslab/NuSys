@@ -860,15 +860,8 @@ namespace NuSysApp
                 _caret.IsVisible = true;
                 UITask.Run(delegate
                 {
-                    if (SessionController.Instance.SessionSettings.TouchKeyboardVisible)
-                    {
-                        if (
-                            SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager
-                                .LastInteractionType == CanvasInteractionManager.InteractionType.Touch)
-                        {
-                            SessionController.Instance.SessionView.FreeFormViewer.Keyboard.GainPseudoFocus();
-                        }
-                    }
+
+                    
                 });
 
             }

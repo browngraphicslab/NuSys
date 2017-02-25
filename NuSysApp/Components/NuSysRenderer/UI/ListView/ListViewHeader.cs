@@ -219,7 +219,6 @@ namespace NuSysApp
             header.Dragged -= Header_Dragged;
             header.HeaderOptionsActivated -= Header_OptionsActivated;
             header.DragCompleted -= Header_DragCompleted;
-            header.HeaderResizing -= HeaderItemResizing;
             header.HeaderResizeCompleted -= HeaderItemResizeCompleted;
 
         }
@@ -236,7 +235,7 @@ namespace NuSysApp
             header.HeaderOptionsActivated += Header_OptionsActivated;
 
             header.DragCompleted += Header_DragCompleted;
-            header.HeaderResizing += HeaderItemResizing;
+
             header.HeaderResizeCompleted += HeaderItemResizeCompleted;
         }
 

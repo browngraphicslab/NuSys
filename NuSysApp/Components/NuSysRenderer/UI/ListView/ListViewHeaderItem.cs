@@ -114,10 +114,10 @@ namespace NuSysApp
             HeaderOptionsActivated?.Invoke(this);
         }
 
-        public override void OnRightTapped(GestureRecognizer sender, RightTappedEventArgs args)
+        public override void OnRightTapped(CanvasPointer pointer)
         {
             HeaderOptionsActivated?.Invoke(this);
-            base.OnRightTapped(sender, args);
+            base.OnRightTapped(pointer);
         }
 
         public override void OnDragStarted(CanvasPointer pointer)
@@ -146,7 +146,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        public override void OnDragging(GestureRecognizer sender, DraggingEventArgs args)
+        public override void OnDragged(GestureRecognizer sender, DraggingEventArgs args)
         {
             if (_borderBeingDragged)
             {
@@ -155,7 +155,7 @@ namespace NuSysApp
             }
             else
             {
-                base.OnDragging(sender, args);
+                base.OnDragged(sender, args);
 
             }
 

@@ -77,13 +77,11 @@ namespace NuSysApp
 
         private void BackgroundRectangleOnPointerPressed(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
         {
-            SessionController.Instance.SessionView.FreeFormViewer.Freeze();
             CapturePointer(pointerRoutedEventArgs.Pointer);
         }
 
         private void OnPointerReleased(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
         {
-            SessionController.Instance.SessionView.FreeFormViewer.Unfreeze();
         }
 
         private void BackgroundRectangleOnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs manipulationDeltaRoutedEventArgs)
@@ -357,12 +355,10 @@ namespace NuSysApp
 
             private void OnPointerReleased(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
             {
-                SessionController.Instance.SessionView.FreeFormViewer.Unfreeze();
             }
 
             private void OnPointerPressed(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
             {
-                SessionController.Instance.SessionView.FreeFormViewer.Freeze();
                 CapturePointer(pointerRoutedEventArgs.Pointer);
             }
 

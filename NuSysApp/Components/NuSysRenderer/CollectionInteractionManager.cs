@@ -89,16 +89,6 @@ namespace NuSysApp
         {
             _collection = collection;
             _canvasInteractionManager = canvasInteractionManager;
-            _canvasInteractionManager.PointerPressed += OnPointerPressed;
-            _canvasInteractionManager.PointerReleased += OnPointerReleased;
-            _canvasInteractionManager.PanZoomed += OnPanZoomed;
-            _canvasInteractionManager.Translated += OnTranslated;
-            _canvasInteractionManager.ItemTapped += CanvasInteractionManagerOnItemTapped;
-            _canvasInteractionManager.ItemLongTapped += CanvasInteractionManagerOnItemLongTapped;
-            _canvasInteractionManager.ItemDoubleTapped += CanvasInteractionManagerOnItemDoubleTapped;
-            _canvasInteractionManager.AllPointersReleased += CanvasInteractionManagerOnAllPointersReleased;
-            _canvasInteractionManager.TwoPointerPressed += CanvasInteractionManagerOnTwoPointerPressed;
-            _canvasInteractionManager.PointerWheelChanged += CanvasInteractionManagerOnPointerWheelChanged;
             _freeFormViewer =  SessionController.Instance.SessionView.FreeFormViewer;
         }
 
@@ -121,7 +111,6 @@ namespace NuSysApp
         {
             var menu = _freeFormViewer.RenderEngine.NodeMarkingMenu;
             menu.IsVisible = false;
-            _canvasInteractionManager.PointerMoved -= CanvasInteractionManagerOnPointerMoved;
 
             SessionController.Instance.SessionSettings.LinksVisible = LinkVisibilityOption.AllLinks;
 
@@ -143,7 +132,6 @@ namespace NuSysApp
             _freeFormViewer.RenderEngine.NodeMarkingMenu.IsVisible = true;
             _freeFormViewer.RenderEngine.NodeMarkingMenu.Show(pointer2.CurrentPoint.X, pointer2.CurrentPoint.Y);
 
-            _canvasInteractionManager.PointerMoved += CanvasInteractionManagerOnPointerMoved;
         }
 
         private void CanvasInteractionManagerOnPointerMoved(CanvasPointer pointer)
@@ -220,7 +208,6 @@ namespace NuSysApp
 
             if (pointer.DeviceType == PointerDeviceType.Pen) { 
                 OnPenPointerPressed(pointer);
-                _canvasInteractionManager.PointerMoved += OnPenPointerMoved;
             }
         }
 
@@ -263,7 +250,6 @@ namespace NuSysApp
 
         private void OnPenPointerReleased(CanvasPointer pointer)
         {
-            _canvasInteractionManager.PointerMoved -= OnPenPointerMoved;
             _finalInkPointer = pointer.PointerId;
             _finalInkPointerUpdated = DateTime.Now;
             SessionController.Instance.SessionView.FreeFormViewer.RenderCanvas.RunOnGameLoopThreadAsync(delegate {
@@ -293,47 +279,8 @@ namespace NuSysApp
 
             _transform = _collection.Camera.LocalToScreenMatrix;
 
-            if (_canvasInteractionManager.ActiveCanvasPointers.Count == 1)
-            {
-                var hit = _freeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
-                if (!(hit is BaseInteractiveUIElement))
-                {
-                    if (hit == _freeFormViewer.RenderEngine.ElementSelectionRect.Resizer)
-                    {
-                        _resizerHit = true;
-                        if (_resizerHit)
-                        {
-                            ResizerStarted?.Invoke();
-                        }
+           
 
-                    }
-                }
-                else
-                {
-                    if ((hit as BaseInteractiveUIElement).IsInteractable())
-                    {
-                        return;
-                    }
-                }
-                RenderItemPressed?.Invoke(hit, pointer);
-
-                _selectedRenderItem = hit as ElementRenderItem;
-
-            }
-            if (_canvasInteractionManager.ActiveCanvasPointers.Count == 2)
-            {
-
-                _secondSelectedRenderItem = _freeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, _collection, 1) as ElementRenderItem;
-                _transformables.Clear();
-
-                if (_canvasInteractionManager.ActiveCanvasPointers[0].MillisecondsActive > 300)
-                {
-                    if (_selectedRenderItem != null && _selectedRenderItem != _collection && _secondSelectedRenderItem == _collection)
-                    {
-                        DuplicateCreated?.Invoke((ElementRenderItem)_selectedRenderItem, _canvasInteractionManager.ActiveCanvasPointers[1].CurrentPoint);
-                    }
-                }
-            }
         }
 
         private void OnTouchPointerReleased(CanvasPointer pointer)
@@ -358,12 +305,7 @@ namespace NuSysApp
             // the currentCollection is the collection that has focus, if we long tap on a collection that will be the current collection
             var currentCollection = _freeFormViewer.CurrentCollection;
 
-            // if the thing we moved is not a "node" or it is the current collection or we have multiple pointers down or ... interactions too long etc
-            // then don't do anything
-            if (!(_selectedRenderItem is ElementRenderItem) || _selectedRenderItem == currentCollection || _canvasInteractionManager.ActiveCanvasPointers.Count > 0 || pointer.MillisecondsActive < 500 || pointer.DistanceTraveled < 50)
-            {
-                return;
-            }
+
 
             // otherwise get a list of the elements which lie under the node that was released
             var hits = _freeFormViewer.RenderEngine.GetRenderItemsAt(pointer.CurrentPoint);
@@ -420,7 +362,6 @@ namespace NuSysApp
             {
                 _mode = Mode.Ink;
                 InkStarted?.Invoke(pointer);
-                _canvasInteractionManager.PointerMoved += OnPointerMoved;
                 return;
             }
 
@@ -456,7 +397,6 @@ namespace NuSysApp
                     SessionController.Instance.SessionView.FreeFormViewer.RenderCanvas.RunOnGameLoopThreadAsync(delegate {
                         InkStopped?.Invoke(pointer);
                     });
-                    _canvasInteractionManager.PointerMoved -= OnPointerMoved;
                 }
                 _mode = Mode.None;
                 return;
@@ -603,14 +543,6 @@ namespace NuSysApp
             }
             else {
 
-                if (_canvasInteractionManager.ActiveCanvasPointers.Count == 0 && pointer.MillisecondsActive < 150)
-                {
-                    var keyStateShift = CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift);
-                    if (!keyStateShift.HasFlag(CoreVirtualKeyStates.Down))
-                    {
-                        SelectionsCleared?.Invoke();
-                    }
-                }
                 ItemSelected?.Invoke(elementRenderItem, pointer);
             }
         }
@@ -672,18 +604,7 @@ namespace NuSysApp
 
         public void Dispose()
         {
-            _canvasInteractionManager.PointerPressed -= OnPointerPressed;
-            _canvasInteractionManager.PointerReleased -= OnPointerReleased;
-            _canvasInteractionManager.PanZoomed -= OnPanZoomed;
-            _canvasInteractionManager.Translated -= OnTranslated;
-            _canvasInteractionManager.ItemTapped -= CanvasInteractionManagerOnItemTapped;
-            _canvasInteractionManager.ItemLongTapped -= CanvasInteractionManagerOnItemLongTapped;
-            _canvasInteractionManager.ItemDoubleTapped -= CanvasInteractionManagerOnItemDoubleTapped;
-            _canvasInteractionManager.AllPointersReleased -= CanvasInteractionManagerOnAllPointersReleased;
-            _canvasInteractionManager.TwoPointerPressed -= CanvasInteractionManagerOnTwoPointerPressed;
-            _canvasInteractionManager.PointerMoved -= OnPenPointerMoved;
-            _canvasInteractionManager.PointerMoved -= CanvasInteractionManagerOnPointerMoved;
-            _canvasInteractionManager.PointerWheelChanged -= CanvasInteractionManagerOnPointerWheelChanged;
+
         }
     }
 }

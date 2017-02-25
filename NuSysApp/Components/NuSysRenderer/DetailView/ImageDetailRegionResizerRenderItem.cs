@@ -9,6 +9,7 @@ using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using System.Numerics;
 using Windows.UI;
+using Windows.UI.Input;
 
 namespace NuSysApp
 {
@@ -49,9 +50,9 @@ namespace NuSysApp
             base.Draw(ds);
         }
 
-        public override void OnDragged(CanvasPointer pointer)
+        public override void OnDragged(GestureRecognizer sender, DraggingEventArgs args)
         {
-            ResizerDragged?.Invoke(pointer.DeltaSinceLastUpdate);
+            ResizerDragged?.Invoke(args.Position.ToSystemVector2());
         }
 
         public override void OnPressed(CanvasPointer pointer)

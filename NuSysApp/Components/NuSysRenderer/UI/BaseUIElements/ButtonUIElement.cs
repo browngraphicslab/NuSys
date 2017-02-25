@@ -218,7 +218,7 @@ namespace NuSysApp
 
         private void Shape_Holding(InteractiveBaseRenderItem item, Vector2 point)
         {
-            OnHolding(point);
+
         }
 
 
@@ -239,7 +239,6 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void Shape_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            OnDragged(pointer);
         }
 
         /// <summary>

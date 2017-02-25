@@ -55,7 +55,6 @@ namespace NuSysApp
 
             _parentsWithFocus = new List<BaseRenderItem>();
 
-            _canvasInteractionManager.PointerPressed += _canvasInteractionManager_PointerPressed;
             Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.KeyDown += FireKeyPressed;
             Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.KeyUp += FireKeyReleased;
         }
@@ -179,7 +178,6 @@ namespace NuSysApp
         // Prevent memory leaks by disposing of resources
         public void Dispose()
         {
-            _canvasInteractionManager.PointerPressed -= _canvasInteractionManager_PointerPressed;
             Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.KeyDown -= FireKeyPressed;
             Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.KeyUp -= FireKeyReleased;
         }

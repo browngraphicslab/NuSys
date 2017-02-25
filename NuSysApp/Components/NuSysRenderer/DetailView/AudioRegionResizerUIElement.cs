@@ -111,7 +111,6 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void HandleDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            OnDragged(pointer);
         }
 
         /// <summary>

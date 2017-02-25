@@ -342,7 +342,6 @@ namespace NuSysApp
             
             UITask.Run(delegate
             {
-                SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.ClearAllPointers();
                 Visibility = Visibility.Visible;
                 //Set width and height based on screen dimensions
                 var normalizedWidth = 920.0/1920;

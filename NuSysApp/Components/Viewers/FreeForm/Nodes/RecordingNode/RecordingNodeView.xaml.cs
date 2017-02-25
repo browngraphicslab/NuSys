@@ -33,7 +33,6 @@ namespace NuSysApp
 
         private void OnUnloaded(object sender, RoutedEventArgs routedEventArgs)
         {
-            SessionController.Instance.SessionView.FreeFormViewer.Unfreeze();
             Dispose();
         }
 
@@ -46,12 +45,10 @@ namespace NuSysApp
 
         private void XRootBorderOnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            SessionController.Instance.SessionView.FreeFormViewer.Unfreeze();
         }
 
         private void XRootBorderOnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs e)
         {
-            SessionController.Instance.SessionView.FreeFormViewer.Freeze();
         }
 
         public void Dispose()

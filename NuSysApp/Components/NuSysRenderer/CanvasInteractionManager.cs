@@ -60,6 +60,11 @@ namespace NuSysApp
 
         private void OnPointerMoved(object sender, PointerRoutedEventArgs args)
         {
+            if (!_renderItems.ContainsKey(args.Pointer.PointerId))
+            {
+                return;
+            }
+
             InteractiveBaseRenderItem e = _renderItems[args.Pointer.PointerId];
             CanvasPointer p = new CanvasPointer(args.GetCurrentPoint(_canvas), _canvas, args);
             e.OnMoved(p);
@@ -67,6 +72,11 @@ namespace NuSysApp
 
         private void OnPointerReleased(object sender, PointerRoutedEventArgs args)
         {
+            if (!_renderItems.ContainsKey(args.Pointer.PointerId))
+            {
+                return;
+            }
+
             InteractiveBaseRenderItem e = _renderItems[args.Pointer.PointerId];
             CanvasPointer p = new CanvasPointer(args.GetCurrentPoint(_canvas), _canvas, args);
             e.OnReleased(p);
@@ -74,6 +84,11 @@ namespace NuSysApp
 
         private void OnPointerExited(object sender, PointerRoutedEventArgs args)
         {
+            if (!_renderItems.ContainsKey(args.Pointer.PointerId))
+            {
+                return;
+            }
+
             InteractiveBaseRenderItem e = _renderItems[args.Pointer.PointerId];
             CanvasPointer p = new CanvasPointer(args.GetCurrentPoint(_canvas), _canvas, args);
             e.OnReleased(p);
@@ -81,6 +96,11 @@ namespace NuSysApp
 
         private void OnPointerWheelChanged(object sender, PointerRoutedEventArgs args)
         {
+            if (!_renderItems.ContainsKey(args.Pointer.PointerId))
+            {
+                return;
+            }
+
             InteractiveBaseRenderItem e = _renderItems[args.Pointer.PointerId];
             CanvasPointer p = new CanvasPointer(args.GetCurrentPoint(_canvas), _canvas, args);
             e.OnPointerWheelChanged(p);

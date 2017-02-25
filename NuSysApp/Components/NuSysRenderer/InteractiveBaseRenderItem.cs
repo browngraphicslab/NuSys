@@ -62,69 +62,81 @@ namespace NuSysApp
         public InteractiveBaseRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             _gestureRecognizer = new GestureRecognizer();
-            _gestureRecognizer.GestureSettings = GestureSettings.None;
-            _gestureRecognizer.Dragging += OnDragging;
-            _gestureRecognizer.Tapped += OnTapped;
-            _gestureRecognizer.RightTapped += OnRightTapped;
-            _gestureRecognizer.Holding += OnHolding;
-            _gestureRecognizer.ManipulationStarted += OnManipulationStarted;
-            _gestureRecognizer.ManipulationUpdated += OnManipulationUpdated;
-            _gestureRecognizer.ManipulationCompleted += OnManipulationCompleted;
         }
 
-        public virtual void OnDragging(GestureRecognizer sender, DraggingEventArgs args)
+        public virtual void OnDragged(GestureRecognizer sender, DraggingEventArgs args)
         {
 
         }
 
-        public virtual void OnManipulationCompleted(GestureRecognizer sender, ManipulationCompletedEventArgs args)
+        public virtual void OnManipulationCompleted(CanvasPointer pointer)
         {
 
         }
 
-        public virtual void OnManipulationUpdated(GestureRecognizer sender, ManipulationUpdatedEventArgs args)
+        public virtual void OnManipulationUpdated(CanvasPointer pointer)
         {
 
         }
 
-        public virtual void OnManipulationStarted(GestureRecognizer sender, ManipulationStartedEventArgs args)
+        public virtual void OnManipulationStarted(CanvasPointer pointer)
         {
 
         }
 
-        public virtual void OnHolding(GestureRecognizer sender, HoldingEventArgs args)
+        public virtual void OnHolding(CanvasPointer pointer)
         {
 
         }
 
-        public virtual void OnRightTapped(GestureRecognizer sender, RightTappedEventArgs args)
+        public virtual void OnRightTapped(CanvasPointer pointer)
         {
 
         }
 
-        public virtual void OnTapped(GestureRecognizer sender, TappedEventArgs args)
+        public virtual void OnTapped(CanvasPointer pointer)
+        {
+
+        }
+
+
+        public virtual void OnDoubleTapped(CanvasPointer pointer)
         {
 
         }
 
         public virtual void OnPressed(CanvasPointer pointer)
         {
-            _gestureRecognizer.ProcessDownEvent(pointer.PointerRoutedEventArgs.GetCurrentPoint(pointer.SourceElement));
+            UITask.Run(() =>
+            {
+                _gestureRecognizer.ProcessDownEvent(pointer.PointerRoutedEventArgs.GetCurrentPoint(pointer.SourceElement));
+            });
         }
 
         public virtual void OnMoved(CanvasPointer pointer)
         {
-            _gestureRecognizer.ProcessMoveEvents(pointer.PointerRoutedEventArgs.GetIntermediatePoints(pointer.SourceElement));
+            UITask.Run(() =>
+            {
+                _gestureRecognizer.ProcessMoveEvents(
+                    pointer.PointerRoutedEventArgs.GetIntermediatePoints(pointer.SourceElement));
+            });
         }
 
         public virtual void OnReleased(CanvasPointer pointer)
         {
-            _gestureRecognizer.ProcessUpEvent(pointer.PointerRoutedEventArgs.GetCurrentPoint(pointer.SourceElement));
+            UITask.Run(() =>
+            {
+                _gestureRecognizer.ProcessUpEvent(pointer.PointerRoutedEventArgs.GetCurrentPoint(pointer.SourceElement));
+            });
         }
 
         public virtual void OnPointerWheelChanged(CanvasPointer pointer)
         {
-            _gestureRecognizer.ProcessMouseWheelEvent(pointer.PointerRoutedEventArgs.GetCurrentPoint(pointer.SourceElement), false, false);
+            UITask.Run(() =>
+            {
+                _gestureRecognizer.ProcessMouseWheelEvent(
+                    pointer.PointerRoutedEventArgs.GetCurrentPoint(pointer.SourceElement));
+            });
         }
 
         // Function fired when key is pressed on this render item
