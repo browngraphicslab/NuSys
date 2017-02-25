@@ -53,7 +53,6 @@ namespace NuSysApp
             PenPointerReleased += OnPenPointerReleased_Callback;
             _inkController.InkAdded += ContentDataControllerOnInkAdded;
             _inkController.InkRemoved += ContentDataControllerOnInkRemoved;
-            SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.InteractionTypeChanged += CanvasInteractionManagerOnInteractionTypeChanged;
             IsHitTestVisible = false;
             _canvas.RunOnGameLoopThreadAsync(() =>
             {
@@ -73,17 +72,6 @@ namespace NuSysApp
              _imageRect = new Rect(model.NormalizedX, model.NormalizedY, model.NormalizedWidth, model.NormalizedHeight);
         }
 
-        private void CanvasInteractionManagerOnInteractionTypeChanged(object sender, CanvasInteractionManager.InteractionType interactionType)
-        {
-            if (interactionType == CanvasInteractionManager.InteractionType.Pen)
-            {
-                IsHitTestVisible = true;
-            } else if (interactionType == CanvasInteractionManager.InteractionType.Touch)
-            {
-                IsHitTestVisible = false;
-            }
-        }
-
         public override void Dispose()
         {
             if (IsDisposed)
@@ -91,7 +79,6 @@ namespace NuSysApp
 
             _inkController.InkAdded -= ContentDataControllerOnInkAdded;
             _inkController.InkRemoved -= ContentDataControllerOnInkRemoved;
-            SessionController.Instance.SessionView.FreeFormViewer.CanvasInteractionManager.InteractionTypeChanged -= CanvasInteractionManagerOnInteractionTypeChanged;
 
             _builder = null;
             _currentInkStroke = null;
