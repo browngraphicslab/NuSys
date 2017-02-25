@@ -85,19 +85,19 @@ namespace NuSysApp
         /// <param name="ds"></param>
         protected abstract void DrawImage(CanvasDrawingSession ds);
 
-        public override void OnPressed(FrameworkElement canvas, PointerRoutedEventArgs args)
+        public override void OnPressed(CanvasPointer pointer)
         {
             GameLoopSynchronizationContext.RunOnGameLoopThreadAsync(Canvas, async () =>
             {
-                base.OnPressed(canvas, args);
+                base.OnPressed(pointer);
             });
         }
 
-        public override void OnReleased(FrameworkElement canvas, PointerRoutedEventArgs args)
+        public override void OnReleased(CanvasPointer pointer)
         {
             GameLoopSynchronizationContext.RunOnGameLoopThreadAsync(Canvas, async () =>
             {
-                base.OnReleased(canvas, args);
+                base.OnReleased(pointer);
             });
         }
 

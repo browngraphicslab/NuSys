@@ -31,7 +31,7 @@ namespace NuSysApp
         /// </summary>
         private Edge _edgeBeingDragged;
 
-        public delegate void ResizeHeaderEventHandler(ListViewHeaderItem<T> header, CanvasPointer pointer, Edge edgeBeingDragged);
+        public delegate void ResizeHeaderEventHandler(ListViewHeaderItem<T> header, GestureRecognizer sender, DraggingEventArgs args, Edge edgeBeingDragged);
 
         /// <summary>
         /// When left or right borders are dragged, this event will fire
@@ -114,17 +114,10 @@ namespace NuSysApp
             HeaderOptionsActivated?.Invoke(this);
         }
 
-
-        public override void OnTapped(CanvasPointer pointer)
+        public override void OnRightTapped(GestureRecognizer sender, RightTappedEventArgs args)
         {
-            if (pointer.IsRightButtonPressed)
-            {
-                HeaderOptionsActivated?.Invoke(this);
-            }
-            else
-            {
-                base.OnTapped(pointer);
-            }
+            HeaderOptionsActivated?.Invoke(this);
+            base.OnRightTapped(sender, args);
         }
 
         public override void OnDragStarted(CanvasPointer pointer)
@@ -158,7 +151,7 @@ namespace NuSysApp
             if (_borderBeingDragged)
             {
                 Debug.Assert(_edgeBeingDragged != null);
-                HeaderResizing?.Invoke(this, pointer, _edgeBeingDragged);
+                HeaderResizing?.Invoke(this, sender, args, _edgeBeingDragged);
             }
             else
             {
