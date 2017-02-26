@@ -57,11 +57,12 @@ namespace NuSysApp
         public delegate void HoldingHandler(InteractiveBaseRenderItem item, Vector2 point);
         //Event that fires when holding a render item with your fingers
         public HoldingHandler Holding;
-        private GestureRecognizer _gestureRecognizer;
+        protected HashSet<GestureRecognizer> GestureRecognizers = new HashSet<GestureRecognizer>();
+
 
         public InteractiveBaseRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
-            _gestureRecognizer = new GestureRecognizer();
+            
         }
 
         public virtual void OnDragged(GestureRecognizer sender, DraggingEventArgs args)
@@ -107,36 +108,34 @@ namespace NuSysApp
 
         public virtual void OnPressed(CanvasPointer pointer)
         {
-            UITask.Run(() =>
+            foreach (GestureRecognizer recognizer in GestureRecognizers)
             {
-                _gestureRecognizer.ProcessDownEvent(pointer.PointerRoutedEventArgs.GetCurrentPoint(pointer.SourceElement));
-            });
+                recognizer.ProcessDownEvent(pointer.PointerRoutedEventArgs.GetCurrentPoint(pointer.SourceElement));
+            }
         }
 
         public virtual void OnMoved(CanvasPointer pointer)
         {
-            UITask.Run(() =>
+            foreach (GestureRecognizer recognizer in GestureRecognizers)
             {
-                _gestureRecognizer.ProcessMoveEvents(
-                    pointer.PointerRoutedEventArgs.GetIntermediatePoints(pointer.SourceElement));
-            });
+                recognizer.ProcessMoveEvents(pointer.PointerRoutedEventArgs.GetIntermediatePoints(pointer.SourceElement));
+            }
         }
 
         public virtual void OnReleased(CanvasPointer pointer)
         {
-            UITask.Run(() =>
+            foreach (GestureRecognizer recognizer in GestureRecognizers)
             {
-                _gestureRecognizer.ProcessUpEvent(pointer.PointerRoutedEventArgs.GetCurrentPoint(pointer.SourceElement));
-            });
+                recognizer.ProcessUpEvent(pointer.PointerRoutedEventArgs.GetIntermediatePoints(pointer.SourceElement));
+            }
         }
 
         public virtual void OnPointerWheelChanged(CanvasPointer pointer)
         {
-            UITask.Run(() =>
+            foreach (GestureRecognizer recognizer in GestureRecognizers)
             {
-                _gestureRecognizer.ProcessMouseWheelEvent(
-                    pointer.PointerRoutedEventArgs.GetCurrentPoint(pointer.SourceElement));
-            });
+                recognizer.ProcessMouseWheelEvent(pointer.PointerRoutedEventArgs.GetCurrentPoint(pointer.SourceElement));
+            };
         }
 
         // Function fired when key is pressed on this render item
