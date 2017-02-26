@@ -55,14 +55,23 @@ namespace NuSysApp
 
         //Delegate for Holding event
         public delegate void HoldingHandler(InteractiveBaseRenderItem item, Vector2 point);
+
+
+
         //Event that fires when holding a render item with your fingers
         public HoldingHandler Holding;
         private GestureRecognizer _gestureRecognizer;
 
         public InteractiveBaseRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
-            _gestureRecognizer = new GestureRecognizer();
+            UITask.Run(() =>
+            {
+                _gestureRecognizer = new GestureRecognizer();
+
+            });
         }
+
+
 
         public virtual void OnDragged(GestureRecognizer sender, DraggingEventArgs args)
         {
@@ -107,36 +116,51 @@ namespace NuSysApp
 
         public virtual void OnPressed(CanvasPointer pointer)
         {
-            UITask.Run(() =>
-            {
-                _gestureRecognizer.ProcessDownEvent(pointer.PointerRoutedEventArgs.GetCurrentPoint(pointer.SourceElement));
-            });
+
         }
 
         public virtual void OnMoved(CanvasPointer pointer)
         {
-            UITask.Run(() =>
-            {
-                _gestureRecognizer.ProcessMoveEvents(
-                    pointer.PointerRoutedEventArgs.GetIntermediatePoints(pointer.SourceElement));
-            });
+
         }
 
         public virtual void OnReleased(CanvasPointer pointer)
         {
-            UITask.Run(() =>
-            {
-                _gestureRecognizer.ProcessUpEvent(pointer.PointerRoutedEventArgs.GetCurrentPoint(pointer.SourceElement));
-            });
+
         }
 
         public virtual void OnPointerWheelChanged(CanvasPointer pointer)
         {
-            UITask.Run(() =>
-            {
-                _gestureRecognizer.ProcessMouseWheelEvent(
-                    pointer.PointerRoutedEventArgs.GetCurrentPoint(pointer.SourceElement));
-            });
+
+        }
+
+
+        public void OnPointerWheelChanged(FrameworkElement _canvas, PointerRoutedEventArgs args)
+        {
+
+                _gestureRecognizer.ProcessMouseWheelEvent(_canvas, args);
+
+        }
+
+        public void OnMoved(FrameworkElement _canvas, PointerRoutedEventArgs args)
+        {
+
+                _gestureRecognizer.ProcessMoveEvents(_canvas, args);
+
+        }
+
+        public void OnPressed(FrameworkElement _canvas, PointerRoutedEventArgs args)
+        {
+
+                _gestureRecognizer.ProcessDownEvent(_canvas, args);
+
+        }
+
+        public void OnReleased(FrameworkElement _canvas, PointerRoutedEventArgs args)
+        {
+
+                _gestureRecognizer.ProcessUpEvent(_canvas, args);
+
         }
 
         // Function fired when key is pressed on this render item
