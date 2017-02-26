@@ -50,7 +50,11 @@ namespace NuSysApp
 
         protected override void ExpandButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            SessionController.Instance.SessionView.FreeFormViewer.ShowFullScreenImage(new Uri(_controller.ContentDataController.ContentDataModel.Data));
+            var uriList = new List<Uri>
+            {
+                new Uri(_controller.ContentDataController.ContentDataModel.Data)
+            };
+            SessionController.Instance.SessionView.FreeFormViewer.ShowFullScreenImage(uriList, 0, false);
         }
     }
 }
