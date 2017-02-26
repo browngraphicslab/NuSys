@@ -52,10 +52,10 @@ namespace NuSysApp
         private void OnPointerPressed(object sender, PointerRoutedEventArgs args)
         {
             InteractiveBaseRenderItem e = _renderEngine.GetRenderItemAt(args.GetCurrentPoint(_canvas).Position.ToSystemVector2(),
-                _renderEngine.Root) as InteractiveBaseRenderItem;
+               _renderEngine.Root) as InteractiveBaseRenderItem;
             _renderItems[args.Pointer.PointerId] = e;
-            CanvasPointer p = new CanvasPointer(args.GetCurrentPoint(_canvas), _canvas, args);
-            e.OnPressed(p);
+            e.OnPressed(_canvas, args);
+
         }
 
         private void OnPointerMoved(object sender, PointerRoutedEventArgs args)
@@ -66,8 +66,7 @@ namespace NuSysApp
             }
 
             InteractiveBaseRenderItem e = _renderItems[args.Pointer.PointerId];
-            CanvasPointer p = new CanvasPointer(args.GetCurrentPoint(_canvas), _canvas, args);
-            e.OnMoved(p);
+            e.OnMoved(_canvas, args);
         }
 
         private void OnPointerReleased(object sender, PointerRoutedEventArgs args)
@@ -78,8 +77,7 @@ namespace NuSysApp
             }
 
             InteractiveBaseRenderItem e = _renderItems[args.Pointer.PointerId];
-            CanvasPointer p = new CanvasPointer(args.GetCurrentPoint(_canvas), _canvas, args);
-            e.OnReleased(p);
+            e.OnReleased(_canvas, args);
         }
 
         private void OnPointerExited(object sender, PointerRoutedEventArgs args)
@@ -90,8 +88,7 @@ namespace NuSysApp
             }
 
             InteractiveBaseRenderItem e = _renderItems[args.Pointer.PointerId];
-            CanvasPointer p = new CanvasPointer(args.GetCurrentPoint(_canvas), _canvas, args);
-            e.OnReleased(p);
+            e.OnReleased(_canvas, args);
         }
 
         private void OnPointerWheelChanged(object sender, PointerRoutedEventArgs args)
@@ -102,8 +99,7 @@ namespace NuSysApp
             }
 
             InteractiveBaseRenderItem e = _renderItems[args.Pointer.PointerId];
-            CanvasPointer p = new CanvasPointer(args.GetCurrentPoint(_canvas), _canvas, args);
-            e.OnPointerWheelChanged(p);
+            e.OnPointerWheelChanged(_canvas, args);
         }
     }
 }
