@@ -25,7 +25,7 @@ namespace NuSysApp
         /// Checks to make sure the query exists as a key in the _message;
         /// </summary>
         /// <returns></returns>
-        public override async Task CheckOutgoingRequest()
+        public override void CheckOutgoingRequest()
         {
             Debug.Assert(_message.ContainsKey(NusysConstants.SEARCH_REQUEST_SERIALIZED_QUERY_KEY));
         }

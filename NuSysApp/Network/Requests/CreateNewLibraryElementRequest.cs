@@ -122,7 +122,7 @@ namespace NuSysApp
         /// Then adds a couple timestamps to the outgoing request message;
         /// </summary>
         /// <returns></returns>
-        public override async Task CheckOutgoingRequest()
+        public override void CheckOutgoingRequest()
         {
             var time = DateTime.UtcNow.ToString();
             Debug.Assert(_message.ContainsKey(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_CONTENT_ID_KEY));

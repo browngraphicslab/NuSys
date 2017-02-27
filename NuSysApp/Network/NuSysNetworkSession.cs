@@ -108,6 +108,16 @@ namespace NuSysApp
         #region Requests
 
         /// <summary>
+        /// method to call to execute a callback request.  
+        /// This requires a fully populateed request
+        /// </summary>
+        /// <param name="request"></param>
+        public void ExecuteCallbackRequest(CallbackRequest<ServerRequestArgsBase,ServerReturnArgsBase> request)
+        {
+            _serverClient.ExecuteCallbackRequest(request);
+        }
+
+        /// <summary>
         /// Will execute a request and not return from this method until the server has processed the request and returned a confirmation message
         /// the message that is returned is the confirmation message
         /// when parsing the confirmation messsage, please use Constants in NusysIntermediate.NusysConstants instead of strings as the keys you're parsing
@@ -130,7 +140,7 @@ namespace NuSysApp
         private async Task<Message> PrivateExecuteRequestAsync(Request request)
         {
             //if CheckOutgoingRequest created a valid thing
-            await request.CheckOutgoingRequest();
+            request.CheckOutgoingRequest();
             Message message = request.GetFinalMessage();
             var returnMessage = await _serverClient.WaitForRequestRequestAsync(message);
             request.SetReturnMessage(returnMessage);
@@ -147,7 +157,7 @@ namespace NuSysApp
         {
             Task.Run(async delegate {
                 //if CheckOutgoingRequest created a valid thing
-                await request.CheckOutgoingRequest();
+                request.CheckOutgoingRequest();
                 Message message = request.GetFinalMessage();
                 await _serverClient.SendMessageToServer(message);
             });

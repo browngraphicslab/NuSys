@@ -13,7 +13,7 @@ namespace NuSysApp
     {
         public FinalizeInkRequest(Message message) : base(NusysConstants.RequestType.FinalizeInkRequest, message){}
 
-        public async override Task CheckOutgoingRequest()
+        public override void CheckOutgoingRequest()
         {
             if (_message.GetString("id", null) == null)
             {

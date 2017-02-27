@@ -39,6 +39,8 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CallbackArgs.cs" />
+    <Compile Include="CallbackRequest.cs" />
     <Compile Include="FullArgsRequest.cs" />
     <Compile Include="ModelFactories\InkModelFactory.cs" />
     <Compile Include="Models\CollectionContentDataModel.cs" />
