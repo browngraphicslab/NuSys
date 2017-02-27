@@ -49,7 +49,7 @@ namespace NuSysApp
             thumbnail.BorderWidth = BorderWidth;
             thumbnail.BorderColor = BorderColor;
             thumbnail.Height = rowHeight;
-            thumbnail.Background = Colors.Transparent;
+            thumbnail.Background = Colors.LightBlue;
             LoadCellImageAsync(thumbnail, itemSource);
             return thumbnail;
 
@@ -71,6 +71,13 @@ namespace NuSysApp
                     thumbnail.Image = await MediaUtil.LoadCanvasBitmapAsync(thumbnail.ResourceCreator, ColumnFunction(itemSource));
                     _dict[itemSource] = thumbnail.Image;
 
+                }
+                var imgBounds = thumbnail?.Image?.GetBounds(thumbnail.ResourceCreator);
+
+
+                if (imgBounds == null)
+                {
+                    return;
                 }
 
                 var cellWidth = thumbnail.Width;

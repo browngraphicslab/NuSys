@@ -289,6 +289,7 @@ namespace NuSysApp
         private async void _dragToCollectionButton_DragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             _dragRect.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, _controller.SmallIconUri);
+            _dragRect.RegionBounds = GetRegionBounds(_controller.LibraryElementModel);
             var width = (float)(_dragRect.Image as CanvasBitmap).SizeInPixels.Width / (_dragRect.Image as CanvasBitmap).SizeInPixels.Height * 100;
             var height = 100;
 
@@ -304,6 +305,23 @@ namespace NuSysApp
             }
 
             _dragRect.IsVisible = true;
+        }
+
+
+        private Rect? GetRegionBounds(LibraryElementModel model)
+        {
+            switch (model.Type)
+            {
+                case NusysConstants.ElementType.Image:
+                    var imageModel = (ImageLibraryElementModel)model;
+                    return new Rect(imageModel.NormalizedX, imageModel.NormalizedY, imageModel.NormalizedWidth, imageModel.NormalizedHeight);
+                case NusysConstants.ElementType.PDF:
+                    var pdfModel = (PdfLibraryElementModel)model;
+                    return new Rect(pdfModel.NormalizedX, pdfModel.NormalizedY, pdfModel.NormalizedWidth, pdfModel.NormalizedHeight);
+                default:
+                    return null;
+            }
+
         }
 
         /// <summary>

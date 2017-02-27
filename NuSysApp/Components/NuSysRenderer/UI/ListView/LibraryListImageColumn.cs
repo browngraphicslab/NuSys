@@ -104,8 +104,8 @@ namespace NuSysApp
 
                 thumbnail.RegionBounds = GetRegionBounds(model);
 
-                var imgWidth = thumbnail.RegionBounds != null ? thumbnail.RegionBounds.Value.Width : imgBounds?.Width;
-                var imgHeight = thumbnail.RegionBounds != null ? thumbnail.RegionBounds.Value.Height : imgBounds?.Height;
+                var imgWidth = thumbnail.RegionBounds != null ? thumbnail.RegionBounds.Value.Width * imgBounds?.Width : imgBounds?.Width;
+                var imgHeight = thumbnail.RegionBounds != null ? thumbnail.RegionBounds.Value.Height * imgBounds?.Height : imgBounds?.Height;
 
                 if (imgWidth < 0 || imgHeight < 0)
                 {
@@ -135,7 +135,7 @@ namespace NuSysApp
                     var pdfModel = (PdfLibraryElementModel) model;
                     return new Rect(pdfModel.NormalizedX, pdfModel.NormalizedY, pdfModel.NormalizedWidth, pdfModel.NormalizedHeight);
                 default:
-                    return new Rect(0,0,1,1);
+                    return null;
             }
         
         }
