@@ -96,6 +96,8 @@ namespace NuSysApp
         /// </summary>
         public override Rect? ImageBounds { get; set; }
 
+        public Rect? RegionBounds { get; set; }
+
         /// <summary>
         /// The BorderColor of the Rectangle
         /// </summary>
@@ -178,7 +180,7 @@ namespace NuSysApp
 
                 using (ds.CreateLayer(1, CanvasGeometry.CreateRectangle(ResourceCreator, GetLocalBounds())))
                 {
-                    ds.DrawImage(Image, GetImageBounds() ?? GetLocalBounds(), Image.GetBounds(ResourceCreator));
+                    ds.DrawImage(Image, GetImageBounds() ?? GetLocalBounds(), GetRegionBounds() ?? Image.GetBounds(ResourceCreator));
                 }
 
                 ds.Transform = orgTransform;
@@ -225,7 +227,15 @@ namespace NuSysApp
             }
             return new Rect(Width * ImageBounds.Value.Left, Height * ImageBounds.Value.Top, Width * ImageBounds.Value.Width, Height * ImageBounds.Value.Height);
         }
-
+        private Rect? GetRegionBounds()
+        {
+            if (RegionBounds == null)
+            {
+                return null;
+            }
+            var bounds = Image.GetBounds(ResourceCreator);
+            return new Rect(bounds.Width * RegionBounds.Value.Left, bounds.Height * RegionBounds.Value.Top, bounds.Width * RegionBounds.Value.Width, bounds.Height * RegionBounds.Value.Height);
+        }
 
     }
 }

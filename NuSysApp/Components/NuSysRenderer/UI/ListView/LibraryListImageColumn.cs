@@ -63,6 +63,8 @@ namespace NuSysApp
         }
         public override async void LoadCellImageAsync(RectangleUIElement cell, T itemSource)
         {
+            var thumbnail = cell as RectangleUIElement;
+            Debug.Assert(thumbnail != null);
             try
             {
                 var model = itemSource as LibraryElementModel;
@@ -70,53 +72,72 @@ namespace NuSysApp
 
                 if (base.ImageDict.Keys.Contains(itemSource))
                 {
-                    cell.Image = base.ImageDict[itemSource];
+                    thumbnail.Image = base.ImageDict[itemSource];
                 }
                 else if (_defaultIconDictionary.ContainsKey(model.Type))
                 {
-                    cell.Image = _defaultIconDictionary[model.Type];
-                    base.ImageDict[itemSource] = cell.Image;
+                    thumbnail.Image = _defaultIconDictionary[model.Type];
+                    base.ImageDict[itemSource] = thumbnail.Image;
                 }
                 else 
                 {
-                    cell.Image = base.DefaultImage;
-                    base.ImageDict[itemSource] = cell.Image;
-                    base.ImageDict[itemSource] = await MediaUtil.LoadCanvasBitmapAsync(cell.ResourceCreator, base.ColumnFunction(itemSource));
+                    thumbnail.Image = base.DefaultImage;
+                    base.ImageDict[itemSource] = thumbnail.Image;
+                    base.ImageDict[itemSource] = await MediaUtil.LoadCanvasBitmapAsync(thumbnail.ResourceCreator, base.ColumnFunction(itemSource));
 
                 }
 
-                var cellWidth = cell.Width;
-                var cellHeight = cell.Height;
+                var cellWidth = thumbnail.Width;
+                var cellHeight = thumbnail.Height;
 
-                if ((cell?.Image as CanvasBitmap)?.Device == null)
+                if ((thumbnail?.Image as CanvasBitmap)?.Device == null)
                 {
                     return;
                 }
-                var imgBounds = cell?.Image?.GetBounds(_resourceCreator);
+                var imgBounds = thumbnail?.Image?.GetBounds(_resourceCreator);
 
                 
                 if (imgBounds == null)
                 {
                     return;
                 }
-                var imgWidth = imgBounds?.Width;
-                var imgHeight = imgBounds?.Height;
+
+                thumbnail.RegionBounds = GetRegionBounds(model);
+
+                var imgWidth = thumbnail.RegionBounds != null ? thumbnail.RegionBounds.Value.Width : imgBounds?.Width;
+                var imgHeight = thumbnail.RegionBounds != null ? thumbnail.RegionBounds.Value.Height : imgBounds?.Height;
 
                 if (imgWidth < 0 || imgHeight < 0)
                 {
                     return;
                 }
 
-                var newWidth = imgWidth/imgHeight*cellHeight/cellWidth;
+                var newWidth = imgWidth / imgHeight * cellHeight / cellWidth;
                 var newHeight = 1;
 
-                cell.ImageBounds = new Rect(0.5 - newWidth.Value/2, 0, newWidth.Value, newHeight);
+                thumbnail.ImageBounds = new Rect(0.5 - newWidth.Value/2, 0, newWidth.Value, newHeight);
             }
             catch (Exception e)
             {
                 
             }
 
+        }
+
+        private Rect? GetRegionBounds(LibraryElementModel model)
+        {
+            switch (model.Type)
+            {
+                case NusysConstants.ElementType.Image:
+                    var imageModel = (ImageLibraryElementModel)model;
+                    return new Rect(imageModel.NormalizedX, imageModel.NormalizedY, imageModel.NormalizedWidth,imageModel.NormalizedHeight);
+                case NusysConstants.ElementType.PDF:
+                    var pdfModel = (PdfLibraryElementModel) model;
+                    return new Rect(pdfModel.NormalizedX, pdfModel.NormalizedY, pdfModel.NormalizedWidth, pdfModel.NormalizedHeight);
+                default:
+                    return new Rect(0,0,1,1);
+            }
+        
         }
 
         public override void Dispose()
