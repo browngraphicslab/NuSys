@@ -423,7 +423,12 @@
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoPage.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewWordPage.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BorderType.cs" />
-    <Compile Include="Components\NuSysRenderer\UI\GestureRecognizer.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Gestures\DragEventArgs.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Gestures\DragGestureRecognizer.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Gestures\GestureEventArgs.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Gestures\GestureRecognizer.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Gestures\TapEventArgs.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Gestures\TapGestureRecognizer.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ListView\LibraryListImageColumn.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ListView\ListImageColumn.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Misc\BingSearchPopup.cs" />

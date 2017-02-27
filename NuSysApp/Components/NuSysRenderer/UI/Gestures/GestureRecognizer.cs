@@ -9,36 +9,22 @@ using Windows.UI.Xaml.Input;
 
 namespace NuSysApp
 {
-    public class GestureRecognizer
+    public interface GestureRecognizer
     {
 
 
-        public GestureRecognizer()
-        {
 
 
 
-        }
+        void ProcessDownEvent(FrameworkElement sender, PointerRoutedEventArgs args);
 
+        void ProcessMoveEvents(FrameworkElement sender, PointerRoutedEventArgs args);
 
-        public virtual void ProcessDownEvent(FrameworkElement sender, PointerRoutedEventArgs args)
-        {
+        void ProcessUpEvent(FrameworkElement sender, PointerRoutedEventArgs args);
 
-        }
+        void ProcessMouseWheelEvent(FrameworkElement sender, PointerRoutedEventArgs args);
 
-        public virtual void ProcessMoveEvents(FrameworkElement sender, PointerRoutedEventArgs args)
-        {
+        void ProcessExitedEvent(FrameworkElement sender, PointerRoutedEventArgs args);
 
-
-        }
-
-        public virtual void ProcessUpEvent(FrameworkElement sender, PointerRoutedEventArgs args)
-        {
-        }
-
-        public virtual void ProcessMouseWheelEvent(FrameworkElement sender, PointerRoutedEventArgs args)
-        {
-
-        }
     }
 }

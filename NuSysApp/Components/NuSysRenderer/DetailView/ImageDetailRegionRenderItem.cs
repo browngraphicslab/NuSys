@@ -174,11 +174,11 @@ namespace NuSysApp
             ds.Transform = orgTransform;
         }
 
-        public override void OnDragged(GestureRecognizer sender, DraggingEventArgs args)
+        public override void OnDragged(DragGestureRecognizer sender, DragEventArgs args)
         {
             if (!IsModifiable)
                 return;
-            RegionMoved?.Invoke(this, args.Position.ToSystemVector2());
+            RegionMoved?.Invoke(this, args.Translation);
         }
 
         public override void OnPressed(CanvasPointer pointer)

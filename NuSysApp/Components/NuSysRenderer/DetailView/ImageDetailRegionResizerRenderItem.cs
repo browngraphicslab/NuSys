@@ -50,9 +50,9 @@ namespace NuSysApp
             base.Draw(ds);
         }
 
-        public override void OnDragged(GestureRecognizer sender, DraggingEventArgs args)
+        public override void OnDragged(DragGestureRecognizer sender, DragEventArgs args)
         {
-            ResizerDragged?.Invoke(args.Position.ToSystemVector2());
+            ResizerDragged?.Invoke(args.Translation);
         }
 
         public override void OnPressed(CanvasPointer pointer)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -62,10 +63,33 @@ namespace NuSysApp
 
         public InteractiveBaseRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
-            
+            var tapRecognizer = new TapGestureRecognizer();
+            GestureRecognizers.Add(tapRecognizer);
+            tapRecognizer.OnTapped += TapRecognizer_OnTapped;
+            tapRecognizer.OnDoubleTapped += TapRecognizer_OnDoubleTapped;
+
+            var dragRecognizer = new DragGestureRecognizer();
+            GestureRecognizers.Add(dragRecognizer);
+            dragRecognizer.OnDragged += DragRecognizer_OnDragged;
+
         }
 
-        public virtual void OnDragged(GestureRecognizer sender, DraggingEventArgs args)
+        private void DragRecognizer_OnDragged(DragGestureRecognizer sender, DragEventArgs args)
+        {
+            Debug.WriteLine($"Dragged, Translation {args.Translation}");
+        }
+
+        private void TapRecognizer_OnDoubleTapped(TapGestureRecognizer sender, TapEventArgs args)
+        {
+            Debug.WriteLine($"Double Tapped, Position {args.Position}");
+        }
+
+        private void TapRecognizer_OnTapped(TapGestureRecognizer sender, TapEventArgs args)
+        {
+            Debug.WriteLine($"Tapped, Position {args.Position}");
+        }
+
+        public virtual void OnDragged(DragGestureRecognizer sender, DragEventArgs args)
         {
 
         }
@@ -108,33 +132,52 @@ namespace NuSysApp
 
         public virtual void OnPressed(CanvasPointer pointer)
         {
-            foreach (GestureRecognizer recognizer in GestureRecognizers)
-            {
-                recognizer.ProcessDownEvent(pointer.PointerRoutedEventArgs.GetCurrentPoint(pointer.SourceElement));
-            }
-        }
 
-        public virtual void OnMoved(CanvasPointer pointer)
-        {
-            foreach (GestureRecognizer recognizer in GestureRecognizers)
-            {
-                recognizer.ProcessMoveEvents(pointer.PointerRoutedEventArgs.GetIntermediatePoints(pointer.SourceElement));
-            }
         }
 
         public virtual void OnReleased(CanvasPointer pointer)
         {
-            foreach (GestureRecognizer recognizer in GestureRecognizers)
-            {
-                recognizer.ProcessUpEvent(pointer.PointerRoutedEventArgs.GetIntermediatePoints(pointer.SourceElement));
-            }
+
         }
 
-        public virtual void OnPointerWheelChanged(CanvasPointer pointer)
+
+        public virtual void OnPressed(FrameworkElement sender, PointerRoutedEventArgs args)
         {
             foreach (GestureRecognizer recognizer in GestureRecognizers)
             {
-                recognizer.ProcessMouseWheelEvent(pointer.PointerRoutedEventArgs.GetCurrentPoint(pointer.SourceElement));
+                recognizer.ProcessDownEvent(sender, args);
+            }
+        }
+
+        public virtual void OnMoved(FrameworkElement sender, PointerRoutedEventArgs args)
+        {
+            foreach (GestureRecognizer recognizer in GestureRecognizers)
+            {
+                recognizer.ProcessMoveEvents(sender, args);
+            }
+        }
+
+        public virtual void OnReleased(FrameworkElement sender, PointerRoutedEventArgs args)
+        {
+            foreach (GestureRecognizer recognizer in GestureRecognizers)
+            {
+                recognizer.ProcessUpEvent(sender, args);
+            }
+        }
+
+        public virtual void OnPointerWheelChanged(FrameworkElement sender, PointerRoutedEventArgs args)
+        {
+            foreach (GestureRecognizer recognizer in GestureRecognizers)
+            {
+                recognizer.ProcessMouseWheelEvent(sender, args);
+            };
+        }
+
+        public void OnExited(FrameworkElement sender, PointerRoutedEventArgs args)
+        {
+            foreach (GestureRecognizer recognizer in GestureRecognizers)
+            {
+                recognizer.ProcessExitedEvent(sender, args);
             };
         }
 
@@ -186,6 +229,7 @@ namespace NuSysApp
         {
             DragCompleted?.Invoke(this, pointer);
         }
-        
+
+
     }
 }

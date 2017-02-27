@@ -88,7 +88,7 @@ namespace NuSysApp
             }
 
             InteractiveBaseRenderItem e = _renderItems[args.Pointer.PointerId];
-            e.OnReleased(_canvas, args);
+            e.OnExited(_canvas, args);
         }
 
         private void OnPointerWheelChanged(object sender, PointerRoutedEventArgs args)

@@ -15,12 +15,29 @@ namespace NuSysApp
     {
         public Vector2 StartPoint { get; private set; }
 
+        public Vector2 EndPoint { get; private set; }
+
         public DragEventArgs(Vector2 pointerStartPoint)
         {
             StartPoint = pointerStartPoint;
+            EndPoint = pointerStartPoint;
+            CurrentState = GestureState.Began;
         }
 
-        public float Translation { get; private set; }
+        public Vector2 Translation => EndPoint - StartPoint;
 
+        public void Update(Vector2 pointerCurrentPoint)
+        {
+            EndPoint = pointerCurrentPoint;
+            CurrentState = GestureState.Changed;
+        }
+
+        public void Complete(Vector2 pointerCurrentPoint)
+        {
+            EndPoint = pointerCurrentPoint;
+            CurrentState = GestureState.Ended;
+        }
     }
+
+    
 }
