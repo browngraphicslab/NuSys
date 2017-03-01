@@ -107,10 +107,6 @@ namespace NuSysApp
         {
             this.InitializeComponent();
 
-            SizeChanged += OnSizeChanged;
-            xMinimapCanvas.IsHitTestVisible = false;
-            xMinimapCanvas.Width = 300;
-            xMinimapCanvas.Height = 300;
 
             xFullScreenImageViewer.ImageClosed += XFullScreenImageViewerOnImageClosed;
 
@@ -163,11 +159,6 @@ namespace NuSysApp
         }
 
 
-        private void OnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
-        {
-            Canvas.SetLeft(xMinimapCanvas, sizeChangedEventArgs.NewSize.Width-xMinimapCanvas.Width);
-            Canvas.SetTop(xMinimapCanvas, sizeChangedEventArgs.NewSize.Height- xMinimapCanvas.Height);
-        }
 
         public async Task LoadInitialCollection(FreeFormViewerViewModel vm)
         {

@@ -782,7 +782,10 @@ namespace NuSysApp
                 }
             }
         }
-
+        /// <summary>
+        /// Centers on camera on world point given without affecting scale
+        /// </summary>
+        /// <param name="point"></param>
         public void CenterCameraOnPoint(Vector2 point)
         {
             UITask.Run(delegate
@@ -802,49 +805,12 @@ namespace NuSysApp
                     new Vector2((float)point.X, (float)point.Y);
             });
         }
-        /*
-        public void CenterCameraOnPoint(Vector2 point, float width, float height)
-        {
-            UITask.Run(delegate
-            {
 
-                // Define some variables that will be used in future translation/scaling
-                var nodeWidth = width; //elementToBeFullScreened.Width;
-                var nodeHeight = height; //elementToBeFullScreened.Height; // 40 for title adjustment
-
-                var x = point.X + nodeWidth / 2;
-                var y = point.Y + nodeHeight / 2;
-                var widthAdjustment = ViewModel.Width / 2;
-                var heightAdjustment = ViewModel.Height / 2;
-                
-                // Reset the scaling and translate the free form viewer so that the passed in element is at the center
-                var scaleX = 1;
-                var scaleY = 1;
-                var translateX = widthAdjustment - x;
-                var translateY = heightAdjustment - y;
-                
-
-                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalPosition =
-                    new Vector2((float)translateX, (float)translateY);
-                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScaleCenter =
-                    new Vector2((float)x, (float)y);
-               // SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScale =  new Vector2((float)scale, (float)scale);
-
-
-                //SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.CameraTranslation = new Vector2((float)translateX, (float)translateY);
-                //SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.CameraCenter = new Vector2((float)x, (float)y);
-                //SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.CameraScale = (float)scale;
-                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.InkRenderItem?
-                    .UpdateDryInkTransform();
-                //SessionController.Instance.SessionView.FreeFormViewer._minimap?.Invalidate();
-                SessionController.Instance.SessionView.FreeFormViewer.MiniMap.IsDirty = true;
-                //CameraOnCentered?.Invoke(this, SessionController.Instance.ContentController.GetLibraryElementController(elementToBeFullScreened.LibraryElementId));
-
-            });
-        }
-        */
-
-
+        /// <summary>
+        /// Centers camera on rectangle so that only the rectangle is visible on the screen.
+        /// </summary>
+        /// <param name="topLeftPoint"></param>
+        /// <param name="bottomRightPoint"></param>
         public void CenterCameraOnRectangle(Vector2 topLeftPoint, Vector2 bottomRightPoint)
         {
 
