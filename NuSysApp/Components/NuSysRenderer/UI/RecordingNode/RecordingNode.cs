@@ -194,7 +194,7 @@ namespace NuSysApp
             
             ShowClosable();
 
-            _videoButton.Tapped += MediaTypeSwitchOnTapped;
+            _videoButton.Tapped += VideoButtonOnTapped;
             _audioButton.Tapped += AudioButtonOnTapped;
             _recordPauseButton.Tapped += Record_Pause_buttonOnTapped;
             _stopButton.Tapped += StopButtonOnTapped;
@@ -421,13 +421,18 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            _videoButton.Tapped -= MediaTypeSwitchOnTapped;
+            _videoButton.Tapped -= VideoButtonOnTapped;
             _recordPauseButton.Tapped -= Record_Pause_buttonOnTapped;
             _stopButton.Tapped -= StopButtonOnTapped;
             _file?.DeleteAsync();//weird to do this with async
             base.Dispose();
         }
 
+        /// <summary>
+        /// Fired when the audio button is tapped, changes the recording type to audio
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
         private void AudioButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
            
@@ -439,12 +444,11 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Fired when the media type switch is tapped, changes the ui to reflect the new media type
-        /// that is going to be recorded
+        /// Fired when the video button is tapped, changes the recording type to video
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void MediaTypeSwitchOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void VideoButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             
                _currRecordingType = RecordingType.Video;
