@@ -14,6 +14,13 @@
             <Image Name="xImage" VerticalAlignment="Center" HorizontalAlignment="Center" ManipulationMode="All" ManipulationStarted="XImage_OnManipulationStarted"  ManipulationCompleted="XCanvas_OnManipulationCompleted" ManipulationDelta="XCanvas_OnManipulationDelta" PointerWheelChanged="XImage_OnPointerWheelChanged"></Image>
                 <Button Name="xCloseButton" Tapped="XCloseButton_OnTapped" Width ="150" Height="50" Canvas.Left="0"  Canvas.Top="0" HorizontalAlignment="Left" VerticalAlignment="Top" Background="White"
                         BorderThickness="2" Foreground="DarkRed" BorderBrush="DarkRed">Close</Button>
-            </Canvas>
+            <Button x:Name="xLeftButton" Background="Transparent"  Width ="50" Height ="50" Click="XLeftButton_OnClick" >
+                <Image Source="ms-appx:///Assets/icon_pdf_left.png" ></Image>
+            </Button>
+            <Button x:Name="xRightButton" Background="Transparent"  Width ="50" Height ="50" Click="XRightButton_OnClick">
+                <Image Source="ms-appx:///Assets/icon_pdf_right.png"></Image>
+            </Button>
+
+        </Canvas>
     </Grid>
 </UserControl>
