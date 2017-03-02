@@ -137,6 +137,16 @@ namespace NuSysApp
 
         public static float floatingMenuHeight = 60;
         public static float floatingMenuWidth = 130;
+        public static float autoSuggestWidth = 200;
+        public static float autoSuggestHeight = 30;
+        public static float buttonWidth = 70;
+        public static float margin = 10;
+        public static float backgroundRectHeight = autoSuggestHeight + margin * 2;
+        public static float backgroundRectWidth = autoSuggestWidth + buttonWidth + margin * 2;
+        
+
+
+
 
         #endregion
 

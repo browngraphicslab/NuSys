@@ -3,6 +3,7 @@
   "version": 1,
   "targets": {
     "UAP,Version=v10.0": {
+      "chrome.TypeScript.DefinitelyTyped/4.2.4": {},
       "CommonMark.NET/0.14.0": {
         "compile": {
           "lib/portable-net45+wp80+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10/CommonMark.dll": {}
@@ -12,6 +13,12 @@
         }
       },
       "Core.Spire.Presentation/1.0.0": {},
+      "filesystem.TypeScript.DefinitelyTyped/1.9.4": {
+        "dependencies": {
+          "filewriter.TypeScript.DefinitelyTyped": "(, )"
+        }
+      },
+      "filewriter.TypeScript.DefinitelyTyped/1.3.3": {},
       "GeoAPI/1.7.4": {
         "compile": {
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.dll": {}
@@ -29,6 +36,7 @@
         }
       },
       "jQuery/1.6.4": {},
+      "jquery.TypeScript.DefinitelyTyped/3.1.2": {},
       "Microsoft.ApplicationInsights/2.1.0": {
         "dependencies": {
           "System.Collections": "4.0.10",
@@ -2288,6 +2296,7 @@
           }
         }
       },
+      "webrtc.TypeScript.DefinitelyTyped/0.5.4": {},
       "Win2D.uwp/1.20.0": {
         "compile": {
           "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
@@ -2331,6 +2340,7 @@
       }
     },
     "UAP,Version=v10.0/win10-arm": {
+      "chrome.TypeScript.DefinitelyTyped/4.2.4": {},
       "CommonMark.NET/0.14.0": {
         "compile": {
           "lib/portable-net45+wp80+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10/CommonMark.dll": {}
@@ -2340,6 +2350,12 @@
         }
       },
       "Core.Spire.Presentation/1.0.0": {},
+      "filesystem.TypeScript.DefinitelyTyped/1.9.4": {
+        "dependencies": {
+          "filewriter.TypeScript.DefinitelyTyped": "(, )"
+        }
+      },
+      "filewriter.TypeScript.DefinitelyTyped/1.3.3": {},
       "GeoAPI/1.7.4": {
         "compile": {
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.dll": {}
@@ -2357,6 +2373,7 @@
         }
       },
       "jQuery/1.6.4": {},
+      "jquery.TypeScript.DefinitelyTyped/3.1.2": {},
       "Microsoft.ApplicationInsights/2.1.0": {
         "dependencies": {
           "System.Collections": "4.0.10",
@@ -4696,6 +4713,7 @@
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
+      "webrtc.TypeScript.DefinitelyTyped/0.5.4": {},
       "Win2D.uwp/1.20.0": {
         "compile": {
           "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
@@ -4728,6 +4746,7 @@
       }
     },
     "UAP,Version=v10.0/win10-arm-aot": {
+      "chrome.TypeScript.DefinitelyTyped/4.2.4": {},
       "CommonMark.NET/0.14.0": {
         "compile": {
           "lib/portable-net45+wp80+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10/CommonMark.dll": {}
@@ -4737,6 +4756,12 @@
         }
       },
       "Core.Spire.Presentation/1.0.0": {},
+      "filesystem.TypeScript.DefinitelyTyped/1.9.4": {
+        "dependencies": {
+          "filewriter.TypeScript.DefinitelyTyped": "(, )"
+        }
+      },
+      "filewriter.TypeScript.DefinitelyTyped/1.3.3": {},
       "GeoAPI/1.7.4": {
         "compile": {
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.dll": {}
@@ -4754,6 +4779,7 @@
         }
       },
       "jQuery/1.6.4": {},
+      "jquery.TypeScript.DefinitelyTyped/3.1.2": {},
       "Microsoft.ApplicationInsights/2.1.0": {
         "dependencies": {
           "System.Collections": "4.0.10",
@@ -7132,6 +7158,7 @@
           "runtimes/aot/lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
+      "webrtc.TypeScript.DefinitelyTyped/0.5.4": {},
       "Win2D.uwp/1.20.0": {
         "compile": {
           "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
@@ -7164,6 +7191,7 @@
       }
     },
     "UAP,Version=v10.0/win10-x64": {
+      "chrome.TypeScript.DefinitelyTyped/4.2.4": {},
       "CommonMark.NET/0.14.0": {
         "compile": {
           "lib/portable-net45+wp80+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10/CommonMark.dll": {}
@@ -7173,6 +7201,12 @@
         }
       },
       "Core.Spire.Presentation/1.0.0": {},
+      "filesystem.TypeScript.DefinitelyTyped/1.9.4": {
+        "dependencies": {
+          "filewriter.TypeScript.DefinitelyTyped": "(, )"
+        }
+      },
+      "filewriter.TypeScript.DefinitelyTyped/1.3.3": {},
       "GeoAPI/1.7.4": {
         "compile": {
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.dll": {}
@@ -7190,6 +7224,7 @@
         }
       },
       "jQuery/1.6.4": {},
+      "jquery.TypeScript.DefinitelyTyped/3.1.2": {},
       "Microsoft.ApplicationInsights/2.1.0": {
         "dependencies": {
           "System.Collections": "4.0.10",
@@ -9538,6 +9573,7 @@
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
+      "webrtc.TypeScript.DefinitelyTyped/0.5.4": {},
       "Win2D.uwp/1.20.0": {
         "compile": {
           "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
@@ -9570,6 +9606,7 @@
       }
     },
     "UAP,Version=v10.0/win10-x64-aot": {
+      "chrome.TypeScript.DefinitelyTyped/4.2.4": {},
       "CommonMark.NET/0.14.0": {
         "compile": {
           "lib/portable-net45+wp80+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10/CommonMark.dll": {}
@@ -9579,6 +9616,12 @@
         }
       },
       "Core.Spire.Presentation/1.0.0": {},
+      "filesystem.TypeScript.DefinitelyTyped/1.9.4": {
+        "dependencies": {
+          "filewriter.TypeScript.DefinitelyTyped": "(, )"
+        }
+      },
+      "filewriter.TypeScript.DefinitelyTyped/1.3.3": {},
       "GeoAPI/1.7.4": {
         "compile": {
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.dll": {}
@@ -9596,6 +9639,7 @@
         }
       },
       "jQuery/1.6.4": {},
+      "jquery.TypeScript.DefinitelyTyped/3.1.2": {},
       "Microsoft.ApplicationInsights/2.1.0": {
         "dependencies": {
           "System.Collections": "4.0.10",
@@ -11983,6 +12027,7 @@
           "runtimes/aot/lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
+      "webrtc.TypeScript.DefinitelyTyped/0.5.4": {},
       "Win2D.uwp/1.20.0": {
         "compile": {
           "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
@@ -12015,6 +12060,7 @@
       }
     },
     "UAP,Version=v10.0/win10-x86": {
+      "chrome.TypeScript.DefinitelyTyped/4.2.4": {},
       "CommonMark.NET/0.14.0": {
         "compile": {
           "lib/portable-net45+wp80+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10/CommonMark.dll": {}
@@ -12024,6 +12070,12 @@
         }
       },
       "Core.Spire.Presentation/1.0.0": {},
+      "filesystem.TypeScript.DefinitelyTyped/1.9.4": {
+        "dependencies": {
+          "filewriter.TypeScript.DefinitelyTyped": "(, )"
+        }
+      },
+      "filewriter.TypeScript.DefinitelyTyped/1.3.3": {},
       "GeoAPI/1.7.4": {
         "compile": {
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.dll": {}
@@ -12041,6 +12093,7 @@
         }
       },
       "jQuery/1.6.4": {},
+      "jquery.TypeScript.DefinitelyTyped/3.1.2": {},
       "Microsoft.ApplicationInsights/2.1.0": {
         "dependencies": {
           "System.Collections": "4.0.10",
@@ -14389,6 +14442,7 @@
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
+      "webrtc.TypeScript.DefinitelyTyped/0.5.4": {},
       "Win2D.uwp/1.20.0": {
         "compile": {
           "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
@@ -14421,6 +14475,7 @@
       }
     },
     "UAP,Version=v10.0/win10-x86-aot": {
+      "chrome.TypeScript.DefinitelyTyped/4.2.4": {},
       "CommonMark.NET/0.14.0": {
         "compile": {
           "lib/portable-net45+wp80+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10/CommonMark.dll": {}
@@ -14430,6 +14485,12 @@
         }
       },
       "Core.Spire.Presentation/1.0.0": {},
+      "filesystem.TypeScript.DefinitelyTyped/1.9.4": {
+        "dependencies": {
+          "filewriter.TypeScript.DefinitelyTyped": "(, )"
+        }
+      },
+      "filewriter.TypeScript.DefinitelyTyped/1.3.3": {},
       "GeoAPI/1.7.4": {
         "compile": {
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.dll": {}
@@ -14447,6 +14508,7 @@
         }
       },
       "jQuery/1.6.4": {},
+      "jquery.TypeScript.DefinitelyTyped/3.1.2": {},
       "Microsoft.ApplicationInsights/2.1.0": {
         "dependencies": {
           "System.Collections": "4.0.10",
@@ -16834,6 +16896,7 @@
           "runtimes/aot/lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
+      "webrtc.TypeScript.DefinitelyTyped/0.5.4": {},
       "Win2D.uwp/1.20.0": {
         "compile": {
           "lib/uap10.0/Microsoft.Graphics.Canvas.winmd": {}
@@ -16867,6 +16930,17 @@
     }
   },
   "libraries": {
+    "chrome.TypeScript.DefinitelyTyped/4.2.4": {
+      "sha512": "snmwdMWhTFWaSVcWTXJVF1seEHM1EXTyRDAgqzUnHfsK1+T0AKeQJu0beqkXDeHAmb8S+LNdS/LcxSFK+U+QEw==",
+      "type": "package",
+      "files": [
+        "Content/Scripts/typings/chrome/chrome-app.d.ts",
+        "Content/Scripts/typings/chrome/chrome-cast.d.ts",
+        "Content/Scripts/typings/chrome/index.d.ts",
+        "chrome.TypeScript.DefinitelyTyped.4.2.4.nupkg.sha512",
+        "chrome.TypeScript.DefinitelyTyped.nuspec"
+      ]
+    },
     "CommonMark.NET/0.14.0": {
       "sha512": "scI4cMHvHIG41gFK8/n1Wwhdxxa3GjHiULkA5eTUzpz0RtLqSxdis8DiXl/Qm2/ewI0MrVbIPfJqG3kiUjX6lA==",
       "type": "package",
@@ -18744,6 +18818,24 @@
         "packages/EntityFramework.6.1.3/tools/migrate.exe"
       ]
     },
+    "filesystem.TypeScript.DefinitelyTyped/1.9.4": {
+      "sha512": "Q9FwFIWU3rCSSyQMHCnXzEszhrIUnRwefw2SHzH25F89uilDmxyschI0Lf7hKc2PqvQw4Ln+LTtLmxlHmj+vOA==",
+      "type": "package",
+      "files": [
+        "Content/Scripts/typings/filesystem/filesystem.d.ts",
+        "filesystem.TypeScript.DefinitelyTyped.1.9.4.nupkg.sha512",
+        "filesystem.TypeScript.DefinitelyTyped.nuspec"
+      ]
+    },
+    "filewriter.TypeScript.DefinitelyTyped/1.3.3": {
+      "sha512": "6qAsyHhk98mEKrwo1u6fJyKRSmsOQ7BjTEeorNYxiEBzlLeus4zgXbiIij6WOzqpDv0uv538vM/blf/bHJ5RUQ==",
+      "type": "package",
+      "files": [
+        "Content/Scripts/typings/filewriter/filewriter.d.ts",
+        "filewriter.TypeScript.DefinitelyTyped.1.3.3.nupkg.sha512",
+        "filewriter.TypeScript.DefinitelyTyped.nuspec"
+      ]
+    },
     "GeoAPI/1.7.4": {
       "sha512": "joDULkwmUsXSZPsqQ6H62QmQOi54t3TWyhiKDb48PVUfIox1nSy1RRuEIDQ51h/jBmgb+ZeCsUmMoETVddKJ1A==",
       "type": "package",
@@ -18809,6 +18901,15 @@
         "Tools/uninstall.ps1",
         "jQuery.1.6.4.nupkg.sha512",
         "jQuery.nuspec"
+      ]
+    },
+    "jquery.TypeScript.DefinitelyTyped/3.1.2": {
+      "sha512": "km6S6ElHdLPBxNf1qj5vQjkw1rpRe5Hwf/1aFo5TZtl3ZSfc//lcdsVTfPZz78o+/dkhEC+ZJcRONNlVDAJg6A==",
+      "type": "package",
+      "files": [
+        "Content/Scripts/typings/jquery/jquery.d.ts",
+        "jquery.TypeScript.DefinitelyTyped.3.1.2.nupkg.sha512",
+        "jquery.TypeScript.DefinitelyTyped.nuspec"
       ]
     },
     "Microsoft.ApplicationInsights/2.1.0": {
@@ -25177,6 +25278,16 @@
         "ref/xamarintvos10/_._",
         "ref/xamarinwatchos10/_._",
         "runtimes/aot/lib/netcore50/System.Xml.XmlSerializer.dll"
+      ]
+    },
+    "webrtc.TypeScript.DefinitelyTyped/0.5.4": {
+      "sha512": "4GagHLZB9XWhQutgUWT+u/yy2JFh66WRd7o50gPLu/c9wyukYkH8pkJh1oX19tZw7wVn+8tDA3t77drTeVMXMQ==",
+      "type": "package",
+      "files": [
+        "Content/Scripts/typings/webrtc/MediaStream.d.ts",
+        "Content/Scripts/typings/webrtc/RTCPeerConnection.d.ts",
+        "webrtc.TypeScript.DefinitelyTyped.0.5.4.nupkg.sha512",
+        "webrtc.TypeScript.DefinitelyTyped.nuspec"
       ]
     },
     "Win2D.uwp/1.20.0": {
