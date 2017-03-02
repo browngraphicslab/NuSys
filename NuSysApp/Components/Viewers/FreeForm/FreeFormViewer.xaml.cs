@@ -1361,6 +1361,17 @@ namespace NuSysApp
                 {
                     element.ViewModel.Controller.SetTitleVisiblity(!element.ViewModel.Controller.Model.ShowTitle);
                 }, SessionController.Instance.NuSessionView.ResourceCreator);
+                if (element.GetType() == typeof (TextElementRenderItem))
+                {
+                    popup.AddFlyoutItem("Open In Web", (item, canvasPointer) =>
+                    {
+                        String url =
+                            element.ViewModel?.Controller?.LibraryElementController?.ContentDataController?
+                                .ContentDataModel.Data ?? "";
+                        ShowWebPreview(url, pointer.CurrentPoint.X, pointer.CurrentPoint.Y);
+        
+                    }, SessionController.Instance.NuSessionView.ResourceCreator);
+                }
                 return;
             }
 
@@ -1381,6 +1392,21 @@ namespace NuSysApp
                     CurrentCollection.ViewModel.Controller.LibraryElementController, element.ViewModel.Controller);
             }
 
+        }
+
+        public void ShowWebPreview(String url, double x, double y)
+        {
+            UITask.Run(() =>
+            {
+                //var webPreview = new WebPreviewUserControl();
+                xWebView.Visibility = Visibility.Visible;
+                Canvas.SetLeft(xWebView, x);
+                Canvas.SetTop(xWebView, y);
+                //webPreview.Height = 400;
+                //webPreview.Width = 600;
+                xWebView.Navigate(url);
+                //xWrapper.Children.Add(webPreview);
+            });
         }
 
         public void AddToSelections(ElementRenderItem element)
@@ -1688,22 +1714,7 @@ namespace NuSysApp
             xAddRegionMenu.Visibility = Visibility.Collapsed;
         }
 
-        /// <summary>
-        /// Displays a small webpreview at the location passed in
-        /// </summary>
-        /// <param name="url"></param>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        public void ShowWebPreview(String url, double x, double y)
-        {
-            UITask.Run(() =>
-            {
-                xWebView.Visibility = Visibility.Visible;
-                Canvas.SetLeft(xWebView, x);
-                Canvas.SetTop(xWebView, y);
-                xWebView.Navigate(url);
-            });
-        }
+        
 
  
     }
