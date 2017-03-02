@@ -25,7 +25,8 @@ namespace NuSysApp
         /// <summary>
         /// Button which when selected changes the media type the recording node is currently set up to record
         /// </summary>
-        private ButtonUIElement _mediaTypeSwitch;
+        private ButtonUIElement _videoButton;
+        private ButtonUIElement _audioButton;
 
         /// <summary>
         /// An enum of the media types the recording node supports
@@ -122,17 +123,33 @@ namespace NuSysApp
             _currRecordingType = RecordingType.Audio;
 
             // add the media type switch and set default ui values
-            _mediaTypeSwitch = new ButtonUIElement(this, Canvas, new EllipseUIElement(this, Canvas))
+            _videoButton = new ButtonUIElement(this, Canvas, new EllipseUIElement(this, Canvas))
             {
                 Height = 50,
                 Width = 50,
                 Background = Constants.DARK_BLUE,
-                BorderColor = Constants.DARK_BLUE,
+                BorderColor = Colors.White,
+                SelectedBorder = Constants.LIGHT_BLUE,
+                BorderWidth = 0,
+            };
+            _videoButton.ImageBounds = new Rect(.25,.25,.5,.5);
+            AddChild(_videoButton);
+
+
+            // add the media type switch and set default ui values
+            _audioButton = new ButtonUIElement(this, Canvas, new EllipseUIElement(this, Canvas))
+            {
+                Height = 50,
+                Width = 50,
+                Background = Constants.DARK_BLUE,
+                BorderColor = Colors.White,
                 SelectedBorder = Constants.LIGHT_BLUE,
                 BorderWidth = 3,
             };
-            _mediaTypeSwitch.ImageBounds = new Rect(.25,.25,.5,.5);
-            AddChild(_mediaTypeSwitch);
+            _audioButton.ImageBounds = new Rect(.25, .25, .5, .5);
+
+            AddChild(_audioButton);
+
 
             // add the record button and set default ui values
             _recordPauseButton = new ButtonUIElement(this, Canvas, new EllipseUIElement(this, Canvas))
@@ -170,15 +187,20 @@ namespace NuSysApp
                 Height = 25,
                 Width = 250
             };
+            _textDisplayOfRecordingType.Text = "Record Audio";
+
             AddChild(_textDisplayOfRecordingType);
 
             
             ShowClosable();
 
-            _mediaTypeSwitch.Tapped += MediaTypeSwitchOnTapped;
+            _videoButton.Tapped += VideoButtonOnTapped;
+            _audioButton.Tapped += AudioButtonOnTapped;
             _recordPauseButton.Tapped += Record_Pause_buttonOnTapped;
             _stopButton.Tapped += StopButtonOnTapped;
         }
+
+       
 
         /// <summary>
         /// Closes the recoding node without saving a recording
@@ -399,7 +421,7 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            _mediaTypeSwitch.Tapped -= MediaTypeSwitchOnTapped;
+            _videoButton.Tapped -= VideoButtonOnTapped;
             _recordPauseButton.Tapped -= Record_Pause_buttonOnTapped;
             _stopButton.Tapped -= StopButtonOnTapped;
             _file?.DeleteAsync();//weird to do this with async
@@ -407,24 +429,35 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Fired when the media type switch is tapped, changes the ui to reflect the new media type
-        /// that is going to be recorded
+        /// Fired when the audio button is tapped, changes the recording type to audio
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void MediaTypeSwitchOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void AudioButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            switch (_currRecordingType)
-            {
-                case RecordingType.Audio:
-                    _currRecordingType = RecordingType.Video;
-                    break;
-                case RecordingType.Video:
-                    _currRecordingType = RecordingType.Audio;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+           
+                 _currRecordingType = RecordingType.Audio;
+                _textDisplayOfRecordingType.Text = "Record Audio";
+                _audioButton.BorderWidth = 3;
+                _videoButton.BorderWidth = 0;
+
+        }
+
+        /// <summary>
+        /// Fired when the video button is tapped, changes the recording type to video
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void VideoButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            
+               _currRecordingType = RecordingType.Video;
+               _textDisplayOfRecordingType.Text = "Record Video";
+               _audioButton.BorderWidth = 0;
+               _videoButton.BorderWidth = 3;
+
+
+
 
             SetUIForCurrentState();
         }
@@ -456,9 +489,11 @@ namespace NuSysApp
         /// </summary>
         private void ArrangeElements()
         {
-            _mediaTypeSwitch.Transform.LocalPosition = new Vector2(Width/2 - _mediaTypeSwitch.Width/2, Height/2 - _mediaTypeSwitch.Height/2);
+            _videoButton.Transform.LocalPosition = new Vector2(Width/2 - _videoButton.Width/2 + 50, Height/2 - _videoButton.Height/2 - 30);
+            _audioButton.Transform.LocalPosition = new Vector2(Width / 2 - _videoButton.Width / 2 - 50, Height / 2 - _videoButton.Height / 2- 30);
+
             // put the _currMediaTypeDisplay just below the center of the record node
-            _textDisplayOfRecordingType.Transform.LocalPosition = new Vector2(Width/2 - _textDisplayOfRecordingType.Width/2, Height/2 - _textDisplayOfRecordingType.Height/2 + _mediaTypeSwitch.Height/2 + 20);
+            _textDisplayOfRecordingType.Transform.LocalPosition = new Vector2(Width/2 - _textDisplayOfRecordingType.Width/2, Height/2 - _textDisplayOfRecordingType.Height/2 + _videoButton.Height/2 + 20);
 
             // put the record button in the bottom of the record node
             _recordPauseButton.Transform.LocalPosition = new Vector2(Width/2 - _recordPauseButton.Width/2, Height - _recordPauseButton.Height - 10);
@@ -489,19 +524,10 @@ namespace NuSysApp
             {
                 _stopButton.IsVisible = false;
                 _recordPauseButton.Image = _recordIcon;
-                switch (_currRecordingType)
-                {
-                    case RecordingType.Audio:
-                        _mediaTypeSwitch.Image = _audioIcon;
-                        _textDisplayOfRecordingType.Text = "Record Audio";
-                        break;
-                    case RecordingType.Video:
-                        _mediaTypeSwitch.Image = _videoIcon;
-                        _textDisplayOfRecordingType.Text = "Record Video";
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(_currRecordingType), _currRecordingType, null); // we don't support recording for that media type yet
-                }
+                _audioButton.Image = _audioIcon;
+                _videoButton.Image = _videoIcon;
+
+
             }
 
             // arrange the elements for the current state

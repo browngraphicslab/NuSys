@@ -908,8 +908,9 @@ namespace NuSysApp
                 }
 
                 _editTagsElement = new EditTagsUIElement(RenderEngine.Root, RenderEngine.CanvasAnimatedControl);
-                RenderEngine.ElementSelectionRect.ElementSelectionRenderItemSizeChanged +=
-                    _editTagsElement.UpdatePositionWithSize;
+                _editTagsElement.Transform.LocalPosition = new Vector2(20, 220);
+                //RenderEngine.ElementSelectionRect.ElementSelectionRenderItemSizeChanged +=
+                  //  _editTagsElement.UpdatePositionWithSize;
                 Rect rect = RenderEngine.ElementSelectionRect.GetLocalBounds();
                 RenderEngine.ElementSelectionRect.AddChild(_editTagsElement);
                 _editTagsElement.Load();

@@ -3,6 +3,21 @@
   "version": 2,
   "targets": {
     "UAP,Version=v10.0": {
+      "chrome.TypeScript.DefinitelyTyped/4.2.4": {
+        "type": "package"
+      },
+      "filesystem.TypeScript.DefinitelyTyped/1.9.4": {
+        "type": "package",
+        "dependencies": {
+          "filewriter.TypeScript.DefinitelyTyped": "(, )"
+        }
+      },
+      "filewriter.TypeScript.DefinitelyTyped/1.3.3": {
+        "type": "package"
+      },
+      "jquery.TypeScript.DefinitelyTyped/3.1.2": {
+        "type": "package"
+      },
       "Microsoft.CSharp/4.0.1": {
         "type": "package",
         "dependencies": {
@@ -285,13 +300,22 @@
           "ref/netstandard1.3/Microsoft.Win32.Primitives.dll": {}
         }
       },
-      "Newtonsoft.Json/8.0.3": {
+      "NAudio/1.8.0": {
         "type": "package",
         "compile": {
-          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+          "lib/windows8/NAudio.Win8.dll": {}
         },
         "runtime": {
-          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+          "lib/windows8/NAudio.Win8.dll": {}
+        }
+      },
+      "Newtonsoft.Json/9.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll": {}
         }
       },
       "runtime.native.System.IO.Compression/4.1.0": {
@@ -2149,9 +2173,27 @@
             "rid": "aot"
           }
         }
+      },
+      "webrtc.TypeScript.DefinitelyTyped/0.5.4": {
+        "type": "package"
       }
     },
     "UAP,Version=v10.0/win10-arm": {
+      "chrome.TypeScript.DefinitelyTyped/4.2.4": {
+        "type": "package"
+      },
+      "filesystem.TypeScript.DefinitelyTyped/1.9.4": {
+        "type": "package",
+        "dependencies": {
+          "filewriter.TypeScript.DefinitelyTyped": "(, )"
+        }
+      },
+      "filewriter.TypeScript.DefinitelyTyped/1.3.3": {
+        "type": "package"
+      },
+      "jquery.TypeScript.DefinitelyTyped/3.1.2": {
+        "type": "package"
+      },
       "Microsoft.CSharp/4.0.1": {
         "type": "package",
         "dependencies": {
@@ -2382,13 +2424,22 @@
           "ref/netstandard1.3/Microsoft.Win32.Primitives.dll": {}
         }
       },
-      "Newtonsoft.Json/8.0.3": {
+      "NAudio/1.8.0": {
         "type": "package",
         "compile": {
-          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+          "lib/windows8/NAudio.Win8.dll": {}
         },
         "runtime": {
-          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+          "lib/windows8/NAudio.Win8.dll": {}
+        }
+      },
+      "Newtonsoft.Json/9.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll": {}
         }
       },
       "runtime.any.System.Collections/4.0.11": {
@@ -4406,9 +4457,27 @@
         "runtime": {
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
+      },
+      "webrtc.TypeScript.DefinitelyTyped/0.5.4": {
+        "type": "package"
       }
     },
     "UAP,Version=v10.0/win10-arm-aot": {
+      "chrome.TypeScript.DefinitelyTyped/4.2.4": {
+        "type": "package"
+      },
+      "filesystem.TypeScript.DefinitelyTyped/1.9.4": {
+        "type": "package",
+        "dependencies": {
+          "filewriter.TypeScript.DefinitelyTyped": "(, )"
+        }
+      },
+      "filewriter.TypeScript.DefinitelyTyped/1.3.3": {
+        "type": "package"
+      },
+      "jquery.TypeScript.DefinitelyTyped/3.1.2": {
+        "type": "package"
+      },
       "Microsoft.CSharp/4.0.1": {
         "type": "package",
         "dependencies": {
@@ -4640,13 +4709,22 @@
           "ref/netstandard1.3/Microsoft.Win32.Primitives.dll": {}
         }
       },
-      "Newtonsoft.Json/8.0.3": {
+      "NAudio/1.8.0": {
         "type": "package",
         "compile": {
-          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+          "lib/windows8/NAudio.Win8.dll": {}
         },
         "runtime": {
-          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+          "lib/windows8/NAudio.Win8.dll": {}
+        }
+      },
+      "Newtonsoft.Json/9.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll": {}
         }
       },
       "runtime.aot.System.Collections/4.0.10": {
@@ -6702,9 +6780,27 @@
         "runtime": {
           "runtimes/aot/lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
+      },
+      "webrtc.TypeScript.DefinitelyTyped/0.5.4": {
+        "type": "package"
       }
     },
     "UAP,Version=v10.0/win10-x64": {
+      "chrome.TypeScript.DefinitelyTyped/4.2.4": {
+        "type": "package"
+      },
+      "filesystem.TypeScript.DefinitelyTyped/1.9.4": {
+        "type": "package",
+        "dependencies": {
+          "filewriter.TypeScript.DefinitelyTyped": "(, )"
+        }
+      },
+      "filewriter.TypeScript.DefinitelyTyped/1.3.3": {
+        "type": "package"
+      },
+      "jquery.TypeScript.DefinitelyTyped/3.1.2": {
+        "type": "package"
+      },
       "Microsoft.CSharp/4.0.1": {
         "type": "package",
         "dependencies": {
@@ -6938,13 +7034,22 @@
           "ref/netstandard1.3/Microsoft.Win32.Primitives.dll": {}
         }
       },
-      "Newtonsoft.Json/8.0.3": {
+      "NAudio/1.8.0": {
         "type": "package",
         "compile": {
-          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+          "lib/windows8/NAudio.Win8.dll": {}
         },
         "runtime": {
-          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+          "lib/windows8/NAudio.Win8.dll": {}
+        }
+      },
+      "Newtonsoft.Json/9.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll": {}
         }
       },
       "runtime.any.System.Collections/4.0.11": {
@@ -8968,9 +9073,27 @@
         "runtime": {
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
+      },
+      "webrtc.TypeScript.DefinitelyTyped/0.5.4": {
+        "type": "package"
       }
     },
     "UAP,Version=v10.0/win10-x64-aot": {
+      "chrome.TypeScript.DefinitelyTyped/4.2.4": {
+        "type": "package"
+      },
+      "filesystem.TypeScript.DefinitelyTyped/1.9.4": {
+        "type": "package",
+        "dependencies": {
+          "filewriter.TypeScript.DefinitelyTyped": "(, )"
+        }
+      },
+      "filewriter.TypeScript.DefinitelyTyped/1.3.3": {
+        "type": "package"
+      },
+      "jquery.TypeScript.DefinitelyTyped/3.1.2": {
+        "type": "package"
+      },
       "Microsoft.CSharp/4.0.1": {
         "type": "package",
         "dependencies": {
@@ -9205,13 +9328,22 @@
           "ref/netstandard1.3/Microsoft.Win32.Primitives.dll": {}
         }
       },
-      "Newtonsoft.Json/8.0.3": {
+      "NAudio/1.8.0": {
         "type": "package",
         "compile": {
-          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+          "lib/windows8/NAudio.Win8.dll": {}
         },
         "runtime": {
-          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+          "lib/windows8/NAudio.Win8.dll": {}
+        }
+      },
+      "Newtonsoft.Json/9.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll": {}
         }
       },
       "runtime.aot.System.Collections/4.0.10": {
@@ -11273,9 +11405,27 @@
         "runtime": {
           "runtimes/aot/lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
+      },
+      "webrtc.TypeScript.DefinitelyTyped/0.5.4": {
+        "type": "package"
       }
     },
     "UAP,Version=v10.0/win10-x86": {
+      "chrome.TypeScript.DefinitelyTyped/4.2.4": {
+        "type": "package"
+      },
+      "filesystem.TypeScript.DefinitelyTyped/1.9.4": {
+        "type": "package",
+        "dependencies": {
+          "filewriter.TypeScript.DefinitelyTyped": "(, )"
+        }
+      },
+      "filewriter.TypeScript.DefinitelyTyped/1.3.3": {
+        "type": "package"
+      },
+      "jquery.TypeScript.DefinitelyTyped/3.1.2": {
+        "type": "package"
+      },
       "Microsoft.CSharp/4.0.1": {
         "type": "package",
         "dependencies": {
@@ -11509,13 +11659,22 @@
           "ref/netstandard1.3/Microsoft.Win32.Primitives.dll": {}
         }
       },
-      "Newtonsoft.Json/8.0.3": {
+      "NAudio/1.8.0": {
         "type": "package",
         "compile": {
-          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+          "lib/windows8/NAudio.Win8.dll": {}
         },
         "runtime": {
-          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+          "lib/windows8/NAudio.Win8.dll": {}
+        }
+      },
+      "Newtonsoft.Json/9.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll": {}
         }
       },
       "runtime.any.System.Collections/4.0.11": {
@@ -13539,9 +13698,27 @@
         "runtime": {
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
+      },
+      "webrtc.TypeScript.DefinitelyTyped/0.5.4": {
+        "type": "package"
       }
     },
     "UAP,Version=v10.0/win10-x86-aot": {
+      "chrome.TypeScript.DefinitelyTyped/4.2.4": {
+        "type": "package"
+      },
+      "filesystem.TypeScript.DefinitelyTyped/1.9.4": {
+        "type": "package",
+        "dependencies": {
+          "filewriter.TypeScript.DefinitelyTyped": "(, )"
+        }
+      },
+      "filewriter.TypeScript.DefinitelyTyped/1.3.3": {
+        "type": "package"
+      },
+      "jquery.TypeScript.DefinitelyTyped/3.1.2": {
+        "type": "package"
+      },
       "Microsoft.CSharp/4.0.1": {
         "type": "package",
         "dependencies": {
@@ -13776,13 +13953,22 @@
           "ref/netstandard1.3/Microsoft.Win32.Primitives.dll": {}
         }
       },
-      "Newtonsoft.Json/8.0.3": {
+      "NAudio/1.8.0": {
         "type": "package",
         "compile": {
-          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+          "lib/windows8/NAudio.Win8.dll": {}
         },
         "runtime": {
-          "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll": {}
+          "lib/windows8/NAudio.Win8.dll": {}
+        }
+      },
+      "Newtonsoft.Json/9.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll": {}
         }
       },
       "runtime.aot.System.Collections/4.0.10": {
@@ -15844,10 +16030,51 @@
         "runtime": {
           "runtimes/aot/lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
+      },
+      "webrtc.TypeScript.DefinitelyTyped/0.5.4": {
+        "type": "package"
       }
     }
   },
   "libraries": {
+    "chrome.TypeScript.DefinitelyTyped/4.2.4": {
+      "sha512": "snmwdMWhTFWaSVcWTXJVF1seEHM1EXTyRDAgqzUnHfsK1+T0AKeQJu0beqkXDeHAmb8S+LNdS/LcxSFK+U+QEw==",
+      "type": "package",
+      "files": [
+        "Content/Scripts/typings/chrome/chrome-app.d.ts",
+        "Content/Scripts/typings/chrome/chrome-cast.d.ts",
+        "Content/Scripts/typings/chrome/index.d.ts",
+        "chrome.TypeScript.DefinitelyTyped.4.2.4.nupkg.sha512",
+        "chrome.TypeScript.DefinitelyTyped.nuspec"
+      ]
+    },
+    "filesystem.TypeScript.DefinitelyTyped/1.9.4": {
+      "sha512": "Q9FwFIWU3rCSSyQMHCnXzEszhrIUnRwefw2SHzH25F89uilDmxyschI0Lf7hKc2PqvQw4Ln+LTtLmxlHmj+vOA==",
+      "type": "package",
+      "files": [
+        "Content/Scripts/typings/filesystem/filesystem.d.ts",
+        "filesystem.TypeScript.DefinitelyTyped.1.9.4.nupkg.sha512",
+        "filesystem.TypeScript.DefinitelyTyped.nuspec"
+      ]
+    },
+    "filewriter.TypeScript.DefinitelyTyped/1.3.3": {
+      "sha512": "6qAsyHhk98mEKrwo1u6fJyKRSmsOQ7BjTEeorNYxiEBzlLeus4zgXbiIij6WOzqpDv0uv538vM/blf/bHJ5RUQ==",
+      "type": "package",
+      "files": [
+        "Content/Scripts/typings/filewriter/filewriter.d.ts",
+        "filewriter.TypeScript.DefinitelyTyped.1.3.3.nupkg.sha512",
+        "filewriter.TypeScript.DefinitelyTyped.nuspec"
+      ]
+    },
+    "jquery.TypeScript.DefinitelyTyped/3.1.2": {
+      "sha512": "km6S6ElHdLPBxNf1qj5vQjkw1rpRe5Hwf/1aFo5TZtl3ZSfc//lcdsVTfPZz78o+/dkhEC+ZJcRONNlVDAJg6A==",
+      "type": "package",
+      "files": [
+        "Content/Scripts/typings/jquery/jquery.d.ts",
+        "jquery.TypeScript.DefinitelyTyped.3.1.2.nupkg.sha512",
+        "jquery.TypeScript.DefinitelyTyped.nuspec"
+      ]
+    },
     "Microsoft.CSharp/4.0.1": {
       "sha512": "17h8b5mXa87XYKrrVqdgZ38JefSUqLChUQpXgSnpzsM0nDOhE40FTeNWOJ/YmySGV6tG6T8+hjz6vxbknHJr6A==",
       "type": "package",
@@ -16150,10 +16377,26 @@
         "ref/xamarinwatchos10/_._"
       ]
     },
-    "Newtonsoft.Json/8.0.3": {
-      "sha512": "KGsYQdS2zLH+H8x2cZaSI7e+YZ4SFIbyy1YJQYl6GYBWjf5o4H1A68nxyq+WTyVSOJQ4GqS/DiPE+UseUizgMg==",
+    "NAudio/1.8.0": {
+      "sha512": "lGh/feCCoYGTpgQSwfizSRVabfNfQCSBSzhr0bISY6YpsmB6pJsh3CtRdTtXekSYuvzOJW7U4HLJghxMrwe+GQ==",
       "type": "package",
       "files": [
+        "NAudio.1.8.0.nupkg.sha512",
+        "NAudio.nuspec",
+        "lib/net35/NAudio.XML",
+        "lib/net35/NAudio.dll",
+        "lib/windows8/NAudio.Win8.XML",
+        "lib/windows8/NAudio.Win8.dll",
+        "license.txt",
+        "readme.txt"
+      ]
+    },
+    "Newtonsoft.Json/9.0.1": {
+      "sha512": "U82mHQSKaIk+lpSVCbWYKNavmNH1i5xrExDEquU1i6I5pV6UMOqRnJRSlKO3cMPfcpp0RgDY+8jUXHdQ4IfXvw==",
+      "type": "package",
+      "files": [
+        "Newtonsoft.Json.9.0.1.nupkg.sha512",
+        "Newtonsoft.Json.nuspec",
         "lib/net20/Newtonsoft.Json.dll",
         "lib/net20/Newtonsoft.Json.xml",
         "lib/net35/Newtonsoft.Json.dll",
@@ -16162,12 +16405,12 @@
         "lib/net40/Newtonsoft.Json.xml",
         "lib/net45/Newtonsoft.Json.dll",
         "lib/net45/Newtonsoft.Json.xml",
+        "lib/netstandard1.0/Newtonsoft.Json.dll",
+        "lib/netstandard1.0/Newtonsoft.Json.xml",
         "lib/portable-net40+sl5+wp80+win8+wpa81/Newtonsoft.Json.dll",
         "lib/portable-net40+sl5+wp80+win8+wpa81/Newtonsoft.Json.xml",
-        "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll",
-        "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.xml",
-        "newtonsoft.json.8.0.3.nupkg.sha512",
-        "newtonsoft.json.nuspec",
+        "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.dll",
+        "lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.xml",
         "tools/install.ps1"
       ]
     },
@@ -22034,12 +22277,28 @@
         "ref/xamarinwatchos10/_._",
         "runtimes/aot/lib/netcore50/System.Xml.XmlSerializer.dll"
       ]
+    },
+    "webrtc.TypeScript.DefinitelyTyped/0.5.4": {
+      "sha512": "4GagHLZB9XWhQutgUWT+u/yy2JFh66WRd7o50gPLu/c9wyukYkH8pkJh1oX19tZw7wVn+8tDA3t77drTeVMXMQ==",
+      "type": "package",
+      "files": [
+        "Content/Scripts/typings/webrtc/MediaStream.d.ts",
+        "Content/Scripts/typings/webrtc/RTCPeerConnection.d.ts",
+        "webrtc.TypeScript.DefinitelyTyped.0.5.4.nupkg.sha512",
+        "webrtc.TypeScript.DefinitelyTyped.nuspec"
+      ]
     }
   },
   "projectFileDependencyGroups": {
     "": [
       "Microsoft.NETCore.UniversalWindowsPlatform >= 5.2.2",
-      "Newtonsoft.Json >= 8.0.3"
+      "NAudio >= 1.8.0",
+      "Newtonsoft.Json >= 9.0.1",
+      "chrome.TypeScript.DefinitelyTyped >= 4.2.4",
+      "filesystem.TypeScript.DefinitelyTyped >= 1.9.4",
+      "filewriter.TypeScript.DefinitelyTyped >= 1.3.3",
+      "jquery.TypeScript.DefinitelyTyped >= 3.1.2",
+      "webrtc.TypeScript.DefinitelyTyped >= 0.5.4"
     ],
     "UAP,Version=v10.0": []
   }
