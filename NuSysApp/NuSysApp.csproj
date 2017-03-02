@@ -491,6 +491,7 @@
     <Compile Include="Components\NuSysRenderer\UI\SessionView\ReadOnly\ReadOnlyModeWindow.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SessionView\ReadOnly\ReadOnlyAliasesWindow.cs" />
     <Compile Include="Components\NuSysRenderer\UI\SessionView\SessionSettingsMenu.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\ThumbnailUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\UserBubbles.cs" />
     <Compile Include="Components\NuSysRenderer\UI\WindowUIElements\DraggableWindowUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\DropdownUIElement.cs" />
