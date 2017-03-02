@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
+using System.Diagnostics;
 
 namespace NuSysApp
 {
@@ -44,53 +45,57 @@ namespace NuSysApp
 
         public override RectangleUIElement GetColumnCellFromItem(T itemSource, ListViewRowUIElement<T> listViewRowUIElement, ICanvasResourceCreatorWithDpi resourceCreator, float rowHeight, float sumOfAllColumnRelativeWidths)
         {
-            var cell = new RectangleUIElement(listViewRowUIElement, resourceCreator);
-            cell.Width = (RelativeWidth / sumOfAllColumnRelativeWidths) * listViewRowUIElement.Width;
-            cell.BorderWidth = BorderWidth;
-            cell.BorderColor = BorderColor;
-            cell.Height = rowHeight;
-            cell.Background = Colors.Transparent;
-            LoadCellImageAsync(cell, itemSource);
-            return cell;
+          
+            var thumbnail = new ThumbnailUIElement(listViewRowUIElement, resourceCreator);
+            thumbnail.Width = (RelativeWidth / sumOfAllColumnRelativeWidths) * listViewRowUIElement.Width;
+            thumbnail.BorderWidth = BorderWidth;
+            thumbnail.BorderColor = BorderColor;
+            thumbnail.Height = rowHeight;
+            thumbnail.Background = Colors.Transparent;
+            LoadCellImageAsync(thumbnail, itemSource);
+            return thumbnail;
 
         }
 
         public virtual async void LoadCellImageAsync(RectangleUIElement cell, T itemSource)
         {
+
+            var thumbnail = cell as ThumbnailUIElement;
+            Debug.Assert(thumbnail != null);
             try
             {
 
                 if (_dict.Keys.Contains(itemSource))
                 {
-                    cell.Image = _dict[itemSource];
+                    thumbnail.Image = _dict[itemSource];
                 }
                 else
                 {
-                    cell.Image = _image;
-                    cell.Image = await MediaUtil.LoadCanvasBitmapAsync(cell.ResourceCreator, ColumnFunction(itemSource));
-                    _dict[itemSource] = cell.Image;
-
-                    cell.Image = _image;
-                    _dict[itemSource] = cell.Image;
-                    _dict[itemSource] = await MediaUtil.LoadCanvasBitmapAsync(cell.ResourceCreator, ColumnFunction(itemSource));
+                    thumbnail.Image = _image;
+                    thumbnail.Image = await MediaUtil.LoadCanvasBitmapAsync(thumbnail.ResourceCreator, ColumnFunction(itemSource));
+                    _dict[itemSource] = thumbnail.Image;
                 }
 
-                var cellWidth = cell.Width;
-                var cellHeight = cell.Height;
+                var imgBounds = thumbnail?.Image?.GetBounds(thumbnail.ResourceCreator);
 
-                var imgWidth = cell.Image.GetBounds(cell.ResourceCreator).Width;
-                var imgHeight = cell.Image.GetBounds(cell.ResourceCreator).Height;
+                Debug.Assert(imgBounds != null);
 
+
+                // var imgWidth = thumbnail.RegionBounds != null ? thumbnail.RegionBounds.Value.Width * imgBounds.Value.Width : imgBounds.Value.Width;
+                //var imgHeight = thumbnail.RegionBounds != null ? thumbnail.RegionBounds.Value.Height * imgBounds.Value.Height : imgBounds.Value.Height;
+                var imgWidth = imgBounds.Value.Width;
+                var imgHeight = imgBounds.Value.Height;
                 if (imgWidth < 0 || imgHeight < 0)
                 {
                     return;
                 }
 
-                var newWidth = imgWidth / imgHeight * cellHeight / cellWidth;
+                var newWidth = imgWidth / imgHeight * thumbnail.Height / thumbnail.Width;
                 var newHeight = 1;
 
-                cell.ImageBounds = new Rect(0.5 - newWidth / 2, 0, newWidth, newHeight);
+                //thumbnail.ImageBounds = new Rect(0, 0, newWidth, newHeight);
 
+                thumbnail.ImageBounds = new Rect(0.5 - newWidth / 2, 0, newWidth, newHeight);
             }
             catch (Exception e)
             {

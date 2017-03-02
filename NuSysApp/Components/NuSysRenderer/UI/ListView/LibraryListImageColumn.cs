@@ -65,58 +65,43 @@ namespace NuSysApp
         {
             try
             {
+                var thumbnail = cell as ThumbnailUIElement;
+                Debug.Assert(thumbnail != null);
                 var model = itemSource as LibraryElementModel;
 
-
-                if (base.ImageDict.Keys.Contains(itemSource))
+                if (_defaultIconDictionary.ContainsKey(model.Type))
                 {
-                    cell.Image = base.ImageDict[itemSource];
-                }
-                else if (_defaultIconDictionary.ContainsKey(model.Type))
-                {
-                    cell.Image = _defaultIconDictionary[model.Type];
-                    base.ImageDict[itemSource] = cell.Image;
-                }
-                else 
-                {
-                    cell.Image = base.DefaultImage;
-                    base.ImageDict[itemSource] = cell.Image;
-                    base.ImageDict[itemSource] = await MediaUtil.LoadCanvasBitmapAsync(cell.ResourceCreator, base.ColumnFunction(itemSource));
-
+                    thumbnail.Image = _defaultIconDictionary[model.Type];
+                    base.ImageDict[itemSource] = thumbnail.Image;
                 }
 
-                var cellWidth = cell.Width;
-                var cellHeight = cell.Height;
+                thumbnail.RegionBounds = GetRegionBounds(model);
 
-                if ((cell?.Image as CanvasBitmap)?.Device == null)
-                {
-                    return;
-                }
-                var imgBounds = cell?.Image?.GetBounds(_resourceCreator);
 
-                
-                if (imgBounds == null)
-                {
-                    return;
-                }
-                var imgWidth = imgBounds?.Width;
-                var imgHeight = imgBounds?.Height;
+                base.LoadCellImageAsync(thumbnail, itemSource);
 
-                if (imgWidth < 0 || imgHeight < 0)
-                {
-                    return;
-                }
-
-                var newWidth = imgWidth/imgHeight*cellHeight/cellWidth;
-                var newHeight = 1;
-
-                cell.ImageBounds = new Rect(0.5 - newWidth.Value/2, 0, newWidth.Value, newHeight);
             }
             catch (Exception e)
             {
                 
             }
 
+
+        }
+
+        private Rect? GetRegionBounds(LibraryElementModel model)
+        {
+            switch (model.Type)
+            {
+                case NusysConstants.ElementType.Image:
+                    var imageModel = (ImageLibraryElementModel)model;
+                    return new Rect(imageModel.NormalizedX, imageModel.NormalizedY, imageModel.NormalizedWidth, imageModel.NormalizedHeight);
+                case NusysConstants.ElementType.PDF:
+                    var pdfModel = (PdfLibraryElementModel)model;
+                    return new Rect(pdfModel.NormalizedX, pdfModel.NormalizedY, pdfModel.NormalizedWidth, pdfModel.NormalizedHeight);
+                default:
+                    return null;
+            }
         }
 
         public override void Dispose()
