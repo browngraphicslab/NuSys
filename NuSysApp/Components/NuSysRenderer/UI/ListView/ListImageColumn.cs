@@ -50,6 +50,7 @@ namespace NuSysApp
             thumbnail.Width = (RelativeWidth / sumOfAllColumnRelativeWidths) * listViewRowUIElement.Width;
             thumbnail.BorderWidth = BorderWidth;
             thumbnail.BorderColor = BorderColor;
+            thumbnail.Background = Colors.Blue;
             thumbnail.Height = rowHeight;
             thumbnail.Background = Colors.Transparent;
             LoadCellImageAsync(thumbnail, itemSource);
@@ -81,10 +82,15 @@ namespace NuSysApp
                 Debug.Assert(imgBounds != null);
 
 
-                // var imgWidth = thumbnail.RegionBounds != null ? thumbnail.RegionBounds.Value.Width * imgBounds.Value.Width : imgBounds.Value.Width;
-                //var imgHeight = thumbnail.RegionBounds != null ? thumbnail.RegionBounds.Value.Height * imgBounds.Value.Height : imgBounds.Value.Height;
                 var imgWidth = imgBounds.Value.Width;
                 var imgHeight = imgBounds.Value.Height;
+
+                if (thumbnail.RegionBounds != null)
+                {
+                    imgWidth *= thumbnail.RegionBounds.Value.Width;
+                    imgHeight *= thumbnail.RegionBounds.Value.Height;
+                }
+
                 if (imgWidth < 0 || imgHeight < 0)
                 {
                     return;
@@ -93,7 +99,6 @@ namespace NuSysApp
                 var newWidth = imgWidth / imgHeight * thumbnail.Height / thumbnail.Width;
                 var newHeight = 1;
 
-                //thumbnail.ImageBounds = new Rect(0, 0, newWidth, newHeight);
 
                 thumbnail.ImageBounds = new Rect(0.5 - newWidth / 2, 0, newWidth, newHeight);
             }
