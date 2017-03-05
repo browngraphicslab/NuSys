@@ -173,5 +173,17 @@ namespace NuSysApp
             IsVisible = true;
             _disabled = false;
         }
+
+        public override void OnDragged(DragGestureRecognizer sender, DragEventArgs args)
+        {
+            base.OnDragged(sender, args);
+            if (args.CurrentState == GestureEventArgs.GestureState.Began)
+            {
+                _initialDragPosition = Transform.LocalPosition;
+            } else if (args.CurrentState == GestureEventArgs.GestureState.Changed)
+            {
+                Transform.LocalPosition = _initialDragPosition + args.Translation;
+            }
+        }
     }
 }

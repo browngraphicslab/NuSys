@@ -16,6 +16,5 @@ namespace NuSysApp
             Position = pointerPosition;
             CurrentState = GestureState.Ended;
         }
-
     }
 }

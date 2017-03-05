@@ -15,10 +15,9 @@ namespace NuSysApp
         private bool _isDoubleTap;
         private Timer _timer;
 
-        public delegate void TappedEventHandler(TapGestureRecognizer sender, TapEventArgs args);
-
-        public event TappedEventHandler OnTapped;
-        public event TappedEventHandler OnDoubleTapped;
+        public delegate void TapEventHandler(TapGestureRecognizer sender, TapEventArgs args);
+        public event TapEventHandler OnTapped;
+        public event TapEventHandler OnDoubleTapped;
 
 
         public void ProcessDownEvent(FrameworkElement sender, PointerRoutedEventArgs args)

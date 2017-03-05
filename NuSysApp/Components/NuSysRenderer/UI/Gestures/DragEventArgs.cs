@@ -17,11 +17,11 @@ namespace NuSysApp
 
         public Vector2 EndPoint { get; private set; }
 
+
         public DragEventArgs(Vector2 pointerStartPoint)
         {
             StartPoint = pointerStartPoint;
             EndPoint = pointerStartPoint;
-            CurrentState = GestureState.Began;
         }
 
         public Vector2 Translation => EndPoint - StartPoint;
@@ -29,13 +29,11 @@ namespace NuSysApp
         public void Update(Vector2 pointerCurrentPoint)
         {
             EndPoint = pointerCurrentPoint;
-            CurrentState = GestureState.Changed;
         }
 
         public void Complete(Vector2 pointerCurrentPoint)
         {
             EndPoint = pointerCurrentPoint;
-            CurrentState = GestureState.Ended;
         }
     }
 

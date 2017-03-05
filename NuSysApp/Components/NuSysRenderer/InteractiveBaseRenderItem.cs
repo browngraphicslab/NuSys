@@ -70,13 +70,8 @@ namespace NuSysApp
 
             var dragRecognizer = new DragGestureRecognizer();
             GestureRecognizers.Add(dragRecognizer);
-            dragRecognizer.OnDragged += DragRecognizer_OnDragged;
+            dragRecognizer.OnDragged += OnDragged;
 
-        }
-
-        private void DragRecognizer_OnDragged(DragGestureRecognizer sender, DragEventArgs args)
-        {
-            Debug.WriteLine($"Dragged, Translation {args.Translation}");
         }
 
         private void TapRecognizer_OnDoubleTapped(TapGestureRecognizer sender, TapEventArgs args)

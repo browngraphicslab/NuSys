@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
@@ -19,6 +20,9 @@ namespace NuSysApp
 
         public event DragEventHandler OnDragged;
 
+        public float DragThreshold { get; private set; } = 5;
+
+
         public void ProcessDownEvent(FrameworkElement sender, PointerRoutedEventArgs args)
         {
             Debug.Assert(_isDragging == false);
@@ -32,9 +36,23 @@ namespace NuSysApp
                 return;
             }
 
-            _isDragging = true;
-            _dragEventArgs.Update(args.GetCurrentPoint(sender).Position.ToSystemVector2());
-            OnDragged?.Invoke(this, _dragEventArgs);
+            var currentPoint = args.GetCurrentPoint(sender).Position.ToSystemVector2();
+            if (!_isDragging && Vector2.Distance(currentPoint, _dragEventArgs.StartPoint) > DragThreshold)
+            {
+                _dragEventArgs.CurrentState = GestureEventArgs.GestureState.Began;
+                _isDragging = true;
+            }
+            else
+            {
+                _dragEventArgs.CurrentState = GestureEventArgs.GestureState.Changed;
+            }
+
+            if (_isDragging)
+            {
+                _dragEventArgs.Update(currentPoint);
+                OnDragged?.Invoke(this, _dragEventArgs);
+            }
+           
         }
 
         public void ProcessUpEvent(FrameworkElement sender, PointerRoutedEventArgs args)
@@ -60,6 +78,7 @@ namespace NuSysApp
                 return;
             }
 
+            _dragEventArgs.CurrentState = GestureEventArgs.GestureState.Ended;
             _dragEventArgs.Complete(args.GetCurrentPoint(sender).Position.ToSystemVector2());
             OnDragged?.Invoke(this, _dragEventArgs);
             _isDragging = false;

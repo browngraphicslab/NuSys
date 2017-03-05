@@ -24,6 +24,6 @@ namespace NuSysApp
         /// <summary>
         /// The current state of the gesture
         /// </summary>
-        public GestureState CurrentState { get; protected set; }
+        public GestureState CurrentState { get; set; }
     }
 }
