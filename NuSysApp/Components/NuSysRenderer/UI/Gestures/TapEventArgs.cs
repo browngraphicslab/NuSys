@@ -9,6 +9,15 @@ namespace NuSysApp
 {
     public class TapEventArgs : GestureEventArgs
     {
+
+        public enum Tap
+        {
+            SingleTap,
+            DoubleTap
+        }
+
+        public Tap TapType { get; set; }
+
         public Vector2 Position { get; private set; }
 
         public TapEventArgs(Vector2 pointerPosition)

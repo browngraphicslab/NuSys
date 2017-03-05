@@ -66,7 +66,6 @@ namespace NuSysApp
             var tapRecognizer = new TapGestureRecognizer();
             GestureRecognizers.Add(tapRecognizer);
             tapRecognizer.OnTapped += TapRecognizer_OnTapped;
-            tapRecognizer.OnDoubleTapped += TapRecognizer_OnDoubleTapped;
 
             var dragRecognizer = new DragGestureRecognizer();
             GestureRecognizers.Add(dragRecognizer);
@@ -74,14 +73,19 @@ namespace NuSysApp
 
         }
 
-        private void TapRecognizer_OnDoubleTapped(TapGestureRecognizer sender, TapEventArgs args)
-        {
-            Debug.WriteLine($"Double Tapped, Position {args.Position}");
-        }
-
         private void TapRecognizer_OnTapped(TapGestureRecognizer sender, TapEventArgs args)
         {
-            Debug.WriteLine($"Tapped, Position {args.Position}");
+            switch (args.TapType)
+            {
+                case TapEventArgs.Tap.SingleTap:
+                    Debug.WriteLine($"Tapped, Position {args.Position}");
+                    break;
+                case TapEventArgs.Tap.DoubleTap:
+                    Debug.WriteLine($"Double Tapped, Position {args.Position}");
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         public virtual void OnDragged(DragGestureRecognizer sender, DragEventArgs args)

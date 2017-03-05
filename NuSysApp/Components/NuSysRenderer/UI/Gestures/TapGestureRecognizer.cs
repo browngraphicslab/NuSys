@@ -17,7 +17,6 @@ namespace NuSysApp
 
         public delegate void TapEventHandler(TapGestureRecognizer sender, TapEventArgs args);
         public event TapEventHandler OnTapped;
-        public event TapEventHandler OnDoubleTapped;
 
 
         public void ProcessDownEvent(FrameworkElement sender, PointerRoutedEventArgs args)
@@ -40,6 +39,7 @@ namespace NuSysApp
             _timer.Dispose();
             if (_isDoubleTap == false)
             {
+                _tapArgs.TapType = TapEventArgs.Tap.SingleTap;
                 OnTapped?.Invoke(this, _tapArgs);
                 _tapArgs = null;
             }
@@ -54,7 +54,8 @@ namespace NuSysApp
         {
             if (_isDoubleTap)
             {
-                OnDoubleTapped?.Invoke(this, _tapArgs);
+                _tapArgs.TapType = TapEventArgs.Tap.DoubleTap;
+                OnTapped?.Invoke(this, _tapArgs);
                 _tapArgs = null;
             }
         }
