@@ -1392,6 +1392,11 @@ namespace NuSysApp
             {
                 return;
             }
+
+            if (Selections.Contains(element))
+            {
+                return;
+            }
             element.ViewModel.IsSelected = true;
             Selections.Add(element);
             _minimap.Invalidate();
