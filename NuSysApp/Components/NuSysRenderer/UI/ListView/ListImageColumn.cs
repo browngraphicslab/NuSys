@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
-
+using Priority_Queue;
 namespace NuSysApp
 {
     public class ListImageColumn<T> : ListColumn<T>, IDisposable
@@ -23,9 +23,14 @@ namespace NuSysApp
 
         public ICanvasImage DefaultImage => _image;
         private ICanvasImage _image;
+
+
+        private SimplePriorityQueue<T> _priorityQueue;
         public ListImageColumn(ICanvasResourceCreatorWithDpi resourceCreator)
         {
             _dict = new Dictionary<T, ICanvasImage>();
+
+            
             LoadDefaultImageAsync(resourceCreator);
         }
 

@@ -12,6 +12,7 @@
     "NAudio": "1.7.3",
     "NetTopologySuite": "1.14.0",
     "Newtonsoft.Json": "9.0.1",
+    "OptimizedPriorityQueue": "4.0.3",
     "Win2D.uwp": "1.20.0",
     "WinRTXamlToolkit.Controls.DataVisualization.UWP": "2.0.0"
   },

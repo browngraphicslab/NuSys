@@ -17,7 +17,6 @@ namespace NuSysApp
 
         public LibraryListImageColumn(ICanvasResourceCreatorWithDpi resourceCreator) : base(resourceCreator)
         {
-            //TODO: make this a public property in the superclass
             _resourceCreator = resourceCreator;
             LoadDefaultIconDictionary();
 
