@@ -15,6 +15,8 @@ namespace NuSysApp
         private Dictionary<NusysConstants.ElementType, ICanvasImage> _defaultIconDictionary;
         private ICanvasResourceCreatorWithDpi _resourceCreator;
 
+
+
         public LibraryListImageColumn(ICanvasResourceCreatorWithDpi resourceCreator) : base(resourceCreator)
         {
             _resourceCreator = resourceCreator;
@@ -72,7 +74,6 @@ namespace NuSysApp
                     cell.Image = _defaultIconDictionary[model.Type];
                     base.ImageDict[itemSource] = cell.Image;
                 }
-
 
                 base.LoadCellImageAsync(cell, itemSource);
             }
