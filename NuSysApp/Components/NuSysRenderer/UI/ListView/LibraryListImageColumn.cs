@@ -66,22 +66,40 @@ namespace NuSysApp
         {
             try
             {
+                UpdateLoadingImages();
+
                 Debug.Assert(cell != null);
                 var model = itemSource as LibraryElementModel;
 
-                if (_defaultIconDictionary.ContainsKey(model.Type))
+                if (base.ImageDict.Keys.Contains(itemSource))
+                {
+                    cell.Image = base.ImageDict[itemSource];
+                }
+                else if (_defaultIconDictionary.ContainsKey(model.Type))
                 {
                     cell.Image = _defaultIconDictionary[model.Type];
                     base.ImageDict[itemSource] = cell.Image;
                 }
+                else
+                {
+                    cell.Image = base.DefaultImage;
+                    base.ImageDict[itemSource] = cell.Image;
+                    base.ImageDict[itemSource] = await MediaUtil.LoadCanvasBitmapAsync(cell.ResourceCreator, base.ColumnFunction(itemSource));
+                }
 
-                base.LoadCellImageAsync(cell, itemSource);
+                SetImageBounds(cell);
+
             }
             catch (Exception e)
             {
-                
+
             }
 
+        }
+
+        private void UpdateLoadingImages()
+        {
+            throw new NotImplementedException();
         }
 
         public override void Dispose()
