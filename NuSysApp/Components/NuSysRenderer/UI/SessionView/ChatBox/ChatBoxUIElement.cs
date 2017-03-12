@@ -10,7 +10,6 @@ using Windows.System;
 using Windows.UI;
 using Windows.UI.Text;
 using Microsoft.Graphics.Canvas;
-using SharpDX.Direct2D1.Effects;
 using NusysIntermediate;
 using WinRTXamlToolkit.Tools;
 

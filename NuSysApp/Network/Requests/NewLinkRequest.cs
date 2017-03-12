@@ -23,7 +23,7 @@ namespace NuSysApp
             _message["creator"] = creator;
             _message["contentId"] = contentId;
         }
-        public override async Task CheckOutgoingRequest()
+        public override void CheckOutgoingRequest()
         {
             if (!_message.ContainsKey("id"))
             {

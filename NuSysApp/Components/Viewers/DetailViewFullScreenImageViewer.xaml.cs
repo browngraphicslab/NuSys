@@ -28,6 +28,9 @@ namespace NuSysApp
         public event EventHandler ImageClosed;
 
 
+        private List<Uri> _currentListOfImageUris;
+        private int _indexOfUri;
+
         /// <summary>
         /// Parameterless constructor jsut initializes the components
         /// </summary>
@@ -130,17 +133,30 @@ namespace NuSysApp
             xCanvas.Width = SessionController.Instance.SessionView.FreeFormViewer.Width;
             Canvas.SetTop(xCloseButton, ActualHeight - xCloseButton.Height - 15);
             Canvas.SetLeft(xCloseButton, ActualWidth/2 - xCloseButton.Width/2);
-            
+
+            Canvas.SetTop(xLeftButton, ActualHeight/2 - xLeftButton.Height/2);
+            Canvas.SetLeft(xLeftButton, 15);
+            Canvas.SetTop(xRightButton, ActualHeight/2 - xLeftButton.Height/2);
+            Canvas.SetLeft(xRightButton, ActualWidth - xLeftButton.Width - 15);
+
         }
         /// <summary>
         /// Method to set the image curently being displayed
         /// </summary>
         /// <param name="imageUri"></param>
-        public void ShowImage(Uri imageUri)
+        public void ShowImage(List<Uri> imageUris, int index, bool pages)
         {
             SetCanvasSize();
+
+            xLeftButton.Visibility = pages & index > 0 ? Visibility.Visible : Visibility.Collapsed;
+            xRightButton.Visibility = pages & index < imageUris.Count - 1? Visibility.Visible : Visibility.Collapsed;
+
+            //Update reference to list of URIs
+            _currentListOfImageUris = imageUris;
+            _indexOfUri = index;
+
             Visibility = Visibility.Visible;
-            xImage.Source = new BitmapImage(imageUri);
+            xImage.Source = new BitmapImage(imageUris[index]);
             xImage.Stretch=Stretch.UniformToFill;
             var tg = new TransformGroup();
             tg.Children.Add(new CompositeTransform());
@@ -301,6 +317,27 @@ namespace NuSysApp
             transform.TranslateY += distance.Y;
             transform.CenterX = center.X;
             transform.CenterY = center.Y;
+        }
+
+        private void XLeftButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            Debug.Assert(_currentListOfImageUris != null);
+            var newIndex = _indexOfUri - 1;
+            if (newIndex >= 0)
+            {
+                ShowImage(_currentListOfImageUris, newIndex, true);
+
+            }
+        }
+
+        private void XRightButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            Debug.Assert(_currentListOfImageUris != null);
+            var newIndex = _indexOfUri + 1;
+            if (newIndex < _currentListOfImageUris.Count)
+            {
+                ShowImage(_currentListOfImageUris, newIndex, true);
+            }
         }
     }
 }

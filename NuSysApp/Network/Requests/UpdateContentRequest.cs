@@ -71,7 +71,7 @@ namespace NuSysApp
         /// Makes sure that the request has the ID of the content to update, the type of content its updating, and the new content. Should only contain assert statements
         /// </summary>
         /// <returns></returns>
-        public override async Task CheckOutgoingRequest()
+        public override void CheckOutgoingRequest()
         {
             Debug.Assert(_message.ContainsKey(NusysConstants.UPDATE_CONTENT_REQUEST_CONTENT_ID_KEY));
             Debug.Assert(_message.ContainsKey(NusysConstants.UPDATE_CONTENT_REQUEST_CONTENT_TYPE_KEY));

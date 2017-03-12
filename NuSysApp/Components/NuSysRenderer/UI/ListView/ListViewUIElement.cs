@@ -2,21 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.Media.Import;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
-using NusysIntermediate;
-using SharpDX;
 using Vector2 = System.Numerics.Vector2;
 using System.Numerics;
 using Windows.Devices.Input;
 using Windows.Foundation;
 using Microsoft.Graphics.Canvas.Geometry;
-using NetTopologySuite.GeometriesGraph;
-using WinRTXamlToolkit.Controls.DataVisualization.Charting;
-using Color = Windows.UI.Color;
 using Matrix3x2 = System.Numerics.Matrix3x2;
 
 namespace NuSysApp

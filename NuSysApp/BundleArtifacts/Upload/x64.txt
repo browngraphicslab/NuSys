@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 MainPackage=C:\Users\Trent\Documents\nusys_repo\main\nusys\NuSysApp\bin\x64\Release\Upload\NuSysApp_1.1.14.0_x64.appx
+=======
+MainPackage=C:\Users\Trent\Documents\nusys_repo\main\nusys\NuSysApp\bin\x64\Release\Upload\NuSysApp_1.1.20.0_x64.appx
+>>>>>>> origin/dev

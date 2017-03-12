@@ -41,7 +41,7 @@ namespace NuSysApp
         /// </summary>
         public static SessionSettingsData LoadSavedSettings()
         {
-            if (File.Exists(NuSysStorages.SaveFolder.Path + "\\settings.txt"))
+            if (File.Exists(ApplicationData.Current.LocalFolder.Path + "\\settings.txt"))
             {
                 try
                 {

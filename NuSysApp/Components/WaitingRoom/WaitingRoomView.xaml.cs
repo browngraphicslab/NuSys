@@ -65,8 +65,6 @@ namespace NuSysApp
         //makes sure collection doesn't get added twice
         private bool _collectionAdded = false;
 
-        private static string LoginCredentialsFilePath;
-
         //list of all collections
         private List<LibraryElementModel> _collectionList;
 
@@ -83,7 +81,6 @@ namespace NuSysApp
         {
             Instance = this;
             this.InitializeComponent();
-            LoginCredentialsFilePath = StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FolderNusysTemp).Result.Path + "\\LoginInfo.json";
 
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.FullScreen;
 
@@ -598,43 +595,6 @@ namespace NuSysApp
                 PreviewPanel.Visibility = Visibility.Collapsed;
                 DetailPanel.Visibility = Visibility.Visible;
             }
-        }
-
-        private async void AutoLogin()
-        {
-            Debug.WriteLine("fix this");
-            Task.Run(async delegate
-            {
-                if (File.Exists(LoginCredentialsFilePath))
-                {
-                    UITask.Run(async delegate
-                    {
-                        Tuple<string, string> creds = this.GetLoginCredentials();
-                        await Login(creds.Item1, creds.Item2, false);
-                    });
-                }
-            });
-        }
-
-        private Tuple<string, string> GetLoginCredentials()
-        {
-            return Task.Run(async delegate
-            {
-                JObject o1 = JObject.Parse(File.ReadAllText(LoginCredentialsFilePath));
-                var username = o1.GetValue("Username").ToString();
-                var password = o1.GetValue("Password").ToString();
-
-
-
-                Tuple<string, string> credentials = new Tuple<string, string>(username, password);
-                return credentials;
-            }).Result;
-        }
-
-        private void SaveLoginInfo(string username, string password)
-        {
-            JObject loginCredentials = new JObject(new JProperty("Username", username), new JProperty("Password", password));
-            File.WriteAllText(LoginCredentialsFilePath, loginCredentials.ToString());
         }
 
 

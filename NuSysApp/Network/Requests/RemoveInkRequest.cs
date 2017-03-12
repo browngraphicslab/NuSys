@@ -15,7 +15,7 @@ namespace NuSysApp
     {
         public RemoveInkRequest(Message message) : base(NusysConstants.RequestType.RemoveInkRequest, message){}
 
-        public async override Task CheckOutgoingRequest()
+        public override void CheckOutgoingRequest()
         {
             if (_message.GetString("id", null) == null)
             {

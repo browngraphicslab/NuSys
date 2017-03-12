@@ -12,11 +12,8 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using MyToolkit.Utilities;
 using NusysIntermediate;
 using WinRTXamlToolkit.Tools;
-using Image = SharpDX.Direct2D1.Image;
-using Line = Windows.UI.Xaml.Shapes.Line;
 using Point = Windows.Foundation.Point;
 using Task = System.Threading.Tasks.Task;
 

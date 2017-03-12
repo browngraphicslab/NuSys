@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 C:\Users\Trent\Desktop\NuSysApp_1.1.14.0\NuSysApp_1.1.14.0_x86_x64_arm.appxbundle
+=======
+C:\Users\Trent\Desktop\NuSysApp_1.1.20.0\NuSysApp_1.1.20.0_x86_x64_arm.appxbundle
+>>>>>>> origin/dev

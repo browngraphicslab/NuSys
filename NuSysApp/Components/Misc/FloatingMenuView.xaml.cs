@@ -1,24 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using Windows.Foundation;
-using Windows.Storage.Streams;
-using Windows.System;
 using Windows.UI;
-using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Animation;
-using Windows.UI.Xaml.Media.Imaging;
 using NusysIntermediate;
-using SharpDX.Direct2D1;
-using Image = Windows.UI.Xaml.Controls.Image;
-using SolidColorBrush = Windows.UI.Xaml.Media.SolidColorBrush;
+
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 

@@ -3,19 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.ApplicationModel.Core;
 using Windows.Devices.Input;
-using Windows.Foundation;
-using Windows.System;
-using Windows.UI.Core;
-using Windows.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
-using Microsoft.Graphics.Canvas.UI.Xaml;
-using SharpDX.Direct2D1;
-using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {

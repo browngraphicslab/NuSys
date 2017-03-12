@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Streams;
@@ -15,11 +11,7 @@ using Microsoft.Graphics.Canvas.Brushes;
 using LdaLibrary;
 using System.Collections.ObjectModel;
 using Windows.Foundation;
-using Windows.UI;
-using Windows.UI.Text;
-using Windows.UI.Xaml;
 using NusysIntermediate;
-using Image = SharpDX.Direct2D1.Image;
 
 namespace NuSysApp
 {

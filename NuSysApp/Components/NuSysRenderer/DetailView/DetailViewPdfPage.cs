@@ -46,8 +46,8 @@ namespace NuSysApp
         protected override void ExpandButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             var model = (PdfContentDataModel) _controller.ContentDataController.ContentDataModel;
-            var pageUrl = model.PageUrls[_content.CurrentPage];
-            SessionController.Instance.SessionView.FreeFormViewer.ShowFullScreenImage(new Uri(pageUrl));
+            //var pageUrl = model.PageUrls[_content.CurrentPage];
+            SessionController.Instance.SessionView.FreeFormViewer.ShowFullScreenImage(model.PageUrls.Select(s => new Uri(s)).ToList(), _content.CurrentPage, true);
         }
 
     }

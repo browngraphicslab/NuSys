@@ -12,7 +12,6 @@ using Windows.UI.Xaml.Controls;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
-using SharpDX.DirectWrite;
 
 namespace NuSysApp
 {

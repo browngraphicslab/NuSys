@@ -204,6 +204,7 @@ namespace NuSysApp
                 }
             }
 
+
             // get all the elements on the workspace using a request, this returns elements to a certain level of 
             // collection recursion, but we only want the top level
             var request = new GetEntireWorkspaceRequest(_controller.CollectionModel.LibraryElementId, 0);
