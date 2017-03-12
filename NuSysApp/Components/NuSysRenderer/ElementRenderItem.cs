@@ -36,6 +36,8 @@ namespace NuSysApp
         // Controls the bubbles showing what users are currently editing this node
         private UserBubbles _userBubbles;
 
+        private RectangleUIElement _shadowRectangle;
+
         /// <summary>
         ///  true if the element is currently highlighted
         /// </summary>
@@ -82,6 +84,16 @@ namespace NuSysApp
             SessionController.Instance.SessionSettings.TextScaleChanged += SessionSettingsTextScaleChanged;
             SessionController.Instance.SessionSettings.ResizeElementTitlesChanged += SessionSettingsOnResizeElementTitlesChanged;
             base.Background = Colors.Transparent;
+            //_shadowRectangle = new RectangleUIElement(this, resourceCreator);
+            //_shadowRectangle.Background = Colors.Red;
+            
+            //this.AddChild(_shadowRectangle);\
+            if (this.GetType() != typeof(CollectionRenderItem))
+            {
+                DropShadow = true;
+
+            }
+
         }
 
         /// <summary>
@@ -234,6 +246,12 @@ namespace NuSysApp
                 return;
             }
 
+            DropShadowWidth = (float)_vm.Width;
+            DropShadowHeight = (float)_vm.Height;
+            DropShadowXOffset = 10;
+            DropShadowYOffset = 20;
+            //_shadowRectangle.Transform.LocalPosition = new Vector2(0,0);
+
             Transform.LocalPosition = new Vector2((float)_vm.X, (float)_vm.Y);
             _tagRenderItem.Transform.LocalPosition = new Vector2(0, (float)_vm.Height + 10f);
             _tagRenderItem.IsVisible = SessionController.Instance.SessionSettings.TagsVisible;
@@ -241,7 +259,7 @@ namespace NuSysApp
             _userBubbles.Transform.LocalPosition = new Vector2((float)_vm.Width + 10f, 0);
             _userBubbles.Height = (float)_vm.Height;
 
-            base.Update(parentLocalToScreenTransform);
+            base.Update(parentLocalToScreenTransform); 
 
             var resizeTitles = SessionController.Instance.SessionSettings.ResizeElementTitles;
 

@@ -8,12 +8,33 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Brushes;
+using Microsoft.Graphics.Canvas.Effects;
 using Microsoft.Graphics.Canvas.Geometry;
+using Microsoft.Graphics.Canvas.UI.Xaml;
 
 namespace NuSysApp
 {
     public class RectangleUIElement : BaseInteractiveUIElement
     {
+
+        public bool DropShadow { get; set; }
+
+        public float DropShadowHeight { get; set; }
+
+        public float DropShadowWidth { get; set; }
+
+        public float DropShadowXOffset { get; set; }
+
+        public float DropShadowYOffset { get; set; }
+
+        public Color DropShadowColor { get; set; }
+
+        private CanvasRenderTarget _dryStrokesTarget;
+
+
+
+
         public RectangleUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             // set default values
@@ -23,6 +44,8 @@ namespace NuSysApp
             BorderWidth = UIDefaults.Borderwidth;
             BorderColor = UIDefaults.Bordercolor;
             BorderType = UIDefaults.BorderType;
+            DropShadowColor = UIDefaults.DropShadowColor;
+
         }
 
         /// <summary>
@@ -115,7 +138,12 @@ namespace NuSysApp
 
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
-          //  ds.Transform = Matrix3x2.Identity;
+            //  ds.Transform = Matrix3x2.Identity;
+
+            if (DropShadow)
+            {
+                DrawDropShadow(ds);
+            }
 
             // draw the background of the rectangle
             DrawBackground(ds);
@@ -196,10 +224,60 @@ namespace NuSysApp
 
             if (BorderType == BorderType.Inside||BorderType == BorderType.Outside)
             {
-                // draw the background of the rectangle
+                //draw the background of the rectangle
                 ds.FillRectangle(0, 0, Width, Height, Background);
 
             }
+            ds.Transform = orgTransform;
+        }
+
+
+        private void DrawDropShadow(CanvasDrawingSession ds)
+        {
+            //DropShadowXOffset = 150;
+            //int change = 2;
+            //var alphaGradientBrush = new CanvasRadialGradientBrush(ResourceCreator, Colors.Black, Colors.Transparent)
+            //{
+            //    Center = new Vector2(DropShadowXOffset + DropShadowWidth/2, DropShadowYOffset + DropShadowHeight / 2),
+
+            //    RadiusX = DropShadowWidth,
+            //    RadiusY = DropShadowHeight
+            //};
+
+            //Color newColor = Color.FromArgb(10, DropShadowColor.R, DropShadowColor.G, DropShadowColor.B);
+            //ds.FillRectangle(DropShadowXOffset, DropShadowYOffset, DropShadowWidth, DropShadowHeight, alphaGradientBrush);
+            //double greaterOffset = DropShadowXOffset > DropShadowYOffset ? DropShadowXOffset : DropShadowYOffset;
+            //for (int i = 0; i < greaterOffset; i++)
+            //{
+            //    ds.FillRectangle(DropShadowXOffset, DropShadowYOffset, DropShadowWidth - i, DropShadowHeight - i, newColor);
+            //}
+
+            var orgTransform = ds.Transform;
+            if (_dryStrokesTarget != null)
+            {
+                using (var dss = _dryStrokesTarget.CreateDrawingSession())
+                {
+                    dss.Clear(Colors.Transparent);
+                    dss.Transform = ds.Transform;
+
+                    ds.FillRectangle(DropShadowXOffset, DropShadowYOffset, DropShadowWidth, DropShadowHeight,
+                        Colors.Black);
+                }
+                var blur = new GaussianBlurEffect();
+                blur.Source = _dryStrokesTarget;
+                blur.BlurAmount = 100;
+
+                ds.Transform = Matrix3x2.Identity;
+                if (_dryStrokesTarget != null)
+                    ds.DrawImage(_dryStrokesTarget);
+            }
+            else
+            {
+                var canvas = (CanvasAnimatedControl) ResourceCreator;
+                _dryStrokesTarget = new CanvasRenderTarget(ResourceCreator, canvas.Size);
+            }
+
+
             ds.Transform = orgTransform;
         }
 

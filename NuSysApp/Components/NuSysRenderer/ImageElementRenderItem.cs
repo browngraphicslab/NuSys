@@ -65,10 +65,16 @@ namespace NuSysApp
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
+            
+
             _inkable.Width = (float) _image.CroppedImageTarget.Width;
             _inkable.Height = (float)_image.CroppedImageTarget.Height;
             _inkable.Transform.LocalPosition = _image.Transform.LocalPosition;
             base.Update(parentLocalToScreenTransform);
+            DropShadowHeight = (float)_image.CroppedImageTarget.Height;
+            DropShadowWidth = (float)_image.CroppedImageTarget.Width;
+            DropShadowXOffset = _image.Transform.LocalPosition.X + 20;
+            DropShadowYOffset = _image.Transform.LocalPosition.Y + 20;
         }
 
         public override void Draw(CanvasDrawingSession ds)

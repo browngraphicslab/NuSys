@@ -117,8 +117,15 @@ namespace NuSysApp
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
 
-            ds.FillRectangle( new Rect {X = 0, Y = 0, Width = _vm.Width, Height=_vm.Height}, Colors.White);
-            ds.DrawRectangle( new Rect {X = 0, Y = 0, Width = _vm.Width, Height=_vm.Height}, Constants.color1, 1f, _strokeStyle);
+            Width = (float)_vm.Width;
+            Height = (float)_vm.Height;
+            Background = Colors.White;
+            BorderWidth = 1f;
+            BorderColor = Constants.color1;
+            BorderType = UIDefaults.BorderType;
+
+            //ds.FillRectangle( new Rect {X = 0, Y = 0, Width = _vm.Width, Height=_vm.Height}, Colors.White);
+            //ds.DrawRectangle( new Rect {X = 0, Y = 0, Width = _vm.Width, Height=_vm.Height}, Constants.color1, 1f, _strokeStyle);
             
             ds.Transform = orgTransform;
 

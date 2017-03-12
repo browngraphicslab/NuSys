@@ -21,6 +21,8 @@ namespace NuSysApp
         public static Color Background = Constants.LIGHT_BLUE;
         public static Color Bordercolor = Colors.Transparent;
         public static Color SelectedBorderColor = Constants.DARK_BLUE;
+
+        public static Color DropShadowColor = Color.FromArgb(200,0,0,0);
         public static float TopBarHeight = 25;
         public static Color TopBarColor = Colors.Transparent;
         public static float ErrorMargin = 15;
