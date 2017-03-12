@@ -15,6 +15,9 @@ namespace NuSysApp
     public class NodeResizerRenderItem : BaseRenderItem
     {
 
+        /// <summary>
+        /// Enum representing which corner this resizer is in
+        /// </summary>
         public enum ResizerPosition
         {
             TopLeft,
@@ -23,14 +26,12 @@ namespace NuSysApp
             BottomRight
         }
 
-        private readonly ResizerPosition _position;
-
-        public ResizerPosition Position => _position;
+        public ResizerPosition Position { get; }
 
         private CanvasGeometry _triangle;
         public NodeResizerRenderItem(BaseRenderItem parent, CanvasAnimatedControl resourceCreator, ResizerPosition position) : base(parent, resourceCreator)
         {
-            _position = position;
+            Position = position;
         }
 
         public override void Dispose()
@@ -44,7 +45,7 @@ namespace NuSysApp
 
         public override async Task Load()
         {
-            switch (_position)
+            switch (Position)// Make the polygon correct for whichever corner we're in
             {
                 case ResizerPosition.TopLeft:
                     _triangle = CanvasGeometry.CreatePolygon(ResourceCreator, new System.Numerics.Vector2[4]{

@@ -43,7 +43,7 @@ namespace NuSysApp
         public ButtonUIElement BtnTools;
         private RectangleUIElement DragToolsRect;
         public List<BaseRenderItem> Buttons = new List<BaseRenderItem>();
-        public List<NodeResizerRenderItem>  Resizers;
+        public List<NodeResizerRenderItem>  Resizers; //Keep array of all resizers so Contains can be used
         private List<BaseRenderItem> _menuButtons = new List<BaseRenderItem>();
         private bool _isSinglePdfSelected;
         private bool _isSingleCollectionSelected;

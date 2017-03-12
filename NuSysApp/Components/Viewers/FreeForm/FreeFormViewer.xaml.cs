@@ -688,23 +688,23 @@ namespace NuSysApp
 
                 switch (resizerPosition)
                 {
-                    case NodeResizerRenderItem.ResizerPosition.TopLeft:
+                    case NodeResizerRenderItem.ResizerPosition.TopLeft: // Need to change both position and size in both directions
                         nx += dx;
                         ny += dy;
                         nw -= dx;
                         nh -= dy;
                         break;
-                    case NodeResizerRenderItem.ResizerPosition.TopRight:
+                    case NodeResizerRenderItem.ResizerPosition.TopRight: // Need to change the Y position and both sizes
                         ny += dy;
                         nw += dx;
                         nh -= dy;
                         break;
-                    case NodeResizerRenderItem.ResizerPosition.BottomLeft:
+                    case NodeResizerRenderItem.ResizerPosition.BottomLeft: // Need to change the X position and both sizes
                         nx += dx;
                         nw -= dx;
                         nh += dy;
                         break;
-                    case NodeResizerRenderItem.ResizerPosition.BottomRight:
+                    case NodeResizerRenderItem.ResizerPosition.BottomRight: // Only need to change both sizes
                         nw += dx;
                         nh += dy;
                         break;

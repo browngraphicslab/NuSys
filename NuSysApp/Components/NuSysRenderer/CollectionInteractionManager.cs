@@ -82,7 +82,7 @@ namespace NuSysApp
         private CanvasInteractionManager _canvasInteractionManager;
         private uint _finalInkPointer;
         private DateTime _finalInkPointerUpdated;
-        private NodeResizerRenderItem _resizer = null;
+        private NodeResizerRenderItem _resizer;
         private bool _isTwoElementsPressed;
         private CanvasPointer _nodeMarkingMenuPointer;
         private Tuple<ElementRenderItem, ElementRenderItem> _potentiaLink;
