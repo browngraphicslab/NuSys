@@ -10,18 +10,14 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
-using Windows.ApplicationModel.Core;
 using Windows.Storage;
 using Windows.UI;
 using Windows.UI.Xaml.Input;
-using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using NetTopologySuite.Geometries;
 using NusysIntermediate;
 using NuSysApp.Components.NuSysRenderer.UI;
-using WinRTXamlToolkit.IO.Extensions;
-using PathGeometry = SharpDX.Direct2D1.PathGeometry;
-using Point = Windows.Foundation.Point;
+
 
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -226,6 +222,13 @@ namespace NuSysApp
         {
             if (_selectedLink is TrailRenderItem)
             {
+                //get a new folderpicker, set suggested start location to documents folder
+                var savePicker = new Windows.Storage.Pickers.FolderPicker();
+                savePicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
+                savePicker.FileTypeFilter.Add(".html");
+                //this is the folder that the user picks
+                var storageFolder = await savePicker.PickSingleFolderAsync();
+
                 //get trail as a list of nodes
                 var trailvm = (_selectedLink as TrailRenderItem).ViewModel;
                 if(trailvm == null)
@@ -249,19 +252,23 @@ namespace NuSysApp
                         next = trailList[i + 1].Id;
                     }
 
-                    await currElement.ExportToHTML(prev, next);
+                    await currElement.ExportToHTML(storageFolder, prev, next);
                 }
                 
-                StorageFolder htmlFolder = await NuSysStorages.NuSysTempFolder.GetFolderAsync("HTML");
+
+                StorageFolder htmlFolder = await storageFolder.GetFolderAsync("HTMLExport");
+                Debug.Assert(htmlFolder != null, "htmlFolder should not be null");
+
                 var firstPage = await htmlFolder.GetFileAsync(trailList[0].Id + ".html");
 
                 var exportPopup = new CenteredPopup(RenderEngine.Root, xRenderCanvas,
-                    "You have exported your trail! \n \n" +
-                    "Find it in your Documents/NuSys/HTML.");
+                    "You have exported your trail! \n \n");
                 RenderEngine.Root.AddChild(exportPopup);
 
                 //open the exported html in browser
                 await Windows.System.Launcher.LaunchFileAsync(firstPage);
+
+
             }
         }
 
@@ -894,8 +901,9 @@ namespace NuSysApp
                 }
 
                 _editTagsElement = new EditTagsUIElement(RenderEngine.Root, RenderEngine.CanvasAnimatedControl);
-                RenderEngine.ElementSelectionRect.ElementSelectionRenderItemSizeChanged +=
-                    _editTagsElement.UpdatePositionWithSize;
+                _editTagsElement.Transform.LocalPosition = new Vector2(20, 220);
+                //RenderEngine.ElementSelectionRect.ElementSelectionRenderItemSizeChanged +=
+                  //  _editTagsElement.UpdatePositionWithSize;
                 Rect rect = RenderEngine.ElementSelectionRect.GetLocalBounds();
                 RenderEngine.ElementSelectionRect.AddChild(_editTagsElement);
                 _editTagsElement.Load();
@@ -1101,14 +1109,12 @@ namespace NuSysApp
                 xVideoPlayer.Visibility = Visibility.Collapsed;
             }
 
-           // collection.ViewModel.Controller.SetSize(500,500);
-          //  collection.ViewModel.Controller.SetPosition(50000,50000);
-
             var targetPoint = RenderEngine.ScreenPointerToCollectionPoint(pointer.CurrentPoint, collection);
+            StaticServerCalls.AddElementToCollection(pointer.CurrentPoint, element.ViewModel.ElementType,
+                element.ViewModel.Controller.LibraryElementController, collection);
             var target = new Vector2(targetPoint.X - (float) element.ViewModel.Width/2f, targetPoint.Y - (float) element.ViewModel.Height/2f);
             var elementId = element.ViewModel.Id;
             var parentCollectionId = element.ViewModel.Controller.GetParentCollectionId();
-            await element.ViewModel.Controller.RequestMoveToCollection(collection.ViewModel.Model.LibraryId, target.X, target.Y);
 
             var oldLocationScreen = new Point2d(pointer.StartPoint.X, pointer.StartPoint.Y);
             var oldLocationCollectionV = RenderEngine.ScreenPointerToCollectionPoint(pointer.StartPoint, CurrentCollection);
@@ -1384,6 +1390,11 @@ namespace NuSysApp
             {
                 return;
             }
+
+            if (Selections.Contains(element))
+            {
+                return;
+            }
             element.ViewModel.IsSelected = true;
             Selections.Add(element);
             //_minimap.Invalidate();
@@ -1575,14 +1586,14 @@ namespace NuSysApp
         /// Method used to show the full-screen image of any uri. 
         /// This will be a pan-zoomable interface for viewing images
         /// </summary>
-        public void ShowFullScreenImage(Uri imageUri)
+        public void ShowFullScreenImage(List<Uri> imageUris, int index, bool pages)
         {
             UITask.Run(delegate
             {
                 xFullScreenImageViewer.IsHitTestVisible = true;
                 xWrapper.IsHitTestVisible = false;
-                Debug.Assert(imageUri != null);
-                xFullScreenImageViewer.ShowImage(imageUri);
+                Debug.Assert(imageUris != null);
+                xFullScreenImageViewer.ShowImage(imageUris, index, pages);
             });
         }
 

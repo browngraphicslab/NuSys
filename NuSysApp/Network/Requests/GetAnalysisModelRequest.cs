@@ -42,7 +42,7 @@ namespace NuSysApp
         /// just checks to make sure the ID is present in this overriden CheckOutgoingRequest method
         /// </summary>
         /// <returns></returns>
-        public override async Task CheckOutgoingRequest()
+        public override void CheckOutgoingRequest()
         {
             Debug.Assert(_message.ContainsKey(NusysConstants.GET_ANALYSIS_MODEL_REQUEST_CONTENT_DATA_MODEL_IDS));
         }

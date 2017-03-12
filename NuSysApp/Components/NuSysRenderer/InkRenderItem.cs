@@ -210,7 +210,7 @@ namespace NuSysApp
 
         public void AddInkModel(InkModel inkModel)
         {
-            _canvas.RunOnGameLoopThreadAsync(() =>
+            _canvas.RunOnGameLoopThreadAsync(async () =>
             {
                 var builder = new InkStrokeBuilder();
                 var inkStroke =
@@ -219,6 +219,20 @@ namespace NuSysApp
                         Matrix3x2.Identity);
                 inkStroke.DrawingAttributes = GetDrawingAttributes(Color.FromArgb((byte)inkModel.Color.A, (byte)inkModel.Color.R, (byte)inkModel.Color.G, (byte)inkModel.Color.B), (float)inkModel.Thickness);
                 _inkManager.AddStroke(inkStroke);
+                /*
+                try
+                {
+                    var recog = await _inkManager.RecognizeAsync(InkRecognitionTarget.Recent);
+                    foreach (InkRecognitionResult ink in recog)
+                    {
+                        var s = ink.GetTextCandidates();
+                        Debug.WriteLine(s.First());
+                    }
+                }
+                catch (Exception e)
+                {
+                    
+                }*/
                 _strokesToDraw = _inkManager.GetStrokes().ToList();
                 _needsDryStrokesUpdate = true;
                 StrokesMap[inkModel.InkStrokeId] = inkStroke;

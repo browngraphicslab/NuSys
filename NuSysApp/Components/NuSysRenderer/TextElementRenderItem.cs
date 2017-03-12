@@ -9,21 +9,10 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
-
-using Windows.Graphics.DirectX;
-using Windows.Storage.Streams;
 using Windows.UI;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media.Imaging;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.Text;
-using Microsoft.Graphics.Canvas.UI.Xaml;
-using NusysIntermediate;
-using SharpDX.DirectWrite;
-using WinRTXamlToolkit.IO.Serialization;
-
 namespace NuSysApp
 {
     public class TextElementRenderItem : ElementRenderItem

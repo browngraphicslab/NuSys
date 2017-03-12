@@ -14,21 +14,8 @@ using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using Microsoft.Graphics.Canvas.UI;
 using Microsoft.Graphics.Canvas.UI.Xaml;
-using MyToolkit.Mathematics;
-using SharpDX.Direct2D1;
 using Matrix3x2 = System.Numerics.Matrix3x2;
-using System.Numerics;
-using Windows.Devices.Input;
-using Windows.Media.Playback;
-using Windows.System;
-using Windows.UI.Core;
-using Windows.UI.Input;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using MyToolkit.UI;
-using Point = Windows.Foundation.Point;
 using Vector2 = System.Numerics.Vector2;
-using NusysIntermediate;
 
 namespace NuSysApp
 {

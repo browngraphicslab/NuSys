@@ -32,7 +32,7 @@ namespace NuSysApp
 
 
         //just checks to see if the message contains an id to request
-        public override async Task CheckOutgoingRequest()
+        public override void CheckOutgoingRequest()
         {
             Debug.Assert(_message.ContainsKey(NusysConstants.GET_ENTIRE_WORKSPACE_REQUEST_COLLECTION_ID_KEY));
         }

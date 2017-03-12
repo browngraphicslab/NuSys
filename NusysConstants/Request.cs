@@ -115,7 +115,7 @@ namespace NusysIntermediate
         /// It makes it hard to understand where things are happening
         /// </summary>
         /// <returns></returns>
-        public virtual async Task CheckOutgoingRequest()
+        public virtual void CheckOutgoingRequest()
         {
         }
 

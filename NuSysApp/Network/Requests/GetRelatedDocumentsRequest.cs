@@ -41,7 +41,7 @@ namespace NuSysApp
         /// Makes sure that the request has the ID of the document to get related documents of
         /// </summary>
         /// <returns></returns>
-        public override async Task CheckOutgoingRequest()
+        public override void CheckOutgoingRequest()
         {
             Debug.Assert(_message.ContainsKey(NusysConstants.GET_RELATED_DOCUMENTS_REQUEST_CONTENT_ID_KEY));
         }

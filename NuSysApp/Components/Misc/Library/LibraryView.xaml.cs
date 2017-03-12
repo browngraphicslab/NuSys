@@ -713,7 +713,7 @@ namespace NuSysApp
             }
 
             // save the writeable bitmap to a file
-            var tempFile = await writeableBitmap.SaveAsync(NuSysStorages.SaveFolder);
+            var tempFile = await writeableBitmap.SaveAsync(ApplicationData.Current.LocalCacheFolder);
 
             // get the thumbnails from the image file
             var thumbnails = await MediaUtil.GetThumbnailDictionary(tempFile);
@@ -757,7 +757,7 @@ namespace NuSysApp
             }
 
             // save the writeable bitmap to a file
-            var tempFile = await writeableBitmap.SaveAsync(NuSysStorages.SaveFolder);
+            var tempFile = await writeableBitmap.SaveAsync(ApplicationData.Current.LocalCacheFolder);
 
             // use the system to convert the file to a string
             var imageAsString = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(tempFile));

@@ -41,7 +41,7 @@ namespace NuSysApp
         /// Makes sure that the request has a library id and the key and new value for the entry being updated.
         /// </summary>
         /// <returns></returns>
-        public override async Task CheckOutgoingRequest()
+        public override void CheckOutgoingRequest()
         {
             Debug.Assert(_message.ContainsKey(NusysConstants.UPDATE_METADATA_REQUEST_LIBRARY_ID_KEY));
             Debug.Assert(_message.ContainsKey(NusysConstants.UPDATE_METADATA_REQUEST_METADATA_KEY));

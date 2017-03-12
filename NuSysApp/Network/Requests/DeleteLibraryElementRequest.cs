@@ -25,7 +25,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="m"></param>
         public DeleteLibraryElementRequest(Message m) : base(NusysConstants.RequestType.DeleteLibraryElementRequest,m) {}
-        public override async Task CheckOutgoingRequest()
+        public override void CheckOutgoingRequest()
         {
             if (!_message.ContainsKey(NusysConstants.DELETE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY))
             {

@@ -19,7 +19,7 @@ namespace NuSysApp
         private StorageFile _recordStorageFile;
         private bool _recording;
         public static int NumInstances;
-        private readonly StorageFolder _rootFolder = NuSysStorages.Media;
+        private readonly StorageFolder _rootFolder = ApplicationData.Current.LocalCacheFolder;
        
         private CoreDispatcher _dispatcher;
 
