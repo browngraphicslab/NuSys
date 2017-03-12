@@ -679,28 +679,29 @@ namespace NuSysApp
                 var elem = item;
                 var collection = item.Parent as CollectionRenderItem;
                 var s = collection.Camera.LocalToScreenMatrix.M11;
-                var nx = elem.ViewModel.X;
-                var ny = elem.ViewModel.Y;
-                var nw = elem.ViewModel.Width;
-                var nh = elem.ViewModel.Height;
+                var oldWidth = elem.ViewModel.Width;
+                var oldHeight = elem.ViewModel.Height;
+                var nw = oldWidth;
+                var nh = oldHeight;
                 var dx = delta.X/s;
                 var dy = delta.Y/s;
 
+                bool updateX = false, updateY = false;
                 switch (resizerPosition)
                 {
                     case NodeResizerRenderItem.ResizerPosition.TopLeft: // Need to change both position and size in both directions
-                        nx += dx;
-                        ny += dy;
+                        updateX = true;
+                        updateY = true;
                         nw -= dx;
                         nh -= dy;
                         break;
                     case NodeResizerRenderItem.ResizerPosition.TopRight: // Need to change the Y position and both sizes
-                        ny += dy;
+                        updateY = true;
                         nw += dx;
                         nh -= dy;
                         break;
                     case NodeResizerRenderItem.ResizerPosition.BottomLeft: // Need to change the X position and both sizes
-                        nx += dx;
+                        updateX = true;
                         nw -= dx;
                         nh += dy;
                         break;
@@ -711,13 +712,26 @@ namespace NuSysApp
                     default:
                         break;
                 }
-
-                elem.ViewModel.X = nx;
-                elem.ViewModel.Y = ny;
+                
                 elem.ViewModel.SetSize(nw, nh); //You need to first set size of view model for proper image resizing
 
-                item.ViewModel.Controller.SetPosition(nx, ny);//Does this need to be done? - tschicke
                 item.ViewModel.Controller.SetSize(nw, nh);
+
+                var newWidth = elem.ViewModel.Width;
+                var newHeight = elem.ViewModel.Height;
+                double nx = elem.ViewModel.X, ny = elem.ViewModel.Y;
+                if (updateX)
+                {
+                    nx -= newWidth - oldWidth;
+                    item.ViewModel.X = nx;//Does this need to be done? - tschicke
+                }
+                if (updateY)
+                {
+                    ny -= newHeight - oldHeight;
+                    item.ViewModel.Y = ny;//Does this need to be done? - tschicke
+                }
+                item.ViewModel.Controller.SetPosition(nx, ny);
+
                 if (_currentAudioElementController?.Model?.Id == item?.ViewModel?.Controller?.Model?.Id && _currentAudioElementController?.Model?.Id != null)
                 {
                     xAudioPlayer?.SetSize(nw, nh);
