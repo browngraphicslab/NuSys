@@ -15,9 +15,22 @@ namespace NuSysApp
     public class NodeResizerRenderItem : BaseRenderItem
     {
 
-        private CanvasGeometry _triangle;
-        public NodeResizerRenderItem(BaseRenderItem parent, CanvasAnimatedControl resourceCreator) : base(parent, resourceCreator)
+        public enum ResizerPosition
         {
+            TopLeft,
+            TopRight,
+            BottomLeft,
+            BottomRight
+        }
+
+        private readonly ResizerPosition _position;
+
+        public ResizerPosition Position => _position;
+
+        private CanvasGeometry _triangle;
+        public NodeResizerRenderItem(BaseRenderItem parent, CanvasAnimatedControl resourceCreator, ResizerPosition position) : base(parent, resourceCreator)
+        {
+            _position = position;
         }
 
         public override void Dispose()
@@ -31,11 +44,43 @@ namespace NuSysApp
 
         public override async Task Load()
         {
-            _triangle = CanvasGeometry.CreatePolygon(ResourceCreator, new System.Numerics.Vector2[4]{new Vector2(0, 30),
-                new Vector2(30, 30),
-                new Vector2(30, 0),
-                new Vector2(0, 30)
-            });
+            switch (_position)
+            {
+                case ResizerPosition.TopLeft:
+                    _triangle = CanvasGeometry.CreatePolygon(ResourceCreator, new System.Numerics.Vector2[4]{
+                        new Vector2(0, 0),
+                        new Vector2(0, 30),
+                        new Vector2(30, 0),
+                        new Vector2(0, 0)
+                    });
+                    break;
+                case ResizerPosition.TopRight:
+                    _triangle = CanvasGeometry.CreatePolygon(ResourceCreator, new System.Numerics.Vector2[4]{
+                        new Vector2(0, 0),
+                        new Vector2(30, 30),
+                        new Vector2(30, 0),
+                        new Vector2(0, 0)
+                    });
+                    break;
+                case ResizerPosition.BottomLeft:
+                    _triangle = CanvasGeometry.CreatePolygon(ResourceCreator, new System.Numerics.Vector2[4]{
+                        new Vector2(0, 0),
+                        new Vector2(0, 30),
+                        new Vector2(30, 30),
+                        new Vector2(0, 0)
+                    });
+                    break;
+                case ResizerPosition.BottomRight:
+                    _triangle = CanvasGeometry.CreatePolygon(ResourceCreator, new System.Numerics.Vector2[4]{
+                        new Vector2(0, 30),
+                        new Vector2(30, 30),
+                        new Vector2(30, 0),
+                        new Vector2(0, 30)
+                    });
+                    break;
+                default:
+                    break;
+            }
         }
 
         public override void Draw(CanvasDrawingSession ds)
@@ -47,7 +92,7 @@ namespace NuSysApp
             ds.Transform = Transform.LocalToScreenMatrix;
 
             if (_triangle != null)
-                ds.FillGeometry(_triangle, new Vector2(0,0), Colors.Black);
+                ds.FillGeometry(_triangle, new Vector2(0, 0), Colors.Black);
 
             ds.Transform = orgTransform;
 
@@ -60,5 +105,5 @@ namespace NuSysApp
         }
     }
 
-    
+
 }
