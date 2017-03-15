@@ -54,7 +54,8 @@ namespace NuSysApp
             _dragRect = new RectangleUIElement(this, Canvas)
             {
                 IsVisible = false,
-                IsHitTestVisible = false
+                IsHitTestVisible = false,
+                Background = Colors.Transparent
             };
             AddChild(_dragRect);
 
