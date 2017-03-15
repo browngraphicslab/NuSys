@@ -37,7 +37,9 @@ namespace NuSysApp
         /// <summary>
         /// Palette is the list of colors that make up the pieces of the pie. 
         /// </summary>
-        public List<Color> Palette { set; get; }
+        public List<CanvasSolidColorBrush> Palette;
+
+        
         /// <summary>
         /// You can select multiple items from the pie if this is set to true.
         /// True by default
@@ -95,6 +97,10 @@ namespace NuSysApp
         #endregion events
 
         #region private variables
+
+        private CanvasSolidColorBrush _lineBrush;
+        private CanvasSolidColorBrush _selectionBrush;
+
         /// <summary>
         /// List of PieChartElements. It is private -- only way to populate it is with the AddElement method.
         /// </summary>
@@ -118,48 +124,74 @@ namespace NuSysApp
             MaxLabels = 6;
             MultiSelect = true;
             DisableSelectionByClick = false;
-            Palette = new List<Color>(new[] { Colors.DarkSalmon, Colors.Azure, Colors.LemonChiffon, Colors.Honeydew, Colors.Pink });
 
             _elements = new List<PieChartElement<string>>();
             _selectedElements = new HashSet<PieChartElement<string>>();
             
             AddHandlers();
 
+            CreateResources();
         }
+
+        public override void CreateResources()
+        {
+
+            //Create the color brushes
+            Palette = new List<CanvasSolidColorBrush>();
+            var colors = new [] {Colors.DarkSalmon, Colors.Azure, Colors.LemonChiffon, Colors.Honeydew, Colors.Pink};
+            foreach (var color in colors)
+            {
+                Palette.Add(new CanvasSolidColorBrush(ResourceCreator, color));
+            }
+
+            //Create the line brush
+            _lineBrush = new CanvasSolidColorBrush(ResourceCreator, Constants.ALMOST_BLACK);
+            //Create the selection brush
+            _selectionBrush = new CanvasSolidColorBrush(ResourceCreator, Constants.ALMOST_BLACK);
+
+
+            base.CreateResources();
+        }
+
         /// <summary>
-        /// When tapped, we get the element that was tapped and invoke ElementTapped + handle selection
+        /// When pressed, we get the element that was tapped and invoke ElementTapped + handle selection
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void PieChartUIElement_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void PieChartUIElement_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-
-                var point = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
-                var element = GetElementFromAngle(GetAngleFromPoint(point));
-                if (element == null)
-                {
-                    return;
-                }
-
-                ElementTapped?.Invoke(this, element, pointer);
-                if (_selectedElements.Contains(element))
-                {
-                    if (!DisableSelectionByClick)
-                    {
-                        DeselectElement(element);
-                    }
-                }
-                else
-                {
-                    if (!DisableSelectionByClick)
-                    {
-                        SelectElement(element);
-                    }
-                }
-
 
             
         }
+        private void PieChartUIElement_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            var point = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
+            var element = GetElementFromAngle(GetAngleFromPoint(point));
+            if (element == null)
+            {
+                return;
+            }
+
+            ElementTapped?.Invoke(this, element, pointer);
+
+
+            if (_selectedElements.Contains(element))
+            {
+                if (!DisableSelectionByClick)
+                {
+                    DeselectElement(element);
+                }
+            }
+            else
+            {
+                if (!DisableSelectionByClick)
+                {
+                    SelectElement(element);
+                }
+            }
+        }
+
+
         /// <summary>
         /// If double tapped, we invoke ElementDoubleTapped, passing in the element that was double tapped
         /// </summary>
@@ -248,11 +280,15 @@ namespace NuSysApp
                 var point = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
                 //Store the element that represents the piece of the pie being dragged.
                 _draggedElement = GetElementFromAngle(GetAngleFromPoint(point));
+
             }
 
             ElementDragged?.Invoke(this, _draggedElement, pointer);
 
         }
+        
+
+
         /// <summary>
         /// Because we override HitTest to only hit the PieChart inside the circle, this only gets called when you release your pointer within the circle.
         /// </summary>
@@ -265,6 +301,7 @@ namespace NuSysApp
             if (_draggedElement != null)
             {
                 ElementDragCompleted?.Invoke(this, _draggedElement, pointer);
+
             }
             _draggedElement = null;
             
@@ -285,7 +322,7 @@ namespace NuSysApp
             }
 
 
-            if (MultiSelect == false)
+            if (MultiSelect == false && _selectedElements.Count == 1)
             {
                 //If multiselect is off, deselect every element first
                 foreach (var e in _selectedElements)
@@ -402,7 +439,8 @@ namespace NuSysApp
             var lineOffset = 20;
             var r = Math.Min(w, h) / 2 - padding;
 
-            var lineBrush = new CanvasSolidColorBrush(ds, Constants.ALMOST_BLACK);
+
+            
             for (int i = 0; i < _elements.Count; i++)
             {
                 var element = _elements[i];
@@ -434,7 +472,7 @@ namespace NuSysApp
 
                     ds.DrawGeometry(
                         CanvasGeometry.CreatePath(cpb),
-                        lineBrush,
+                        _lineBrush,
                         1);
                 }
 
@@ -471,7 +509,6 @@ namespace NuSysApp
             var lineOffset = 20;
             var r = Math.Min(w, h) / 2 - padding;
 
-            var selectionBrush = new CanvasSolidColorBrush(ds, Constants.ALMOST_BLACK);
             foreach (var element in _selectedElements)
             {
                 var arcStartPoint = new Vector2((float)(midx + r * Math.Sin(element.StartAngle)), (float)(midy - r * Math.Cos(element.StartAngle)));
@@ -483,7 +520,7 @@ namespace NuSysApp
                     cpb.AddArc(new Vector2(midx, midy), r, r, element.StartAngle - (float)(Math.PI / 2), element.SweepAngle);
                     cpb.AddLine(center);
                     cpb.EndFigure(CanvasFigureLoop.Open);
-                    ds.DrawGeometry(CanvasGeometry.CreatePath(cpb), selectionBrush, 3);
+                    ds.DrawGeometry(CanvasGeometry.CreatePath(cpb), _selectionBrush, 3);
 
                 }
             
@@ -599,6 +636,8 @@ namespace NuSysApp
             Released += PieChartUIElement_Released;
             Dragged += PieChartUIElement_Dragged;
             Tapped += PieChartUIElement_Tapped;
+            Pressed += PieChartUIElement_Pressed;
+            
         }
 
         private void RemoveHandlers()
@@ -607,6 +646,8 @@ namespace NuSysApp
             Released -= PieChartUIElement_Released;
             Dragged -= PieChartUIElement_Dragged;
             Tapped -= PieChartUIElement_Tapped;
+
+            Pressed -= PieChartUIElement_Pressed;
 
         }
         public override void Dispose()
