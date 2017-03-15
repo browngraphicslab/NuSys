@@ -232,7 +232,7 @@ namespace NuSysApp
         }
 
 
-        private void DrawDropShadow(CanvasDrawingSession ds)
+        private async void DrawDropShadow(CanvasDrawingSession ds)
         {
             //DropShadowXOffset = 150;
             //int change = 2;
@@ -259,21 +259,22 @@ namespace NuSysApp
                 {
                     dss.Clear(Colors.Transparent);
                     dss.Transform = ds.Transform;
-
-                    ds.FillRectangle(DropShadowXOffset, DropShadowYOffset, DropShadowWidth, DropShadowHeight,
+                    //dss.DrawImage(_bmp, new Rect(DropShadowXOffset, DropShadowYOffset, DropShadowWidth, DropShadowHeight));
+                    dss.FillRectangle(DropShadowXOffset, DropShadowYOffset, DropShadowWidth, DropShadowHeight,
                         Colors.Black);
-                }
-                var blur = new GaussianBlurEffect();
-                blur.Source = _dryStrokesTarget;
-                blur.BlurAmount = 100;
 
-                ds.Transform = Matrix3x2.Identity;
-                if (_dryStrokesTarget != null)
+                    //var blur = new GaussianBlurEffect();
+                    //blur.Source = _dryStrokesTarget;
+                    //blur.BlurAmount = 3.0f;
+
+                    ds.Transform = Matrix3x2.Identity;
                     ds.DrawImage(_dryStrokesTarget);
+                }
+
             }
             else
             {
-                var canvas = (CanvasAnimatedControl) ResourceCreator;
+                var canvas = (CanvasAnimatedControl)ResourceCreator;
                 _dryStrokesTarget = new CanvasRenderTarget(ResourceCreator, canvas.Size);
             }
 
