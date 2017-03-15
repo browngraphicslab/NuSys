@@ -899,6 +899,7 @@
     <Compile Include="Network\Requests\UnsubscribeFromCollectionRequest.cs" />
     <Compile Include="Network\Requests\UpdatePresentationLinkRequest.cs" />
     <Compile Include="Network\Requests\UploadCollectionBackgroundImageRequest.cs" />
+    <Compile Include="Network\Requests\UploadFileRequest.cs" />
     <Compile Include="Network\Requests\WebSearchRequest.cs" />
     <Compile Include="Network\ServerRepo\ILockable.cs" />
     <Compile Include="Network\ServerRepo\ILockableMethodExtensions.cs" />

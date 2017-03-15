@@ -62,11 +62,13 @@
     <Compile Include="RequestArgs\ReturnArgs\ServerReturnArgsBase.cs" />
     <Compile Include="RequestArgs\ReturnArgs\SubscribeToLockRequestReturnArgs.cs" />
     <Compile Include="RequestArgs\ReturnArgs\UploadCollectionBackgroundImageReturnArgs.cs" />
+    <Compile Include="RequestArgs\ReturnArgs\UploadFileReturnArgs.cs" />
     <Compile Include="RequestArgs\ReturnLockRequestArgs.cs" />
     <Compile Include="RequestArgs\SendCollaboratorCoordinatesRequestArgs.cs" />
     <Compile Include="RequestArgs\SubscribeToLockRequestArgs.cs" />
     <Compile Include="RequestArgs\UnSubscribeToLockRequestArgs.cs" />
     <Compile Include="RequestArgs\UploadCollectionBackgroundImageServerRequestArgs.cs" />
+    <Compile Include="RequestArgs\UploadFileRequestArgs.cs" />
     <Compile Include="RequestArgs\WebSearchRequestArgs.cs" />
     <Compile Include="ServerArgsRequest.cs" />
     <Compile Include="BaseClient.cs" />

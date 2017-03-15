@@ -14,6 +14,7 @@ using LDAUser;
 using Newtonsoft.Json;
 using NusysIntermediate;
 using Image = System.Drawing.Image;
+using DotNetOpenAuth.OAuth2;
 
 namespace NusysServer
 {
