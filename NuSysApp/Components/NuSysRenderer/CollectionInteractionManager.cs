@@ -84,7 +84,7 @@ namespace NuSysApp
         private CanvasPointer _nodeMarkingMenuPointer;
         private Tuple<ElementRenderItem, ElementRenderItem> _potentiaLink;
         private FreeFormViewer _freeFormViewer;
-
+        
         public CollectionInteractionManager(CanvasInteractionManager canvasInteractionManager, CollectionRenderItem collection)
         {
             _collection = collection;

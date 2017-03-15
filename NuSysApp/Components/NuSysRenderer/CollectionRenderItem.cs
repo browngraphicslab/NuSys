@@ -782,6 +782,12 @@ namespace NuSysApp
             }
         }
 
+        public override void OnDragged(DragGestureRecognizer sender, DragEventArgs args)
+        {
+            base.OnDragged(sender, args);
+            Camera.LocalPosition = Camera.LocalPosition + args.Translation;
+        }
+
         /// <summary>
         /// Zooms the camera to the passed in elementModelId
         /// </summary>

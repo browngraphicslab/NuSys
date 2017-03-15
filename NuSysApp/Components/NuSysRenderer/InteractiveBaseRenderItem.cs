@@ -60,7 +60,6 @@ namespace NuSysApp
         public HoldingHandler Holding;
         protected HashSet<GestureRecognizer> GestureRecognizers = new HashSet<GestureRecognizer>();
 
-
         public InteractiveBaseRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             var tapRecognizer = new TapGestureRecognizer();
@@ -172,7 +171,7 @@ namespace NuSysApp
             };
         }
 
-        public void OnExited(FrameworkElement sender, PointerRoutedEventArgs args)
+        public virtual void OnExited(FrameworkElement sender, PointerRoutedEventArgs args)
         {
             foreach (GestureRecognizer recognizer in GestureRecognizers)
             {

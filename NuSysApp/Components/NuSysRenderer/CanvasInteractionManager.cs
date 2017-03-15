@@ -54,8 +54,7 @@ namespace NuSysApp
             InteractiveBaseRenderItem e = _renderEngine.GetRenderItemAt(args.GetCurrentPoint(_canvas).Position.ToSystemVector2(),
                _renderEngine.Root) as InteractiveBaseRenderItem;
             _renderItems[args.Pointer.PointerId] = e;
-            e.OnPressed(_canvas, args);
-
+            e?.OnPressed(_canvas, args);
         }
 
         private void OnPointerMoved(object sender, PointerRoutedEventArgs args)
@@ -66,7 +65,7 @@ namespace NuSysApp
             }
 
             InteractiveBaseRenderItem e = _renderItems[args.Pointer.PointerId];
-            e.OnMoved(_canvas, args);
+            e?.OnMoved(_canvas, args);
         }
 
         private void OnPointerReleased(object sender, PointerRoutedEventArgs args)
@@ -77,7 +76,7 @@ namespace NuSysApp
             }
 
             InteractiveBaseRenderItem e = _renderItems[args.Pointer.PointerId];
-            e.OnReleased(_canvas, args);
+            e?.OnReleased(_canvas, args);
         }
 
         private void OnPointerExited(object sender, PointerRoutedEventArgs args)
@@ -88,7 +87,7 @@ namespace NuSysApp
             }
 
             InteractiveBaseRenderItem e = _renderItems[args.Pointer.PointerId];
-            e.OnExited(_canvas, args);
+            e?.OnExited(_canvas, args);
         }
 
         private void OnPointerWheelChanged(object sender, PointerRoutedEventArgs args)
@@ -99,7 +98,7 @@ namespace NuSysApp
             }
 
             InteractiveBaseRenderItem e = _renderItems[args.Pointer.PointerId];
-            e.OnPointerWheelChanged(_canvas, args);
+            e?.OnPointerWheelChanged(_canvas, args);
         }
     }
 }

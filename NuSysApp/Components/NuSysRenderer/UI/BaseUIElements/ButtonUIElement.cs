@@ -251,7 +251,7 @@ namespace NuSysApp
             OnReleased(pointer);
         }
 
-        /// <summary>
+        /// <summgit stasary>
         /// overrides the normal on released event to set background colors correctly
         /// </summary>
         /// <param name="pointer"></param>
