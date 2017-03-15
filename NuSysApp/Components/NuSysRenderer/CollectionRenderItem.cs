@@ -92,6 +92,7 @@ namespace NuSysApp
 
 
 
+
         /// <summary>
         /// event handler called whenevr the element controller changes scale
         /// </summary>
@@ -781,6 +782,71 @@ namespace NuSysApp
                 }
             }
         }
+        /// <summary>
+        /// Centers on camera on world point given without affecting scale
+        /// </summary>
+        /// <param name="point"></param>
+        public void CenterCameraOnPoint(Vector2 point)
+        {
+            UITask.Run(delegate
+            {
+                var x = point.X;
+                var y = point.Y;
+                var widthAdjustment = ViewModel.Width / 2;
+                var heightAdjustment = ViewModel.Height / 2;
+
+                var translateX = widthAdjustment - x;
+                var translateY = heightAdjustment - y;
+
+                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalPosition =
+    new Vector2((float)translateX, (float)translateY);
+    
+                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScaleCenter =
+                    new Vector2((float)point.X, (float)point.Y);
+            });
+        }
+
+        /// <summary>
+        /// Centers camera on rectangle so that only the rectangle is visible on the screen.
+        /// </summary>
+        /// <param name="topLeftPoint"></param>
+        /// <param name="bottomRightPoint"></param>
+        public void CenterCameraOnRectangle(Vector2 topLeftPoint, Vector2 bottomRightPoint)
+        {
+
+            UITask.Run(delegate
+            {
+                var rectWidth = bottomRightPoint.X - topLeftPoint.X;
+                var rectHeight = bottomRightPoint.Y - topLeftPoint.Y;
+
+                var x = topLeftPoint.X + rectWidth / 2;
+                var y = topLeftPoint.Y + rectHeight / 2;
+                var widthAdjustment = ViewModel.Width / 2;
+                var heightAdjustment = ViewModel.Height / 2;
+
+                var scale = ViewModel.Width / (rectWidth);
+
+                var translateX = widthAdjustment - x;
+                var translateY = heightAdjustment - y;
+
+
+                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScaleCenter =
+    new Vector2((float)x, (float)y);
+                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScale =
+                    new Vector2((float)scale, (float)scale);
+                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalPosition =
+                    new Vector2((float)translateX, (float)translateY);
+
+
+
+
+                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.InkRenderItem?
+                    .UpdateDryInkTransform();
+                SessionController.Instance.NuSessionView.Minimap.IsDirty = true;
+
+            });
+
+        }
 
         /// <summary>
         /// Zooms the camera to the passed in elementModelId
@@ -840,7 +906,8 @@ namespace NuSysApp
                 //SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.CameraScale = (float)scale;
                 SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.InkRenderItem?
                     .UpdateDryInkTransform();
-                SessionController.Instance.SessionView.FreeFormViewer._minimap?.Invalidate();
+                //SessionController.Instance.SessionView.FreeFormViewer._minimap?.Invalidate();
+                SessionController.Instance.NuSessionView.Minimap.IsDirty = true;
                 CameraOnCentered?.Invoke(this, SessionController.Instance.ContentController.GetLibraryElementController(elementToBeFullScreened.LibraryElementId));
 
             });
