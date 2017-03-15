@@ -717,8 +717,8 @@ namespace NuSysApp
 
                 item.ViewModel.Controller.SetSize(nw, nh);
 
-				//Because images must maintain aspect ratio, the new width and height is not necessarily nw and nh, so read back the actual sizes
-				var newWidth = elem.ViewModel.Width;
+                //Because images must maintain aspect ratio, the new width and height is not necessarily nw and nh, so read back the actual sizes
+                var newWidth = elem.ViewModel.Width;
                 var newHeight = elem.ViewModel.Height;
                 double nx = elem.ViewModel.X, ny = elem.ViewModel.Y;
 				//Potentially update the x and y position depending on which corner is being dragged
