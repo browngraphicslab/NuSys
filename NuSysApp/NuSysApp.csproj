@@ -378,6 +378,7 @@
     </Compile>
     <Compile Include="Components\Misc\Library\LibraryFavoritesViewModel.cs" />
     <Compile Include="Components\Misc\Library\LibraryItemTemplate.cs" />
+    <Compile Include="Components\Misc\RandomColorGenerator.cs" />
     <Compile Include="Components\Misc\ReadonlyFloatingMenuButtonView.xaml.cs">
       <DependentUpon>ReadonlyFloatingMenuButtonView.xaml</DependentUpon>
     </Compile>

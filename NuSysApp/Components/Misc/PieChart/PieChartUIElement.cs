@@ -114,6 +114,8 @@ namespace NuSysApp
         /// The element that was stored in the first call to the DraggedEventHandler, so that when we invoke PointerReleased, we have reference to the relevant element.
         /// </summary>
         private PieChartElement<String> _draggedElement;
+
+        private RandomColorGenerator _colorGenerator;
         #endregion private variables
 
         public PieChartUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
@@ -127,7 +129,8 @@ namespace NuSysApp
 
             _elements = new List<PieChartElement<string>>();
             _selectedElements = new HashSet<PieChartElement<string>>();
-            
+
+            _colorGenerator = new RandomColorGenerator();
             AddHandlers();
 
             CreateResources();
@@ -553,19 +556,35 @@ namespace NuSysApp
                 float sweepAngle = _elements[i].SweepAngle;
                 var arcStartPoint = new Vector2((float)(midx + r * Math.Sin(_elements[i].StartAngle)), (float)(midy - r * Math.Cos(_elements[i].StartAngle)));
                 //Draw the piece itself
+
+                var brush = GetColoredBrush(i);
                 using (var cpb = new CanvasPathBuilder(ds))
                 {
                     cpb.BeginFigure(center);
                     cpb.AddLine(arcStartPoint);
                     cpb.AddArc(new Vector2(midx, midy), r, r, _elements[i].StartAngle - (float)(Math.PI / 2), sweepAngle);
                     cpb.EndFigure(CanvasFigureLoop.Closed);
-                    ds.FillGeometry(CanvasGeometry.CreatePath(cpb), Palette[i % Palette.Count]);
+                    ds.FillGeometry(CanvasGeometry.CreatePath(cpb), brush);
 
                 }
 
             }
             ds.Transform = orgTransform;
 
+        }
+
+        private CanvasSolidColorBrush GetColoredBrush(int index)
+        {
+            if (index < Palette.Count)
+            {
+                return Palette[index];
+            }
+            
+            //otherwise, create a new brush and return it
+
+            var brush = new CanvasSolidColorBrush(ResourceCreator, _colorGenerator.GetNext());
+            Palette.Add(brush);
+            return brush;
         }
 
         public void DeselectAllElements()
