@@ -411,19 +411,7 @@ namespace NuSysApp
                 // by drag x amount
                 case ResizerBorderPosition.Left:
                     sizeDelta.X = -pointer.DeltaSinceLastUpdate.X;
-                    if (Width + sizeDelta.X < MinWidth)
-                    {
-                        Debug.Assert(MinWidth != null);
-                        sizeDelta.X = (float) (MinWidth - Width);
-                    }
-
-                    if (Width + sizeDelta.X > MaxWidth)
-                    {
-                        Debug.Assert(MaxWidth != null);
-                        sizeDelta.X = (float) (MaxWidth - Width);
-                    }
-
-                    offsetDelta.X -= sizeDelta.X;
+                    offsetDelta.X = 1;
                     break;
                 // in this case we are changing the size only. Size increases by the drag x amount
                 case ResizerBorderPosition.Right:
@@ -439,18 +427,7 @@ namespace NuSysApp
                     break;
                 case ResizerBorderPosition.BottomLeft:
                     sizeDelta.X -= pointer.DeltaSinceLastUpdate.X;
-                    if (Width + sizeDelta.X < MinWidth)
-                    {
-                        Debug.Assert(MinWidth != null);
-                        sizeDelta.X = (float)(MinWidth - Width);
-                    }
-
-                    if (Width + sizeDelta.X > MaxWidth)
-                    {
-                        Debug.Assert(MaxWidth != null);
-                        sizeDelta.X = (float)(MaxWidth - Width);
-                    }
-                    offsetDelta.X -= sizeDelta.X;
+                    offsetDelta.X = 1;
                     sizeDelta.Y += pointer.DeltaSinceLastUpdate.Y;
                     break;
                 default:
@@ -465,9 +442,11 @@ namespace NuSysApp
         /// <summary>
         /// private method to apply a pre-calculated offset and size delta to the window.
         /// This takes into account the aspect ratio logic for the window resizing.
+        /// Note: the non aspect ratio code was changed and the aspect ratio code has not been tested since.
         /// </summary>
-        /// <param name="offsetDelta"></param>
-        /// <param name="resizeDelta"></param>
+        /// <param name="offsetDelta">A vector containing an amount to scale the translation in each dimention by
+        /// (0 if it shouldn't be translated, 1 if it should be translated)</param>
+        /// <param name="resizeDelta">A vector containing the amount to resize in each dimension</param>
         private void ApplyResizeChanges(Vector2 offsetDelta, Vector2 sizeDelta)
         {
 
@@ -484,10 +463,7 @@ namespace NuSysApp
                     Width += sizeDelta.X;
                     Height = oldHeight * Width / oldWidth;
                     // check the offset otherwise resizing the window below minwidth will just move the window across the screen
-                    if (Width != MinWidth)
-                    {
-                        Transform.LocalPosition += offsetDelta;
-                    }
+                    Transform.LocalPosition += offsetDelta * new Vector2(oldWidth - Width, oldHeight - Height);
                 }
                 else
                 // otherwise if we change the x and y direction or just the y direction
@@ -495,10 +471,7 @@ namespace NuSysApp
                     Height += sizeDelta.Y;
                     Width = oldWidth * Height / oldHeight;
                     // check the offset otherwise resizing the window below minwidth will just move the window across the screen
-                    if (Width != MinWidth && (_resizePosition == ResizerBorderPosition.BottomLeft || _resizePosition == ResizerBorderPosition.Left))
-                    {
-                        Transform.LocalPosition += new Vector2(oldWidth - Width, 0);
-                    }
+                    Transform.LocalPosition += offsetDelta * new Vector2(oldWidth - Width, oldHeight - Height);
                 }
             }
             // otherwise just use simple code
@@ -506,11 +479,9 @@ namespace NuSysApp
             {
                 Width += sizeDelta.X;
                 Height += sizeDelta.Y;
-                // check the offset otherwise resizing the window below minwidth will just move the window across the screen
-                if (Width != MinWidth)
-                {
-                    Transform.LocalPosition += offsetDelta;
-                }
+                // The Width and Height properties auto clamp to their min and max
+                // Check how much was actually scaled by and potentially move the window by that much depending on which ResizeBorderPosition
+                Transform.LocalPosition += offsetDelta * new Vector2(oldWidth - Width, oldHeight - Height);
             }
         }
 
