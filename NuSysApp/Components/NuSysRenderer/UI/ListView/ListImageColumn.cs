@@ -72,41 +72,62 @@ namespace NuSysApp
                 }
                 else
                 {
+                    /*
                     thumbnail.Image = _image;
                     thumbnail.Image = await MediaUtil.LoadCanvasBitmapAsync(thumbnail.ResourceCreator, ColumnFunction(itemSource));
                     _dict[itemSource] = thumbnail.Image;
+                    */
+
+                    thumbnail.Image = _image;
+                    _dict[itemSource] = cell.Image;
+                    _dict[itemSource] = await MediaUtil.LoadCanvasBitmapAsync(cell.ResourceCreator, ColumnFunction(itemSource));
+
                 }
 
-                var imgBounds = thumbnail?.Image?.GetBounds(thumbnail.ResourceCreator);
-
-                Debug.Assert(imgBounds != null);
-
-
-                var imgWidth = imgBounds.Value.Width;
-                var imgHeight = imgBounds.Value.Height;
-
-                if (thumbnail.RegionBounds != null)
-                {
-                    imgWidth *= thumbnail.RegionBounds.Value.Width;
-                    imgHeight *= thumbnail.RegionBounds.Value.Height;
-                }
-
-                if (imgWidth < 0 || imgHeight < 0)
-                {
-                    return;
-                }
-
-                var newWidth = imgWidth / imgHeight * thumbnail.Height / thumbnail.Width;
-                var newHeight = 1;
-
-
-                thumbnail.ImageBounds = new Rect(0.5 - newWidth / 2, 0, newWidth, newHeight);
+                UpdateImageBounds(thumbnail);
             }
             catch (Exception e)
             {
 
             }
 
+        }
+
+        public virtual void UpdateImageBounds(RectangleUIElement cell)
+        {
+            var thumbnail = cell as ThumbnailUIElement;
+
+            var imgBounds = thumbnail?.Image?.GetBounds(thumbnail.ResourceCreator);
+
+            //Debug.Assert(imgBounds != null);
+
+            if (imgBounds == null)
+            {
+                return;
+            }
+
+
+            var imgWidth = imgBounds.Value.Width;
+            var imgHeight = imgBounds.Value.Height;
+
+            /*
+            if (thumbnail.RegionBounds != null)
+            {
+                imgWidth *= thumbnail.RegionBounds.Value.Width;
+                imgHeight *= thumbnail.RegionBounds.Value.Height;
+            }
+            */
+
+            if (imgWidth < 0 || imgHeight < 0)
+            {
+                return;
+            }
+
+            var newWidth = imgWidth / imgHeight * thumbnail.Height / thumbnail.Width;
+            var newHeight = 1;
+
+
+            thumbnail.ImageBounds = new Rect(0.5 - newWidth / 2, 0, newWidth, newHeight);
         }
 
         public override async void UpdateColumnCellFromItem(T item, RectangleUIElement rectangleUIElement, bool isSelected)

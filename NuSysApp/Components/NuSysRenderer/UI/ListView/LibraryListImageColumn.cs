@@ -63,23 +63,29 @@ namespace NuSysApp
         }
         public override async void LoadCellImageAsync(RectangleUIElement cell, T itemSource)
         {
+
             try
             {
                 var thumbnail = cell as ThumbnailUIElement;
                 Debug.Assert(thumbnail != null);
                 var model = itemSource as LibraryElementModel;
-
-                if (_defaultIconDictionary.ContainsKey(model.Type))
+                if (base.ImageDict.Keys.Contains(itemSource))
+                {
+                    thumbnail.Image = base.ImageDict[itemSource];
+                }
+                else if (_defaultIconDictionary.ContainsKey(model.Type))
                 {
                     thumbnail.Image = _defaultIconDictionary[model.Type];
                     base.ImageDict[itemSource] = thumbnail.Image;
                 }
+                else
+                {
+                    thumbnail.Image = base.DefaultImage;
+                    base.ImageDict[itemSource] = cell.Image;
+                    base.ImageDict[itemSource] = await MediaUtil.LoadCanvasBitmapAsync(cell.ResourceCreator, base.ColumnFunction(itemSource));
+                }
 
-                thumbnail.RegionBounds = GetRegionBounds(model);
-
-
-                base.LoadCellImageAsync(thumbnail, itemSource);
-
+                UpdateImageBounds(thumbnail);
             }
             catch (Exception e)
             {
