@@ -453,6 +453,7 @@ namespace NuSysApp
             // get the old width and height for calculating the ratio
             var oldWidth = Width;
             var oldHeight = Height;
+            var ratio = (float)oldWidth / oldHeight;
 
             // if we are keeping the aspect ratio do this code
             if (KeepAspectRatio)
@@ -461,16 +462,20 @@ namespace NuSysApp
                 if (Math.Abs(sizeDelta.Y) < .001)
                 {
                     Width += sizeDelta.X;
-                    Height = oldHeight * Width / oldWidth;
-                    // check the offset otherwise resizing the window below minwidth will just move the window across the screen
+                    Height = Width / ratio;
+                    //Set Width again to account for the fact that Height might have been clamped
+                    Width = Height * ratio;
+                    // Update the position of the window depending on offsetDelta and how much the size changed
                     Transform.LocalPosition += offsetDelta * new Vector2(oldWidth - Width, oldHeight - Height);
                 }
                 else
                 // otherwise if we change the x and y direction or just the y direction
                 {
                     Height += sizeDelta.Y;
-                    Width = oldWidth * Height / oldHeight;
-                    // check the offset otherwise resizing the window below minwidth will just move the window across the screen
+                    Width = Height * ratio;
+                    //Set Height again to account for the fact that Width might have been clamped
+                    Height = Width / ratio;
+                    // Update the position of the window depending on offsetDelta and how much the size changed
                     Transform.LocalPosition += offsetDelta * new Vector2(oldWidth - Width, oldHeight - Height);
                 }
             }
