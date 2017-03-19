@@ -32,7 +32,7 @@ namespace NuSysApp.Network.Requests
         /// just checks to see if the message contains the necessary keys
         /// </summary>
         /// <returns></returns>
-        public override async Task CheckOutgoingRequest()
+        public override void CheckOutgoingRequest()
         {
             Debug.Assert(_message.ContainsKey(NusysConstants.CREATE_SNAPSHOT_OF_COLLECTION_REQUEST_COLLECTION_ID));
         }

@@ -36,7 +36,7 @@ namespace NuSysApp
         /// this checker just debug.asserts() the required keys.
         /// </summary>
         /// <returns></returns>
-        public override async Task CheckOutgoingRequest()
+        public override void CheckOutgoingRequest()
         {
             var m = _message;
             Debug.Assert(_message.ContainsKey(NusysConstants.NEW_ELEMENT_REQUEST_ELEMENT_ID_KEY));

@@ -34,7 +34,7 @@ namespace NuSysApp
         /// Then adds a couple timestamps to the outgoing request message;
         /// </summary>
         /// <returns></returns>
-        public override async Task CheckOutgoingRequest()
+        public override void CheckOutgoingRequest()
         {
             Debug.Assert(_message.ContainsKey(NusysConstants.CREATE_NEW_METADATA_REQUEST_LIBRARY_ID_KEY));
             Debug.Assert(_message.ContainsKey(NusysConstants.CREATE_NEW_METADATA_REQUEST_METADATA_KEY_KEY));

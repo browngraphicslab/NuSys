@@ -20,7 +20,7 @@ namespace NuSysApp
             _message["tags"] = tags;
         }
 
-        public override async Task CheckOutgoingRequest()
+        public override void CheckOutgoingRequest()
         {
             if (!_message.ContainsKey("id"))
             {

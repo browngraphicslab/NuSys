@@ -34,7 +34,7 @@ namespace NuSysApp
         /// this check outgoing request just adds a timestamp to last edited, and debug asserts that the message contains the correct ID key
         /// </summary>
         /// <returns></returns>
-        public override async Task CheckOutgoingRequest()
+        public override void CheckOutgoingRequest()
         {
             Debug.Assert(_message.ContainsKey(NusysConstants.UPDATE_LIBRARY_ELEMENT_REQUEST_LIBRARY_ELEMENT_ID));
             var time = DateTime.UtcNow.ToString();
