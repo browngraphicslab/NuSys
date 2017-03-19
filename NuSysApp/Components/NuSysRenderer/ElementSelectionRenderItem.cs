@@ -29,6 +29,9 @@ namespace NuSysApp
         public event ElementSelectionSizeChanged ElementSelectionRenderItemSizeChanged;
         public NodeMenuButtonRenderItem BtnDelete;
         public NodeMenuButtonRenderItem BtnPresent;
+
+        public NodeMenuButtonRenderItem BtnTest;
+
         public NodeMenuButtonRenderItem BtnGroup;
         public NodeMenuButtonRenderItem BtnEnterCollection;
         public NodeMenuButtonRenderItem BtnLayoutTool;
@@ -49,6 +52,10 @@ namespace NuSysApp
             BtnDelete.Label = "delete";
             BtnPresent = new NodeMenuButtonRenderItem("ms-appx:///Assets/new icons/present white.png", parent, resourceCreator);
             BtnPresent.Label = "present";
+
+            BtnTest = new NodeMenuButtonRenderItem("ms-appx:///Assets/new icons/present white.png", parent, resourceCreator);
+            BtnTest.Label = "TESTING";
+
             BtnGroup = new NodeMenuButtonRenderItem("ms-appx:///Assets/new icons/collection white.png", parent, resourceCreator);
             BtnGroup.Label = "collection";
             BtnEnterCollection = new NodeMenuButtonRenderItem("ms-appx:///Assets/new icons/enter collection white.png", parent, resourceCreator);
@@ -70,6 +77,7 @@ namespace NuSysApp
                 BtnDelete,
                 BtnGroup,
                 BtnPresent,
+                BtnTest,
                 BtnLayoutTool,
                 BtnEditTags,
                 BtnPdfLeft,
@@ -78,7 +86,7 @@ namespace NuSysApp
                 Resizer,
                 BtnTools
             };
-            _menuButtons = new List<BaseRenderItem> { BtnDelete, BtnGroup, BtnPresent, BtnLayoutTool, BtnEditTags, BtnEnterCollection, BtnTools };
+            _menuButtons = new List<BaseRenderItem> { BtnDelete, BtnGroup, BtnPresent, BtnTest, BtnLayoutTool, BtnEditTags, BtnEnterCollection, BtnTools };
 
             IsHitTestVisible = false;
             IsChildrenHitTestVisible = true;
@@ -116,7 +124,7 @@ namespace NuSysApp
                 Width = 20,
                 Background = Colors.Transparent,
             };
-            DragToolsRect.IsVisible = false;
+            DragToolsRect.IsVisible = true;
             AddChild(DragToolsRect);
 
 
@@ -193,6 +201,8 @@ namespace NuSysApp
 
             BtnEnterCollection.IsVisible = _isSingleCollectionSelected;
             BtnTools.IsVisible = _isSingleCollectionSelected;
+
+            BtnTest.IsVisible = _isSingleCollectionSelected;
 
 
             BtnDelete.IsVisible = !SessionController.IsReadonly;
