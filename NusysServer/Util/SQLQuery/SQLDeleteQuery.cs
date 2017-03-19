@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using NusysIntermediate;
 
-namespace NusysServer.Util.SQLQuery
+namespace NusysServer
 {
     public class SQLDeleteQuery
     {

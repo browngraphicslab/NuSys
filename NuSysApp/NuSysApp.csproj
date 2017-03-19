@@ -944,6 +944,7 @@
       <DependentUpon>RelatedListBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Util\RenderTask.cs" />
+    <Compile Include="Util\RequestExtensions.cs" />
     <Compile Include="Util\Statistics.cs" />
     <Compile Include="Util\Telemetry.cs" />
     <Compile Include="Util\UITask.cs" />

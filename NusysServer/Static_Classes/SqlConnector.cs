@@ -8,10 +8,10 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using DotNetOpenAuth.GoogleOAuth2;
 using DotNetOpenAuth.OAuth2;
 using Newtonsoft.Json;
 using NusysIntermediate;
-using NusysServer.Util.SQLQuery;
 
 namespace NusysServer
 {
@@ -78,6 +78,7 @@ namespace NusysServer
 
         public void TestFunc()
         {
+
         }
 
         /// <summary>
