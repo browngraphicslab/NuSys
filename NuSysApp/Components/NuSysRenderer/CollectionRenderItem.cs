@@ -782,10 +782,19 @@ namespace NuSysApp
             }
         }
 
-        public override void OnDragged(DragGestureRecognizer sender, DragEventArgs args)
+        //public override void OnDragged(DragGestureRecognizer sender, DragEventArgs args)
+        //{
+        //    base.OnDragged(sender, args);
+        //    Camera.LocalPosition = Camera.LocalPosition + args.Translation;
+        //}
+
+        public override void OnManipulated(ManipulationGestureRecognizer sender, ManipulationEventArgs args)
         {
-            base.OnDragged(sender, args);
+            base.OnManipulated(sender, args);
+            Camera.LocalScale *= args.ScaleDelta;
             Camera.LocalPosition = Camera.LocalPosition + args.Translation;
+            //Camera.LocalScaleCenter = args.CurrentFocus;
+
         }
 
         /// <summary>

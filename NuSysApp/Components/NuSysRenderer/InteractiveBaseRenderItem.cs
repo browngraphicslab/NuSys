@@ -62,29 +62,19 @@ namespace NuSysApp
 
         public InteractiveBaseRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
-            var tapRecognizer = new TapGestureRecognizer();
-            GestureRecognizers.Add(tapRecognizer);
-            tapRecognizer.OnTapped += TapRecognizer_OnTapped;
-
             var dragRecognizer = new DragGestureRecognizer();
             GestureRecognizers.Add(dragRecognizer);
             dragRecognizer.OnDragged += OnDragged;
 
+            var manipulationGestureRecognizer = new ManipulationGestureRecognizer();
+            GestureRecognizers.Add(manipulationGestureRecognizer);
+            manipulationGestureRecognizer.OnManipulation += OnManipulated;
+
         }
 
-        private void TapRecognizer_OnTapped(TapGestureRecognizer sender, TapEventArgs args)
+        public virtual void OnManipulated(ManipulationGestureRecognizer sender, ManipulationEventArgs args)
         {
-            switch (args.TapType)
-            {
-                case TapEventArgs.Tap.SingleTap:
-                    Debug.WriteLine($"Tapped, Position {args.Position}");
-                    break;
-                case TapEventArgs.Tap.DoubleTap:
-                    Debug.WriteLine($"Double Tapped, Position {args.Position}");
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+
         }
 
         public virtual void OnDragged(DragGestureRecognizer sender, DragEventArgs args)
@@ -92,25 +82,6 @@ namespace NuSysApp
 
         }
 
-        public virtual void OnManipulationCompleted(CanvasPointer pointer)
-        {
-
-        }
-
-        public virtual void OnManipulationUpdated(CanvasPointer pointer)
-        {
-
-        }
-
-        public virtual void OnManipulationStarted(CanvasPointer pointer)
-        {
-
-        }
-
-        public virtual void OnHolding(CanvasPointer pointer)
-        {
-
-        }
 
         public virtual void OnRightTapped(CanvasPointer pointer)
         {

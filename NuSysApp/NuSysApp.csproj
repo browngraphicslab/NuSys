@@ -427,6 +427,8 @@
     <Compile Include="Components\NuSysRenderer\UI\Gestures\DragGestureRecognizer.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Gestures\GestureEventArgs.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Gestures\GestureRecognizer.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Gestures\ManipulationEventArgs.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Gestures\ManipulationGestureRecognizer.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Gestures\TapEventArgs.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Gestures\TapGestureRecognizer.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ListView\LibraryListImageColumn.cs" />

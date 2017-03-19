@@ -77,6 +77,7 @@ namespace NuSysApp
 
             InteractiveBaseRenderItem e = _renderItems[args.Pointer.PointerId];
             e?.OnReleased(_canvas, args);
+            _renderItems.Remove(args.Pointer.PointerId);
         }
 
         private void OnPointerExited(object sender, PointerRoutedEventArgs args)
@@ -88,6 +89,7 @@ namespace NuSysApp
 
             InteractiveBaseRenderItem e = _renderItems[args.Pointer.PointerId];
             e?.OnExited(_canvas, args);
+            _renderItems.Remove(args.Pointer.PointerId);
         }
 
         private void OnPointerWheelChanged(object sender, PointerRoutedEventArgs args)
