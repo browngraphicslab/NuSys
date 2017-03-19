@@ -175,16 +175,6 @@ namespace NuSysApp
         private Vector2 GetCollectionPointFromLocalPoint(Vector2 localPoint)
         {
 
-            /*
-            var collectionRectOrg = new Rect(_collection.ViewModel.X,
-_collection.ViewModel.Y,
-_collection.ViewModel.Width,
-_collection.ViewModel.Height);
-
-            var collectionRectScreen = Win2dUtil.TransformRect(collectionRectOrg, SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetTransformUntil(_collection));
-
-            var collectionRect = Win2dUtil.TransformRect(collectionRectScreen, Win2dUtil.Invert(SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetCollectionTransform(_collection)));
-            */
 
             //Creates translation based on the start of the bounding rectangle of all the nodes in the collection
             var translationMatrix = Matrix3x2.CreateTranslation((float)_bb.X, (float)_bb.Y);
@@ -199,7 +189,7 @@ _collection.ViewModel.Height);
             //var pt = Vector2.Transform(localPoint, Win2dUtil.Invert(SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetCollectionTransform(_collection)));
             var matrix =  translationMatrixInverse * scaleInverse;
 
-            //If you're smarter than me, please fix this
+            //TODO: Someone smarter than me pls fix this
             if (_collection != SessionController.Instance.SessionView.FreeFormViewer.InitialCollection)
             {
                 //Currently, this method doesn't give the correct collection point for nested collections. I figure it probably has to do with having to use the GetTransformUntil method on the collection to take into account the parent's transform.
@@ -380,7 +370,12 @@ _collection.ViewModel.Height);
                 var viewport = Win2dUtil.TransformRect(collectionRect, dss.Transform, 3f);
                 dss.Transform = Matrix3x2.Identity;
                 var strokeWidth = 3f;
-                dss.DrawRectangle(viewport, Colors.DarkRed, 3f);
+
+                if (!_zoomRectangle.IsVisible)
+                {
+                    dss.DrawRectangle(viewport, Colors.DarkRed, 3f);
+
+                }
 
             }
 
