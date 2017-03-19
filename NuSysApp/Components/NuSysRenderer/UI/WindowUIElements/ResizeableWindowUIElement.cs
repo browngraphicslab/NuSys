@@ -254,6 +254,17 @@ namespace NuSysApp
         /// </summary>
         private GradientBackgroundRectangleUIElement _bottomRightResizeHighlight;
 
+        /// <summary>
+        /// Rectangle that represents left slider
+        /// </summary>
+        private RectangleUIElement _leftSlider;
+
+        /// <summary>
+        /// Rectangle that represents right slider
+        /// </summary>
+        private RectangleUIElement _rightSlider;
+
+
 
         public ResizeableWindowUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator)
             : base(parent, resourceCreator)
@@ -265,6 +276,25 @@ namespace NuSysApp
             MinWidth = UIDefaults.WindowMinWidth;
             MinHeight = UIDefaults.WindowMinHeight;
             ResizeHighlightColor = UIDefaults.ResizeHighlightColor;
+
+            _leftSlider = new RectangleUIElement(this, resourceCreator)
+            {
+                Width = 30,
+                Height = 1500,
+                IsHitTestVisible = false,
+                Background = Constants.COLOR_BLUE,
+            };
+            _leftSlider.Transform.LocalPosition = new Vector2(-30, 0);
+            AddChild(_leftSlider);
+
+            _rightSlider = new RectangleUIElement(this, resourceCreator)
+            {
+                Width = 20,
+                Height = 1500,
+                IsHitTestVisible = false,
+                Background = Constants.COLOR_BLUE,
+            };
+            AddChild(_rightSlider);
 
             _leftResizeHighlight = new GradientBackgroundRectangleUIElement(this, resourceCreator)
             {
@@ -315,7 +345,8 @@ namespace NuSysApp
             };
             AddChild(_bottomRightResizeHighlight);
 
-
+            
+            
             // add manipulation events
             Dragged += ResizeableWindowUIElement_Dragged;
             Pressed += ResizeableWindowUIElement_Pressed;
@@ -534,7 +565,7 @@ namespace NuSysApp
             var currentPoint = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
 
             // the pointer is on the right bound of the window
-            if (currentPoint.X > Width - Math.Max(BorderWidth, ErrorMargin))
+            if (currentPoint.X > Width - Math.Max(BorderWidth, ErrorMargin) || (_rightSlider.IsVisible && currentPoint.X > Width - 100))
             {
                 right = true;
             }
@@ -544,7 +575,7 @@ namespace NuSysApp
                 bottom = true;
             }
             // the pointer is on the left bound of the window
-            if (currentPoint.X < 0 + Math.Max(BorderWidth, ErrorMargin))
+            if (currentPoint.X < 0 + Math.Max(BorderWidth, ErrorMargin) || (_leftSlider.IsVisible && currentPoint.X < 0 + 100))
             {
                 left = true;
             }
@@ -588,6 +619,10 @@ namespace NuSysApp
 
         }
 
+        /// <summary>
+        /// Everything that relies on changes in the size will go here
+        /// </summary>
+        /// <param name="parentLocalToScreenTransform"></param>
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
             _leftResizeHighlight.Transform.LocalPosition = new Vector2(-ErrorMargin, 0);
@@ -605,6 +640,22 @@ namespace NuSysApp
             _bottomRightResizeHighlight.Transform.LocalPosition = new Vector2(Width, Height);
             _bottomRightResizeHighlight.Width = ErrorMargin;
             _bottomRightResizeHighlight.Height = ErrorMargin;
+
+            _rightSlider.Transform.LocalPosition = new Vector2(this.Width, 0);
+
+            // check snapped
+            if (IsSnapped)
+            {
+                _leftSlider.IsVisible = true;
+                _rightSlider.IsVisible = true;
+                //Width = Width + 100;
+            }
+            else
+            {
+                _leftSlider.IsVisible = false;
+                _rightSlider.IsVisible = false;
+               // Width = Width - 100;
+            }
 
             // check gradient visibility 
             if ((HasFocus == true || ChildHasFocus == true) && _leftResizeHighlight.IsVisible == false)
@@ -674,7 +725,7 @@ namespace NuSysApp
             {
                 return;
             }
-
+            
             // set the snap preview rect dimensions
             switch (CurrentSnapPosition)
             {

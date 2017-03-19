@@ -226,6 +226,16 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void ResizeableWindowUIElement_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+
+        }
+
+        /// <summary>
         /// Show a library element in the detail viewer
         /// </summary>
         /// <param name="libraryElementModelId"></param>
