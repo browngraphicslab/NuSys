@@ -57,6 +57,7 @@ namespace NuSysApp
 
         public DetailViewMainContainer(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
+            this.ErrorMargin = 30;
             // create the _mainTabContainer, this is the tabs at the top of the page which represent different elements open in the detail view
             // the page of the mainTabContainer is the _pageContainer, which will dynamically be updated to display the correct item
             // in the detail viewer when a tab on the mainTabContainer is clicked

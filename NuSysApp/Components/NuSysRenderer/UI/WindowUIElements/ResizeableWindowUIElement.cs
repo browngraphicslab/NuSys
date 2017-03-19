@@ -277,24 +277,7 @@ namespace NuSysApp
             MinHeight = UIDefaults.WindowMinHeight;
             ResizeHighlightColor = UIDefaults.ResizeHighlightColor;
 
-            _leftSlider = new RectangleUIElement(this, resourceCreator)
-            {
-                Width = 30,
-                Height = 1500,
-                IsHitTestVisible = false,
-                Background = Constants.COLOR_BLUE,
-            };
-            _leftSlider.Transform.LocalPosition = new Vector2(-30, 0);
-            AddChild(_leftSlider);
-
-            _rightSlider = new RectangleUIElement(this, resourceCreator)
-            {
-                Width = 20,
-                Height = 1500,
-                IsHitTestVisible = false,
-                Background = Constants.COLOR_BLUE,
-            };
-            AddChild(_rightSlider);
+            
 
             _leftResizeHighlight = new GradientBackgroundRectangleUIElement(this, resourceCreator)
             {
@@ -345,8 +328,28 @@ namespace NuSysApp
             };
             AddChild(_bottomRightResizeHighlight);
 
+            _leftSlider = new RectangleUIElement(this, resourceCreator)
+            {
+                Width = 20,
+                Height = 1500,
+                IsHitTestVisible = false,
+                Background = Constants.COLOR_BLUE,
+            };
+            _leftSlider.Transform.LocalPosition = new Vector2(-20, 0);
+            AddChild(_leftSlider);
             
+
+            _rightSlider = new RectangleUIElement(this, resourceCreator)
+            {
+                Width = 20,
+                Height = 1500,
+                IsHitTestVisible = false,
+                Background = Constants.COLOR_BLUE,
+            };
+
+            AddChild(_rightSlider);
             
+
             // add manipulation events
             Dragged += ResizeableWindowUIElement_Dragged;
             Pressed += ResizeableWindowUIElement_Pressed;
@@ -565,7 +568,7 @@ namespace NuSysApp
             var currentPoint = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
 
             // the pointer is on the right bound of the window
-            if (currentPoint.X > Width - Math.Max(BorderWidth, ErrorMargin) || (_rightSlider.IsVisible && currentPoint.X > Width - 100))
+            if (currentPoint.X > Width - Math.Max(BorderWidth, ErrorMargin) /*|| (_rightSlider.IsVisible && currentPoint.X > Width + 1000)*/)
             {
                 right = true;
             }
@@ -575,7 +578,7 @@ namespace NuSysApp
                 bottom = true;
             }
             // the pointer is on the left bound of the window
-            if (currentPoint.X < 0 + Math.Max(BorderWidth, ErrorMargin) || (_leftSlider.IsVisible && currentPoint.X < 0 + 100))
+            if (currentPoint.X < 0 + Math.Max(BorderWidth, ErrorMargin) /*|| (_leftSlider.IsVisible && currentPoint.X < 0 - 1000)*/)
             {
                 left = true;
             }
@@ -641,7 +644,7 @@ namespace NuSysApp
             _bottomRightResizeHighlight.Width = ErrorMargin;
             _bottomRightResizeHighlight.Height = ErrorMargin;
 
-            _rightSlider.Transform.LocalPosition = new Vector2(this.Width, 0);
+            _rightSlider.Transform.LocalPosition = new Vector2(this.Width-1, 0);
 
             // check snapped
             if (IsSnapped)
