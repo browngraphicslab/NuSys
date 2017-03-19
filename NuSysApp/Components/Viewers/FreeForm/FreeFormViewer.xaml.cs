@@ -985,8 +985,6 @@ namespace NuSysApp
 
                 lib.AddItems(LibraryElementModelList);
 
-                lib.BorderWidth = 5;
-                lib.BorderColor = Colors.Black;
                 
                 var width = RenderEngine.ElementSelectionRect._selectionBoundingRect.Width;
                 var height = RenderEngine.ElementSelectionRect._selectionBoundingRect.Height;

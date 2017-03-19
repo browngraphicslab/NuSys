@@ -38,24 +38,24 @@ namespace NuSysApp
         /// <summary>
         /// list of RectangleUIElements which are used to display icons while dragging
         /// </summary>
-        private List<RectangleUIElement> _libraryDragElements;
+        private static List<RectangleUIElement> _libraryDragElements;
 
         /// <summary>
         /// True if the drag icons are visible false otherwise
         /// </summary>
-        private bool _isDragVisible;
+        private static bool _isDragVisible;
 
         /// <summary>
         /// how much each of the dragged icons and dropped library elements will be offset from eachother in postive x and positive y pixel coordinates
         /// </summary>
-        private float _itemDropOffset = 10;
+        private static float _itemDropOffset = 10;
 
         /// <summary>
         /// The add file button on the top right corner of the library list
         /// </summary>
         private TransparentButtonUIElement _addFileButton;
 
-        private bool _dragCanceled;
+        private static bool _dragCanceled;
 
         /// <summary>
         /// A dictionary of fileids to access types, static because the adding files methods have to be static
@@ -129,10 +129,10 @@ namespace NuSysApp
             }
         }
 
-        ///// <summary>
-        ///// TEST BUTTON
-        ///// </summary>
-        //private RectangleButtonUIElement _testbutton;
+        /// <summary>
+        /// TEST BUTTON
+        /// </summary>
+        private ButtonUIElement _testbutton;
 
         public LibraryListUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator)
             : base(parent, resourceCreator)
@@ -142,8 +142,15 @@ namespace NuSysApp
             // add the libary list view as a child
             AddChild(LibraryListView);
 
-            //setup the bing button and it's popup
+            //setup the bing button and its popup
             _bingButton = new TransparentButtonUIElement(this, ResourceCreator)
+            {
+                ImageBounds = new Rect(.25, .25, .5, .5)
+            };
+            AddButton(_bingButton, TopBarPosition.Right);
+
+            //Adds the test button that will switch content to collection's elements
+            _testbutton = new TransparentButtonUIElement(this, ResourceCreator)
             {
                 ImageBounds = new Rect(.25, .25, .5, .5)
             };
@@ -209,6 +216,9 @@ namespace NuSysApp
 
             _filterButton.Tapped += OnFilterButtonTapped;
             _bingButton.Tapped += _bingButton_Tapped;
+
+            _testbutton.Tapped += OnTestButtonTapped;
+
             BrushManager.BrushUpdated += BrushManager_BrushUpdated;
 
             _dragCanceled = false;
@@ -218,6 +228,12 @@ namespace NuSysApp
             SessionController.Instance.ContentController.OnLibraryElementDelete += UpdateLibraryListToRemoveElement;
 
             _previouslySelectedControllers = new List<LibraryElementController>();
+        }
+
+        private void OnTestButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            InitializeLibraryList();
+
         }
 
         /// <summary>
@@ -493,7 +509,8 @@ namespace NuSysApp
                     //Otherwise move each of the library drag elements
                     foreach (var element in _libraryDragElements)
                     {
-                        element.Transform.LocalPosition = position + new Vector2(_itemDropOffset * _libraryDragElements.IndexOf(element));
+                        if (element != null)
+                            element.Transform.LocalPosition = position + new Vector2(_itemDropOffset * _libraryDragElements.IndexOf(element));
                     }
                 }
 
@@ -624,7 +641,7 @@ namespace NuSysApp
         /// <summary>
         /// Initialize the UI for the library list 
         /// </summary>
-        public void InitializeLibraryList()
+        private void InitializeLibraryList()
         {
             LibraryListView = new ListViewUIElementContainer<LibraryElementModel>(this, Canvas)
             {
@@ -683,8 +700,25 @@ namespace NuSysApp
 
             LibraryListView.AddColumnOptions(new List<ListColumn<LibraryElementModel>> {listColumn5, listColumn8, listColumn7,listColumn6 });
 
-            LibraryListView.AddItems(
-                           SessionController.Instance.ContentController.ContentValues.ToList());
+            var ElementList = new List<LibraryElementModel>();
+
+            if (SessionController.Instance.ActiveFreeFormViewer.Selections[0] is CollectionRenderItem)
+            {
+                
+                var collectionRenderItem = (CollectionRenderItem)SessionController.Instance.ActiveFreeFormViewer.Selections[0];
+                foreach (var child in collectionRenderItem.ViewModel.GetOutputLibraryIds())
+                {
+    
+                    ElementList.Add(SessionController.Instance.ContentController.GetLibraryElementModel(child));
+                }
+            }
+            else
+            {
+                ElementList = SessionController.Instance.ContentController.AllLibraryElementModels.ToList();
+            }
+
+
+            LibraryListView.AddItems(ElementList);
 
 
 
