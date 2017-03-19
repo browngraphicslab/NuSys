@@ -209,6 +209,22 @@ namespace NuSysApp
 
             RenderEngine.Root.AddChild(InitialCollection);
 
+            //START OF USELESS CODE
+            var rect = new ThumbnailUIElement(null, RenderCanvas)
+            {
+                Width = 200,
+                Height = 200,
+                Background = Colors.Firebrick,
+
+
+            };
+            rect.Transform.LocalPosition = new Vector2(500, 500);
+            rect.RegionBounds = new Rect(0, 0, .5, .5);
+            rect.Image = await MediaUtil.LoadCanvasBitmapAsync(RenderCanvas, new Uri("ms-appx:///Assets/icon_image.png"));
+            RenderEngine.Root.AddChild(rect);
+            //END OF USELESS CODE
+
+
             RenderEngine.Start();
 
             RenderEngine.BtnDelete.Tapped -= BtnDeleteOnTapped;
