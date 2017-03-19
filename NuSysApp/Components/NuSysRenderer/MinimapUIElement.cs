@@ -28,12 +28,19 @@ namespace NuSysApp
 
         private RectangleUIElement _zoomRectangle;
 
+        private Rect _viewport;
+
+        private enum Mode { None, Moving, Dragging}
+
+        private Mode _mode;
         public MinimapUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
-            //SwitchCollection(collection);
             Background = Colors.Transparent;
             Width = UIDefaults.MaxMinimapWidth;
             Height = UIDefaults.MaxMinimapHeight;
+
+            _mode = Mode.None;
+
             AddHandlers();
             SetUpZoomRectangle();
         }
@@ -65,7 +72,10 @@ namespace NuSysApp
             DoubleTapped += MinimapUIElement_DoubleTapped;
             Released += MinimapUIElement_Released;
             Dragged += MinimapUIElement_Dragged;
+            Holding += MinimapUIElement_Holding;
         }
+
+
         /// <summary>
         /// Removes interaction handlers
         /// </summary>
@@ -74,11 +84,27 @@ namespace NuSysApp
             DoubleTapped -= MinimapUIElement_DoubleTapped;
             Released -= MinimapUIElement_Released;
             Dragged -= MinimapUIElement_Dragged;
+            Holding -= MinimapUIElement_Holding;
         }
 
         #endregion misc
 
         #region events
+
+        private void MinimapUIElement_Holding(InteractiveBaseRenderItem item, Vector2 point)
+        {
+
+            //Goes from CanvasPointer, whose CurrentPoint is the local representation of the point, to the representation of the point relative to the minimap _rect, then to the representation of the point on the collection
+            var localPoint = Vector2.Transform(point, Transform.ScreenToLocalMatrix);
+            var trueLocalPoint = GetTrueLocalPoint(localPoint);
+            var collectionPoint = GetCollectionPointFromLocalPoint(trueLocalPoint);
+            //Finally we center the camera on that point, only if the current collection is the top collection
+            if (_collection == SessionController.Instance.SessionView.FreeFormViewer.InitialCollection)
+            {
+                _collection.CenterCameraOnPoint(collectionPoint);
+            }
+
+        }
 
         /// <summary>
         /// On double tap, center camera at that point
@@ -87,13 +113,8 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void MinimapUIElement_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            //Goes from CanvasPointer, whose CurrentPoint is the local representation of the point, to the representation of the point relative to the minimap _rect, then to the representation of the point on the collection
-            var point = GetCollectionPointFromCanvasPointer(pointer);
-            //Finally we center the camera on that point, only if the current collection is the top collection
-            if (_collection == SessionController.Instance.SessionView.FreeFormViewer.InitialCollection)
-            {
-                _collection.CenterCameraOnPoint(point);
-            }
+            _mode = Mode.Dragging;
+
         }
 
         /// <summary>
@@ -110,10 +131,54 @@ namespace NuSysApp
                 return;
             }
             var localPoint = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
+            //Set mode based on whether your pointer hit the viewport
+            if (_mode == Mode.None)
+            {
+                
+                if (localPoint.X >= _viewport.X && localPoint.Y >= _viewport.Y &&
+                    localPoint.X <= _viewport.X + _viewport.Width && localPoint.Y <= _viewport.Y + _viewport.Height)
+                {
+                    _mode = Mode.Moving;
+                }
+            
 
-            // get ratio of height to width of collection so that the corresponding Zoom rectangle is of the same dimension
-            var ratioHeight = (float)_collection.ViewModel.Height / (float)_collection.ViewModel.Width;
 
+            }
+
+            if (_mode == Mode.Dragging)
+            {
+                Drag(pointer);
+            }else if (_mode == Mode.Moving)
+            {
+                Move(pointer);
+            }
+
+           
+        }
+
+        private void Move(CanvasPointer pointer)
+        {
+
+            if (!_zoomRectangle.IsVisible)
+            {
+                _zoomRectangle.IsVisible = true;
+                _zoomRectangle.Width = (float)_viewport.Width;
+                _zoomRectangle.Height = (float)_viewport.Height;
+                _zoomRectangle.Transform.LocalPosition = new Vector2((float)_viewport.X, (float)_viewport.Y);
+            }
+
+            var newPosition = _zoomRectangle.Transform.LocalPosition + pointer.DeltaSinceLastUpdate;
+
+            _zoomRectangle.Transform.LocalPosition = newPosition;
+
+
+            SetCollectionCameraBasedOnRectangle();
+
+        }
+
+        private void Drag(CanvasPointer pointer)
+        {
+            var localPoint = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
 
             if (!_zoomRectangle.IsVisible)
             {
@@ -121,8 +186,11 @@ namespace NuSysApp
                 _zoomRectangle.Transform.LocalPosition = localPoint;
                 _zoomRectangle.Width = 0f;
                 _zoomRectangle.Height = 0f;
-
             }
+
+            // get ratio of height to width of collection so that the corresponding Zoom rectangle is of the same dimension
+            var ratioHeight = (float)_collection.ViewModel.Height / (float)_collection.ViewModel.Width;
+
             // Width of zoom rectangle
             var width = Math.Max(0, localPoint.X - _zoomRectangle.Transform.LocalX);
             //Height of zoom rectangle
@@ -145,6 +213,12 @@ namespace NuSysApp
             }
             _zoomRectangle.IsVisible = false;
 
+            if (_mode == Mode.Moving)
+            {
+                _mode = Mode.None;
+
+            }
+
             var ratioHeight = (float)_collection.ViewModel.Height / (float)_collection.ViewModel.Width;
 
             if (_zoomRectangle.Width < 15 || _zoomRectangle.Height < 15 * ratioHeight)
@@ -152,6 +226,13 @@ namespace NuSysApp
                 return;
             }
 
+            SetCollectionCameraBasedOnRectangle();
+
+        }
+        #endregion events
+
+        private void SetCollectionCameraBasedOnRectangle()
+        {
             //collection points of the rectangle
             var topLeftPoint = GetCollectionPointFromLocalPoint(GetTrueLocalPoint(_zoomRectangle.Transform.LocalPosition));
             var bottomRightPoint = GetCollectionPointFromLocalPoint(GetTrueLocalPoint(_zoomRectangle.Transform.LocalPosition + new Vector2(_zoomRectangle.Width, _zoomRectangle.Height)));
@@ -162,9 +243,7 @@ namespace NuSysApp
                 _collection.CenterCameraOnRectangle(topLeftPoint, bottomRightPoint);
 
             }
-
         }
-        #endregion events
 
         /// <summary>
         /// Input: local point relative to the _rect.
@@ -367,13 +446,13 @@ namespace NuSysApp
 
                 //  var tlp = Vector2.Transform(tl, dss.Transform);
                 //  var trp = Vector2.Transform(tr, dss.Transform);
-                var viewport = Win2dUtil.TransformRect(collectionRect, dss.Transform, 3f);
+                _viewport = Win2dUtil.TransformRect(collectionRect, dss.Transform, 3f);
                 dss.Transform = Matrix3x2.Identity;
                 var strokeWidth = 3f;
 
                 if (!_zoomRectangle.IsVisible)
                 {
-                    dss.DrawRectangle(viewport, Colors.DarkRed, 3f);
+                    dss.DrawRectangle(_viewport, Colors.DarkRed, 3f);
 
                 }
 
