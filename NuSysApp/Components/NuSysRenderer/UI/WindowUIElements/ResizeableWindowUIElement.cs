@@ -442,7 +442,6 @@ namespace NuSysApp
         /// <summary>
         /// private method to apply a pre-calculated offset and size delta to the window.
         /// This takes into account the aspect ratio logic for the window resizing.
-        /// Note: the non aspect ratio code was changed and the aspect ratio code has not been tested since.
         /// </summary>
         /// <param name="offsetDelta">A vector containing an amount to scale the translation in each dimention by
         /// (0 if it shouldn't be translated, 1 if it should be translated)</param>
@@ -463,7 +462,7 @@ namespace NuSysApp
                 {
                     Width += sizeDelta.X;
                     Height = Width / ratio;
-                    //Set Width again to account for the fact that Height might have been clamped
+                    // Set Width again to account for the fact that Height might have been clamped
                     Width = Height * ratio;
                     // Update the position of the window depending on offsetDelta and how much the size changed
                     Transform.LocalPosition += offsetDelta * new Vector2(oldWidth - Width, oldHeight - Height);
@@ -473,7 +472,7 @@ namespace NuSysApp
                 {
                     Height += sizeDelta.Y;
                     Width = Height * ratio;
-                    //Set Height again to account for the fact that Width might have been clamped
+                    // Set Height again to account for the fact that Width might have been clamped
                     Height = Width / ratio;
                     // Update the position of the window depending on offsetDelta and how much the size changed
                     Transform.LocalPosition += offsetDelta * new Vector2(oldWidth - Width, oldHeight - Height);
