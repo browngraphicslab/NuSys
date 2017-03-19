@@ -15,25 +15,29 @@ namespace NuSysApp
     {
         public Vector2 StartPoint { get; private set; }
 
-        public Vector2 EndPoint { get; private set; }
+        public Vector2 CurrentPoint { get; private set; }
 
+        private Vector2 lastPoint;
 
         public DragEventArgs(Vector2 pointerStartPoint)
         {
             StartPoint = pointerStartPoint;
-            EndPoint = pointerStartPoint;
+            CurrentPoint = pointerStartPoint;
+            lastPoint = pointerStartPoint;
         }
 
-        public Vector2 Translation => EndPoint - StartPoint;
+        public Vector2 Translation => CurrentPoint - lastPoint;
+        public Vector2 TotalTranslation => CurrentPoint - StartPoint;
 
         public void Update(Vector2 pointerCurrentPoint)
         {
-            EndPoint = pointerCurrentPoint;
+            lastPoint = CurrentPoint;
+            CurrentPoint = pointerCurrentPoint;
         }
 
         public void Complete(Vector2 pointerCurrentPoint)
         {
-            EndPoint = pointerCurrentPoint;
+            CurrentPoint = pointerCurrentPoint;
         }
     }
 
