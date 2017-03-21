@@ -152,6 +152,9 @@ namespace NusysServer
                         case NusysConstants.RequestType.UploadFileRequest:
                             requestHandler = new UploadFileRequestHandler();
                             break;
+                        case NusysConstants.RequestType.GetFileBytesRequest:
+                            requestHandler = new GetFileBytesRequestHandler();
+                            break;
                         default:
                             throw new Exception("request type not supported on the server yet!");
                     }

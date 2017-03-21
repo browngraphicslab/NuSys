@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using NusysIntermediate;
-using NusysServer.Util.SQLQuery;
 
 namespace NusysServer
 {

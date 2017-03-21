@@ -1012,7 +1012,7 @@ namespace NuSysApp
                     NusysConstants.ServerName = "nusystest.azurewebsites.net";
                     break;
                 case "live":
-                    NusysConstants.ServerName = "nusysrepo.azurewebsites.net";
+                    NusysConstants.ServerName = "doc-eng.azurewebsites.net";
                     break;
                 default:
                     NusysConstants.ServerName = ServerNameText.Text;

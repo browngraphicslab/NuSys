@@ -116,6 +116,7 @@ namespace NuSysApp
         /// ienumerable of selected controllers
         /// </summary>
         private IEnumerable<LibraryElementController> _previouslySelectedControllers;
+        
 
         /// <summary>
         /// Sets the visibility of the library
@@ -758,11 +759,13 @@ namespace NuSysApp
             int pdfPageCount = 0;
             double aspectRatio = 0;
 
+            List<MetadataEntry> metadata = new List<MetadataEntry>();
+
             var addedLibraryElemControllers = new List<LibraryElementController>();
 
             if (storageFiles == null)
             {
-                storageFiles = await FileManager.PromptUserForFiles(Constants.AllFileTypes);
+                storageFiles = await FileManager.PromptUserForFiles(Constants.AllFileTypes, allowAllFileTypes:true);
             }
 
             // get the fileAddedAclsPopup from the session view
@@ -797,7 +800,7 @@ namespace NuSysApp
                 var fileType = storageFile.FileType.ToLower();
                 title = storageFile.DisplayName;
 
-                bool validFileType = true;
+
                 // Create a thumbnail dictionary mapping thumbnail sizes to the byte arrays.
                 // Note that only video and images are to get thumbnails this way, currently.
                 var thumbnails = new Dictionary<NusysConstants.ThumbnailSize, string>();
@@ -904,120 +907,138 @@ namespace NuSysApp
                 }
                 else
                 {
-                    validFileType = false;
+                    title = storageFile.Name;
+                    byte[] fileBytes;
+                    elementType = NusysConstants.ElementType.Unknown;
+                    using (IRandomAccessStreamWithContentType stream = await storageFile.OpenReadAsync())
+                    {
+                        fileBytes = new byte[stream.Size];
+                        using (DataReader reader = new DataReader(stream))
+                        {
+                            await reader.LoadAsync((uint)stream.Size);
+                            reader.ReadBytes(fileBytes);
+                        }
+                    }
+
+                    metadata.Add(new MetadataEntry("file_extension", new List<string>() {fileType},MetadataMutability.IMMUTABLE));
+
+                   var r = new UploadFileRequest(new UploadFileRequestArgs()
+                   {
+                       Id = contentId,
+                       Bytes = fileBytes
+                    },new CallbackArgs<CallbackRequest<UploadFileRequestArgs, UploadFileReturnArgs>>() {SuccessFunction = delegate(CallbackRequest<UploadFileRequestArgs, UploadFileReturnArgs> callbackRequest)
+                   {
+                       return true;
+                   }} );
+                   r.Execute();
                 }
-                if (validFileType)
+
+                CreateNewContentRequestArgs args;
+                //if there is pdf text, add it to the request
+                if (pdfTextByPage.Any())
                 {
-                    CreateNewContentRequestArgs args;
-                    //if there is pdf text, add it to the request
-                    if (pdfTextByPage.Any())
+                    args = new CreateNewPdfContentRequestArgs
                     {
-                        args = new CreateNewPdfContentRequestArgs
-                        {
-                            PdfText = JsonConvert.SerializeObject(pdfTextByPage),
-                            PageCount = pdfPageCount
-                        };
-                        pdfTextByPage.Clear();
-                    }
-                    else
-                    {
-                        args = new CreateNewContentRequestArgs();
-                    }
-                    args.ContentId = contentId;
-                    args.DataBytes = data;
-
-                    //add the extension if there is one
-                    if (fileType != null)
-                    {
-                        args.FileExtension = fileType;
-                    }
-
-                    CreateNewLibraryElementRequestArgs libraryElementArgs;
-                    switch (elementType)
-                    {
-                        case NusysConstants.ElementType.Image:
-                            var imageArgs = new CreateNewImageLibraryElementRequestArgs();
-                            imageArgs.AspectRatio = aspectRatio;
-                            libraryElementArgs = imageArgs;
-                            break;
-                        case NusysConstants.ElementType.Word:
-                            var wordArgs = new CreateNewPdfLibraryElementModelRequestArgs();
-                            wordArgs.PdfPageStart = 0;
-                            wordArgs.PdfPageEnd = pdfPageCount;
-                            wordArgs.AspectRatio = aspectRatio;
-                            wordArgs.NormalizedHeight = 1;
-                            wordArgs.NormalizedWidth = 1;
-                            libraryElementArgs = wordArgs;
-                            break;
-                        case NusysConstants.ElementType.PDF:
-                            var pdfArgs = new CreateNewPdfLibraryElementModelRequestArgs();
-                            pdfArgs.PdfPageStart = 0;
-                            pdfArgs.PdfPageEnd = pdfPageCount;
-                            pdfArgs.AspectRatio = aspectRatio;
-                            libraryElementArgs = pdfArgs;
-                            break;
-                        case NusysConstants.ElementType.Video:
-                            var videoArgs = new CreateNewVideoLibraryElementRequestArgs();
-                            videoArgs.AspectRatio = aspectRatio;
-                            libraryElementArgs = videoArgs;
-                            break;
-                        case NusysConstants.ElementType.Audio:
-                            libraryElementArgs = new CreateNewAudioLibraryElementRequestArgs();
-                            break;
-                        default:
-                            libraryElementArgs = new CreateNewLibraryElementRequestArgs();
-                            break;
-                    }
-
-                    args.LibraryElementArgs = libraryElementArgs;
-
-                    //add the three thumbnails
-                    args.LibraryElementArgs.Large_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Large];
-                    args.LibraryElementArgs.Small_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Small];
-                    args.LibraryElementArgs.Medium_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Medium];
-
-                    args.LibraryElementArgs.Title = title;
-                    args.LibraryElementArgs.LibraryElementType = elementType;
-
-                    // add the acls from the map, default to private instead of throwing an error on release
-                    Debug.Assert(_fileIdToAccessMap.ContainsKey(storageFile.FolderRelativeId), "The mapping from the fileAddedPopup is not being output or set correctly");
-                    if (_fileIdToAccessMap.ContainsKey(storageFile.FolderRelativeId))
-                    {
-                        args.LibraryElementArgs.AccessType = _fileIdToAccessMap[storageFile.FolderRelativeId];
-                        args.LibraryElementArgs.LibraryElementId = SessionController.Instance.GenerateId();
-                    }
-                    else
-                    {
-                        args.LibraryElementArgs.AccessType = NusysConstants.AccessType.Private;
-                    }
-
-                    var request = new CreateNewContentRequest(args);
-
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-
-                    // if we succesfully complete the request
-                    if (request.AddReturnedLibraryElementToLibrary())
-                    {
-                        // add the library element controller of the new content to the list we are going to return
-                        addedLibraryElemControllers.Add(SessionController.Instance.ContentController.GetLibraryElementController(args.LibraryElementArgs.LibraryElementId));
-                        Task.Run(async delegate
-                        {
-                            var controller = SessionController.Instance.ContentController?.GetLibraryElementController(args?.LibraryElementArgs?.LibraryElementId);
-                            if (controller != null)
-                            {
-                                SessionController.Instance.NuSessionView?.Library?.LibraryListView?.ScrollTo(controller.LibraryElementModel);
-                                SessionController.Instance.NuSessionView?.Library?.LibraryListView?.SelectItem(controller.LibraryElementModel);
-                            }
-                        });
-                    }
-                    
-
-                    vm.ClearSelection();
+                        PdfText = JsonConvert.SerializeObject(pdfTextByPage),
+                        PageCount = pdfPageCount
+                    };
+                    pdfTextByPage.Clear();
                 }
                 else
                 {
-                    Debug.WriteLine("tried to import invalid filetype");
+                    args = new CreateNewContentRequestArgs();
                 }
+                args.ContentId = contentId;
+                args.DataBytes = data;
+
+                //add the extension if there is one
+                if (fileType != null)
+                {
+                    args.FileExtension = fileType;
+                }
+
+                CreateNewLibraryElementRequestArgs libraryElementArgs;
+                switch (elementType)
+                {
+                    case NusysConstants.ElementType.Image:
+                        var imageArgs = new CreateNewImageLibraryElementRequestArgs();
+                        imageArgs.AspectRatio = aspectRatio;
+                        libraryElementArgs = imageArgs;
+                        break;
+                    case NusysConstants.ElementType.Word:
+                        var wordArgs = new CreateNewPdfLibraryElementModelRequestArgs();
+                        wordArgs.PdfPageStart = 0;
+                        wordArgs.PdfPageEnd = pdfPageCount;
+                        wordArgs.AspectRatio = aspectRatio;
+                        wordArgs.NormalizedHeight = 1;
+                        wordArgs.NormalizedWidth = 1;
+                        libraryElementArgs = wordArgs;
+                        break;
+                    case NusysConstants.ElementType.PDF:
+                        var pdfArgs = new CreateNewPdfLibraryElementModelRequestArgs();
+                        pdfArgs.PdfPageStart = 0;
+                        pdfArgs.PdfPageEnd = pdfPageCount;
+                        pdfArgs.AspectRatio = aspectRatio;
+                        libraryElementArgs = pdfArgs;
+                        break;
+                    case NusysConstants.ElementType.Video:
+                        var videoArgs = new CreateNewVideoLibraryElementRequestArgs();
+                        videoArgs.AspectRatio = aspectRatio;
+                        libraryElementArgs = videoArgs;
+                        break;
+                    case NusysConstants.ElementType.Audio:
+                        libraryElementArgs = new CreateNewAudioLibraryElementRequestArgs();
+                        break;
+                    default:
+                        libraryElementArgs = new CreateNewLibraryElementRequestArgs();
+                        break;
+                }
+
+                args.LibraryElementArgs = libraryElementArgs;
+
+                //add the three thumbnails
+                args.LibraryElementArgs.Large_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Large];
+                args.LibraryElementArgs.Small_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Small];
+                args.LibraryElementArgs.Medium_Thumbnail_Bytes = thumbnails[NusysConstants.ThumbnailSize.Medium];
+
+                args.LibraryElementArgs.Title = title;
+                args.LibraryElementArgs.LibraryElementType = elementType;
+
+                // add the acls from the map, default to private instead of throwing an error on release
+                Debug.Assert(_fileIdToAccessMap.ContainsKey(storageFile.FolderRelativeId), "The mapping from the fileAddedPopup is not being output or set correctly");
+                if (_fileIdToAccessMap.ContainsKey(storageFile.FolderRelativeId))
+                {
+                    args.LibraryElementArgs.AccessType = _fileIdToAccessMap[storageFile.FolderRelativeId];
+                    args.LibraryElementArgs.LibraryElementId = SessionController.Instance.GenerateId();
+                }
+                else
+                {
+                    args.LibraryElementArgs.AccessType = NusysConstants.AccessType.Private;
+                }
+                args.LibraryElementArgs.Metadata = metadata.Any() ? metadata:null;
+
+                var request = new CreateNewContentRequest(args);
+
+                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+
+                // if we succesfully complete the request
+                if (request.AddReturnedLibraryElementToLibrary())
+                {
+                    // add the library element controller of the new content to the list we are going to return
+                    addedLibraryElemControllers.Add(SessionController.Instance.ContentController.GetLibraryElementController(args.LibraryElementArgs.LibraryElementId));
+                    Task.Run(async delegate
+                    {
+                        var controller = SessionController.Instance.ContentController?.GetLibraryElementController(args?.LibraryElementArgs?.LibraryElementId);
+                        if (controller != null)
+                        {
+                            SessionController.Instance.NuSessionView?.Library?.LibraryListView?.ScrollTo(controller.LibraryElementModel);
+                            SessionController.Instance.NuSessionView?.Library?.LibraryListView?.SelectItem(controller.LibraryElementModel);
+                        }
+                    });
+                }
+                    
+
+                vm.ClearSelection();
 
                 _fileIdToAccessMap.Remove(storageFile.FolderRelativeId);
             }

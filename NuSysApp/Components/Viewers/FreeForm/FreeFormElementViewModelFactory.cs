@@ -23,6 +23,9 @@ namespace NuSysApp
 
             switch (model.ElementType)
             {
+                case NusysConstants.ElementType.Unknown:
+                    vm = new UnknownFileViewModel(controller);
+                    break;
                 case NusysConstants.ElementType.Text:
                     vm = new TextNodeViewModel(controller);
                     break;

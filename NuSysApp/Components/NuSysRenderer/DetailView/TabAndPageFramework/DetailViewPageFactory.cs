@@ -57,6 +57,9 @@ namespace NuSysApp
                             Debug.Assert(controller is WordNodeLibraryElementController);
                             rectangle = new DetailViewWordPage(parent, resourceCreator, controller as WordNodeLibraryElementController);
                             break;
+                        case NusysConstants.ElementType.Unknown:
+                            rectangle = new DetailViewUnknownFilePage(parent, resourceCreator, controller as LibraryElementController);
+                            break;
                         default:
                             throw new ArgumentOutOfRangeException(nameof(elementType),
                                 $"No home page support for {elementType} yet");

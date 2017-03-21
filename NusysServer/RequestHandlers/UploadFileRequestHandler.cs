@@ -11,7 +11,7 @@ namespace NusysServer
         protected override UploadFileReturnArgs HandleArgsRequest(UploadFileRequestArgs args, NuWebSocketHandler senderHandler)
         {
             var retArgs = new UploadFileReturnArgs();
-            retArgs.WasSuccessful = true;
+            retArgs.WasSuccessful = FileHelper.CreateFile(args.Bytes, args.Id); ;
             return retArgs;
         }
     }

@@ -18,6 +18,9 @@ namespace NuSysApp
                 case NusysConstants.ElementType.Text:
                     controller = new TextNodeController((TextElementModel)elementModel);
                     break;
+                case NusysConstants.ElementType.Unknown:
+                    controller = new UnknownFileElementController((UnknownFileElementModel)elementModel);
+                    break;
                 case NusysConstants.ElementType.Image:
                     controller = new ImageElementIntanceController(elementModel);
                     break;

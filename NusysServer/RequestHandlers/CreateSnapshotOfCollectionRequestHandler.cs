@@ -6,7 +6,6 @@ using System.Linq;
 using System.Web;
 using Newtonsoft.Json;
 using NusysIntermediate;
-using NusysServer.Util;
 
 namespace NusysServer
 {

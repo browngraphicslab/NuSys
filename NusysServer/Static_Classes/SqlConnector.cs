@@ -23,7 +23,9 @@ namespace NusysServer
         /// 
         //Nusys  Live
         //private const string SQLSTRING = "Server=tcp:nureposql.database.windows.net,1433;Database=NuRepo_SQL;User ID=nusys@nureposql;Password=browngfx1!;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;MultipleActiveResultSets=True;";
-        private const string SQLSTRING = "Server=tcp:nusystestsql.database.windows.net,1433;Initial Catalog=NuRepo_SQL_Copy_2_Copy;Persist Security Info=False;User ID=nusys@nureposql;Password=browngfx1!;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+        private const string SQLSTRING = "Server=tcp:doc-eng.database.windows.net,1433;Initial Catalog=doc_eng;Persist Security Info=False;User ID=nusys@doc-eng;Password=browngfx1!;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+
+        //private const string SQLSTRING = "Server=tcp:nusystestsql.database.windows.net,1433;Initial Catalog=NuRepo_SQL_Copy_2_Copy;Persist Security Info=False;User ID=nusys@nureposql;Password=browngfx1!;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
 
         //Nusys Test
         //private const string SQLSTRING = "Server=tcp:nusystestsql.database.windows.net,1433;Database=NuSysTest;User ID=nusys@nusystest;Password=browngfx1!;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;MultipleActiveResultSets=True;";    /// <summary>
@@ -53,8 +55,8 @@ namespace NusysServer
             _db.Open(); //open database
 
             //FileHelper.DeleteAllFiles();
-
-            //ResetTables(true);
+        
+            //ResetTables();
             //SetUpTables();
 
             //"Update Customers set City=Orders.OrderID FROM Customers join Orders on Orders.CustomerID = Customers.CustomerID  where ShipperId='3'";

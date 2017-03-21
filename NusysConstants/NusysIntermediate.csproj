@@ -49,13 +49,16 @@
     <Compile Include="Models\ImageLibraryElementModel.cs" />
     <Compile Include="Models\LastUsedCollectionModel.cs" />
     <Compile Include="Models\LibraryElementOrigin.cs" />
+    <Compile Include="Models\UnknownFileElementModel.cs" />
     <Compile Include="Models\VideoLibraryElementModel.cs" />
     <Compile Include="Models\WordLibraryElementModel.cs" />
     <Compile Include="RequestArgs\AddNewLastUsedCollectionServerRequestArgs.cs" />
     <Compile Include="RequestArgs\GetCollaboratorCoordinatesRequestArgs.cs" />
+    <Compile Include="RequestArgs\GetFileBytesRequestArgs.cs" />
     <Compile Include="RequestArgs\GetLastUsedCollectionsServerRequestArgs.cs" />
     <Compile Include="RequestArgs\GetLockRequestArgs.cs" />
     <Compile Include="RequestArgs\GetWordDocumentRequestArgs.cs" />
+    <Compile Include="RequestArgs\ReturnArgs\GetFileBytesRequestReturnArgs.cs" />
     <Compile Include="RequestArgs\ReturnArgs\GetLockRequestReturnArgs.cs" />
     <Compile Include="RequestArgs\ReturnArgs\GetWordDocumentReturnArgs.cs" />
     <Compile Include="RequestArgs\ReturnArgs\ReturnLockRequestReturnArgs.cs" />

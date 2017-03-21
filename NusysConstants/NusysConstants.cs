@@ -22,7 +22,7 @@ namespace NusysIntermediate
         /// <summary>
         /// the name of the currently used server
         /// </summary>
-        public static string ServerName { get; set; } = TEST_LOCAL_BOOLEAN ? "localhost:2776" : (TEST_SERVER_BOOLEAN ? "nusystest.azurewebsites.net" : "nusysrepo.azurewebsites.net");
+        public static string ServerName { get; set; } = TEST_LOCAL_BOOLEAN ? "localhost:2776" : (TEST_SERVER_BOOLEAN ? "doc-eng.azurewebsites.net" : "nusysrepo.azurewebsites.net");
 
         #region RequestManagementKeys
 
@@ -1800,7 +1800,9 @@ namespace NusysIntermediate
             UpdateContentRequest,
 
             UploadFileRequest,
-            
+
+            GetFileBytesRequest,
+
             /// <summary>
             /// this request type is used to create a search over the library elements.  
             /// </summary>
@@ -1876,7 +1878,7 @@ namespace NusysIntermediate
         {
 
             // Basic Types
-            Text, Image, Word, Powerpoint, Collection, PDF, Audio, Video, Tag, Web, Area, Link, Recording,
+            Text, Image, Word, Powerpoint, Collection, PDF, Audio, Video, Tag, Web, Area, Link, Recording, Unknown,
 
             // weird type that possibly shouldn't be here
             Tools

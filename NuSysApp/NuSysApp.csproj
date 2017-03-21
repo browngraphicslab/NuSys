@@ -419,6 +419,8 @@
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewTextContent.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewTextPage.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewMetadataPage.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewUnknownFileContent.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\DetailViewUnknownFilePage.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoContent.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoPage.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewWordPage.cs" />
@@ -633,6 +635,9 @@
     </Compile>
     <Compile Include="Components\Viewers\FreeForm\Modes\ExploreMode.cs" />
     <Compile Include="Components\Viewers\FreeForm\Modes\PresentMode.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\UnknownFileElementController.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\UnknownFileElementRenderItem.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\UnknownFileViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Wrapper\IRegionHideable.cs" />
     <Compile Include="Components\Viewers\KeyboardModeExtensions.cs" />
     <Compile Include="Components\Viewers\RecordingNodeViewModel.cs" />
@@ -836,6 +841,7 @@
     <Compile Include="Network\Requests\GetCollaboratorCoordinatesRequest.cs" />
     <Compile Include="Network\Requests\GetContentDataModelRequest.cs" />
     <Compile Include="Network\Requests\GetEntireWorkspaceRequest.cs" />
+    <Compile Include="Network\Requests\GetFileBytesRequest.cs" />
     <Compile Include="Network\Requests\GetLastUsedCollectionsRequest.cs" />
     <Compile Include="Network\Requests\GetLockRequest.cs" />
     <Compile Include="Network\Requests\GetRelatedDocumentsRequest.cs" />

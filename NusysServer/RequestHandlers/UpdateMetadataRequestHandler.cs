@@ -4,7 +4,6 @@ using System.Linq;
 using System.Web;
 using NusysIntermediate;
 using System.Diagnostics;
-using NusysServer.Util.SQLQuery;
 
 namespace NusysServer
 {

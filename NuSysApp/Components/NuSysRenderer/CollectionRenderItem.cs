@@ -667,6 +667,12 @@ namespace NuSysApp
                 await item.Load();
                 _renderItems2?.Add(item);
             }
+            else if (vm is UnknownFileViewModel)
+            {
+                item = new UnknownFileElementRenderItem((UnknownFileViewModel)vm, this, ResourceCreator);
+                await item.Load();
+                _renderItems2?.Add(item);
+            }
             else if (vm is ImageElementViewModel)
             {
                 item = new ImageElementRenderItem((ImageElementViewModel)vm, this, ResourceCreator);

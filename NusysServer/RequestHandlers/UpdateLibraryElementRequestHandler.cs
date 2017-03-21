@@ -4,8 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using NusysIntermediate;
-using NusysServer.Util.SQLQuery;
-using NusysServer.Util;
 using Newtonsoft.Json;
 
 namespace NusysServer

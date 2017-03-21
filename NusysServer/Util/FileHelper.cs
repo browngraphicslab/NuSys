@@ -118,6 +118,42 @@ namespace NusysServer
         }
 
         /// <summary>
+        /// method used to create an arbitrary file with any filename and bytes.Puts it in the www root.
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <param name="fileName"></param>
+        /// <param name="extension"></param>
+        /// <returns></returns>
+        public static bool CreateFile(byte[] bytes, string fileName, string extension = "")
+        {
+            extension = extension ?? "";
+            var filePath = Constants.WWW_ROOT + "/" + fileName+extension;
+            if (File.Exists(filePath))
+            {
+                return false;
+            }
+            File.WriteAllBytes(filePath,bytes);
+            return true;
+        }
+
+        /// <summary>
+        /// method to fetch a file from the www root.  Will return null if not exists.
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="fileExtension"></param>
+        /// <returns></returns>
+        public static byte[] GetFileBytes(string fileName, string fileExtension = "")
+        {
+            fileExtension = fileExtension ?? "";
+            var filePath = Constants.WWW_ROOT + "/" + fileName + fileExtension;
+            if (File.Exists(filePath))
+            {
+                return File.ReadAllBytes(filePath);
+            }
+            return null;
+        }
+
+        /// <summary>
         /// creates a content file based off the content data model id of the file.  
         /// A file exstension is needed for Audio, Video, and Image contentTypes.  
         /// If the contentType isn't on of those, the extension string will be ignored.  

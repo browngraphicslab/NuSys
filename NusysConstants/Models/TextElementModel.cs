@@ -10,8 +10,6 @@ namespace NusysIntermediate
 {
     public class TextElementModel : ElementModel
     {
-        public delegate void TextChangedEventHandler(object source, string text);
-        public event TextChangedEventHandler TextChanged;
 
         public TextElementModel(string id): base(id)
         {

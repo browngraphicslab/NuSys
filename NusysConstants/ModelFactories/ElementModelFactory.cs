@@ -25,6 +25,9 @@ namespace NusysIntermediate
                 case NusysConstants.ElementType.Text:
                     elementModel = new TextElementModel(id);
                     break;
+                case NusysConstants.ElementType.Unknown:
+                    elementModel = new UnknownFileElementModel(id);
+                    break;
                 case NusysConstants.ElementType.Image:
                     elementModel = new ImageElementModel(id);
                     break;
@@ -65,29 +68,32 @@ namespace NusysIntermediate
                 var elementModel = JsonConvert.DeserializeObject<ElementModel>(elementJSON);
                 switch (elementModel.ElementType)
                 {
-                case NusysConstants.ElementType.Text:
-                     elementModel = JsonConvert.DeserializeObject<TextElementModel>(elementJSON);
-                    break;
-                case NusysConstants.ElementType.Image:
-                     elementModel = JsonConvert.DeserializeObject<ImageElementModel>(elementJSON);
-                    break;
-                case NusysConstants.ElementType.Word:
-                     elementModel = JsonConvert.DeserializeObject<WordNodeModel>(elementJSON);
-                    break;
-                case NusysConstants.ElementType.PDF:
-                     elementModel = JsonConvert.DeserializeObject<PdfNodeModel>(elementJSON);
-                    break;
-                case NusysConstants.ElementType.Audio:
-                        elementModel = JsonConvert.DeserializeObject<AudioNodeModel>(elementJSON);
-                    break;
-                case NusysConstants.ElementType.Video:
-                        elementModel = JsonConvert.DeserializeObject<VideoNodeModel>(elementJSON);
-                    break;
-                case NusysConstants.ElementType.Collection:
-                        elementModel = JsonConvert.DeserializeObject<CollectionElementModel>(elementJSON);
-                    break;
-                case NusysConstants.ElementType.Area:
-                        elementModel = JsonConvert.DeserializeObject<AreaModel>(elementJSON);
+                    case NusysConstants.ElementType.Unknown:
+                        elementModel = JsonConvert.DeserializeObject<UnknownFileElementModel>(elementJSON);
+                        break;
+                    case NusysConstants.ElementType.Text:
+                        elementModel = JsonConvert.DeserializeObject<TextElementModel>(elementJSON);
+                        break;
+                    case NusysConstants.ElementType.Image:
+                         elementModel = JsonConvert.DeserializeObject<ImageElementModel>(elementJSON);
+                        break;
+                    case NusysConstants.ElementType.Word:
+                         elementModel = JsonConvert.DeserializeObject<WordNodeModel>(elementJSON);
+                        break;
+                    case NusysConstants.ElementType.PDF:
+                         elementModel = JsonConvert.DeserializeObject<PdfNodeModel>(elementJSON);
+                        break;
+                    case NusysConstants.ElementType.Audio:
+                            elementModel = JsonConvert.DeserializeObject<AudioNodeModel>(elementJSON);
+                        break;
+                    case NusysConstants.ElementType.Video:
+                            elementModel = JsonConvert.DeserializeObject<VideoNodeModel>(elementJSON);
+                        break;
+                    case NusysConstants.ElementType.Collection:
+                            elementModel = JsonConvert.DeserializeObject<CollectionElementModel>(elementJSON);
+                        break;
+                    case NusysConstants.ElementType.Area:
+                            elementModel = JsonConvert.DeserializeObject<AreaModel>(elementJSON);
                     break;
                 }
                 //VERY IMPORTANT

@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using NusysIntermediate;
-using NusysServer.Util.SQLQuery;
-
 namespace NusysServer.RequestHandlers
 {
     public class DeleteInkStrokeRequestHandler : RequestHandler
