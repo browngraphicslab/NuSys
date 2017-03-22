@@ -96,15 +96,6 @@ namespace NuSysApp
         private void MinimapUIElement_Holding(InteractiveBaseRenderItem item, Vector2 point)
         {
 
-            //Goes from CanvasPointer, whose CurrentPoint is the local representation of the point, to the representation of the point relative to the minimap _rect, then to the representation of the point on the collection
-            var localPoint = Vector2.Transform(point, Transform.ScreenToLocalMatrix);
-            var trueLocalPoint = GetTrueLocalPoint(localPoint);
-            var collectionPoint = GetCollectionPointFromLocalPoint(trueLocalPoint);
-            //Finally we center the camera on that point, only if the current collection is the top collection
-            if (_collection == SessionController.Instance.SessionView.FreeFormViewer.InitialCollection)
-            {
-                _collection.CenterCameraOnPoint(collectionPoint);
-            }
 
         }
 
@@ -115,7 +106,15 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void MinimapUIElement_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            //_mode = Mode.Dragging;
+            //Goes from CanvasPointer, whose CurrentPoint is the local representation of the point, to the representation of the point relative to the minimap _rect, then to the representation of the point on the collection
+            var localPoint = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
+            var trueLocalPoint = GetTrueLocalPoint(localPoint);
+            var collectionPoint = GetCollectionPointFromLocalPoint(trueLocalPoint);
+            //Finally we center the camera on that point, only if the current collection is the top collection
+            if (_collection == SessionController.Instance.SessionView.FreeFormViewer.InitialCollection)
+            {
+                _collection.CenterCameraOnPoint(collectionPoint);
+            }
 
         }
 
@@ -260,7 +259,7 @@ namespace NuSysApp
         /// Output: point on collection the input represents
         /// </summary>
         /// <param name="localPoint"></param>
-        /// <returns></returns>
+        /// <returns></returns>d
         private Vector2 GetCollectionPointFromLocalPoint(Vector2 localPoint)
         {
 
@@ -482,17 +481,12 @@ namespace NuSysApp
                 return;
             }
 
-a
-
-
             if (_renderTarget == null)
             {
                 CreateResources();
             }
 
             CalculateViewport(ds);
-
-
 
             base.Draw(ds);
 
