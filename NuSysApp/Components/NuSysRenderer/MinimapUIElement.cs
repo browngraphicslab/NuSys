@@ -11,6 +11,7 @@ using Windows.Foundation;
 using Windows.UI.Xaml.Media;
 using Microsoft.Graphics.Canvas.Brushes;
 using Microsoft.Graphics.Canvas.Geometry;
+using Microsoft.Office.Interop.Word;
 
 namespace NuSysApp
 {
@@ -35,6 +36,8 @@ namespace NuSysApp
         private enum Mode { None, Moving, Dragging}
 
         private Mode _mode;
+
+        private RectangleUIElement _test;
         public MinimapUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             Background = Colors.Transparent;
@@ -56,7 +59,7 @@ namespace NuSysApp
             _zoomRectangle = new RectangleUIElement(this, ResourceCreator)
             {
                 BorderType = BorderType.Outside,
-                BorderWidth = 2f,
+                BorderWidth = 5f,
                 BorderColor = Colors.DarkRed,
                 Background = Colors.Transparent,
                 Width = 4f,
@@ -65,6 +68,14 @@ namespace NuSysApp
 
             };
             AddChild(_zoomRectangle);
+
+            _test = new RectangleUIElement(this, ResourceCreator)
+            {
+                Background = Colors.Blue,
+                Width = 10,
+                Height = 10
+            };
+
         }
         /// <summary>
         /// Adds interaction handlers
@@ -146,8 +157,6 @@ namespace NuSysApp
                     _mode = Mode.Moving;
                 }
             
-
-
             }
 
             if (_mode == Mode.Dragging)
@@ -172,13 +181,11 @@ namespace NuSysApp
                 _zoomRectangle.Transform.LocalPosition = new Vector2((float)_viewport.X, (float)_viewport.Y);
             }
 
-            var newPosition = _zoomRectangle.Transform.LocalPosition + pointer.DeltaSinceLastUpdate;
+            _zoomRectangle.Transform.LocalPosition += pointer.DeltaSinceLastUpdate;
 
-            _zoomRectangle.Transform.LocalPosition = newPosition;
 
-            //local point is center of rectangle
-            var center = _zoomRectangle.Transform.LocalPosition +
-                                 new Vector2(_zoomRectangle.Width, _zoomRectangle.Height)/2;
+            //local point is center of rectangles
+            var center = _zoomRectangle.Transform.LocalPosition + new Vector2(_zoomRectangle.Width, _zoomRectangle.Height)/2;
             var trueLocalPoint = GetTrueLocalPoint(center);
             var collectionPoint = GetCollectionPointFromLocalPoint(trueLocalPoint);
             //Finally we center the camera on that point, only if the current collection is the top collection
@@ -225,17 +232,20 @@ namespace NuSysApp
                 return;
             }
             _zoomRectangle.IsVisible = false;
-
+            var modeWhenReleased = _mode;
             _mode = Mode.None;
-
-            var ratioHeight = (float)_collection.ViewModel.Height / (float)_collection.ViewModel.Width;
-
-            if (_zoomRectangle.Width < 15 || _zoomRectangle.Height < 15 * ratioHeight)
+            //Don't update the collection camera based on the rectangle if we were simply moving the zoom rectangle. Only when dragging out a new one
+            if (modeWhenReleased == Mode.Dragging)
             {
-                return;
-            }
+                var ratioHeight = (float)_collection.ViewModel.Height / (float)_collection.ViewModel.Width;
 
-            SetCollectionCameraBasedOnRectangle();
+                if (_zoomRectangle.Width < 15 || _zoomRectangle.Height < 15 * ratioHeight)
+                {
+                    return;
+                }
+
+                SetCollectionCameraBasedOnRectangle();
+            }
 
         }
         #endregion events
@@ -487,6 +497,16 @@ namespace NuSysApp
             }
 
             CalculateViewport(ds);
+
+            var orgTransform = ds.Transform;
+            ds.Transform = Transform.LocalToScreenMatrix;
+
+            // Creates a clipping of the drawing session based on local bounds
+            using (ds.CreateLayer(1f, GetLocalBounds()))
+            {
+                //_zoomRectangle.Draw(ds);
+            }
+            ds.Transform = orgTransform;
 
             base.Draw(ds);
 

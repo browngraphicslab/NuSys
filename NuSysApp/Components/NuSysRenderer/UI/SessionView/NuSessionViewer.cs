@@ -314,13 +314,13 @@ namespace NuSysApp
 
 
 
-            _minimap = new MinimapUIElement(this, Canvas)
+            _minimap = new MinimapUIElement(this, ResourceCreator)
             {
                 Height = UIDefaults.MaxMinimapHeight,
                 Width = UIDefaults.MaxMinimapWidth
                 
             };
-            _minimap.Transform.LocalPosition = new Vector2(Width - 300f, Height - 170f);
+            _minimap.Transform.LocalPosition = new Vector2(Width - UIDefaults.MaxMinimapWidth, Height - UIDefaults.MaxMinimapHeight);
 
             AddChild(_minimap);
 
