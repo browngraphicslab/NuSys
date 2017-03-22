@@ -258,7 +258,6 @@ namespace NuSysApp
             MultipleSelections = false;
             BorderWidth = 0;
             Rows = new List<ListViewRowUIElement<T>>();
-            _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
             _selectedElements = new HashSet<T>();
  
         }
@@ -771,7 +770,6 @@ namespace NuSysApp
         /// <param name="parentLocalToScreenTransform"></param>
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
 
             FinishScrolling();
 
@@ -827,7 +825,7 @@ namespace NuSysApp
             ds.Transform = Transform.LocalToScreenMatrix;
 
             // Creates a clipping of the drawing session based on _clippingrect
-            using (ds.CreateLayer(1f, _clippingRect))
+            using (ds.CreateLayer(1f, GetLocalBounds()))
             {
                 //Draws every row
                 foreach (var row in Rows.ToArray())

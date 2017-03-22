@@ -9,6 +9,8 @@ using System.Diagnostics;
 using Windows.UI;
 using Windows.Foundation;
 using Windows.UI.Xaml.Media;
+using Microsoft.Graphics.Canvas.Brushes;
+using Microsoft.Graphics.Canvas.Geometry;
 
 namespace NuSysApp
 {
@@ -55,7 +57,7 @@ namespace NuSysApp
             {
                 BorderType = BorderType.Outside,
                 BorderWidth = 2f,
-                BorderColor = Colors.Red,
+                BorderColor = Colors.DarkRed,
                 Background = Colors.Transparent,
                 Width = 4f,
                 Height = 4f,
@@ -113,7 +115,7 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void MinimapUIElement_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            _mode = Mode.Dragging;
+            //_mode = Mode.Dragging;
 
         }
 
@@ -134,8 +136,12 @@ namespace NuSysApp
             //Set mode based on whether your pointer hit the viewport
             if (_mode == Mode.None)
             {
-                
-                if (localPoint.X >= _viewport.X && localPoint.Y >= _viewport.Y &&
+                if (pointer.IsRightButtonPressed)
+                {
+                    _mode = Mode.Dragging;
+                }
+
+                else if (localPoint.X >= _viewport.X && localPoint.Y >= _viewport.Y &&
                     localPoint.X <= _viewport.X + _viewport.Width && localPoint.Y <= _viewport.Y + _viewport.Height)
                 {
                     _mode = Mode.Moving;
@@ -171,8 +177,16 @@ namespace NuSysApp
 
             _zoomRectangle.Transform.LocalPosition = newPosition;
 
-
-            SetCollectionCameraBasedOnRectangle();
+            //local point is center of rectangle
+            var center = _zoomRectangle.Transform.LocalPosition +
+                                 new Vector2(_zoomRectangle.Width, _zoomRectangle.Height)/2;
+            var trueLocalPoint = GetTrueLocalPoint(center);
+            var collectionPoint = GetCollectionPointFromLocalPoint(trueLocalPoint);
+            //Finally we center the camera on that point, only if the current collection is the top collection
+            if (_collection == SessionController.Instance.SessionView.FreeFormViewer.InitialCollection)
+            {
+                _collection.CenterCameraOnPoint(collectionPoint);
+            }
 
         }
 
@@ -213,11 +227,7 @@ namespace NuSysApp
             }
             _zoomRectangle.IsVisible = false;
 
-            if (_mode == Mode.Moving)
-            {
-                _mode = Mode.None;
-
-            }
+            _mode = Mode.None;
 
             var ratioHeight = (float)_collection.ViewModel.Height / (float)_collection.ViewModel.Width;
 
@@ -344,42 +354,15 @@ namespace NuSysApp
             IsDirty = true;
         }
 
-        /// <summary>
-        /// Most of this is written by Phil
-        /// </summary>
-        /// <param name="ds"></param>
-        public override void Draw(CanvasDrawingSession ds)
+        private void CalculateViewport(CanvasDrawingSession ds)
         {
-            if (IsDisposed || !SessionController.Instance.SessionSettings.MinimapVisible || _collection == null)
-            {
-                return;
-            }
-
-            if (_collection?.ViewModel?.Elements?.Count != null && _collection?.ViewModel?.Elements?.Count == 0)
-            {
-                return;
-            }
-
-            Debug.Assert(_collection?.ViewModel != null, "this shouldn't be null");
-            if (_collection?.ViewModel == null)
-            {
-                return;
-            }
-
-
-            if (_renderTarget == null)
-            {
-                CreateResources();
-            }
-
-
 
             float rh = (float)_collection.ViewModel.Height / (float)_collection.ViewModel.Width;
             float newW;
             float newH;
 
-            
-            if (rh < UIDefaults.MaxMinimapHeight/UIDefaults.MaxMinimapWidth)
+
+            if (rh < UIDefaults.MaxMinimapHeight / UIDefaults.MaxMinimapWidth)
             {
                 newH = rh * UIDefaults.MaxMinimapWidth;
                 newW = UIDefaults.MaxMinimapWidth;
@@ -391,7 +374,7 @@ namespace NuSysApp
             }
 
             //_rect = new Rect(_collection.ViewModel.Width - newW, _collection.ViewModel.Height - newH, newW, newH);
-            _rect = new Rect(0,0, newW, newH); //I don't know the difference between this line and the line above. Both behave the same.
+            _rect = new Rect(0, 0, newW, newH); //I don't know the difference between this line and the line above. Both behave the same.
 
             using (var dss = _renderTarget.CreateDrawingSession())
             {
@@ -465,7 +448,7 @@ namespace NuSysApp
             {
                 var old = ds.Transform;
                 ds.Transform = Transform.LocalToScreenMatrix;
-                var xOffset =  UIDefaults.MaxMinimapWidth - _rect.Width;
+                var xOffset = UIDefaults.MaxMinimapWidth - _rect.Width;
                 var yOffset = UIDefaults.MaxMinimapHeight - _rect.Height;
 
                 ds.DrawImage(_renderTarget, new Rect(xOffset, yOffset, _rect.Width, _rect.Height));
@@ -475,6 +458,41 @@ namespace NuSysApp
             {
                 //TODO fix this
             }
+        }
+
+        /// <summary>
+        /// Most of this is written by Phil
+        /// </summary>
+        /// <param name="ds"></param>
+        public override void Draw(CanvasDrawingSession ds)
+        {
+            if (IsDisposed || !SessionController.Instance.SessionSettings.MinimapVisible || _collection == null)
+            {
+                return;
+            }
+
+            if (_collection?.ViewModel?.Elements?.Count != null && _collection?.ViewModel?.Elements?.Count == 0)
+            {
+                return;
+            }
+
+            Debug.Assert(_collection?.ViewModel != null, "this shouldn't be null");
+            if (_collection?.ViewModel == null)
+            {
+                return;
+            }
+
+a
+
+
+            if (_renderTarget == null)
+            {
+                CreateResources();
+            }
+
+            CalculateViewport(ds);
+
+
 
             base.Draw(ds);
 
