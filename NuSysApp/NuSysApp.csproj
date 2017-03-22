@@ -325,6 +325,9 @@
     <Content Include="Assets\fonts\Rubik-Regular.ttf" />
     <None Include="Assets\paragraph.nusys" />
     <None Include="ClassDiagram1.cd" />
+    <None Include="Google Drive\client_id.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="NuSysApp_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="project.json" />
@@ -673,6 +676,11 @@
     <Compile Include="Converters\ListToStringConverter.cs" />
     <Compile Include="Converters\MutabilityToBrushConverter.cs" />
     <Compile Include="FocusManager.cs" />
+    <Compile Include="Google Drive\AuthResponse.cs" />
+    <Compile Include="Google Drive\GoogleDriveAuthPage.xaml.cs">
+      <DependentUpon>GoogleDriveAuthPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Google Drive\GoogleDriveTest.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
     <Compile Include="Models\InqLineModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\InkStorage.cs" />
@@ -918,6 +926,7 @@
     <Compile Include="Util\AccessList.cs" />
     <Compile Include="Util\BiDirectionary.cs" />
     <Compile Include="Util\CapturedStateModel.cs" />
+    <Compile Include="Google Drive\GoogleDriveCommunicator.cs" />
     <Compile Include="Util\ColorExtensions.cs" />
     <Compile Include="Util\DetailViewTabType.cs" />
     <Compile Include="Util\EventUtil.cs" />
@@ -1384,6 +1393,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\WaitingRoom\CollectionListBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Google Drive\GoogleDriveAuthPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -2,11 +2,13 @@
   "dependencies": {
     "CommonMark.NET": "0.14.0",
     "GeoAPI": "1.7.4",
+    "Google.Apis.Drive.v3": "1.22.0.792",
     "HtmlAgilityPack": "1.4.9.5",
     "Microsoft.ApplicationInsights": "2.1.0",
     "Microsoft.ApplicationInsights.PersistenceChannel": "1.2.3",
     "Microsoft.ApplicationInsights.WindowsApps": "1.1.1",
     "Microsoft.AspNet.SignalR.JS": "2.2.1",
+    "Microsoft.Bcl.Async": "1.0.168",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2",
     "MyToolkit.Extended": "2.5.16",
     "NAudio": "1.7.3",
