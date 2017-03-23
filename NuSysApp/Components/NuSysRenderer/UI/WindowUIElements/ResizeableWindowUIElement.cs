@@ -14,6 +14,11 @@ namespace NuSysApp
 {
     public class ResizeableWindowUIElement : DraggableWindowUIElement
     {
+        private CanvasBitmap _dragIcon;
+
+        private ButtonUIElement _leftIconButton;
+        private ButtonUIElement _rightIconButton;
+
 
         public static ResizeableWindowUIElement CurrentlyDraggingWindow { get; private set; }
 
@@ -328,27 +333,49 @@ namespace NuSysApp
             };
             AddChild(_bottomRightResizeHighlight);
 
+
             _leftSlider = new RectangleUIElement(this, resourceCreator)
             {
-                Width = 20,
+                Width = UIDefaults.detailViewSliderWidth,
                 Height = 1500,
                 IsHitTestVisible = false,
-                Background = Constants.COLOR_BLUE,
+                Background = Constants.MED_BLUE,
             };
-            _leftSlider.Transform.LocalPosition = new Vector2(-20, 0);
+            _leftSlider.Transform.LocalPosition = new Vector2(-UIDefaults.detailViewSliderWidth, 0);
             AddChild(_leftSlider);
-            
 
+
+            _leftIconButton = new ButtonUIElement(this, resourceCreator)
+            {
+                Width = UIDefaults.detailViewSliderWidth,
+                Height = UIDefaults.detailViewSliderWidth,
+                IsHitTestVisible = false,
+                Background = Constants.MED_BLUE,
+            };
+            _leftIconButton.Transform.LocalPosition = new Vector2(-UIDefaults.detailViewSliderWidth, 500);
+            AddChild(_leftIconButton);
+
+           
             _rightSlider = new RectangleUIElement(this, resourceCreator)
             {
-                Width = 20,
+                Width = UIDefaults.detailViewSliderWidth,
                 Height = 1500,
                 IsHitTestVisible = false,
-                Background = Constants.COLOR_BLUE,
+                Background = Constants.MED_BLUE,
             };
 
             AddChild(_rightSlider);
-            
+
+            _rightIconButton = new ButtonUIElement(this, resourceCreator)
+            {
+                Width = UIDefaults.detailViewSliderWidth,
+                Height = UIDefaults.detailViewSliderWidth,
+                IsHitTestVisible = false,
+                Background = Constants.MED_BLUE,
+            };
+            AddChild(_rightIconButton);
+
+
 
             // add manipulation events
             Dragged += ResizeableWindowUIElement_Dragged;
@@ -359,6 +386,16 @@ namespace NuSysApp
             OnChildFocusLost += FocusLostHideHighlight;
 
 
+        }
+
+        public override async Task Load()
+        {
+            // load all the images async
+            _dragIcon = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/threeBarDetailViewSlider.png"));
+
+            _leftIconButton.Image = _dragIcon;
+            _rightIconButton.Image = _dragIcon;
+            base.Load();
         }
 
         /// <summary>
@@ -645,19 +682,24 @@ namespace NuSysApp
             _bottomRightResizeHighlight.Height = ErrorMargin;
 
             _rightSlider.Transform.LocalPosition = new Vector2(this.Width-1, 0);
+            _rightIconButton.Transform.LocalPosition = new Vector2(this.Width - 1, 500);
 
-            // check snapped
+            // If the element is snapped, show the sliders, else hide the sliders
             if (IsSnapped)
             {
                 _leftSlider.IsVisible = true;
                 _rightSlider.IsVisible = true;
-                //Width = Width + 100;
+                _leftIconButton.IsVisible = true;
+                _rightIconButton.IsVisible = true;
+                ErrorMargin = 30;
             }
             else
             {
                 _leftSlider.IsVisible = false;
                 _rightSlider.IsVisible = false;
-               // Width = Width - 100;
+                _leftIconButton.IsVisible = false;
+                _rightIconButton.IsVisible = false;
+                ErrorMargin = 15;
             }
 
             // check gradient visibility 
