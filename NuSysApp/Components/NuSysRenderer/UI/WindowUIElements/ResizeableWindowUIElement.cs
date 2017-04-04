@@ -330,9 +330,9 @@ namespace NuSysApp
 
             _leftSlider = new RectangleUIElement(this, resourceCreator)
             {
-                Width = 20,
+                Width = 100,
                 Height = 1500,
-                IsHitTestVisible = false,
+                IsHitTestVisible = true,
                 Background = Constants.COLOR_BLUE,
             };
             _leftSlider.Transform.LocalPosition = new Vector2(-20, 0);
@@ -343,7 +343,7 @@ namespace NuSysApp
             {
                 Width = 20,
                 Height = 1500,
-                IsHitTestVisible = false,
+                IsHitTestVisible = true,
                 Background = Constants.COLOR_BLUE,
             };
 
@@ -358,6 +358,11 @@ namespace NuSysApp
             OnFocusLost += FocusLostHideHighlight;
             OnChildFocusLost += FocusLostHideHighlight;
 
+            // add manipulation events to sliders (used in DetailView)
+            _leftSlider.Dragged += ResizeableWindowUIElement_Dragged;
+            _rightSlider.Dragged += ResizeableWindowUIElement_Dragged;
+            _leftSlider.Pressed += Slider_Pressed;
+            _rightSlider.Pressed += Slider_Pressed;
 
         }
 
@@ -395,8 +400,15 @@ namespace NuSysApp
             ToggleResizeHighlight(false);
         }
 
-
-
+        /// <summary>
+        /// Fired when a pointer is pressed on either the left or the right slider
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void Slider_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            _resizePosition = (item == _leftSlider) ? ResizerBorderPosition.Left : ResizerBorderPosition.Right;
+        }
 
         /// <summary>
         /// Fired when a pointer is pressed on the ResizeableWindowUIElement.
@@ -425,7 +437,6 @@ namespace NuSysApp
 
             base.Dispose();
         }
-
 
         /// <summary>
         /// Fired when a pointer that was initially placed on the ResizeableWindowUIElement is dragged.
@@ -568,7 +579,7 @@ namespace NuSysApp
             var currentPoint = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
 
             // the pointer is on the right bound of the window
-            if (currentPoint.X > Width - Math.Max(BorderWidth, ErrorMargin) /*|| (_rightSlider.IsVisible && currentPoint.X > Width + 1000)*/)
+            if (currentPoint.X > Width - Math.Max(BorderWidth, ErrorMargin))
             {
                 right = true;
             }
@@ -578,7 +589,7 @@ namespace NuSysApp
                 bottom = true;
             }
             // the pointer is on the left bound of the window
-            if (currentPoint.X < 0 + Math.Max(BorderWidth, ErrorMargin) /*|| (_leftSlider.IsVisible && currentPoint.X < 0 - 1000)*/)
+            if (currentPoint.X < 0 + Math.Max(BorderWidth, ErrorMargin))
             {
                 left = true;
             }
