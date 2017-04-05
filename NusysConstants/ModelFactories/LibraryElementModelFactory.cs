@@ -35,6 +35,9 @@ namespace NusysIntermediate
                 case NusysConstants.ElementType.Image:
                     model = new ImageLibraryElementModel(id);
                     break;
+                case NusysConstants.ElementType.HTML:
+                    model = new HtmlLibraryElementModel(id);
+                    break;
                 case NusysConstants.ElementType.Audio:
                     model = new AudioLibraryElementModel(id);
                     break;
@@ -77,11 +80,14 @@ namespace NusysIntermediate
                     case NusysConstants.ElementType.Audio:
                         model = JsonConvert.DeserializeObject<AudioLibraryElementModel>(libraryElementJSON);
                         break;
-                    case NusysConstants.ElementType.PDF: //TODO at some point actually have a word library element model
+                    case NusysConstants.ElementType.PDF:
                         model = JsonConvert.DeserializeObject<PdfLibraryElementModel>(libraryElementJSON);
                         break;
                     case NusysConstants.ElementType.Word:
                         model = JsonConvert.DeserializeObject<WordLibraryElementModel>(libraryElementJSON);
+                        break;
+                    case NusysConstants.ElementType.HTML:
+                        model = JsonConvert.DeserializeObject<HtmlLibraryElementModel>(libraryElementJSON);
                         break;
                     case NusysConstants.ElementType.Image:
                         model = JsonConvert.DeserializeObject<ImageLibraryElementModel>(libraryElementJSON);

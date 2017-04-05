@@ -1,4 +1,5 @@
-﻿using System;
+﻿// compile with: /unsafe
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -10,7 +11,9 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web.Http;
+using Windows.Devices.Bluetooth.Advertisement;
 
 namespace NusysServer.Controllers
 {
@@ -40,8 +43,12 @@ namespace NusysServer.Controllers
         public static extern void Dispose(IntPtr pointer);
 
 
-        public HttpResponseMessage Get()
+        public async Task<HttpResponseMessage> Get()
         {
+            
+            var r2 = new HttpResponseMessage(HttpStatusCode.OK);
+            r2.Content = new StringContent(await Get(5));
+            return r2;
             // get the bytes of a pdf
             var webClient = new WebClient();
             byte[] pdfBytes = webClient.DownloadData("http://cs.brown.edu/~peichmann/downloads/cted.pdf");
@@ -72,16 +79,61 @@ namespace NusysServer.Controllers
             r.Content = new StringContent(textString);
             return r;
         }
+        
+        [DllImport("ConsoleApplication2_122", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int test();
+
+
+        //[DllImport("d6_2", CallingConvention = CallingConvention.Cdecl)]
+        //public static unsafe extern int getImage (void* pointer);
 
 
 
-        // GET api/<controller>/5
-        public string Get(int id)
+        /*
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct test_struct
         {
-            var str = "result";
+            
+            public string byte_array;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 1234)]
+            public string url;
 
+        };*/
 
-            return str;
+        public struct int_struct
+        {
+            public int myInt;
+        };
+        
+        // GET api/<controller>/5
+        public async Task<string> Get(int site)
+        {
+            try
+            {
+                var url = "http://www.pdf995.com/samples/pdf.pdf";
+                var client = new HttpClient();
+                var result = await client.GetStreamAsync(new Uri(url));
+                MemoryStream ms = new MemoryStream();
+                result.CopyTo(ms);
+                byte[] data = ms.ToArray();
+
+                var exePath = Constants.WWW_ROOT + "wkhtmltoimage.exe";
+
+                var imagePath = Constants.WWW_ROOT + "temp.jpg";
+
+                var htmlPath = Constants.WWW_ROOT + "temp.html";
+                File.WriteAllBytes(htmlPath, data);
+
+                ProcessStartInfo startInfo = new ProcessStartInfo(exePath, " --crop-h 1250 " + htmlPath + " " + imagePath);
+                Process process = new Process() {StartInfo = startInfo};
+                process.Start();
+
+                return "done! " + process.ToString() + "   done";
+            }
+            catch (Exception e)
+            {
+                return "Failed: "+e.Message;
+            }
         }
 
         // POST api/<controller>

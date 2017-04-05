@@ -46,6 +46,8 @@
     <Compile Include="Models\CollectionContentDataModel.cs" />
     <Compile Include="Models\CollectionShapeModel.cs" />
     <Compile Include="Models\ColorModel.cs" />
+    <Compile Include="Models\HtmlElementModel.cs" />
+    <Compile Include="Models\HtmlLibraryElementModel.cs" />
     <Compile Include="Models\ImageLibraryElementModel.cs" />
     <Compile Include="Models\LastUsedCollectionModel.cs" />
     <Compile Include="Models\LibraryElementOrigin.cs" />

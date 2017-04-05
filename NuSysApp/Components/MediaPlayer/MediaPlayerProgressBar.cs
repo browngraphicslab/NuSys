@@ -239,7 +239,11 @@ namespace NuSysApp
             {
                 return;
             }
-            _progressBar.Width = Math.Max(0,Width*((normalizedTime - CurrentLibraryElementController.AudioLibraryElementModel.NormalizedStartTime)/CurrentLibraryElementController.AudioLibraryElementModel.NormalizedDuration));
+            var maxWidth = Width*
+                           ((normalizedTime -
+                             CurrentLibraryElementController.AudioLibraryElementModel.NormalizedStartTime)/
+                            CurrentLibraryElementController.AudioLibraryElementModel.NormalizedDuration);
+            _progressBar.Width = Math.Max(0,Math.Min(maxWidth,1));
         }
 
         private class RegionView : Canvas

@@ -622,12 +622,19 @@ namespace NuSysApp
         {
             get
             {
+                if (LibraryElementModel.Type == NusysConstants.ElementType.Unknown)
+                {
+                    return new Uri("ms-appx:///Assets/library_thumbnails/unknown_file.png");
+                }
                 if (!string.IsNullOrEmpty(LibraryElementModel.LargeIconUrl))
                 {
                     return new Uri(LibraryElementModel.LargeIconUrl);
                 }
                 switch (LibraryElementModel.Type)
                 {
+                    case NusysConstants.ElementType.HTML:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/html.png");
+                        break;
                     case NusysConstants.ElementType.Image:
                     case NusysConstants.ElementType.Video:
                         return
@@ -662,12 +669,19 @@ namespace NuSysApp
         {
             get
             {
+                if (LibraryElementModel.Type == NusysConstants.ElementType.Unknown)
+                {
+                    return new Uri("ms-appx:///Assets/library_thumbnails/unknown_file.png");
+                }
                 if (!string.IsNullOrEmpty(LibraryElementModel.MediumIconUrl))
                 {
                     return new Uri(LibraryElementModel.MediumIconUrl);
                 }
                 switch (LibraryElementModel.Type)
                 {
+                    case NusysConstants.ElementType.HTML:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/html.png");
+                        break;
                     case NusysConstants.ElementType.Image:
                     case NusysConstants.ElementType.Video:
                         return
@@ -702,12 +716,19 @@ namespace NuSysApp
         {
             get
             {
+                if (LibraryElementModel.Type == NusysConstants.ElementType.Unknown)
+                {
+                    return new Uri("ms-appx:///Assets/library_thumbnails/unknown_file.png");
+                }
                 if (!string.IsNullOrEmpty(LibraryElementModel.SmallIconUrl))
                 {
                     return new Uri(LibraryElementModel.SmallIconUrl);
                 }
                 switch (LibraryElementModel.Type)
                 {
+                    case NusysConstants.ElementType.HTML:
+                        return new Uri("ms-appx:///Assets/library_thumbnails/html.png");
+                        break;
                     case NusysConstants.ElementType.Image:
                     case NusysConstants.ElementType.Video:
                         return

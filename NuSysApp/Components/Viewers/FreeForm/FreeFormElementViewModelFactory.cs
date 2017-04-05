@@ -35,6 +35,9 @@ namespace NuSysApp
                 case NusysConstants.ElementType.Tag:
                     vm =new LabelNodeViewModel((ElementController)controller);
                     break;
+                case NusysConstants.ElementType.HTML:
+                    vm = new HtmlNodeViewModel(controller as HtmlElementController);
+                    break;
                 case NusysConstants.ElementType.Image:
                     vm = new ImageElementViewModel(controller);
                     break;

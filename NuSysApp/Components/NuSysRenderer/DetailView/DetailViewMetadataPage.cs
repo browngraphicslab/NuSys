@@ -169,7 +169,7 @@ namespace NuSysApp
                 _addKeyBox.ClearText();
                 _addKeyBox.Text = item.Key;
             }
-            else if (item.Key == "Search_Url")
+            else if (item.Key == "Search_Url" || item.Key == "Original_Url")
             {
                 try
                 {

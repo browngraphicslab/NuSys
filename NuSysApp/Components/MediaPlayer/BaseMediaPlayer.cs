@@ -12,6 +12,9 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
+using Google.Apis.Services;
+using Google.Apis.YouTube.v3;
+using MyToolkit.Multimedia;
 
 namespace NuSysApp
 {
@@ -200,6 +203,13 @@ namespace NuSysApp
             ((TranslateTransform)PlayPauseButton.RenderTransform).X = (width - PlayPauseButton.Width )/ 2;
         }
 
+        private static YouTubeService youtubeService = new YouTubeService(
+        new BaseClientService.Initializer()
+        {
+            ApiKey = "AIzaSyB_lctEqNUGu2mKozQkTler9pS1jU8fO6Q",
+            ApplicationName = "NusysImporter"
+        });
+
         /// <summary>
         /// 
         /// </summary>
@@ -211,8 +221,23 @@ namespace NuSysApp
             {
                 CurrentLibraryElementController = controller;
                 ProgressBar.SetLibraryElementController(controller);
-                MediaElement.Source = new Uri(controller.Data);
-                AutoStartMedia = autoStartWhenLoaded;
+
+                var url = controller.Data;
+                if (url.Contains("."))
+                {
+                    MediaElement.Source = new Uri(controller.Data);
+                    AutoStartMedia = autoStartWhenLoaded;
+                }
+                else
+                {
+                    UITask.Run(async delegate
+                    {
+                        var videoUrl = await YouTube.GetVideoUriAsync(url, YouTubeQuality.Quality1080P);
+                        MediaElement.Source = videoUrl.Uri;
+                        AutoStartMedia = autoStartWhenLoaded;
+                    });
+                }
+
             }
         }
 

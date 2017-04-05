@@ -38,7 +38,7 @@ namespace NusysServer
             //create message of database keys from request keys
             var addLibraryElementMessage = RequestToSqlKeyMappings.LibraryElementRequestKeysToDatabaseKeys(message);
 
-            addLibraryElementMessage[NusysConstants.LIBRARY_ELEMENT_CREATOR_USER_ID_KEY] = senderHandler?.UserId;
+            addLibraryElementMessage[NusysConstants.LIBRARY_ELEMENT_CREATOR_USER_ID_KEY] = senderHandler?.UserId ?? message.GetString(NusysConstants.LIBRARY_ELEMENT_CREATOR_USER_ID_KEY);
             addLibraryElementMessage = SetUpIconUrls(message, addLibraryElementMessage, libraryId);
             
             //if the request didn't specify a access Control type,

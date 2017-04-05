@@ -121,6 +121,8 @@
     <Content Include="Assets\layout_icons\horizontal_layout_icon.png" />
     <Content Include="Assets\layout_icons\layout_icon.png" />
     <Content Include="Assets\layout_icons\vertical_layout_icon.png" />
+    <Content Include="Assets\library_thumbnails\html.png" />
+    <Content Include="Assets\library_thumbnails\unknown_file.png" />
     <Content Include="Assets\new icons\add elements white.png" />
     <Content Include="Assets\new icons\add elements.png" />
     <Content Include="Assets\new icons\back.png" />
@@ -424,6 +426,7 @@
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoContent.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoPage.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewWordPage.cs" />
+    <Compile Include="Components\NuSysRenderer\HtmlElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BorderType.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ListView\LibraryListImageColumn.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ListView\ListImageColumn.cs" />
@@ -635,6 +638,8 @@
     </Compile>
     <Compile Include="Components\Viewers\FreeForm\Modes\ExploreMode.cs" />
     <Compile Include="Components\Viewers\FreeForm\Modes\PresentMode.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\HtmlNode\HtmlElementController.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\HtmlNode\HtmlNodeViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\UnknownFileElementController.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\UnknownFileElementRenderItem.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\UnknownFileViewModel.cs" />
@@ -664,6 +669,7 @@
     <Compile Include="Controller\ContentDataController.cs" />
     <Compile Include="Controller\ContentDataControllerFactory.cs" />
     <Compile Include="Controller\ElementControllerFactory.cs" />
+    <Compile Include="Controller\LibraryElementController\HtmlLibraryElementController.cs" />
     <Compile Include="Controller\LibraryElementController\LibraryElementControllerFactory.cs" />
     <Compile Include="Controller\LibraryElementController\LinkLibraryElementController.cs" />
     <Compile Include="Controller\LibraryElementController\WordNodeLibraryElementController.cs" />

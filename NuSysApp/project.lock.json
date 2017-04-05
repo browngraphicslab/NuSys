@@ -20,6 +20,60 @@
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.dll": {}
         }
       },
+      "Google.Apis/1.9.0": {
+        "dependencies": {
+          "Google.Apis.Core": "1.9.0",
+          "Zlib.Portable": "1.10.0"
+        },
+        "compile": {
+          "lib/netcore45/Google.Apis.PlatformServices.dll": {},
+          "lib/netcore45/Google.Apis.dll": {}
+        },
+        "runtime": {
+          "lib/netcore45/Google.Apis.PlatformServices.dll": {},
+          "lib/netcore45/Google.Apis.dll": {}
+        }
+      },
+      "Google.Apis.Auth/1.9.0": {
+        "dependencies": {
+          "Google.Apis.Core": "1.9.0"
+        },
+        "compile": {
+          "lib/netcore45/Google.Apis.Auth.PlatformServices.dll": {},
+          "lib/netcore45/Google.Apis.Auth.dll": {}
+        },
+        "runtime": {
+          "lib/netcore45/Google.Apis.Auth.PlatformServices.dll": {},
+          "lib/netcore45/Google.Apis.Auth.dll": {}
+        }
+      },
+      "Google.Apis.Core/1.9.0": {
+        "dependencies": {
+          "Microsoft.Bcl": "1.1.9",
+          "Microsoft.Bcl.Async": "1.0.168",
+          "Microsoft.Bcl.Build": "1.0.14",
+          "Microsoft.Net.Http": "2.2.22",
+          "Newtonsoft.Json": "6.0.4"
+        },
+        "compile": {
+          "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.Core.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.Core.dll": {}
+        }
+      },
+      "Google.Apis.YouTube.v3/1.9.0.1410": {
+        "dependencies": {
+          "Google.Apis": "1.9.0",
+          "Google.Apis.Auth": "1.9.0"
+        },
+        "compile": {
+          "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.YouTube.v3.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.YouTube.v3.dll": {}
+        }
+      },
       "HtmlAgilityPack/1.4.9.5": {
         "compile": {
           "lib/NetCore45/HtmlAgilityPack.dll": {}
@@ -86,6 +140,31 @@
           "jQuery": "1.6.4"
         }
       },
+      "Microsoft.Bcl/1.1.9": {
+        "dependencies": {
+          "Microsoft.Bcl.Build": "1.0.14"
+        },
+        "compile": {
+          "lib/win8/_._": {}
+        },
+        "runtime": {
+          "lib/win8/_._": {}
+        }
+      },
+      "Microsoft.Bcl.Async/1.0.168": {
+        "dependencies": {
+          "Microsoft.Bcl": "1.1.8"
+        },
+        "compile": {
+          "lib/win8/Microsoft.Threading.Tasks.Extensions.dll": {},
+          "lib/win8/Microsoft.Threading.Tasks.dll": {}
+        },
+        "runtime": {
+          "lib/win8/Microsoft.Threading.Tasks.Extensions.dll": {},
+          "lib/win8/Microsoft.Threading.Tasks.dll": {}
+        }
+      },
+      "Microsoft.Bcl.Build/1.0.14": {},
       "Microsoft.CSharp/4.0.1": {
         "dependencies": {
           "System.Collections": "4.0.11",
@@ -110,6 +189,20 @@
         },
         "runtime": {
           "lib/netcore50/Microsoft.CSharp.dll": {}
+        }
+      },
+      "Microsoft.Net.Http/2.2.22": {
+        "dependencies": {
+          "Microsoft.Bcl": "1.1.9",
+          "Microsoft.Bcl.Build": "1.0.14"
+        },
+        "compile": {
+          "lib/win8/System.Net.Http.Extensions.dll": {},
+          "lib/win8/System.Net.Http.Primitives.dll": {}
+        },
+        "runtime": {
+          "lib/win8/System.Net.Http.Extensions.dll": {},
+          "lib/win8/System.Net.Http.Primitives.dll": {}
         }
       },
       "Microsoft.NETCore/5.0.2": {
@@ -2207,6 +2300,14 @@
         "runtime": {
           "lib/uap10.0/WinRTXamlToolkit.dll": {}
         }
+      },
+      "Zlib.Portable/1.10.0": {
+        "compile": {
+          "lib/portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid/Zlib.Portable.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid/Zlib.Portable.dll": {}
+        }
       }
     },
     "UAP,Version=v10.0/win10-arm": {
@@ -2225,6 +2326,60 @@
         },
         "runtime": {
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.dll": {}
+        }
+      },
+      "Google.Apis/1.9.0": {
+        "dependencies": {
+          "Google.Apis.Core": "1.9.0",
+          "Zlib.Portable": "1.10.0"
+        },
+        "compile": {
+          "lib/netcore45/Google.Apis.PlatformServices.dll": {},
+          "lib/netcore45/Google.Apis.dll": {}
+        },
+        "runtime": {
+          "lib/netcore45/Google.Apis.PlatformServices.dll": {},
+          "lib/netcore45/Google.Apis.dll": {}
+        }
+      },
+      "Google.Apis.Auth/1.9.0": {
+        "dependencies": {
+          "Google.Apis.Core": "1.9.0"
+        },
+        "compile": {
+          "lib/netcore45/Google.Apis.Auth.PlatformServices.dll": {},
+          "lib/netcore45/Google.Apis.Auth.dll": {}
+        },
+        "runtime": {
+          "lib/netcore45/Google.Apis.Auth.PlatformServices.dll": {},
+          "lib/netcore45/Google.Apis.Auth.dll": {}
+        }
+      },
+      "Google.Apis.Core/1.9.0": {
+        "dependencies": {
+          "Microsoft.Bcl": "1.1.9",
+          "Microsoft.Bcl.Async": "1.0.168",
+          "Microsoft.Bcl.Build": "1.0.14",
+          "Microsoft.Net.Http": "2.2.22",
+          "Newtonsoft.Json": "6.0.4"
+        },
+        "compile": {
+          "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.Core.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.Core.dll": {}
+        }
+      },
+      "Google.Apis.YouTube.v3/1.9.0.1410": {
+        "dependencies": {
+          "Google.Apis": "1.9.0",
+          "Google.Apis.Auth": "1.9.0"
+        },
+        "compile": {
+          "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.YouTube.v3.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.YouTube.v3.dll": {}
         }
       },
       "HtmlAgilityPack/1.4.9.5": {
@@ -2293,6 +2448,31 @@
           "jQuery": "1.6.4"
         }
       },
+      "Microsoft.Bcl/1.1.9": {
+        "dependencies": {
+          "Microsoft.Bcl.Build": "1.0.14"
+        },
+        "compile": {
+          "lib/win8/_._": {}
+        },
+        "runtime": {
+          "lib/win8/_._": {}
+        }
+      },
+      "Microsoft.Bcl.Async/1.0.168": {
+        "dependencies": {
+          "Microsoft.Bcl": "1.1.8"
+        },
+        "compile": {
+          "lib/win8/Microsoft.Threading.Tasks.Extensions.dll": {},
+          "lib/win8/Microsoft.Threading.Tasks.dll": {}
+        },
+        "runtime": {
+          "lib/win8/Microsoft.Threading.Tasks.Extensions.dll": {},
+          "lib/win8/Microsoft.Threading.Tasks.dll": {}
+        }
+      },
+      "Microsoft.Bcl.Build/1.0.14": {},
       "Microsoft.CSharp/4.0.1": {
         "dependencies": {
           "System.Collections": "4.0.11",
@@ -2317,6 +2497,20 @@
         },
         "runtime": {
           "lib/netcore50/Microsoft.CSharp.dll": {}
+        }
+      },
+      "Microsoft.Net.Http/2.2.22": {
+        "dependencies": {
+          "Microsoft.Bcl": "1.1.9",
+          "Microsoft.Bcl.Build": "1.0.14"
+        },
+        "compile": {
+          "lib/win8/System.Net.Http.Extensions.dll": {},
+          "lib/win8/System.Net.Http.Primitives.dll": {}
+        },
+        "runtime": {
+          "lib/win8/System.Net.Http.Extensions.dll": {},
+          "lib/win8/System.Net.Http.Primitives.dll": {}
         }
       },
       "Microsoft.NETCore/5.0.2": {
@@ -4483,6 +4677,14 @@
         "runtime": {
           "lib/uap10.0/WinRTXamlToolkit.dll": {}
         }
+      },
+      "Zlib.Portable/1.10.0": {
+        "compile": {
+          "lib/portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid/Zlib.Portable.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid/Zlib.Portable.dll": {}
+        }
       }
     },
     "UAP,Version=v10.0/win10-arm-aot": {
@@ -4501,6 +4703,60 @@
         },
         "runtime": {
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.dll": {}
+        }
+      },
+      "Google.Apis/1.9.0": {
+        "dependencies": {
+          "Google.Apis.Core": "1.9.0",
+          "Zlib.Portable": "1.10.0"
+        },
+        "compile": {
+          "lib/netcore45/Google.Apis.PlatformServices.dll": {},
+          "lib/netcore45/Google.Apis.dll": {}
+        },
+        "runtime": {
+          "lib/netcore45/Google.Apis.PlatformServices.dll": {},
+          "lib/netcore45/Google.Apis.dll": {}
+        }
+      },
+      "Google.Apis.Auth/1.9.0": {
+        "dependencies": {
+          "Google.Apis.Core": "1.9.0"
+        },
+        "compile": {
+          "lib/netcore45/Google.Apis.Auth.PlatformServices.dll": {},
+          "lib/netcore45/Google.Apis.Auth.dll": {}
+        },
+        "runtime": {
+          "lib/netcore45/Google.Apis.Auth.PlatformServices.dll": {},
+          "lib/netcore45/Google.Apis.Auth.dll": {}
+        }
+      },
+      "Google.Apis.Core/1.9.0": {
+        "dependencies": {
+          "Microsoft.Bcl": "1.1.9",
+          "Microsoft.Bcl.Async": "1.0.168",
+          "Microsoft.Bcl.Build": "1.0.14",
+          "Microsoft.Net.Http": "2.2.22",
+          "Newtonsoft.Json": "6.0.4"
+        },
+        "compile": {
+          "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.Core.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.Core.dll": {}
+        }
+      },
+      "Google.Apis.YouTube.v3/1.9.0.1410": {
+        "dependencies": {
+          "Google.Apis": "1.9.0",
+          "Google.Apis.Auth": "1.9.0"
+        },
+        "compile": {
+          "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.YouTube.v3.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.YouTube.v3.dll": {}
         }
       },
       "HtmlAgilityPack/1.4.9.5": {
@@ -4569,6 +4825,31 @@
           "jQuery": "1.6.4"
         }
       },
+      "Microsoft.Bcl/1.1.9": {
+        "dependencies": {
+          "Microsoft.Bcl.Build": "1.0.14"
+        },
+        "compile": {
+          "lib/win8/_._": {}
+        },
+        "runtime": {
+          "lib/win8/_._": {}
+        }
+      },
+      "Microsoft.Bcl.Async/1.0.168": {
+        "dependencies": {
+          "Microsoft.Bcl": "1.1.8"
+        },
+        "compile": {
+          "lib/win8/Microsoft.Threading.Tasks.Extensions.dll": {},
+          "lib/win8/Microsoft.Threading.Tasks.dll": {}
+        },
+        "runtime": {
+          "lib/win8/Microsoft.Threading.Tasks.Extensions.dll": {},
+          "lib/win8/Microsoft.Threading.Tasks.dll": {}
+        }
+      },
+      "Microsoft.Bcl.Build/1.0.14": {},
       "Microsoft.CSharp/4.0.1": {
         "dependencies": {
           "System.Collections": "4.0.11",
@@ -4593,6 +4874,20 @@
         },
         "runtime": {
           "lib/netcore50/Microsoft.CSharp.dll": {}
+        }
+      },
+      "Microsoft.Net.Http/2.2.22": {
+        "dependencies": {
+          "Microsoft.Bcl": "1.1.9",
+          "Microsoft.Bcl.Build": "1.0.14"
+        },
+        "compile": {
+          "lib/win8/System.Net.Http.Extensions.dll": {},
+          "lib/win8/System.Net.Http.Primitives.dll": {}
+        },
+        "runtime": {
+          "lib/win8/System.Net.Http.Extensions.dll": {},
+          "lib/win8/System.Net.Http.Primitives.dll": {}
         }
       },
       "Microsoft.NETCore/5.0.2": {
@@ -6798,6 +7093,14 @@
         "runtime": {
           "lib/uap10.0/WinRTXamlToolkit.dll": {}
         }
+      },
+      "Zlib.Portable/1.10.0": {
+        "compile": {
+          "lib/portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid/Zlib.Portable.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid/Zlib.Portable.dll": {}
+        }
       }
     },
     "UAP,Version=v10.0/win10-x64": {
@@ -6816,6 +7119,60 @@
         },
         "runtime": {
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.dll": {}
+        }
+      },
+      "Google.Apis/1.9.0": {
+        "dependencies": {
+          "Google.Apis.Core": "1.9.0",
+          "Zlib.Portable": "1.10.0"
+        },
+        "compile": {
+          "lib/netcore45/Google.Apis.PlatformServices.dll": {},
+          "lib/netcore45/Google.Apis.dll": {}
+        },
+        "runtime": {
+          "lib/netcore45/Google.Apis.PlatformServices.dll": {},
+          "lib/netcore45/Google.Apis.dll": {}
+        }
+      },
+      "Google.Apis.Auth/1.9.0": {
+        "dependencies": {
+          "Google.Apis.Core": "1.9.0"
+        },
+        "compile": {
+          "lib/netcore45/Google.Apis.Auth.PlatformServices.dll": {},
+          "lib/netcore45/Google.Apis.Auth.dll": {}
+        },
+        "runtime": {
+          "lib/netcore45/Google.Apis.Auth.PlatformServices.dll": {},
+          "lib/netcore45/Google.Apis.Auth.dll": {}
+        }
+      },
+      "Google.Apis.Core/1.9.0": {
+        "dependencies": {
+          "Microsoft.Bcl": "1.1.9",
+          "Microsoft.Bcl.Async": "1.0.168",
+          "Microsoft.Bcl.Build": "1.0.14",
+          "Microsoft.Net.Http": "2.2.22",
+          "Newtonsoft.Json": "6.0.4"
+        },
+        "compile": {
+          "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.Core.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.Core.dll": {}
+        }
+      },
+      "Google.Apis.YouTube.v3/1.9.0.1410": {
+        "dependencies": {
+          "Google.Apis": "1.9.0",
+          "Google.Apis.Auth": "1.9.0"
+        },
+        "compile": {
+          "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.YouTube.v3.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.YouTube.v3.dll": {}
         }
       },
       "HtmlAgilityPack/1.4.9.5": {
@@ -6884,6 +7241,31 @@
           "jQuery": "1.6.4"
         }
       },
+      "Microsoft.Bcl/1.1.9": {
+        "dependencies": {
+          "Microsoft.Bcl.Build": "1.0.14"
+        },
+        "compile": {
+          "lib/win8/_._": {}
+        },
+        "runtime": {
+          "lib/win8/_._": {}
+        }
+      },
+      "Microsoft.Bcl.Async/1.0.168": {
+        "dependencies": {
+          "Microsoft.Bcl": "1.1.8"
+        },
+        "compile": {
+          "lib/win8/Microsoft.Threading.Tasks.Extensions.dll": {},
+          "lib/win8/Microsoft.Threading.Tasks.dll": {}
+        },
+        "runtime": {
+          "lib/win8/Microsoft.Threading.Tasks.Extensions.dll": {},
+          "lib/win8/Microsoft.Threading.Tasks.dll": {}
+        }
+      },
+      "Microsoft.Bcl.Build/1.0.14": {},
       "Microsoft.CSharp/4.0.1": {
         "dependencies": {
           "System.Collections": "4.0.11",
@@ -6908,6 +7290,20 @@
         },
         "runtime": {
           "lib/netcore50/Microsoft.CSharp.dll": {}
+        }
+      },
+      "Microsoft.Net.Http/2.2.22": {
+        "dependencies": {
+          "Microsoft.Bcl": "1.1.9",
+          "Microsoft.Bcl.Build": "1.0.14"
+        },
+        "compile": {
+          "lib/win8/System.Net.Http.Extensions.dll": {},
+          "lib/win8/System.Net.Http.Primitives.dll": {}
+        },
+        "runtime": {
+          "lib/win8/System.Net.Http.Extensions.dll": {},
+          "lib/win8/System.Net.Http.Primitives.dll": {}
         }
       },
       "Microsoft.NETCore/5.0.2": {
@@ -9083,6 +9479,14 @@
         "runtime": {
           "lib/uap10.0/WinRTXamlToolkit.dll": {}
         }
+      },
+      "Zlib.Portable/1.10.0": {
+        "compile": {
+          "lib/portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid/Zlib.Portable.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid/Zlib.Portable.dll": {}
+        }
       }
     },
     "UAP,Version=v10.0/win10-x64-aot": {
@@ -9101,6 +9505,60 @@
         },
         "runtime": {
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.dll": {}
+        }
+      },
+      "Google.Apis/1.9.0": {
+        "dependencies": {
+          "Google.Apis.Core": "1.9.0",
+          "Zlib.Portable": "1.10.0"
+        },
+        "compile": {
+          "lib/netcore45/Google.Apis.PlatformServices.dll": {},
+          "lib/netcore45/Google.Apis.dll": {}
+        },
+        "runtime": {
+          "lib/netcore45/Google.Apis.PlatformServices.dll": {},
+          "lib/netcore45/Google.Apis.dll": {}
+        }
+      },
+      "Google.Apis.Auth/1.9.0": {
+        "dependencies": {
+          "Google.Apis.Core": "1.9.0"
+        },
+        "compile": {
+          "lib/netcore45/Google.Apis.Auth.PlatformServices.dll": {},
+          "lib/netcore45/Google.Apis.Auth.dll": {}
+        },
+        "runtime": {
+          "lib/netcore45/Google.Apis.Auth.PlatformServices.dll": {},
+          "lib/netcore45/Google.Apis.Auth.dll": {}
+        }
+      },
+      "Google.Apis.Core/1.9.0": {
+        "dependencies": {
+          "Microsoft.Bcl": "1.1.9",
+          "Microsoft.Bcl.Async": "1.0.168",
+          "Microsoft.Bcl.Build": "1.0.14",
+          "Microsoft.Net.Http": "2.2.22",
+          "Newtonsoft.Json": "6.0.4"
+        },
+        "compile": {
+          "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.Core.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.Core.dll": {}
+        }
+      },
+      "Google.Apis.YouTube.v3/1.9.0.1410": {
+        "dependencies": {
+          "Google.Apis": "1.9.0",
+          "Google.Apis.Auth": "1.9.0"
+        },
+        "compile": {
+          "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.YouTube.v3.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.YouTube.v3.dll": {}
         }
       },
       "HtmlAgilityPack/1.4.9.5": {
@@ -9169,6 +9627,31 @@
           "jQuery": "1.6.4"
         }
       },
+      "Microsoft.Bcl/1.1.9": {
+        "dependencies": {
+          "Microsoft.Bcl.Build": "1.0.14"
+        },
+        "compile": {
+          "lib/win8/_._": {}
+        },
+        "runtime": {
+          "lib/win8/_._": {}
+        }
+      },
+      "Microsoft.Bcl.Async/1.0.168": {
+        "dependencies": {
+          "Microsoft.Bcl": "1.1.8"
+        },
+        "compile": {
+          "lib/win8/Microsoft.Threading.Tasks.Extensions.dll": {},
+          "lib/win8/Microsoft.Threading.Tasks.dll": {}
+        },
+        "runtime": {
+          "lib/win8/Microsoft.Threading.Tasks.Extensions.dll": {},
+          "lib/win8/Microsoft.Threading.Tasks.dll": {}
+        }
+      },
+      "Microsoft.Bcl.Build/1.0.14": {},
       "Microsoft.CSharp/4.0.1": {
         "dependencies": {
           "System.Collections": "4.0.11",
@@ -9193,6 +9676,20 @@
         },
         "runtime": {
           "lib/netcore50/Microsoft.CSharp.dll": {}
+        }
+      },
+      "Microsoft.Net.Http/2.2.22": {
+        "dependencies": {
+          "Microsoft.Bcl": "1.1.9",
+          "Microsoft.Bcl.Build": "1.0.14"
+        },
+        "compile": {
+          "lib/win8/System.Net.Http.Extensions.dll": {},
+          "lib/win8/System.Net.Http.Primitives.dll": {}
+        },
+        "runtime": {
+          "lib/win8/System.Net.Http.Extensions.dll": {},
+          "lib/win8/System.Net.Http.Primitives.dll": {}
         }
       },
       "Microsoft.NETCore/5.0.2": {
@@ -11407,6 +11904,14 @@
         "runtime": {
           "lib/uap10.0/WinRTXamlToolkit.dll": {}
         }
+      },
+      "Zlib.Portable/1.10.0": {
+        "compile": {
+          "lib/portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid/Zlib.Portable.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid/Zlib.Portable.dll": {}
+        }
       }
     },
     "UAP,Version=v10.0/win10-x86": {
@@ -11425,6 +11930,60 @@
         },
         "runtime": {
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.dll": {}
+        }
+      },
+      "Google.Apis/1.9.0": {
+        "dependencies": {
+          "Google.Apis.Core": "1.9.0",
+          "Zlib.Portable": "1.10.0"
+        },
+        "compile": {
+          "lib/netcore45/Google.Apis.PlatformServices.dll": {},
+          "lib/netcore45/Google.Apis.dll": {}
+        },
+        "runtime": {
+          "lib/netcore45/Google.Apis.PlatformServices.dll": {},
+          "lib/netcore45/Google.Apis.dll": {}
+        }
+      },
+      "Google.Apis.Auth/1.9.0": {
+        "dependencies": {
+          "Google.Apis.Core": "1.9.0"
+        },
+        "compile": {
+          "lib/netcore45/Google.Apis.Auth.PlatformServices.dll": {},
+          "lib/netcore45/Google.Apis.Auth.dll": {}
+        },
+        "runtime": {
+          "lib/netcore45/Google.Apis.Auth.PlatformServices.dll": {},
+          "lib/netcore45/Google.Apis.Auth.dll": {}
+        }
+      },
+      "Google.Apis.Core/1.9.0": {
+        "dependencies": {
+          "Microsoft.Bcl": "1.1.9",
+          "Microsoft.Bcl.Async": "1.0.168",
+          "Microsoft.Bcl.Build": "1.0.14",
+          "Microsoft.Net.Http": "2.2.22",
+          "Newtonsoft.Json": "6.0.4"
+        },
+        "compile": {
+          "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.Core.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.Core.dll": {}
+        }
+      },
+      "Google.Apis.YouTube.v3/1.9.0.1410": {
+        "dependencies": {
+          "Google.Apis": "1.9.0",
+          "Google.Apis.Auth": "1.9.0"
+        },
+        "compile": {
+          "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.YouTube.v3.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.YouTube.v3.dll": {}
         }
       },
       "HtmlAgilityPack/1.4.9.5": {
@@ -11493,6 +12052,31 @@
           "jQuery": "1.6.4"
         }
       },
+      "Microsoft.Bcl/1.1.9": {
+        "dependencies": {
+          "Microsoft.Bcl.Build": "1.0.14"
+        },
+        "compile": {
+          "lib/win8/_._": {}
+        },
+        "runtime": {
+          "lib/win8/_._": {}
+        }
+      },
+      "Microsoft.Bcl.Async/1.0.168": {
+        "dependencies": {
+          "Microsoft.Bcl": "1.1.8"
+        },
+        "compile": {
+          "lib/win8/Microsoft.Threading.Tasks.Extensions.dll": {},
+          "lib/win8/Microsoft.Threading.Tasks.dll": {}
+        },
+        "runtime": {
+          "lib/win8/Microsoft.Threading.Tasks.Extensions.dll": {},
+          "lib/win8/Microsoft.Threading.Tasks.dll": {}
+        }
+      },
+      "Microsoft.Bcl.Build/1.0.14": {},
       "Microsoft.CSharp/4.0.1": {
         "dependencies": {
           "System.Collections": "4.0.11",
@@ -11517,6 +12101,20 @@
         },
         "runtime": {
           "lib/netcore50/Microsoft.CSharp.dll": {}
+        }
+      },
+      "Microsoft.Net.Http/2.2.22": {
+        "dependencies": {
+          "Microsoft.Bcl": "1.1.9",
+          "Microsoft.Bcl.Build": "1.0.14"
+        },
+        "compile": {
+          "lib/win8/System.Net.Http.Extensions.dll": {},
+          "lib/win8/System.Net.Http.Primitives.dll": {}
+        },
+        "runtime": {
+          "lib/win8/System.Net.Http.Extensions.dll": {},
+          "lib/win8/System.Net.Http.Primitives.dll": {}
         }
       },
       "Microsoft.NETCore/5.0.2": {
@@ -13692,6 +14290,14 @@
         "runtime": {
           "lib/uap10.0/WinRTXamlToolkit.dll": {}
         }
+      },
+      "Zlib.Portable/1.10.0": {
+        "compile": {
+          "lib/portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid/Zlib.Portable.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid/Zlib.Portable.dll": {}
+        }
       }
     },
     "UAP,Version=v10.0/win10-x86-aot": {
@@ -13710,6 +14316,60 @@
         },
         "runtime": {
           "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.dll": {}
+        }
+      },
+      "Google.Apis/1.9.0": {
+        "dependencies": {
+          "Google.Apis.Core": "1.9.0",
+          "Zlib.Portable": "1.10.0"
+        },
+        "compile": {
+          "lib/netcore45/Google.Apis.PlatformServices.dll": {},
+          "lib/netcore45/Google.Apis.dll": {}
+        },
+        "runtime": {
+          "lib/netcore45/Google.Apis.PlatformServices.dll": {},
+          "lib/netcore45/Google.Apis.dll": {}
+        }
+      },
+      "Google.Apis.Auth/1.9.0": {
+        "dependencies": {
+          "Google.Apis.Core": "1.9.0"
+        },
+        "compile": {
+          "lib/netcore45/Google.Apis.Auth.PlatformServices.dll": {},
+          "lib/netcore45/Google.Apis.Auth.dll": {}
+        },
+        "runtime": {
+          "lib/netcore45/Google.Apis.Auth.PlatformServices.dll": {},
+          "lib/netcore45/Google.Apis.Auth.dll": {}
+        }
+      },
+      "Google.Apis.Core/1.9.0": {
+        "dependencies": {
+          "Microsoft.Bcl": "1.1.9",
+          "Microsoft.Bcl.Async": "1.0.168",
+          "Microsoft.Bcl.Build": "1.0.14",
+          "Microsoft.Net.Http": "2.2.22",
+          "Newtonsoft.Json": "6.0.4"
+        },
+        "compile": {
+          "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.Core.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.Core.dll": {}
+        }
+      },
+      "Google.Apis.YouTube.v3/1.9.0.1410": {
+        "dependencies": {
+          "Google.Apis": "1.9.0",
+          "Google.Apis.Auth": "1.9.0"
+        },
+        "compile": {
+          "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.YouTube.v3.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.YouTube.v3.dll": {}
         }
       },
       "HtmlAgilityPack/1.4.9.5": {
@@ -13778,6 +14438,31 @@
           "jQuery": "1.6.4"
         }
       },
+      "Microsoft.Bcl/1.1.9": {
+        "dependencies": {
+          "Microsoft.Bcl.Build": "1.0.14"
+        },
+        "compile": {
+          "lib/win8/_._": {}
+        },
+        "runtime": {
+          "lib/win8/_._": {}
+        }
+      },
+      "Microsoft.Bcl.Async/1.0.168": {
+        "dependencies": {
+          "Microsoft.Bcl": "1.1.8"
+        },
+        "compile": {
+          "lib/win8/Microsoft.Threading.Tasks.Extensions.dll": {},
+          "lib/win8/Microsoft.Threading.Tasks.dll": {}
+        },
+        "runtime": {
+          "lib/win8/Microsoft.Threading.Tasks.Extensions.dll": {},
+          "lib/win8/Microsoft.Threading.Tasks.dll": {}
+        }
+      },
+      "Microsoft.Bcl.Build/1.0.14": {},
       "Microsoft.CSharp/4.0.1": {
         "dependencies": {
           "System.Collections": "4.0.11",
@@ -13802,6 +14487,20 @@
         },
         "runtime": {
           "lib/netcore50/Microsoft.CSharp.dll": {}
+        }
+      },
+      "Microsoft.Net.Http/2.2.22": {
+        "dependencies": {
+          "Microsoft.Bcl": "1.1.9",
+          "Microsoft.Bcl.Build": "1.0.14"
+        },
+        "compile": {
+          "lib/win8/System.Net.Http.Extensions.dll": {},
+          "lib/win8/System.Net.Http.Primitives.dll": {}
+        },
+        "runtime": {
+          "lib/win8/System.Net.Http.Extensions.dll": {},
+          "lib/win8/System.Net.Http.Primitives.dll": {}
         }
       },
       "Microsoft.NETCore/5.0.2": {
@@ -16016,6 +16715,14 @@
         "runtime": {
           "lib/uap10.0/WinRTXamlToolkit.dll": {}
         }
+      },
+      "Zlib.Portable/1.10.0": {
+        "compile": {
+          "lib/portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid/Zlib.Portable.dll": {}
+        },
+        "runtime": {
+          "lib/portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid/Zlib.Portable.dll": {}
+        }
       }
     }
   },
@@ -17917,6 +18624,89 @@
         "lib/portable-net403+sl5+netcore45+wpa81+wp8+MonoAndroid10+XamariniOS10+MonoTouch10/GeoAPI.xml"
       ]
     },
+    "Google.Apis/1.9.0": {
+      "sha512": "krcgABgv73pwVbqJ6dKf7Cigq8EP/dxq5rG/63EWeZKidOx4gWxhVLWUekDDaDw4JQDR26rmibtu8QqNmIWdEw==",
+      "type": "package",
+      "files": [
+        "Google.Apis.1.9.0.nupkg.sha512",
+        "Google.Apis.nuspec",
+        "License.txt",
+        "lib/net40/Google.Apis.PlatformServices.dll",
+        "lib/net40/Google.Apis.PlatformServices.pdb",
+        "lib/net40/Google.Apis.PlatformServices.xml",
+        "lib/net40/Google.Apis.dll",
+        "lib/net40/Google.Apis.pdb",
+        "lib/net40/Google.Apis.xml",
+        "lib/netcore45/Google.Apis.PlatformServices.dll",
+        "lib/netcore45/Google.Apis.PlatformServices.pdb",
+        "lib/netcore45/Google.Apis.PlatformServices.xml",
+        "lib/netcore45/Google.Apis.dll",
+        "lib/netcore45/Google.Apis.pdb",
+        "lib/netcore45/Google.Apis.xml",
+        "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.dll",
+        "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.pdb",
+        "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.xml",
+        "lib/wp8/Google.Apis.PlatformServices.dll",
+        "lib/wp8/Google.Apis.PlatformServices.pdb",
+        "lib/wp8/Google.Apis.PlatformServices.xml",
+        "lib/wp8/Google.Apis.dll",
+        "lib/wp8/Google.Apis.pdb",
+        "lib/wp8/Google.Apis.xml"
+      ]
+    },
+    "Google.Apis.Auth/1.9.0": {
+      "sha512": "XYe3ykybR+ZrNmMllnIaVtZyXgx1jyIuX36t0iL2DDH585Q/x45h9NiRTOuFPXeqnOwagYRoJYzT1phAaqOxFg==",
+      "type": "package",
+      "files": [
+        "Google.Apis.Auth.1.9.0.nupkg.sha512",
+        "Google.Apis.Auth.nuspec",
+        "License.txt",
+        "lib/net40/Google.Apis.Auth.PlatformServices.dll",
+        "lib/net40/Google.Apis.Auth.PlatformServices.pdb",
+        "lib/net40/Google.Apis.Auth.PlatformServices.xml",
+        "lib/net40/Google.Apis.Auth.dll",
+        "lib/net40/Google.Apis.Auth.pdb",
+        "lib/net40/Google.Apis.Auth.xml",
+        "lib/netcore45/Google.Apis.Auth.PlatformServices.dll",
+        "lib/netcore45/Google.Apis.Auth.PlatformServices.pdb",
+        "lib/netcore45/Google.Apis.Auth.PlatformServices.xml",
+        "lib/netcore45/Google.Apis.Auth.dll",
+        "lib/netcore45/Google.Apis.Auth.pdb",
+        "lib/netcore45/Google.Apis.Auth.xml",
+        "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.Auth.dll",
+        "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.Auth.pdb",
+        "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.Auth.xml",
+        "lib/wp8/Google.Apis.Auth.PlatformServices.dll",
+        "lib/wp8/Google.Apis.Auth.PlatformServices.pdb",
+        "lib/wp8/Google.Apis.Auth.PlatformServices.xml",
+        "lib/wp8/Google.Apis.Auth.dll",
+        "lib/wp8/Google.Apis.Auth.pdb",
+        "lib/wp8/Google.Apis.Auth.xml"
+      ]
+    },
+    "Google.Apis.Core/1.9.0": {
+      "sha512": "3I376Q7WFIJjnLDijtBWCdmXHhd/YA+zSZNORVl71AHdlPbtcWv7dluf7cHyrLaPzxIl4z2jVDFOgGoTbHBVmQ==",
+      "type": "package",
+      "files": [
+        "Google.Apis.Core.1.9.0.nupkg.sha512",
+        "Google.Apis.Core.nuspec",
+        "License.txt",
+        "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.Core.dll",
+        "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.Core.pdb",
+        "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.Core.xml"
+      ]
+    },
+    "Google.Apis.YouTube.v3/1.9.0.1410": {
+      "sha512": "D5xj+XFEfTIDx+YZXvIDZs1vNOFTEpr/3u5/cq3650H0VyCi4cpIla7RwUT5TPr+KWfXwdCDXUht/9BzyH3UBg==",
+      "type": "package",
+      "files": [
+        "Google.Apis.YouTube.v3.1.9.0.1410.nupkg.sha512",
+        "Google.Apis.YouTube.v3.nuspec",
+        "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.YouTube.v3.dll",
+        "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.YouTube.v3.pdb",
+        "lib/portable-net40+sl50+win+wpa81+wp80/Google.Apis.YouTube.v3.xml"
+      ]
+    },
     "HtmlAgilityPack/1.4.9.5": {
       "sha512": "i5di/J7GO4y2kx/hhVzctPrBI8G2cefWZDMDU/FdOUD3iVkiidN1q1NDZ0FvqrhB28LSaYaM4Z0hs86Tnp0IzA==",
       "type": "package",
@@ -18023,6 +18813,178 @@
         "content/Scripts/jquery.signalR-2.2.1.min.js"
       ]
     },
+    "Microsoft.Bcl/1.1.9": {
+      "sha512": "USQ55innJy8K+tAXvVa1O8dUTp2s7pmJ5cJj6Tl02HtGc2xBDj0P2QH5620HbGXIWKWYhydoeQF8Rm/JRDBGhw==",
+      "type": "package",
+      "files": [
+        "License-Stable.rtf",
+        "Microsoft.Bcl.1.1.9.nupkg.sha512",
+        "Microsoft.Bcl.nuspec",
+        "content/monoandroid/_._",
+        "content/monotouch/_._",
+        "content/net45/_._",
+        "content/portable-net45+win8+wp8+wpa81/_._",
+        "content/portable-net45+win8+wpa81/_._",
+        "content/portable-net451+win81+wpa81/_._",
+        "content/portable-net451+win81/_._",
+        "content/portable-win81+wp81+wpa81/_._",
+        "content/sl4/_._",
+        "content/sl5/_._",
+        "content/win8/_._",
+        "content/wp8/_._",
+        "content/wpa81/_._",
+        "lib/monoandroid/_._",
+        "lib/monotouch/_._",
+        "lib/net40/System.IO.dll",
+        "lib/net40/System.IO.xml",
+        "lib/net40/System.Runtime.dll",
+        "lib/net40/System.Runtime.xml",
+        "lib/net40/System.Threading.Tasks.dll",
+        "lib/net40/System.Threading.Tasks.xml",
+        "lib/net40/ensureRedirect.xml",
+        "lib/net45/_._",
+        "lib/portable-net40+sl4+win8+wp71+wpa81/System.IO.dll",
+        "lib/portable-net40+sl4+win8+wp71+wpa81/System.IO.xml",
+        "lib/portable-net40+sl4+win8+wp71+wpa81/System.Runtime.dll",
+        "lib/portable-net40+sl4+win8+wp71+wpa81/System.Runtime.xml",
+        "lib/portable-net40+sl4+win8+wp71+wpa81/System.Threading.Tasks.dll",
+        "lib/portable-net40+sl4+win8+wp71+wpa81/System.Threading.Tasks.xml",
+        "lib/portable-net40+sl4+win8+wp71+wpa81/ensureRedirect.xml",
+        "lib/portable-net40+sl4+win8+wp8+wpa81/System.IO.dll",
+        "lib/portable-net40+sl4+win8+wp8+wpa81/System.IO.xml",
+        "lib/portable-net40+sl4+win8+wp8+wpa81/System.Runtime.dll",
+        "lib/portable-net40+sl4+win8+wp8+wpa81/System.Runtime.xml",
+        "lib/portable-net40+sl4+win8+wp8+wpa81/System.Threading.Tasks.dll",
+        "lib/portable-net40+sl4+win8+wp8+wpa81/System.Threading.Tasks.xml",
+        "lib/portable-net40+sl4+win8+wp8+wpa81/ensureRedirect.xml",
+        "lib/portable-net40+sl4+win8/System.IO.dll",
+        "lib/portable-net40+sl4+win8/System.IO.xml",
+        "lib/portable-net40+sl4+win8/System.Runtime.dll",
+        "lib/portable-net40+sl4+win8/System.Runtime.xml",
+        "lib/portable-net40+sl4+win8/System.Threading.Tasks.dll",
+        "lib/portable-net40+sl4+win8/System.Threading.Tasks.xml",
+        "lib/portable-net40+sl4+win8/ensureRedirect.xml",
+        "lib/portable-net40+sl5+win8+wp8+wpa81/System.IO.dll",
+        "lib/portable-net40+sl5+win8+wp8+wpa81/System.IO.xml",
+        "lib/portable-net40+sl5+win8+wp8+wpa81/System.Runtime.dll",
+        "lib/portable-net40+sl5+win8+wp8+wpa81/System.Runtime.xml",
+        "lib/portable-net40+sl5+win8+wp8+wpa81/System.Threading.Tasks.dll",
+        "lib/portable-net40+sl5+win8+wp8+wpa81/System.Threading.Tasks.xml",
+        "lib/portable-net40+sl5+win8+wp8+wpa81/ensureRedirect.xml",
+        "lib/portable-net40+win8+wp8+wpa81/System.IO.dll",
+        "lib/portable-net40+win8+wp8+wpa81/System.IO.xml",
+        "lib/portable-net40+win8+wp8+wpa81/System.Runtime.dll",
+        "lib/portable-net40+win8+wp8+wpa81/System.Runtime.xml",
+        "lib/portable-net40+win8+wp8+wpa81/System.Threading.Tasks.dll",
+        "lib/portable-net40+win8+wp8+wpa81/System.Threading.Tasks.xml",
+        "lib/portable-net40+win8+wp8+wpa81/ensureRedirect.xml",
+        "lib/portable-net40+win8/System.IO.dll",
+        "lib/portable-net40+win8/System.IO.xml",
+        "lib/portable-net40+win8/System.Runtime.dll",
+        "lib/portable-net40+win8/System.Runtime.xml",
+        "lib/portable-net40+win8/System.Threading.Tasks.dll",
+        "lib/portable-net40+win8/System.Threading.Tasks.xml",
+        "lib/portable-net40+win8/ensureRedirect.xml",
+        "lib/portable-net45+win8+wp8+wpa81/_._",
+        "lib/portable-net45+win8+wpa81/_._",
+        "lib/portable-net451+win81+wpa81/_._",
+        "lib/portable-net451+win81/_._",
+        "lib/portable-win81+wp81+wpa81/_._",
+        "lib/sl4-windowsphone71/System.IO.dll",
+        "lib/sl4-windowsphone71/System.IO.xml",
+        "lib/sl4-windowsphone71/System.Runtime.dll",
+        "lib/sl4-windowsphone71/System.Runtime.xml",
+        "lib/sl4-windowsphone71/System.Threading.Tasks.dll",
+        "lib/sl4-windowsphone71/System.Threading.Tasks.xml",
+        "lib/sl4-windowsphone71/ensureRedirect.xml",
+        "lib/sl4/System.IO.dll",
+        "lib/sl4/System.IO.xml",
+        "lib/sl4/System.Runtime.dll",
+        "lib/sl4/System.Runtime.xml",
+        "lib/sl4/System.Threading.Tasks.dll",
+        "lib/sl4/System.Threading.Tasks.xml",
+        "lib/sl5/System.IO.dll",
+        "lib/sl5/System.IO.xml",
+        "lib/sl5/System.Runtime.dll",
+        "lib/sl5/System.Runtime.xml",
+        "lib/sl5/System.Threading.Tasks.dll",
+        "lib/sl5/System.Threading.Tasks.xml",
+        "lib/win8/_._",
+        "lib/wp8/_._",
+        "lib/wpa81/_._"
+      ]
+    },
+    "Microsoft.Bcl.Async/1.0.168": {
+      "sha512": "tUNC02eBwDKpGre0BcNIvblLv1q0Q3DnS/vtkRHj2FE1sXwt386HAudztyl5C0U88hllrqHDvtlz8bK0Y8cHDA==",
+      "type": "package",
+      "files": [
+        "License-Stable.rtf",
+        "Microsoft.Bcl.Async.1.0.168.nupkg.sha512",
+        "Microsoft.Bcl.Async.nuspec",
+        "lib/net40/Microsoft.Threading.Tasks.Extensions.Desktop.dll",
+        "lib/net40/Microsoft.Threading.Tasks.Extensions.Desktop.xml",
+        "lib/net40/Microsoft.Threading.Tasks.Extensions.dll",
+        "lib/net40/Microsoft.Threading.Tasks.Extensions.xml",
+        "lib/net40/Microsoft.Threading.Tasks.dll",
+        "lib/net40/Microsoft.Threading.Tasks.xml",
+        "lib/portable-net40+sl4+win8+wp71+wpa81/Microsoft.Threading.Tasks.Extensions.dll",
+        "lib/portable-net40+sl4+win8+wp71+wpa81/Microsoft.Threading.Tasks.Extensions.xml",
+        "lib/portable-net40+sl4+win8+wp71+wpa81/Microsoft.Threading.Tasks.dll",
+        "lib/portable-net40+sl4+win8+wp71+wpa81/Microsoft.Threading.Tasks.xml",
+        "lib/portable-net45+win8+wp8+wpa81/Microsoft.Threading.Tasks.Extensions.dll",
+        "lib/portable-net45+win8+wp8+wpa81/Microsoft.Threading.Tasks.Extensions.xml",
+        "lib/portable-net45+win8+wp8+wpa81/Microsoft.Threading.Tasks.dll",
+        "lib/portable-net45+win8+wp8+wpa81/Microsoft.Threading.Tasks.xml",
+        "lib/portable-net45+win8+wpa81/Microsoft.Threading.Tasks.Extensions.dll",
+        "lib/portable-net45+win8+wpa81/Microsoft.Threading.Tasks.Extensions.xml",
+        "lib/portable-net45+win8+wpa81/Microsoft.Threading.Tasks.dll",
+        "lib/portable-net45+win8+wpa81/Microsoft.Threading.Tasks.xml",
+        "lib/sl4-windowsphone71/Microsoft.Threading.Tasks.Extensions.Phone.dll",
+        "lib/sl4-windowsphone71/Microsoft.Threading.Tasks.Extensions.Phone.xml",
+        "lib/sl4-windowsphone71/Microsoft.Threading.Tasks.Extensions.dll",
+        "lib/sl4-windowsphone71/Microsoft.Threading.Tasks.Extensions.xml",
+        "lib/sl4-windowsphone71/Microsoft.Threading.Tasks.dll",
+        "lib/sl4-windowsphone71/Microsoft.Threading.Tasks.xml",
+        "lib/sl4/Microsoft.Threading.Tasks.Extensions.Silverlight.dll",
+        "lib/sl4/Microsoft.Threading.Tasks.Extensions.Silverlight.xml",
+        "lib/sl4/Microsoft.Threading.Tasks.Extensions.dll",
+        "lib/sl4/Microsoft.Threading.Tasks.Extensions.xml",
+        "lib/sl4/Microsoft.Threading.Tasks.dll",
+        "lib/sl4/Microsoft.Threading.Tasks.xml",
+        "lib/win8/Microsoft.Threading.Tasks.Extensions.dll",
+        "lib/win8/Microsoft.Threading.Tasks.Extensions.xml",
+        "lib/win8/Microsoft.Threading.Tasks.dll",
+        "lib/win8/Microsoft.Threading.Tasks.xml",
+        "lib/wp8/Microsoft.Threading.Tasks.Extensions.Phone.dll",
+        "lib/wp8/Microsoft.Threading.Tasks.Extensions.Phone.xml",
+        "lib/wp8/Microsoft.Threading.Tasks.Extensions.dll",
+        "lib/wp8/Microsoft.Threading.Tasks.Extensions.xml",
+        "lib/wp8/Microsoft.Threading.Tasks.dll",
+        "lib/wp8/Microsoft.Threading.Tasks.xml",
+        "lib/wpa81/Microsoft.Threading.Tasks.Extensions.dll",
+        "lib/wpa81/Microsoft.Threading.Tasks.Extensions.xml",
+        "lib/wpa81/Microsoft.Threading.Tasks.dll",
+        "lib/wpa81/Microsoft.Threading.Tasks.xml"
+      ]
+    },
+    "Microsoft.Bcl.Build/1.0.14": {
+      "sha512": "cDLKSvNvRa519hplsbSoYqO69TjdDIhfjtKUM0g20/nVROoWsGav9KCI9HtnGjLmdV1+TcUUDhbotcllibjPEA==",
+      "type": "package",
+      "files": [
+        "License-Stable.rtf",
+        "Microsoft.Bcl.Build.1.0.14.nupkg.sha512",
+        "Microsoft.Bcl.Build.nuspec",
+        "content/net40/_._",
+        "content/netcore45/_._",
+        "content/portable-net40+win8+sl4+wp71+wpa81/_._",
+        "content/sl4-windowsphone71/_._",
+        "content/sl4/_._",
+        "tools/Install.ps1",
+        "tools/Microsoft.Bcl.Build.Tasks.dll",
+        "tools/Microsoft.Bcl.Build.targets",
+        "tools/Uninstall.ps1"
+      ]
+    },
     "Microsoft.CSharp/4.0.1": {
       "sha512": "17h8b5mXa87XYKrrVqdgZ38JefSUqLChUQpXgSnpzsM0nDOhE40FTeNWOJ/YmySGV6tG6T8+hjz6vxbknHJr6A==",
       "type": "package",
@@ -18077,6 +19039,68 @@
         "ref/xamarinmac20/_._",
         "ref/xamarintvos10/_._",
         "ref/xamarinwatchos10/_._"
+      ]
+    },
+    "Microsoft.Net.Http/2.2.22": {
+      "sha512": "bqVLJ2UimlAEs2bn3y28lB1pmFRxuysv9pFyB0A86WEMYGYTfDyfjAGjm0fiaSRjlMNU1jVnp8Mxt8qe4OmpXQ==",
+      "type": "package",
+      "files": [
+        "License-Stable.rtf",
+        "Microsoft.Net.Http.2.2.22.nupkg.sha512",
+        "Microsoft.Net.Http.nuspec",
+        "lib/monoandroid/System.Net.Http.Extensions.XML",
+        "lib/monoandroid/System.Net.Http.Extensions.dll",
+        "lib/monoandroid/System.Net.Http.Primitives.dll",
+        "lib/monoandroid/System.Net.Http.Primitives.xml",
+        "lib/monotouch/System.Net.Http.Extensions.XML",
+        "lib/monotouch/System.Net.Http.Extensions.dll",
+        "lib/monotouch/System.Net.Http.Primitives.dll",
+        "lib/monotouch/System.Net.Http.Primitives.xml",
+        "lib/net40/System.Net.Http.Extensions.XML",
+        "lib/net40/System.Net.Http.Extensions.dll",
+        "lib/net40/System.Net.Http.Primitives.dll",
+        "lib/net40/System.Net.Http.Primitives.xml",
+        "lib/net40/System.Net.Http.WebRequest.dll",
+        "lib/net40/System.Net.Http.WebRequest.xml",
+        "lib/net40/System.Net.Http.dll",
+        "lib/net40/System.Net.Http.xml",
+        "lib/net40/ensureRedirect.xml",
+        "lib/net45/System.Net.Http.Extensions.XML",
+        "lib/net45/System.Net.Http.Extensions.dll",
+        "lib/net45/System.Net.Http.Primitives.dll",
+        "lib/net45/System.Net.Http.Primitives.xml",
+        "lib/net45/ensureRedirect.xml",
+        "lib/portable-net40+sl4+win8+wp71+wpa81/System.Net.Http.Extensions.XML",
+        "lib/portable-net40+sl4+win8+wp71+wpa81/System.Net.Http.Extensions.dll",
+        "lib/portable-net40+sl4+win8+wp71+wpa81/System.Net.Http.Primitives.XML",
+        "lib/portable-net40+sl4+win8+wp71+wpa81/System.Net.Http.Primitives.dll",
+        "lib/portable-net40+sl4+win8+wp71+wpa81/System.Net.Http.dll",
+        "lib/portable-net40+sl4+win8+wp71+wpa81/System.Net.Http.xml",
+        "lib/portable-net40+sl4+win8+wp71+wpa81/ensureRedirect.xml",
+        "lib/portable-net45+win8+wpa81/System.Net.Http.Extensions.XML",
+        "lib/portable-net45+win8+wpa81/System.Net.Http.Extensions.dll",
+        "lib/portable-net45+win8+wpa81/System.Net.Http.Primitives.dll",
+        "lib/portable-net45+win8+wpa81/System.Net.Http.Primitives.xml",
+        "lib/portable-net45+win8+wpa81/ensureRedirect.xml",
+        "lib/portable-net45+win8/System.Net.Http.Extensions.XML",
+        "lib/portable-net45+win8/System.Net.Http.Extensions.dll",
+        "lib/portable-net45+win8/System.Net.Http.Primitives.dll",
+        "lib/portable-net45+win8/System.Net.Http.Primitives.xml",
+        "lib/portable-net45+win8/ensureRedirect.xml",
+        "lib/sl4-windowsphone71/System.Net.Http.Extensions.XML",
+        "lib/sl4-windowsphone71/System.Net.Http.Extensions.dll",
+        "lib/sl4-windowsphone71/System.Net.Http.Primitives.XML",
+        "lib/sl4-windowsphone71/System.Net.Http.Primitives.dll",
+        "lib/sl4-windowsphone71/System.Net.Http.dll",
+        "lib/sl4-windowsphone71/System.Net.Http.xml",
+        "lib/win8/System.Net.Http.Extensions.XML",
+        "lib/win8/System.Net.Http.Extensions.dll",
+        "lib/win8/System.Net.Http.Primitives.dll",
+        "lib/win8/System.Net.Http.Primitives.xml",
+        "lib/wpa81/System.Net.Http.Extensions.XML",
+        "lib/wpa81/System.Net.Http.Extensions.dll",
+        "lib/wpa81/System.Net.Http.Primitives.dll",
+        "lib/wpa81/System.Net.Http.Primitives.xml"
       ]
     },
     "Microsoft.NETCore/5.0.2": {
@@ -24884,12 +25908,24 @@
         "lib/uap10.0/WinRTXamlToolkit/obj/x86/Release/Themes/_._",
         "lib/uap10.0/WinRTXamlToolkit/obj/x86/Release/intermediatexaml/_._"
       ]
+    },
+    "Zlib.Portable/1.10.0": {
+      "sha512": "o9Xs/YjYGx2VwbdtBGVu4hSxiYCfTmS0Ch4LdC/+gQLOOaOi1xxVqGuUs5mPAhDIAhBWQYEN9LQmjUJ64YfBWw==",
+      "type": "package",
+      "files": [
+        "Zlib.Portable.1.10.0.nupkg.sha512",
+        "Zlib.Portable.nuspec",
+        "lib/portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid/Zlib.Portable.dll",
+        "lib/portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid/Zlib.Portable.xml"
+      ]
     }
   },
   "projectFileDependencyGroups": {
     "": [
       "CommonMark.NET >= 0.14.0",
       "GeoAPI >= 1.7.4",
+      "Google.Apis >= 1.9.0",
+      "Google.Apis.YouTube.v3 >= 1.9.0.1410",
       "HtmlAgilityPack >= 1.4.9.5",
       "Microsoft.ApplicationInsights >= 2.1.0",
       "Microsoft.ApplicationInsights.PersistenceChannel >= 1.2.3",

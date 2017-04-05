@@ -1679,7 +1679,8 @@ namespace NusysIntermediate
             Video,
             Audio,
             Word, 
-            Collection
+            Collection,
+            HTML
         }
 
         /// <summary>
@@ -1881,7 +1882,7 @@ namespace NusysIntermediate
             Text, Image, Word, Powerpoint, Collection, PDF, Audio, Video, Tag, Web, Area, Link, Recording, Unknown,
 
             // weird type that possibly shouldn't be here
-            Tools
+            Tools, HTML
         }
 
         /// <summary>
@@ -1957,6 +1958,8 @@ namespace NusysIntermediate
                     return ContentType.Collection;
                 case ElementType.Text:
                     return ContentType.Text;
+                case ElementType.HTML:
+                    return ContentType.HTML;
                 default:
                     return ContentType.Text;
             }

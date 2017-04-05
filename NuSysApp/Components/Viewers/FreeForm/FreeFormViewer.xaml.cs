@@ -1324,6 +1324,10 @@ namespace NuSysApp
                         (item as ElementRenderItem)?.ViewModel?.Model);
                 }
             }
+            else if(item is HtmlElementRenderItem)
+            {
+                
+            }
             else //if we are in regular mode
             {
                 if (item is ElementRenderItem)

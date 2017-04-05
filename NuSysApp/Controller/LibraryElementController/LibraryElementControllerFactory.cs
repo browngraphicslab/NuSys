@@ -26,6 +26,11 @@ namespace NuSysApp
                     Debug.Assert(imageModel != null);
                     controller = new ImageLibraryElementController(imageModel);
                     break;
+                case NusysConstants.ElementType.HTML:
+                    var htmlModel = model as HtmlLibraryElementModel;
+                    Debug.Assert(htmlModel != null);
+                    controller = new HtmlLibraryElementController(htmlModel);
+                    break;
                 case NusysConstants.ElementType.PDF:
                     var pdfModel = model as PdfLibraryElementModel;
                     Debug.Assert(pdfModel != null);

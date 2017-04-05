@@ -28,6 +28,9 @@ namespace NusysIntermediate
                 case NusysConstants.ElementType.Unknown:
                     elementModel = new UnknownFileElementModel(id);
                     break;
+                case NusysConstants.ElementType.HTML:
+                    elementModel = new HtmlElementModel(id);
+                    break;
                 case NusysConstants.ElementType.Image:
                     elementModel = new ImageElementModel(id);
                     break;
@@ -73,6 +76,9 @@ namespace NusysIntermediate
                         break;
                     case NusysConstants.ElementType.Text:
                         elementModel = JsonConvert.DeserializeObject<TextElementModel>(elementJSON);
+                        break;
+                    case NusysConstants.ElementType.HTML:
+                        elementModel = JsonConvert.DeserializeObject<HtmlElementModel>(elementJSON);
                         break;
                     case NusysConstants.ElementType.Image:
                          elementModel = JsonConvert.DeserializeObject<ImageElementModel>(elementJSON);

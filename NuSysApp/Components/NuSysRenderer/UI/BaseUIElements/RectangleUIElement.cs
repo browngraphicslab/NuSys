@@ -38,7 +38,7 @@ namespace NuSysApp
             get { return _width; }
             set
             {
-                Debug.Assert(value >= 0);
+                //Debug.Assert(value >= 0);
                 _width = value >= 0 ? value : 0;
             }
         }

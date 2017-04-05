@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Web;
@@ -15,6 +16,8 @@ namespace NusysServer
 {
     public class NusysLoginController : ApiController
     {
+
+
         /*
         public static RSACryptoServiceProvider RSA;*/
         // GET api/<controller>

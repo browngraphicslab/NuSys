@@ -67,6 +67,7 @@ namespace NusysServer
                     case NusysConstants.ContentType.Word:
                     case NusysConstants.ContentType.Text:
                     case NusysConstants.ContentType.Collection:
+                    case NusysConstants.ContentType.HTML:
                         return contentUrl;
                 }
                 throw new Exception("the requested contentType is not supported yet for url-to-data conversion");
@@ -179,6 +180,7 @@ namespace NusysServer
                     case NusysConstants.ContentType.Audio:
                     case NusysConstants.ContentType.Image:
                     case NusysConstants.ContentType.Video:
+                    case NusysConstants.ContentType.HTML:
                         if (fileExtension == null)
                         {
                             return contentData;
