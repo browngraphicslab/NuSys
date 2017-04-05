@@ -10,10 +10,23 @@ namespace NuSysApp.Components.NuSysRenderer.DetailView.TabAndPageFramework
 {
     class TabControlUIElement : RectangleUIElement
     {
+        protected class TabButtonUIElement
+        {
+            public TabPageUIElement TabPage;
+
+            public TabButtonUIElement(TabPageUIElement tabPage)
+            {
+                TabPage = tabPage;
+            }
+        }
+
         /// <summary>
         /// List of tabs in the TabControl
         /// </summary>
         protected List<TabPageUIElement> _tabs = new List<TabPageUIElement>();
+
+        protected Dictionary<TabPageUIElement, TabButtonUIElement> _tabDict = new Dictionary<TabPageUIElement, TabButtonUIElement>();
+        protected List<TabButtonUIElement> _tabButtons = new List<TabButtonUIElement>();
 
         public TabPageUIElement SelectedTab
         {
@@ -74,6 +87,9 @@ namespace NuSysApp.Components.NuSysRenderer.DetailView.TabAndPageFramework
         void AddTab(TabPageUIElement newTab, bool select = false)
         {
             _tabs.Add(newTab);
+            TabButtonUIElement button = new TabButtonUIElement(newTab);
+            _tabButtons.Add(button);
+            _tabDict.Add(newTab, button);
             if(select)
             {
                 SelectedTab = newTab;
@@ -82,15 +98,7 @@ namespace NuSysApp.Components.NuSysRenderer.DetailView.TabAndPageFramework
 
         void RemoveTab(TabPageUIElement tab)
         {
-            if(SelectedTab == tab)
-            {
-                DeselectTab(tab);
-                if(SelectedTab == tab)
-                {
-                    SelectedTab = null;
-                }
-            }
-            _tabs.Remove(tab);
+            RemoveTabAt(_tabs.IndexOf(tab));
         }
 
         void RemoveTabAt(int index)
@@ -104,7 +112,9 @@ namespace NuSysApp.Components.NuSysRenderer.DetailView.TabAndPageFramework
                 }
             }
             TabPageUIElement t = _tabs[index];
+            _tabButtons.Remove(_tabDict[t]);
             _tabs.RemoveAt(index);
+            _tabDict.Remove(t);
         }
 
         void RemoveTabWithName(string name)
