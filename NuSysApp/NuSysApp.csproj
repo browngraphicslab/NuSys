@@ -422,6 +422,8 @@
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoContent.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoPage.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewWordPage.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\TabAndPageFramework\TabControlUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\TabAndPageFramework\TabPageUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BorderType.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ListView\LibraryListImageColumn.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ListView\ListImageColumn.cs" />
