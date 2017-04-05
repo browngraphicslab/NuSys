@@ -29,6 +29,7 @@ namespace NuSysApp
                         case NusysConstants.ElementType.Text:
                             rectangle = new DetailViewTextPage(parent, resourceCreator, controller);
                             break;
+                        case NusysConstants.ElementType.HTML:
                         case NusysConstants.ElementType.Image:
                             Debug.Assert(controller is ImageLibraryElementController);
                             rectangle = new DetailViewImagePage(parent, resourceCreator, controller as ImageLibraryElementController, true, false);
@@ -75,6 +76,7 @@ namespace NuSysApp
                         case NusysConstants.ElementType.Audio:
                         case NusysConstants.ElementType.Video:
                         case NusysConstants.ElementType.Link:
+                        case NusysConstants.ElementType.HTML:
                             rectangle = new DetailViewMetadataPage(parent, resourceCreator, controller);
                             break;
                         default:
