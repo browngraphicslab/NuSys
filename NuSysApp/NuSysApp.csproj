@@ -643,6 +643,9 @@
     <Compile Include="Components\Viewers\FreeForm\Nodes\UnknownFileElementController.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\UnknownFileElementRenderItem.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\UnknownFileViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\WebNode\WebPreviewUserControl.xaml.cs">
+      <DependentUpon>WebPreviewUserControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Viewers\FreeForm\Wrapper\IRegionHideable.cs" />
     <Compile Include="Components\Viewers\KeyboardModeExtensions.cs" />
     <Compile Include="Components\Viewers\RecordingNodeViewModel.cs" />
@@ -1362,6 +1365,10 @@
     <Page Include="Components\Viewers\FreeForm\Nodes\RecordingNode\RecordingNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Components\Viewers\FreeForm\Nodes\WebNode\WebPreviewUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Viewers\FreeForm\Nodes\WebNode\WebNodeView.xaml">
       <Generator>MSBuild:Compile</Generator>

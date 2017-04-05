@@ -31,9 +31,9 @@ namespace NuSysApp
 
             Loaded += delegate(object sender, RoutedEventArgs args)
             {
-                String url = vm.Controller.LibraryElementController.Data;
+                String url = "http://www.google.com";
                 url = url ?? "http://www.google.com";
-                vm.Controller.LibraryElementController?.ContentDataController.SetData(url);
+                vm.Controller?.LibraryElementController?.ContentDataController.SetData(url);
 
                 xUrlBox.ManipulationDelta += delegate(object o, ManipulationDeltaRoutedEventArgs eventArgs)
                 {
@@ -42,10 +42,10 @@ namespace NuSysApp
             };
 
 
-            vm.Controller.LibraryElementController.ContentDataController.ContentDataUpdated += delegate (object sender, string contentData)
-            {
-                OnUrlChanged(contentData);
-            };
+            //vm.Controller.LibraryElementController.ContentDataController.ContentDataUpdated += delegate (object sender, string contentData)
+            //{
+            //    OnUrlChanged(contentData);
+            //};
 
 
             vm.PropertyChanged += OnPropertyChanged;

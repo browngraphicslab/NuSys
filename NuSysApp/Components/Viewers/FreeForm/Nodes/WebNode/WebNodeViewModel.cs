@@ -36,7 +36,7 @@ namespace NuSysApp
 
         public WebNodeViewModel(ElementController controller) : base(controller)
         {
-            ClipRect = new Rect(0, 0, controller.Model.Width, controller.Model.Height);
+            ClipRect = new Rect(0, 0,500, 500);
             Color = new SolidColorBrush(Windows.UI.Color.FromArgb(175, 100, 175, 255));
 
             // TODO: refactor
@@ -54,11 +54,11 @@ namespace NuSysApp
             //    Url = url;
             //    RaisePropertyChanged("Url");
             //};
-            controller.LibraryElementController.ContentDataController.ContentDataUpdated += delegate (object sender, string newData)
-            {
-                Url = newData;
-                RaisePropertyChanged("Url");
-            };
+            //controller.LibraryElementController.ContentDataController.ContentDataUpdated += delegate (object sender, string newData)
+            //{
+            //    Url = newData;
+            //    RaisePropertyChanged("Url");
+            //};
             //    Zoom = (Width / 1024.0);
 
             //}

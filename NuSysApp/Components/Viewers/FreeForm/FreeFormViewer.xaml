@@ -7,6 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converters="using:NuSysApp"
+    xmlns:webNode="using:NuSysApp.Components.Viewers.FreeForm.Nodes.WebNode"
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400"
@@ -14,6 +15,7 @@
 
     <Canvas x:Name="xOuterWrapper" Background="Transparent" >
         <Canvas x:Name="xWrapper" Width="{Binding ElementName=xFreeFormViewer, Path=Width}" Height="{Binding ElementName=xFreeFormViewer, Path=Height}" Background="Transparent">
+
             <xaml:CanvasAnimatedControl x:Name="xRenderCanvas" Visibility="Visible" IsFixedTimeStep="False" Width="{Binding ElementName=xFreeFormViewer, Path=Width}" Height="{Binding ElementName=xFreeFormViewer, Path=Height}" />
           
 
@@ -26,7 +28,7 @@
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
             </Canvas>
-            
+
 
             <xaml:CanvasControl x:Name="xMinimapCanvas" Visibility="Visible" />
             
@@ -46,6 +48,7 @@
             </Canvas>
 
             <local:UndoButton x:Name="xUndoButton" Visibility="Collapsed"></local:UndoButton>
+
 
 
             <local:MultiSelectMenuView x:Name="multiMenu" Visibility="Collapsed" Canvas.Top="30" Canvas.Left="300"/>
@@ -70,9 +73,10 @@
                     </Button>
                 </StackPanel>
             </Grid>
-            
+            <local:WebPreviewUserControl x:Name="xWebView" HorizontalAlignment="Stretch" Visibility="Collapsed" VerticalAlignment="Stretch"  Height="200" Width="400"  Margin="0,0,0,0"/>
+
         </Canvas>
-        <local:Keyboard x:Name="xKeyboard" Visibility="Collapsed"  ></local:Keyboard>
+        <local:Keyboard x:Name="xKeyboard" Visibility="Collapsed"></local:Keyboard>
 
         <local:DetailViewFullScreenImageViewer VerticalAlignment="Stretch" HorizontalAlignment="Stretch" x:Name="xFullScreenImageViewer"></local:DetailViewFullScreenImageViewer>
 

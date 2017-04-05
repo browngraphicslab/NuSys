@@ -114,6 +114,7 @@ namespace NuSysApp
 
             xKeyboard.KeyboardKeyPressed += Keyboard_KeyboardKeyPressed;
             xKeyboard.KeyboardKeyReleased += Keyboard_KeyboardKeyReleased;
+            
 
         }
 
@@ -218,6 +219,8 @@ namespace NuSysApp
             RenderEngine.BtnExportTrail.Tapped += BtnExportTrailOnTapped;
 
             _minimap = new MinimapRenderItem(InitialCollection, null, xMinimapCanvas);
+
+            
         }
 
         /// <summary>
@@ -1326,7 +1329,13 @@ namespace NuSysApp
             }
             else if(item is HtmlElementRenderItem)
             {
-                
+                var element = item as ElementRenderItem;
+                if (element != null)
+                {
+                    var url = element.ViewModel.Controller.LibraryElementController.GetMetadata("Original_Url").FirstOrDefault();
+                    var p = Vector2.Transform(item.Transform.LocalPosition, CurrentCollection.Camera.LocalToScreenMatrix);
+                    ShowWebPreview(url,p.X,p.Y);
+                }
             }
             else //if we are in regular mode
             {
@@ -1367,6 +1376,19 @@ namespace NuSysApp
                 {
                     element.ViewModel.Controller.SetTitleVisiblity(!element.ViewModel.Controller.Model.ShowTitle);
                 }, SessionController.Instance.NuSessionView.ResourceCreator);
+                if (element.GetType() == typeof (TextElementRenderItem))
+                {
+                    string url = element.ViewModel?.Controller?.LibraryElementController?.ContentDataController?.ContentDataModel.Data ?? "";
+
+                    if (Uri.IsWellFormedUriString(url, UriKind.RelativeOrAbsolute))
+                    {
+                        popup.AddFlyoutItem("Open In Web", (item, canvasPointer) =>
+                        {
+                            ShowWebPreview(url, pointer.CurrentPoint.X, pointer.CurrentPoint.Y);
+
+                        }, SessionController.Instance.NuSessionView.ResourceCreator);
+                    }
+                }
                 return;
             }
 
@@ -1387,6 +1409,21 @@ namespace NuSysApp
                     CurrentCollection.ViewModel.Controller.LibraryElementController, element.ViewModel.Controller);
             }
 
+        }
+
+        public void ShowWebPreview(String url, double x, double y)
+        {
+            UITask.Run(() =>
+            {
+                //var webPreview = new WebPreviewUserControl();
+                xWebView.Visibility = Visibility.Visible;
+                Canvas.SetLeft(xWebView, x);
+                Canvas.SetTop(xWebView, y);
+                //webPreview.Height = 400;
+                //webPreview.Width = 600;
+                xWebView.Navigate(url);
+                //xWrapper.Children.Add(webPreview);
+            });
         }
 
         public void AddToSelections(ElementRenderItem element)
@@ -1694,6 +1731,8 @@ namespace NuSysApp
             xAddRegionMenu.Visibility = Visibility.Collapsed;
         }
 
+        
 
+ 
     }
 }

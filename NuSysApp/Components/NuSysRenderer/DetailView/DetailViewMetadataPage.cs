@@ -173,7 +173,8 @@ namespace NuSysApp
             {
                 try
                 {
-                    Windows.System.Launcher.LaunchUriAsync(new Uri(item.Values.First()));
+                   // Windows.System.Launcher.LaunchUriAsync(new Uri(item.Values.First()));
+                    SessionController.Instance.SessionView.FreeFormViewer.ShowWebPreview(item.Values.First(), pointer.CurrentPoint.X, pointer.CurrentPoint.Y);
                 }
                 catch (Exception e)
                 {
