@@ -1212,7 +1212,61 @@ namespace NuSysApp
             // return the string representation of the image
             return imageAsString;
         }
-
-
     }
+
+    public static class Attacher
+    {
+        //public static void attach(this ListViewUIElementContainer<LibraryElementModel> lib, RenderEngine renderer)
+        //{
+        //    var imgColumn = new LibraryListImageColumn<LibraryElementModel>(RenderEngine.CanvasAnimatedControl);
+        //    imgColumn.Title = "";
+        //    imgColumn.RelativeWidth = 1;
+        //    imgColumn.ColumnFunction = model => model.GetController().SmallIconUri;
+
+        //    var listColumn1 = new ListTextColumn<LibraryElementModel>();
+        //    listColumn1.Title = "Title";
+        //    listColumn1.RelativeWidth = 2;
+        //    listColumn1.ColumnFunction = model => model.Title;
+
+        //    var listColumn2 = new ListTextColumn<LibraryElementModel>();
+        //    listColumn2.Title = "Type";
+        //    listColumn2.RelativeWidth = 1.25f;
+        //    listColumn2.ColumnFunction = model => model.Type.ToString();
+
+        //    var listColumn3 = new ListTextColumn<LibraryElementModel>();
+        //    listColumn3.Title = "Creator";
+        //    listColumn3.RelativeWidth = 1;
+        //    listColumn3.ColumnFunction =
+        //        model => SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(model.Creator);
+
+        //    var listColumn4 = new ListTextColumn<LibraryElementModel>();
+        //    listColumn4.Title = "Last Edited Timestamp";
+        //    listColumn4.RelativeWidth = 1.8f;
+        //    listColumn4.ColumnFunction = model => model.GetController()?.GetLastEditedTimestampInMinutes(); //Trims the seconds portion of the timestamp
+
+        //    var listColumn5 = new ListTextColumn<LibraryElementModel>();
+        //    listColumn5.Title = "Tags";
+        //    listColumn5.RelativeWidth = 1f;
+        //    listColumn5.ColumnFunction = model => model.Keywords != null ? string.Join(", ", model.Keywords.Select(i => i.Text)) : "";
+
+        //    var listColumn6 = new ListTextColumn<LibraryElementModel>();
+        //    listColumn6.Title = "Parent";
+        //    listColumn6.RelativeWidth = 1f;
+        //    listColumn6.ColumnFunction = model => SessionController.Instance.ContentController.GetLibraryElementController(model.ParentId) != null ? SessionController.Instance.ContentController.GetLibraryElementController(model.ParentId).Title : "";
+
+        //    var listColumn7 = new ListTextColumn<LibraryElementModel>();
+        //    listColumn7.Title = "Creation Date";
+        //    listColumn7.RelativeWidth = 1f;
+        //    listColumn7.ColumnFunction = model => model.GetController().GetCreationTimestampInMinutes();
+
+        //    var listColumn8 = new ListTextColumn<LibraryElementModel>();
+        //    listColumn8.Title = "Access";
+        //    listColumn8.RelativeWidth = 1f;
+        //    listColumn8.ColumnFunction = model => model.AccessType.ToString();
+
+        //    lib.AddColumns(new List<ListColumn<LibraryElementModel>> { imgColumn, listColumn1, listColumn2, listColumn3, listColumn4 });
+        //    lib.AddColumnOptions(new List<ListColumn<LibraryElementModel>> { listColumn5, listColumn8, listColumn7, listColumn6 });
+        //}
+    }
+
 }
