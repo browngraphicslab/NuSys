@@ -249,17 +249,20 @@ namespace NuSysApp
             compositeTransform.CenterY = center.Y;
 
             //And consider a translational shift
-
-
             compositeTransform.TranslateX += e.Delta.Translation.X;
             compositeTransform.TranslateY += e.Delta.Translation.Y;
+
+            // Rotation? 
+            compositeTransform.Rotation += e.Delta.Rotation * 180 / Math.PI; 
+            // 
 
             var start = (xImage.RenderTransform as TransformGroup).Children[1] as CompositeTransform;
             start.CenterX = e.Position.X;
             start.CenterY = e.Position.Y;
 
             var rotate = (xImage.RenderTransform as TransformGroup).Children[2] as CompositeTransform;
-            //rotate.Rotation += e.Delta.Rotation;
+            // rotate.Rotation += e.Delta.Rotation; //uncommented this 
+
             var end = (xImage.RenderTransform as TransformGroup).Children[3] as CompositeTransform;
         }
 

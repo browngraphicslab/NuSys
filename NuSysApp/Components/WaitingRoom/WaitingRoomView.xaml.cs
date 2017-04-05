@@ -634,7 +634,7 @@ namespace NuSysApp
             string userID = "";
             try
             {
-                XmlDocument doc = new XmlDocument();
+                Windows.Data.Xml.Dom.XmlDocument doc = new Windows.Data.Xml.Dom.XmlDocument(); // Windows.Data.Xml.Dom OR System.Xml.XmlDocument 
                 doc.LoadXml(data);
                 var dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(doc.ChildNodes[0].InnerText);
                 validCredentials = bool.Parse(dict["valid"]);
