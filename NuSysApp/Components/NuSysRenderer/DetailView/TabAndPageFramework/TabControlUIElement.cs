@@ -5,18 +5,44 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Graphics.Canvas;
 using Windows.Foundation;
+using Windows.UI;
 
 namespace NuSysApp.Components.NuSysRenderer.DetailView.TabAndPageFramework
 {
     class TabControlUIElement : RectangleUIElement
     {
-        protected class TabButtonUIElement
+        protected class TabButtonUIElement : ButtonUIElement
         {
             public TabPageUIElement TabPage;
 
-            public TabButtonUIElement(TabPageUIElement tabPage)
+            private bool _selected = false;
+            public bool Selected {
+                get
+                {
+                    return _selected;
+                }
+                set
+                {
+                    _selected = value;
+                }
+            }
+
+            public TabButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, TabPageUIElement tabPage, BaseInteractiveUIElement shape = null) : base(parent, resourceCreator, shape)
             {
                 TabPage = tabPage;
+            }
+
+            public override void Draw(CanvasDrawingSession ds)
+            {
+                if(Selected)
+                {
+                    Background = Colors.Blue;
+                } else
+                {
+                    Background = Colors.Yellow;
+                }
+                ButtonText = TabPage.Name;
+                base.Draw(ds);
             }
         }
 
@@ -28,9 +54,23 @@ namespace NuSysApp.Components.NuSysRenderer.DetailView.TabAndPageFramework
         protected Dictionary<TabPageUIElement, TabButtonUIElement> _tabDict = new Dictionary<TabPageUIElement, TabButtonUIElement>();
         protected List<TabButtonUIElement> _tabButtons = new List<TabButtonUIElement>();
 
+        protected StackLayoutManager _buttonLayoutManager = new StackLayoutManager();
+
+        private TabPageUIElement _selectedTab;
         public TabPageUIElement SelectedTab
         {
-            get; set;
+            get
+            {
+                return _selectedTab;
+            }
+            set
+            {
+                RemoveChild(_selectedTab);
+                _tabDict[_selectedTab].Selected = false;
+                _selectedTab = value;
+                AddChild(_selectedTab);
+                _tabDict[_selectedTab].Selected = true;
+            }
         }
         
         public int SelectedIndex
@@ -86,14 +126,28 @@ namespace NuSysApp.Components.NuSysRenderer.DetailView.TabAndPageFramework
 
         void AddTab(TabPageUIElement newTab, bool select = false)
         {
+            newTab.Parent = this;
             _tabs.Add(newTab);
-            TabButtonUIElement button = new TabButtonUIElement(newTab);
+            TabButtonUIElement button = new TabButtonUIElement(this, ResourceCreator, newTab);
             _tabButtons.Add(button);
+            AddChild(button);
+            _buttonLayoutManager.AddElement(button);
+            button.Tapped += TabButton_Tapped;
             _tabDict.Add(newTab, button);
             if(select)
             {
                 SelectedTab = newTab;
             }
+        }
+
+        private void TabButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            TabButtonUIElement button = item as TabButtonUIElement;
+            if(button == null)
+            {
+                return;
+            }
+            SelectedTab = button.TabPage;
         }
 
         void RemoveTab(TabPageUIElement tab)
@@ -112,7 +166,11 @@ namespace NuSysApp.Components.NuSysRenderer.DetailView.TabAndPageFramework
                 }
             }
             TabPageUIElement t = _tabs[index];
-            _tabButtons.Remove(_tabDict[t]);
+            TabButtonUIElement button = _tabDict[t];
+            _tabButtons.Remove(button);
+            RemoveChild(button);
+            _buttonLayoutManager.Remove(button);
+            button.Tapped -= TabButton_Tapped;
             _tabs.RemoveAt(index);
             _tabDict.Remove(t);
         }
@@ -181,6 +239,28 @@ namespace NuSysApp.Components.NuSysRenderer.DetailView.TabAndPageFramework
             TabPageUIElement t = _tabs[oldIndex];
             _tabs.RemoveAt(oldIndex);
             _tabs.Insert(newIndex, t);
+        }
+
+        public override void Draw(CanvasDrawingSession ds)
+        {
+            _buttonLayoutManager.ItemWidth = 100;
+            _buttonLayoutManager.Height = 200;
+            _buttonLayoutManager.Width = Width;
+            _buttonLayoutManager.ArrangeItems();
+
+            SelectedTab.Transform.LocalPosition = new System.Numerics.Vector2(0, 200);
+            SelectedTab.Transform.Size = new Size(Width, Height - 200);
+            base.Draw(ds);
+        }
+
+        public override void Dispose()
+        {
+            foreach(TabButtonUIElement button in _tabButtons)
+            {
+                button.Tapped -= TabButton_Tapped;
+            }
+
+            base.Dispose();
         }
 
     }
