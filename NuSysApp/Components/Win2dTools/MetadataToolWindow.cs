@@ -56,7 +56,8 @@ namespace NuSysApp
 
         private void SearchBarTextChanged(InteractiveBaseRenderItem item, string text)
         {
-            RefreshValueList();
+            
+            RefreshValueList(true);
         }
 
         /// <summary>
@@ -165,20 +166,21 @@ namespace NuSysApp
         /// <summary>
         ///  Based on the selected key, and the search bar, refreshes the value list and sets visual value selection
         /// </summary>
-        public void RefreshValueList()
+        public void RefreshValueList(bool selectAllItems = false)
         {
 
                 var vm = (Vm as MetadataToolViewModel);
                 if (vm?.Selection?.Item1 != null && vm.Controller.ToolModel.Selected)
                 {
                     var filteredList = FilterValuesList(_searchBar.Text); //FilterValuesList(xSearchBox.Text);
-
+                    
                     if (!ScrambledEquals(_metadataValuesList.GetItems().Select(item => ((KeyValuePair<string, double>)item).Key), filteredList.Select(item => ((KeyValuePair<string, double>)item).Key)))
                     {
                         //if new filtered list is different from old filtered list, set new list as item source, set the visual selection, and 
                         //scroll into view if necessary.
                         _metadataValuesList.ClearItems();
                         _metadataValuesList.AddItems(filteredList);
+                        
                         SetValueListVisualSelection();
                         if (_metadataValuesList.GetSelectedItems().ToArray().Any())
                         {
@@ -190,7 +192,14 @@ namespace NuSysApp
                         //if new filtered list is the same as old filtered list, just set the visual selection and do not refresh the value list item source
                         SetValueListVisualSelection();
                     }
+                if (selectAllItems)
+                {
+                    vm.Selection.Item2.Clear();
+                    vm.Selection.Item2.UnionWith(filteredList.Select(item => ((KeyValuePair<string, double>)item).Key));
+                    vm.Selection = vm.Selection;
+                    return;
                 }
+            }
                 else
                 {
                     _metadataValuesList.ClearItems();
@@ -228,12 +237,15 @@ namespace NuSysApp
                     _metadataValuesList.DeselectAllItems();
                     if (_metadataValuesList.GetItems().Any())
                     {
-                        foreach (var item in vm.Selection.Item2)
-                        {
-                            var toAdd = _metadataValuesList.GetItems().Where(kvp => ((KeyValuePair<string, double>)kvp).Key.Equals(item)).FirstOrDefault();
 
-                            _metadataValuesList.SelectItem(toAdd);
-                        }
+                        //foreach (var item in vm.Selection.Item2)
+                        //{
+
+                        //}
+                        var toAdd = _metadataValuesList.GetItems().Where(kvp => vm.Selection.Item2.Contains((kvp).Key));
+
+                        _metadataValuesList.SelectItems(toAdd);
+
                     }
                 }
                 else
