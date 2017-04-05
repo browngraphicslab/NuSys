@@ -203,7 +203,7 @@ namespace NuSysApp
             ((TranslateTransform)PlayPauseButton.RenderTransform).X = (width - PlayPauseButton.Width )/ 2;
         }
 
-        private static YouTubeService youtubeService = new YouTubeService(
+        private static YouTubeService _youtubeService = new YouTubeService(
         new BaseClientService.Initializer()
         {
             ApiKey = "AIzaSyB_lctEqNUGu2mKozQkTler9pS1jU8fO6Q",
@@ -232,6 +232,7 @@ namespace NuSysApp
                 {
                     UITask.Run(async delegate
                     {
+                        var a = _youtubeService.Features;
                         var videoUrl = await YouTube.GetVideoUriAsync(url, YouTubeQuality.Quality1080P);
                         MediaElement.Source = videoUrl.Uri;
                         AutoStartMedia = autoStartWhenLoaded;

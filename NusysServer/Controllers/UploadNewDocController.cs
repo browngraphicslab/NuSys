@@ -117,11 +117,12 @@ namespace NusysServer
                             title = temp.url ?? "New website import";
                         }
 
-                        var websiteImageUrl = await ImageUtil.GetImageUrlFromUrl(temp.url, contentDataId);
+                        var filepath = contentDataId + ".jpeg";
+                        FileHelper.CreateFile(Convert.FromBase64String(temp.data), filepath);
 
 
                         m[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY] = contentDataId;
-                        m[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES] = websiteImageUrl;
+                        m[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES] = Constants.SERVER_ADDRESS + filepath; ;
                         m[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY] = NusysConstants.ContentType.HTML;
                         m[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_CONTENT_ID_KEY] = contentDataId;
                         m[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_CREATOR_USER_ID_KEY] = "web_import";
@@ -187,13 +188,20 @@ namespace NusysServer
 
                         string videoString;
 
-                        if (temp.data.Substring(0,25).Contains("youtube"))
+                        if (temp.url.Substring(0,25).Contains("youtube"))
                         {
-                            videoString = temp.data.Substring(temp.data.LastIndexOf("v=") + 2);
+                            try
+                            {
+                                videoString = temp.url.Substring(temp.url.LastIndexOf("v=") + 2);
+                            }
+                            catch (Exception e)
+                            {
+                                videoString = temp.url;
+                            }
                         }
                         else
                         {
-                            videoString = temp.data;
+                            videoString = temp.url;
                         }
 
                         m[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY] = contentDataId;
