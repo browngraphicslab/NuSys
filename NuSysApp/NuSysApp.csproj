@@ -422,6 +422,7 @@
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoContent.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoPage.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewWordPage.cs" />
+    <Compile Include="Components\NuSysRenderer\DetailView\TabAndPageFramework\TabButtonUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\TabAndPageFramework\TabControlUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\TabAndPageFramework\TabPageUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BorderType.cs" />
@@ -524,7 +525,6 @@
     <Compile Include="Components\NuSysRenderer\DetailView\SliderUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\LayoutManager\StackAlignment.cs" />
     <Compile Include="Components\NuSysRenderer\UI\LayoutManager\StackLayoutManager.cs" />
-    <Compile Include="Components\NuSysRenderer\DetailView\TabAndPageFramework\TabButtonUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\TabAndPageFramework\TabContainerUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Textbox\TextboxUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\UIDefaults.cs" />

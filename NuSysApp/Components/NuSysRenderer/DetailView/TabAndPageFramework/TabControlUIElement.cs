@@ -7,7 +7,7 @@ using Microsoft.Graphics.Canvas;
 using Windows.Foundation;
 using Windows.UI;
 
-namespace NuSysApp.Components.NuSysRenderer.DetailView.TabAndPageFramework
+namespace NuSysApp
 {
     class TabControlUIElement : RectangleUIElement
     {

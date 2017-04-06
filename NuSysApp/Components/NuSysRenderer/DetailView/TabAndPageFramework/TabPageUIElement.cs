@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Graphics.Canvas;
 
-namespace NuSysApp.Components.NuSysRenderer.DetailView.TabAndPageFramework
+namespace NuSysApp
 {
     class TabPageUIElement : RectangleUIElement
     {
