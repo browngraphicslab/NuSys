@@ -189,8 +189,11 @@ namespace NuSysApp
 
         private void XCanvas_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
+            /*
             var transform = (xImage.RenderTransform as TransformGroup)?.Children?.First() as CompositeTransform;
             Debug.Assert(transform != null);
+
+            */                                                                                          // uncomment this  
 
             /*
             //var transPoint = transform.Inverse.TransformPoint(e.Position);
@@ -206,12 +209,23 @@ namespace NuSysApp
             //transform.Rotation += e.Delta.Rotation;*/
 
 
-            var compositeTransform = transform;
+            //            var compositeTransform = transform;                                                                   // uncomment this lol 
 
             // Rotation? 
-            compositeTransform.Rotation += e.Delta.Rotation;
+            var trans = xImage.RenderTransform as CompositeTransform; 
 
+         //   compositeTransform.Rotation += e.Delta.Rotation;
+            RotateTransform rt = new RotateTransform();
+            rt.Angle = trans.Rotation + e.Delta.Rotation;
 
+            TransformGroup tg = new TransformGroup();
+            tg.Children.Add(rt);
+            xImage.RenderTransform = tg; 
+            
+
+         //   System.Diagnostics.Debug.WriteLine(compositeTransform.Rotation); 
+         // use codebehind rendertransform rotatetransform etc ;;; ?? << ????????????????????? 
+         /* 
             var center = e.Position;
 
             var tmpTranslate = new CompositeTransform()
@@ -264,6 +278,8 @@ namespace NuSysApp
             //rotate.Rotation += e.Delta.Rotation;  
 
             var end = (xImage.RenderTransform as TransformGroup).Children[3] as CompositeTransform;
+
+            */                                                                                                          // uncomment this 
         }
 
         private void XImage_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
