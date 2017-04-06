@@ -31,6 +31,8 @@ namespace NuSysApp
         private List<Uri> _currentListOfImageUris;
         private int _indexOfUri;
 
+        public double ActualX { get; private set; }
+
         /// <summary>
         /// Parameterless constructor jsut initializes the components
         /// </summary>
@@ -183,17 +185,49 @@ namespace NuSysApp
 
         private void XCanvas_OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            var transform = (xImage.RenderTransform as TransformGroup)?.Children?.First() as CompositeTransform;
-            Debug.Assert(transform != null);
+             var transform = (xImage.RenderTransform as TransformGroup)?.Children?.First() as CompositeTransform;
+            // Debug.Assert(transform != null);                                                                                 // uncomment these?  
+
         }
 
         private void XCanvas_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            /*
+            var point = xImage.TransformToVisual(Window.Current.Content);
+            Point screenCoord = point.TransformPoint(new Point(0, 0));
+
+            TranslateTransform translate = new TranslateTransform
+            {
+                X = e.Delta.Translation.X,
+                Y = e.Delta.Translation.Y
+            };
+
+            ScaleTransform scale = new ScaleTransform
+            {
+                CenterX = screenCoord.X, // e.Position.X,
+                CenterY = screenCoord.Y, // e.Position.Y,
+                ScaleX = e.Delta.Scale, ScaleY = e.Delta.Scale
+            };
+
+            RotateTransform rotate = new RotateTransform
+            {
+                CenterX = screenCoord.X, // e.Position.X,
+                CenterY = screenCoord.Y, // e.Position.Y,
+                Angle = e.Delta.Rotation
+            };
+
+            TransformGroup composite = new TransformGroup();
+            composite.Children.Add(xImage.RenderTransform);
+            composite.Children.Add(translate);
+            composite.Children.Add(rotate);
+            composite.Children.Add(scale);
+            xImage.RenderTransform = new MatrixTransform { Matrix = composite.Value };
+           
+
+            ////////////////////////// 
+
+            /* 
             var transform = (xImage.RenderTransform as TransformGroup)?.Children?.First() as CompositeTransform;
             Debug.Assert(transform != null);
-
-            */                                                                                          // uncomment this  
 
             /*
             //var transPoint = transform.Inverse.TransformPoint(e.Position);
@@ -201,31 +235,17 @@ namespace NuSysApp
             transform.CenterX = e.Position.X / transform.ScaleX;
             transform.CenterY = e.Position.Y / transform.ScaleY;
 
-            transform.TranslateX += e.Delta.Translation.X;//- ((1-transform.ScaleX) * e.Position.X);
+            transform.TranslateX += e.Delta.Translation.X;// - ((1-transform.ScaleX) * e.Position.X);
             transform.TranslateY += e.Delta.Translation.Y;// - ((1 - transform.ScaleY) * e.Position.Y);
 
             transform.ScaleX *= e.Delta.Scale;
             transform.ScaleY *= e.Delta.Scale;
-            //transform.Rotation += e.Delta.Rotation;*/
+            //transform.Rotation += e.Delta.Rotation;
+            */
 
+            /* 
+            var compositeTransform = transform;
 
-            //            var compositeTransform = transform;                                                                   // uncomment this lol 
-
-            // Rotation? 
-            var trans = xImage.RenderTransform as CompositeTransform; 
-
-         //   compositeTransform.Rotation += e.Delta.Rotation;
-            RotateTransform rt = new RotateTransform();
-            rt.Angle = trans.Rotation + e.Delta.Rotation;
-
-            TransformGroup tg = new TransformGroup();
-            tg.Children.Add(rt);
-            xImage.RenderTransform = tg; 
-            
-
-         //   System.Diagnostics.Debug.WriteLine(compositeTransform.Rotation); 
-         // use codebehind rendertransform rotatetransform etc ;;; ?? << ????????????????????? 
-         /* 
             var center = e.Position;
 
             var tmpTranslate = new CompositeTransform()
@@ -270,22 +290,48 @@ namespace NuSysApp
 
 
 
+            /* //////////////////  
+            TranslateTransform translate = new TranslateTransform
+            {
+                X = compositeTransform.TranslateX,
+                Y = compositeTransform.TranslateY
+            };
+
+            ScaleTransform scale = new ScaleTransform
+            {
+                CenterX = center.X, // e.Position.X,
+                CenterY = center.Y, // e.Position.Y,
+                ScaleX = compositeTransform.ScaleX,
+                ScaleY = compositeTransform.ScaleY
+            };
+
+            TransformGroup composite = new TransformGroup();
+            composite.Children.Add(xImage.RenderTransform);
+            composite.Children.Add(translate);
+           // composite.Children.Add(rotate);
+            composite.Children.Add(scale);
+            xImage.RenderTransform = new MatrixTransform { Matrix = composite.Value };
+            */
+            ///////////////////////// 
+
+
+            /*                                                                                                  why do we even have this lever 
             var start = (xImage.RenderTransform as TransformGroup).Children[1] as CompositeTransform;
             start.CenterX = e.Position.X;
             start.CenterY = e.Position.Y;
 
-            var rotate = (xImage.RenderTransform as TransformGroup).Children[2] as CompositeTransform;
+            var rotation = (xImage.RenderTransform as TransformGroup).Children[2] as CompositeTransform;
             //rotate.Rotation += e.Delta.Rotation;  
 
             var end = (xImage.RenderTransform as TransformGroup).Children[3] as CompositeTransform;
+            */
 
-            */                                                                                                          // uncomment this 
         }
 
         private void XImage_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-            var transform = (xImage.RenderTransform as TransformGroup)?.Children?.First() as CompositeTransform;
-            Debug.Assert(transform != null);
+             var transform = (xImage.RenderTransform as TransformGroup)?.Children?.First() as CompositeTransform;
+            // Debug.Assert(transform != null);                                                                                 // uncomment these  
 
             //transform.CenterX = e.Position.X;
             //transform.CenterY = e.Position.Y;
