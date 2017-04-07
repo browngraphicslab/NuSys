@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using NusysServer.Static_Classes;
 
 namespace NusysServer
 {
@@ -55,6 +56,7 @@ namespace NusysServer
             _comparisonController = new ComparisonController();
             LockController = new LocksController();
             LockListeners = new LockListenersController(LockController);
+            DocumentDBConnector.Initialize();
         }
     }
 }

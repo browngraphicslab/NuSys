@@ -20,6 +20,8 @@
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
     <ApplicationInsightsResourceId>/subscriptions/4fe2eba9-8916-410b-93ee-7fe31ec29a78/resourcegroups/Default-ApplicationInsights-CentralUS/providers/microsoft.insights/components/NusysServer</ApplicationInsightsResourceId>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -378,6 +380,7 @@
     <Compile Include="Static_Classes\DocumentComparison\RetrieveSimilarDocs.cs" />
     <Compile Include="Static_Classes\DocumentComparison\Tfidf\Tfidf.cs" />
     <Compile Include="Static_Classes\DocumentComparison\VectorUtil.cs" />
+    <Compile Include="Static_Classes\DocumentDBConnector.cs" />
     <Compile Include="Static_Classes\ImageProcessor.cs" />
     <Compile Include="Static_Classes\MediaProcessor.cs" />
     <Compile Include="Static_Classes\NuWebSocketHandler.cs" />
