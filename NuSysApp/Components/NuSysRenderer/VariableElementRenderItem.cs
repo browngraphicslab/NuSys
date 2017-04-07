@@ -61,7 +61,7 @@ namespace NuSysApp
         protected override void HackyUpdate()
         {
             var elController = ViewModel.Controller as VariableElementController;
-            if ((ViewModel as VariableNodeViewModel).VariableElementController.ValueString.Length > 50)
+            if ((ViewModel as VariableNodeViewModel).VariableElementController.ValueString.Length > VariableElementController.MaxChars)
             {
                 _textBox.FuckedWidth = null;
                 _textBox.FuckedHeight = null;

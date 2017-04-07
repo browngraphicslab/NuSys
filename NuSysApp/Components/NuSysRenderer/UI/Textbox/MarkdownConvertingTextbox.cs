@@ -286,7 +286,7 @@ namespace NuSysApp
             var dpi = FuckedHeight != null ? 16000/Math.Max(1,(float) (FuckedWidth/FuckedHeight)) : ResourceCreator.Dpi;
 
             _renderTarget?.Dispose();
-            _renderTarget = new CanvasRenderTarget(Canvas,(float)Math.Min(tempWidth, Canvas.Size.Width),(float)Math.Min(tempHeight, Canvas.Size.Height),dpi);
+            _renderTarget = new CanvasRenderTarget(Canvas,(float)Math.Min(tempWidth, Canvas.Size.Width),(float)Math.Min(tempHeight, Canvas.Size.Height),dpi*7);
 
             using (var dss = _renderTarget.CreateDrawingSession())
             {

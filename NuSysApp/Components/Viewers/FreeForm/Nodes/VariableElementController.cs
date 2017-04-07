@@ -11,6 +11,7 @@ namespace NuSysApp
 {
     public class VariableElementController : TextNodeController
     {
+        public static int MaxChars = 0;
         public event EventHandler<string> StoredLibraryIdChanged; 
         public VariableLibraryElementController VariableController
         {
@@ -71,7 +72,7 @@ namespace NuSysApp
 
         public override void SetSize(double width, double height, bool saveToServer = true)
         {
-            if (ValueString?.Length > 50)
+            if (ValueString?.Length > MaxChars)
             {
                 base.SetSize(width, height, saveToServer);
                 return;
