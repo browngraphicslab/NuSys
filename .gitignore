@@ -214,3 +214,6 @@ Win8/Release
 Win8/ARM
 Win8/Win32
 Win8/Generated Files
+
+# Ignore the Error Log for the server
+NusysServer/errorlog
