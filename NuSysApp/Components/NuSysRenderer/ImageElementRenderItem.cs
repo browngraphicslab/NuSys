@@ -53,10 +53,11 @@ namespace NuSysApp
 
         public override void Dispose()
         {
+            _image?.Dispose();
             if (IsDisposed)
                 return;
 
-            _image.Dispose();
+            _image?.Dispose();
             _image = null;
             _vm.Controller.SizeChanged -= ControllerOnSizeChanged;
             _vm = null;
@@ -65,6 +66,10 @@ namespace NuSysApp
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
+            if (_image == null)
+            {
+                return;
+            }
             _inkable.Width = (float) _image.CroppedImageTarget.Width;
             _inkable.Height = (float)_image.CroppedImageTarget.Height;
             _inkable.Transform.LocalPosition = _image.Transform.LocalPosition;

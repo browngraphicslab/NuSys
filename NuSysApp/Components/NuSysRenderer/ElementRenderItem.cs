@@ -282,7 +282,7 @@ namespace NuSysApp
 
             Color color = this != SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection ? Color.FromArgb(0xdd, 0, 0, 0) : Colors.White;
 
-            var drawBoundsHeight = (float)_textLayout.DrawBounds.Height;
+            var drawBoundsHeight = (float)(_textLayout?.DrawBounds.Height ?? 5.0f);
 
             if (ViewModel.Controller.Model.ShowTitle)
             {

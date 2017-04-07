@@ -189,6 +189,14 @@ namespace NuSysApp
                     metadata.Add("Access",
                         new MetadataEntry("Access", new List<string>() {LibraryElementModel.AccessType.ToString()},MetadataMutability.IMMUTABLE));
                 }
+                if (LibraryElementModel.Type == NusysConstants.ElementType.Text)
+                {
+                    if (!metadata.ContainsKey("TextContent"))
+                    {
+                        metadata.Add("TextContent",
+                            new MetadataEntry("TextContent", new List<string>() { ContentDataController?.ContentDataModel?.Data ?? "" }, MetadataMutability.IMMUTABLE));
+                    }
+                }
                 return metadata;
             }
         }

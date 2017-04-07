@@ -387,7 +387,7 @@ namespace NuSysApp
                     {
                         Task.Run(async delegate
                         {
-                            await CustomViewerDisplay.AddElementToDisplay(NusysConstants.ElementType.Variable,p.X,p.Y,node.Width,node.Height);
+                            await CustomViewerDisplay.AddElementToDisplay(NusysConstants.ElementType.Variable,p.X,p.Y,node.ViewModel.Width,node.ViewModel.Height);
                             var controller = CustomViewerDisplay.LastVariableNodeAdded;
                             controller.SetMetadataKey(
                                 (node.ViewModel.Controller as VariableElementController).MetadataKey);

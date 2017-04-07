@@ -33,6 +33,7 @@ namespace NuSysApp
         public NodeMenuButtonRenderItem BtnEnterCollection;
         public NodeMenuButtonRenderItem BtnLayoutTool;
         public NodeMenuButtonRenderItem BtnEditTags;
+        public NodeMenuButtonRenderItem BtnMakeDisplay;
         public PdfPageButtonRenderItem BtnPdfLeft;
         public PdfPageButtonRenderItem BtnPdfRight;
         public NodeResizerRenderItem Resizer;
@@ -57,6 +58,8 @@ namespace NuSysApp
             BtnLayoutTool.Label = "edit layout";
             BtnEditTags = new NodeMenuButtonRenderItem("ms-appx:///Assets/new icons/multitag.png", parent, resourceCreator);
             BtnEditTags.Label = "add tags";
+            BtnMakeDisplay = new NodeMenuButtonRenderItem("ms-appx:///Assets/new icons/collection white.png", parent, resourceCreator);
+            BtnMakeDisplay.Label = "make display";
 
             BtnPdfLeft = new PdfPageButtonRenderItem(-1, parent, resourceCreator);
             BtnPdfRight = new PdfPageButtonRenderItem(1, parent, resourceCreator);
@@ -72,13 +75,14 @@ namespace NuSysApp
                 BtnPresent,
                 BtnLayoutTool,
                 BtnEditTags,
+                BtnMakeDisplay,
                 BtnPdfLeft,
                 BtnPdfRight,
                 BtnEnterCollection,
                 Resizer,
                 BtnTools
             };
-            _menuButtons = new List<BaseRenderItem> { BtnDelete, BtnGroup, BtnPresent, BtnLayoutTool, BtnEditTags, BtnEnterCollection, BtnTools };
+            _menuButtons = new List<BaseRenderItem> { BtnDelete, BtnGroup, BtnPresent, BtnLayoutTool, BtnEditTags,BtnMakeDisplay, BtnEnterCollection, BtnTools };
 
             IsHitTestVisible = false;
             IsChildrenHitTestVisible = true;

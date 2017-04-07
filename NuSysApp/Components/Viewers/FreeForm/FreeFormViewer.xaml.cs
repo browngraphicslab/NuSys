@@ -860,6 +860,14 @@ namespace NuSysApp
                 ClearSelections();
                 
             }
+            if (item == RenderEngine.ElementSelectionRect.BtnMakeDisplay)
+            {
+                var minX = Selections.Min(i => i.ViewModel.Model.X);
+                var maxX = Selections.Max(i => i.ViewModel.Model.X + i.ViewModel.Model.Width);
+                var minY = Selections.Min(i => i.ViewModel.Model.Y);
+                var maxY = Selections.Max(i => i.ViewModel.Model.Y + i.ViewModel.Model.Height);
+                CurrentCollection.AddRect(new Rect(minX,minY,maxX-minX,maxY-minY));
+            }
             if (item == RenderEngine.ElementSelectionRect.BtnGroup)
             {
                 multiMenu.Show(pointer.CurrentPoint.X + 50, pointer.CurrentPoint.Y, _latestStroke != null);
@@ -1342,7 +1350,12 @@ namespace NuSysApp
                 var element = item as VariableElementRenderItem;
                 if (element != null)
                 {
-                    CustomViewerDisplay.CurrentElement = SessionController.Instance.ContentController.GetLibraryElementController((element.ViewModel.Model as VariableElementModel).StoredLibraryId);
+                    //CustomViewerDisplay.CurrentElement = SessionController.Instance.ContentController.GetLibraryElementController((element.ViewModel.Model as VariableElementModel).StoredLibraryId);
+                    var controller = SessionController.Instance.ContentController.GetLibraryElementController((element.ViewModel.Model as VariableElementModel).StoredLibraryId);
+                    if (controller != null)
+                    {
+                        CurrentCollection.SetNewController(controller);
+                    }
                 }
             }
             else if (item is CustomDisplayElementRenderItem)

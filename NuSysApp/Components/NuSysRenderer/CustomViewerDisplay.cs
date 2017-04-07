@@ -55,17 +55,21 @@ namespace NuSysApp
         private static async Task Reset()
         {
             var models = Controllers.Select(c => c.Model).ToArray();
+            var controllers = Controllers.ToArray();
 
-            foreach (var controller in Controllers)//dispose of old controllers
+            var all = _allDisplayRenderItems.ToArray();
+            all.SelectMany(r => r.Value).ForEach(i => i.Dispose());
+
+            all.ForEach(k => _allDisplayRenderItems[k.Key].Clear());
+
+            foreach (var controller in controllers)//dispose of old controllers
             {
                 ElementController outController;
                 SessionController.Instance.ElementModelIdToElementController.TryRemove(controller.Id, out outController);
                 controller.Dispose();
+                Controllers.Remove(controller);
             }
 
-            Controllers.Clear();
-            _allDisplayRenderItems.SelectMany(r => r.Value).ForEach(i => i.Dispose());
-            _allDisplayRenderItems.Values.ForEach(i => i.Clear());
 
             await UITask.Run(async delegate
             {

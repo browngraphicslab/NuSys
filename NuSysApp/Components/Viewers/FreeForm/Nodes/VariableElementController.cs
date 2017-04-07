@@ -58,8 +58,24 @@ namespace NuSysApp
             }
         }
 
+        public void IncrementBlockServerInteraction()
+        {
+            _blockServerInteractionCount++;
+        }
+
+        public void DecrementBlockServerInteraction()
+        {
+            _blockServerInteractionCount--;
+        }
+
+
         public override void SetSize(double width, double height, bool saveToServer = true)
         {
+            if (ValueString?.Length > 50)
+            {
+                base.SetSize(width, height, saveToServer);
+                return;
+            }
             var ratio =  ValueAspectRatio;
             height = (1 / ratio) * width;
 
@@ -120,7 +136,7 @@ namespace NuSysApp
         {
             if (text.Length <= 1)
             {
-                ValueAspectRatio = 1;
+                ValueAspectRatio = 0;
                 return;
             }
 

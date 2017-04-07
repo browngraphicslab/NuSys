@@ -61,8 +61,16 @@ namespace NuSysApp
         protected override void HackyUpdate()
         {
             var elController = ViewModel.Controller as VariableElementController;
-            _textBox.FuckedWidth = (float)(32 * elController.ValueAspectRatio);
-            _textBox.FuckedHeight = 32;
+            if ((ViewModel as VariableNodeViewModel).VariableElementController.ValueString.Length > 50)
+            {
+                _textBox.FuckedWidth = null;
+                _textBox.FuckedHeight = null;
+            }
+            else
+            {
+                _textBox.FuckedWidth = (float) (32*elController.ValueAspectRatio);
+                _textBox.FuckedHeight = 32;
+            }
         }
 
         public override void Draw(CanvasDrawingSession ds)
@@ -73,9 +81,12 @@ namespace NuSysApp
                 var orgTransform = ds.Transform;
                 ds.Transform = Transform.LocalToScreenMatrix;
 
-                using (ds.CreateLayer(1, CanvasGeometry.CreateRectangle(Canvas, new Rect(0, 0, Width, Height))))
+                var s = Constants.DefaultNodeSize*.1;
+
+                using (ds.CreateLayer(1, CanvasGeometry.CreateRectangle(Canvas, new Rect(0, 0, ViewModel.Width, ViewModel.Height))))
                 {
-                    ds.DrawImage(_icon, new Rect(1, 1, Constants.DefaultNodeSize * .1, Constants.DefaultNodeSize * .1), _icon.GetBounds(Canvas));
+                    var b = _icon.GetBounds(ResourceCreator);
+                    ds.DrawImage(_icon, new Rect(ViewModel.Width-s, ViewModel.Height-s,s,s*(b.Height/b.Width)), _icon.GetBounds(Canvas));
                 }
 
                 ds.Transform = orgTransform;

@@ -64,6 +64,49 @@ namespace NuSysApp
 
         private ShapedStatus _shapeStatus;
 
+        private List<Rect> _boundingRects = new List<Rect>();
+
+        public void AddRect(Rect rect)
+        {
+            _boundingRects.Add(rect);
+        }
+
+        public void SetNewController(LibraryElementController controller)
+        {
+            var array = _renderItems2.OfType<VariableElementRenderItem>().ToArray();
+            var overlap = new List<VariableElementRenderItem>();
+            foreach (var rect in _boundingRects.ToArray())
+            {
+                foreach (var ri in array)
+                {
+                    if (rect.Intersects(new Rect(new Point(ri.ViewModel.X, ri.ViewModel.Y),
+                        new Point(ri.ViewModel.X + ri.ViewModel.Width, ri.ViewModel.Y + ri.ViewModel.Height))))
+                    {
+                        overlap.Add(ri);
+                    }
+                }
+            }
+
+            foreach (var renderItem in overlap)
+            {
+                var elController = renderItem.ViewModel.Controller as VariableElementController;
+                elController.SetStoredLibraryId(controller.LibraryElementModel.LibraryElementId);
+            }
+        }
+
+        private bool doOverlap(Point l1, Point r1, Point l2, Point r2)
+        {
+            // If one rectangle is on left side of other
+            if (l1.X > r2.X || l2.X > r1.X)
+                return false;
+
+            // If one rectangle is above other
+            if (l1.Y < r2.Y || l2.Y < r1.Y)
+                return false;
+
+            return true;
+        }
+
         public CollectionRenderItem(ElementCollectionViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi canvas, bool interactionEnabled = false) : base(vm, parent, canvas)
         {
             _canvas = (CanvasAnimatedControl)ResourceCreator;
@@ -433,6 +476,7 @@ namespace NuSysApp
 
             using (ds.CreateLayer(1, Mask))
             {
+
                 ds.Transform = Transform.LocalToScreenMatrix;
                 ds.FillRectangle(GetLocalBounds(), Colors.White);
 
@@ -459,6 +503,19 @@ namespace NuSysApp
                 {
                     item.Draw(ds);
                 }
+
+                var old = ds.Transform;
+                ds.Transform = Matrix3x2.Identity;
+
+                foreach (var rect in _boundingRects.ToArray())
+                {
+                    var p1 = new Point(rect.X, rect.Y);
+                    var p2 = new Point(rect.X + rect.Width, rect.Y + rect.Height);
+                    var v1 = Vector2.Transform(p1.ToSystemVector2(), Camera.LocalToScreenMatrix).ToPoint();
+                    var v2 = Vector2.Transform(p2.ToSystemVector2(), Camera.LocalToScreenMatrix).ToPoint();
+                    ds.FillRectangle(new Rect(v1.X, v1.Y, v2.X - v1.X, v2.Y - v1.Y), Color.FromArgb(100, 14, 233, 143));
+                }
+                ds.Transform = old;
 
                 // this layer contains tools and element render items
                 foreach (var item in _renderItems2?.ToArray() ?? new BaseRenderItem[0])
