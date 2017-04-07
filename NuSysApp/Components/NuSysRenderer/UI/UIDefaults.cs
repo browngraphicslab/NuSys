@@ -198,5 +198,9 @@ namespace NuSysApp
         public static float MinChatHeight = 50f;
         #endregion chat
 
+        #region detail view
+        public static float detailViewSliderWidth = 20;
+        #endregion detail view
+
     }
 }
