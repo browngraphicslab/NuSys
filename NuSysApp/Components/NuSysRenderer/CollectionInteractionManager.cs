@@ -369,11 +369,11 @@ namespace NuSysApp
             // otherwise get a list of the elements which lie under the node that was released
             var hits = _freeFormViewer.RenderEngine.GetRenderItemsAt(pointer.CurrentPoint);
 
-            var custom = hits.OfType<CustomDisplayElementRenderItem>().FirstOrDefault();
+            //var custom = hits.OfType<CustomDisplayElementRenderItem>().FirstOrDefault();
 
-            CustomViewerDisplay display = hits.OfType<CustomViewerDisplay>().FirstOrDefault();
+            //CustomViewerDisplay display = hits.OfType<CustomViewerDisplay>().FirstOrDefault();
             
-
+            /*
             if ((display != null || custom != null) && _selectedRenderItem != null)
             {
                 var node = _selectedRenderItem as ElementRenderItem;
@@ -402,7 +402,7 @@ namespace NuSysApp
                         CustomViewerDisplay.AddElementToDisplay(NusysConstants.ElementType.Text, p.X, p.Y, node.Width, node.Height);
                     }
                 }
-            }
+            }*/
 
             // get a list of the collections which lie under the thing we released
             var underlyingCollections = hits.OfType<CollectionRenderItem>().ToList();

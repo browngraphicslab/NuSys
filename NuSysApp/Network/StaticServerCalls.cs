@@ -214,7 +214,7 @@ namespace NuSysApp
         /// <param name="elementType">The type of the elementy we are going to create. Must be able to exist without predefined content if library element controller is null</param>
         /// <param name="lec">The libraryy element controller of the element we are going to add</param>
         /// <param name="collection">The collection we are going to add the elemnt to</param>
-        public static async Task AddElementToCollection(Vector2 screenPoint, NusysConstants.ElementType elementType, LibraryElementController lec, CollectionRenderItem collection)
+        public static async Task AddElementToCollection(Vector2 screenPoint, NusysConstants.ElementType elementType, LibraryElementController lec, CollectionRenderItem collection, string id = null)
         {
             // transform the passed in screenpoint to a point on the main collection
             var collectionPoint = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(screenPoint, collection);
@@ -322,7 +322,8 @@ namespace NuSysApp
                 Height = Constants.DefaultNodeSize,
                 Width = Constants.DefaultNodeSize,
                 X = collectionPoint.X,
-                Y = collectionPoint.Y
+                Y = collectionPoint.Y,
+                Id = id ?? SessionController.Instance.GenerateId()
             };
 
             // execute the add element to collection request

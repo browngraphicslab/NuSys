@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
+    /*
     public class CustomDisplayElementViewModel : ElementViewModel
     {
         public CustomDisplayElementViewModel(ElementController controller) : base(controller)
         {
         }
-    }
+    }*/
 }

@@ -99,7 +99,7 @@ namespace NuSysApp
         {
             if (id == "display")
             {
-                return CustomViewerDisplay.CurrentElement?.LibraryElementModel;
+                //return CustomViewerDisplay.CurrentElement?.LibraryElementModel;
             }
             Debug.Assert(id != null);
             return _contents.ContainsKey(id) ? _contents[id] : null;
@@ -114,7 +114,7 @@ namespace NuSysApp
         {
             if (libraryElementModelId == "display")
             {
-                return CustomViewerDisplay.CurrentElement;
+                //return CustomViewerDisplay.CurrentElement;
             }
             if (libraryElementModelId == null)
             {

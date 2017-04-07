@@ -282,7 +282,7 @@ namespace NuSysApp
             if (model.LibraryId == "display")
             {
                 await UITask.Run(async delegate {
-                    await CustomViewerDisplay.AddDisplayModel(model);
+                    //await CustomViewerDisplay.AddDisplayModel(model);
                 });
                 return true;
             }

@@ -12,6 +12,7 @@ using WinRTXamlToolkit.Tools;
 
 namespace NuSysApp
 {
+    /*
     public class CustomViewerDisplay : RectangleUIElement
     {
         private static Dictionary<CustomViewerDisplay,List<ElementRenderItem>> _allDisplayRenderItems = new Dictionary<CustomViewerDisplay, List<ElementRenderItem>>();
@@ -211,5 +212,5 @@ namespace NuSysApp
             request.AddReturnedElementToSession();
             return args.Id;
         }
-    }
+    }*/
 }

@@ -152,17 +152,18 @@ namespace NuSysApp
             {
                 Task.Run(async delegate
                 {
+                    var id = SessionController.Instance.GenerateId();
                     await StaticServerCalls.AddElementToCollection(canvasPointer.CurrentPoint,
-                        NusysConstants.ElementType.Variable, null, baseRenderItem as CollectionRenderItem);
+                        NusysConstants.ElementType.Variable, null, baseRenderItem as CollectionRenderItem,id);
 
-                    var controller = CustomViewerDisplay.LastVariableNodeAdded;
+                    var controller = SessionController.Instance.ElementModelIdToElementController[id] as VariableElementController;
                     if (_lastDragEntry != null)
                     {
                         controller.SetMetadataKey(_lastDragEntry.Key);
                     }
                 });
             }
-            else if (baseRenderItem.Parent is VariableElementRenderItem)
+            else if (baseRenderItem?.Parent is VariableElementRenderItem)
             {
                 var controller = (baseRenderItem.Parent as VariableElementRenderItem).ViewModel.Controller as VariableElementController;
                 controller.SetMetadataKey(_lastDragEntry.Key);

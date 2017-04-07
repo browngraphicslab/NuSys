@@ -198,24 +198,27 @@ namespace NuSysApp
 
                         var m = controller.Model;
 
-                        var width = m.Width;
+                        var height = m.Height;
                         var padding = 25;
+
+                        int count = 1;
+
+                        var ids = new string[finalSet.Length];
 
                         Parallel.ForEach(finalSet.Skip(1), async (libraryId, state) =>
                         {
-                            string elementId;
+                            string elementId = null;
                             int i = Array.IndexOf(finalSet, libraryId);
 
                             if (m.LibraryId == "display")
                             {
-                                elementId = await CustomViewerDisplay.AddElementToDisplay(NusysConstants.ElementType.Variable, m.X + i * (padding + width), m.Y, m.Width, m.Height);
+                                //elementId = await CustomViewerDisplay.AddElementToDisplay(NusysConstants.ElementType.Variable, m.X + i * (padding + width), m.Y, m.Width, m.Height);
                             }
                             else
                             {
-                                elementId = await libraryController.AddElementAtPosition(m.X + i * (padding + width), m.Y, m.ParentCollectionId, m.Width, m.Height);
+                                elementId = await libraryController.AddElementAtPosition(m.X , m.Y + i * (padding + height), m.ParentCollectionId, m.Width, m.Height);
                             }
 
-                            
 
                             Debug.Assert(SessionController.Instance.ElementModelIdToElementController.ContainsKey(elementId));
                             if (SessionController.Instance.ElementModelIdToElementController.ContainsKey(elementId))
@@ -223,6 +226,21 @@ namespace NuSysApp
                                 var ec = (SessionController.Instance.ElementModelIdToElementController[elementId] as VariableElementController);
                                 ec?.SetStoredLibraryId(libraryId);
                                 ec?.SetMetadataKey(controller.MetadataKey);
+                                ids[i] = elementId;
+                            }
+                            count++;
+                            if (count == finalSet.Length)
+                            {
+                                var total = padding + m.Height + m.Y;
+                                for (int j = 1; j < finalSet.Length; j++)
+                                {
+                                    if (ids[j] != null)
+                                    {
+                                        var c = (SessionController.Instance.ElementModelIdToElementController[ids[j]] as VariableElementController);
+                                        c.SetPosition(c.Model.X,total);
+                                        total += padding + c.Model.Height;
+                                    }
+                                }
                             }
                         });
                     }

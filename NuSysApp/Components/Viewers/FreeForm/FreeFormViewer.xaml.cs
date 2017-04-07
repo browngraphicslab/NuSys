@@ -1358,14 +1358,6 @@ namespace NuSysApp
                     }
                 }
             }
-            else if (item is CustomDisplayElementRenderItem)
-            {
-                var element = item as CustomDisplayElementRenderItem;
-                if (element != null)
-                {
-                    //TODO open editor mode
-                }
-            }
             else //if we are in regular mode
             {
                 if (item is ElementRenderItem)
@@ -1418,11 +1410,6 @@ namespace NuSysApp
 
                         }, SessionController.Instance.NuSessionView.ResourceCreator);
                     }
-                }
-                else if (element.GetType() == typeof(CustomDisplayElementRenderItem))
-                {
-                    var controller = (element as CustomDisplayElementRenderItem).ViewModel.Controller;
-                    CustomViewerDisplay.AddElementToDisplay(NusysConstants.ElementType.Text);
                 }
                 return;
             }

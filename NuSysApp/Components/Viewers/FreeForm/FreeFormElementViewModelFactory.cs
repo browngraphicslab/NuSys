@@ -28,9 +28,6 @@ namespace NuSysApp
 
             switch (model.ElementType)
             {
-                case NusysConstants.ElementType.Display:
-                    vm = new CustomDisplayElementViewModel(controller);
-                    break;
                 case NusysConstants.ElementType.Unknown:
                     vm = new UnknownFileViewModel(controller);
                     break;

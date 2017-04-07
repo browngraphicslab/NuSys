@@ -730,12 +730,6 @@ namespace NuSysApp
                 await item.Load();
                 _renderItems2?.Add(item);
             }
-            else if (vm is CustomDisplayElementViewModel)
-            {
-                item = new CustomDisplayElementRenderItem((CustomDisplayElementViewModel)vm, this, ResourceCreator);
-                await item.Load();
-                _renderItems2?.Add(item);
-            }
 
             else if (vm is UnknownFileViewModel)
             {

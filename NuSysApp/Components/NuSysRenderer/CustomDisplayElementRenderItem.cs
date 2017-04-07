@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Graphics.Canvas;
 
 namespace NuSysApp
-{
+{/*
     public class CustomDisplayElementRenderItem : ElementRenderItem
     {
         private CustomViewerDisplay _display;
@@ -23,5 +23,5 @@ namespace NuSysApp
             _display.Height = (float)(ViewModel.Height);
             base.Update(parentLocalToScreenTransform);
         }
-    }
+    }*/
 }
