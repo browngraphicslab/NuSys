@@ -12,7 +12,7 @@ namespace NusysServer
         public static readonly string VALID_CREDENTIALS_BOOLEAN_STRING = "valid";
 
 
-        public static string user = "trent"; //TODO: CHANGE TO PRIVATE LATER
+        public static string user = "luke"; //TODO: CHANGE TO PRIVATE LATER
 
         public static string WWW_ROOT {
             get
@@ -33,8 +33,8 @@ namespace NusysServer
                         return Directory.Exists("C:/Users/Zach/Documents/Visual Studio 2015/Projects/nusys/NusysServer/") ? "C:/Users/Zach/Documents/Visual Studio 2015/Projects/nusys/NusysServer/" : "D:/home/site/wwwroot/";
                     case "book":
                         return Directory.Exists("C:/Users/nusys/Desktop/Leandro NEW SIS/nusys/NusysServer/") ? "C:/Users/nusys/Desktop/Leandro NEW SIS/nusys/NusysServer/" : "D:/home/site/wwwroot/";
-                    case "luke1":
-                        return Directory.Exists("C:/Users/luke murray/Documents/Visual Studio 2015/Projects/nusys/NusysServer/") ? "C:/Users/luke murray/Documents/Visual Studio 2015/Projects/nusys/NusysServer/" : "D:/home/site/wwwroot/";
+                    case "luke":
+                        return Directory.Exists("C:/Users/luke murray/Documents/Visual Studio 2015/Projects/NewSys/NuSys/NusysServer/") ? "C:/Users/luke murray/Documents/Visual Studio 2015/Projects/NewSys/NuSys/NusysServer/" : "D:/home/site/wwwroot/";
                     case "nico":
                         return Directory.Exists("C:/Users/nico/Documents/Nu_Nusys_repo/nusys/NusysServer/") ? "C:/Users/nico/Documents/Nu_Nusys_repo/nusys/NusysServer/" : "D:/home/site/wwwroot/files";
 
