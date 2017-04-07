@@ -13,6 +13,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Microsoft.Graphics.Canvas;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -202,14 +203,26 @@ namespace NuSysApp
 
                         Parallel.ForEach(finalSet.Skip(1), async (libraryId, state) =>
                         {
+                            string elementId;
                             int i = Array.IndexOf(finalSet, libraryId);
-                            var elementId = await libraryController.AddElementAtPosition(m.X + i * (padding + width), m.Y, m.ParentCollectionId, m.Width, m.Height);
+
+                            if (m.LibraryId == "display")
+                            {
+                                elementId = await CustomViewerDisplay.AddElementToDisplay(NusysConstants.ElementType.Variable, m.X + i * (padding + width), m.Y, m.Width, m.Height);
+                            }
+                            else
+                            {
+                                elementId = await libraryController.AddElementAtPosition(m.X + i * (padding + width), m.Y, m.ParentCollectionId, m.Width, m.Height);
+                            }
+
+                            
 
                             Debug.Assert(SessionController.Instance.ElementModelIdToElementController.ContainsKey(elementId));
                             if (SessionController.Instance.ElementModelIdToElementController.ContainsKey(elementId))
                             {
                                 var ec = (SessionController.Instance.ElementModelIdToElementController[elementId] as VariableElementController);
                                 ec?.SetStoredLibraryId(libraryId);
+                                ec?.SetMetadataKey(controller.MetadataKey);
                             }
                         });
                     }

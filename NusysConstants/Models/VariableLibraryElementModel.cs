@@ -12,12 +12,12 @@ namespace NusysIntermediate
         {
         }
         //public double AspectRatio { get; set; }
-        public string MetadataKey { get; set; }
+        //public string MetadataKey { get; set; }
         public override void UnPackFromDatabaseKeys(Message message)
         {
             if (message.ContainsKey("metadataKey"))
             {
-                MetadataKey = message.GetString("metadataKey");
+                //MetadataKey = message.GetString("metadataKey");
             }
             if (message.ContainsKey("aspectRatio"))
             {

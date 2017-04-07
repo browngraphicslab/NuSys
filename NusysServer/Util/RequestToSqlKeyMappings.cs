@@ -86,6 +86,9 @@ namespace NusysServer
             {NusysConstants.NEW_ELEMENT_REQUEST_SIZE_WIDTH_KEY, NusysConstants.ALIAS_SIZE_WIDTH_KEY }, // width
 
             {NusysConstants.NEW_ELEMENT_REQUEST_TITLE_VISIBILITY_KEY,NusysConstants.ALIAS_TITLE_VISIBILITY_KEY }, //title visiblity
+
+            {"hacky_type_fix", "hacky_type_fix"},
+            {"type","type"}
         };
 
         /// <summary>

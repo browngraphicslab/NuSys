@@ -27,16 +27,34 @@ namespace NuSysApp
             }
             set
             {
-                Debug.Assert(_currentElement != null);
+                if (value == null)
+                {
+                    return;
+                }
+                if (_currentElement == null)
+                {
+                    _currentElement = value;
+                    foreach (var model in _firstModelList)
+                    {
+                        AddDisplayModel(model);
+                    }
+                    _firstModelList.Clear();
+                }
                 _currentElement = value;
                 Reset();
             }
         }
 
+        public static VariableElementController LastVariableNodeAdded {
+            get
+            {
+                return SessionController.Instance.ElementModelIdToElementController.Values.OfType<VariableElementController>().OrderBy(i => i.LocalCreationTimestamp).Last();
+            }
+        }
+
         private static async Task Reset()
         {
-            var models = Controllers.Select(c => c.Model);
-            var newModels = models.Select(m => GetCleanModel(m, _currentElement));
+            var models = Controllers.Select(c => c.Model).ToArray();
 
             foreach (var controller in Controllers)//dispose of old controllers
             {
@@ -51,7 +69,7 @@ namespace NuSysApp
 
             await UITask.Run(async delegate
             {
-                foreach (var newModel in newModels)
+                foreach (var newModel in models)
                 {
                     await AddDisplayModel(newModel);
                 }
@@ -59,8 +77,16 @@ namespace NuSysApp
             
         }
 
+        private static List<ElementModel> _firstModelList = new List<ElementModel>();
+
         public static async Task AddDisplayModel(ElementModel model)
         {
+            if (_currentElement == null)
+            {
+                _firstModelList.Add(model);
+                return;
+            }
+            model = GetCleanModel(model, _currentElement);
             var c = ElementControllerFactory.CreateFromModel(model);
             Controllers.Add(c);
             SessionController.Instance.ElementModelIdToElementController[model.Id] = c;
@@ -116,6 +142,7 @@ namespace NuSysApp
             }
             await item.Load();
             item.Transform.SetParent(parent.Transform);
+            parent.AddChild(item);
             return item;
         }
 
@@ -128,7 +155,7 @@ namespace NuSysApp
             }
             var m = new Message()
                 {
-                    { NusysConstants.LIBRARY_ELEMENT_TYPE_KEY ,_currentElement.LibraryElementModel.Type},
+                    { NusysConstants.LIBRARY_ELEMENT_TYPE_KEY ,_currentElement?.LibraryElementModel.Type ?? NusysConstants.ElementType.Variable},
                     { NusysConstants.ALIAS_ID_KEY, model.Id}
                 };
             var newModel = ElementModelFactory.CreateFromMessage(m);
@@ -159,35 +186,26 @@ namespace NuSysApp
             base.Dispose();
         }
 
-        public override void Draw(CanvasDrawingSession ds)
-        {
-            var orig = ds.Transform;
-            ds.Transform = Transform.LocalToScreenMatrix;
-            foreach (var element in _allDisplayRenderItems[this])
-            {
-                element.Draw(ds);
-            }
-            base.Draw(ds);
-            ds.Transform = orig;
-        }
-
-        public static async Task AddElementToDisplay(NusysConstants.ElementType type)
+        public static async Task<string> AddElementToDisplay(NusysConstants.ElementType type, double x = 50, double y = 50, double width = 150, double height  = 150)
         {
             var args = new NewElementRequestArgs();
-            args.Width = 150;
-            args.Height = 150;
+            args.Width = width;
+            args.Height = height;
             args.AccessType = NusysConstants.AccessType.Public;
             args.LibraryElementId = "display";
             args.ParentCollectionId = "Doesn't matter!";
-            args.X = 50;
-            args.Y = 50;
+            args.X = x;
+            args.Y = y;
+            args.Id = SessionController.Instance.GenerateId();
             var request = new NewElementRequest(args);
             request.SetSystemProperties(new Dictionary<string, object>()
             {
-                {NusysConstants.LIBRARY_ELEMENT_TYPE_KEY, type}
+                {NusysConstants.LIBRARY_ELEMENT_TYPE_KEY, type.ToString()},
+                {"hacky_type_fix", type.ToString()}
             });
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
             request.AddReturnedElementToSession();
+            return args.Id;
         }
     }
 }

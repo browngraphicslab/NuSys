@@ -46,10 +46,13 @@ namespace NusysServer
 
             //map the request keys tothe database keys
             var addAliasMessage = RequestToSqlKeyMappings.ElementRequestKeysToDatabaseKeys(message);
+            if (results.Any())
+            {
+                //take the first result and set the alias elementType as that returned type
+                addAliasMessage[NusysConstants.LIBRARY_ELEMENT_TYPE_KEY] =
+                    results.First().GetString(NusysConstants.LIBRARY_ELEMENT_TYPE_KEY);
 
-            //take the first result and set the alias elementType as that returned type
-            addAliasMessage[NusysConstants.LIBRARY_ELEMENT_TYPE_KEY] = results.First().GetString(NusysConstants.LIBRARY_ELEMENT_TYPE_KEY);
-
+            }
             //if the message does not contain an access type, default to private
             if (string.IsNullOrEmpty(addAliasMessage.GetString(NusysConstants.ALIAS_ACCESS_KEY)))
             {

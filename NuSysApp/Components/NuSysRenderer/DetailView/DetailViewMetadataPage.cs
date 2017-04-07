@@ -155,12 +155,17 @@ namespace NuSysApp
                     await StaticServerCalls.AddElementToCollection(canvasPointer.CurrentPoint,
                         NusysConstants.ElementType.Variable, null, baseRenderItem as CollectionRenderItem);
 
-                    var controller = SessionController.Instance.ContentController.AllLibraryElementControllers.OfType<VariableLibraryElementController>().OrderBy(i => DateTime.Parse(i.LibraryElementModel.Timestamp)).Last();
+                    var controller = CustomViewerDisplay.LastVariableNodeAdded;
                     if (_lastDragEntry != null)
                     {
                         controller.SetMetadataKey(_lastDragEntry.Key);
                     }
                 });
+            }
+            else if (baseRenderItem.Parent is VariableElementRenderItem)
+            {
+                var controller = (baseRenderItem.Parent as VariableElementRenderItem).ViewModel.Controller as VariableElementController;
+                controller.SetMetadataKey(_lastDragEntry.Key);
             }
             return false;
         }

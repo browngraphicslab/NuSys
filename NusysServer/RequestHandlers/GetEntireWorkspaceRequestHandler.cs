@@ -57,9 +57,8 @@ namespace NusysServer
             var aliases2 = new List<ElementModel>();
             foreach (var result in results)
             {
-                var m = new ElementModel(result.GetString(NusysConstants.ALIAS_ID_KEY));
-                m.UnPackFromDatabaseMessage(result);
-                aliases2.Add(m);
+                result[NusysConstants.LIBRARY_ELEMENT_TYPE_KEY] = result["hacky_type_fix"];
+                aliases2.Add(ElementModelFactory.CreateFromMessage(result));
             }
 
 

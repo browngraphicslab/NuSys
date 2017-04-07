@@ -12,12 +12,17 @@ namespace NusysIntermediate
         {
             ElementType = NusysConstants.ElementType.Variable;
         }
+        public string MetadataKey { get; set; }
         public string StoredLibraryId { get; set; }
         public override void UnPackFromDatabaseMessage(Message props)
         {
             if (props.ContainsKey("StoredLibraryId"))
             {
                 StoredLibraryId = props.GetString("StoredLibraryId");
+            }
+            if (props.ContainsKey("metadataKey"))
+            {
+                MetadataKey = props.GetString("metadataKey");
             }
             base.UnPackFromDatabaseMessage(props);
         }

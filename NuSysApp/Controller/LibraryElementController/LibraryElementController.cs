@@ -57,7 +57,7 @@ namespace NuSysApp
                 var contentDataModel =
                     SessionController.Instance.ContentController.GetContentDataModel(
                         LibraryElementModel.ContentDataModelId);
-                Debug.Assert(contentDataModel != null);
+                //Debug.Assert(contentDataModel != null);
 
                 return contentDataModel?.Data;
             }

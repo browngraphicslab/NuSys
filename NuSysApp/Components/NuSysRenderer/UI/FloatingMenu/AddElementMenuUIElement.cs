@@ -174,6 +174,22 @@ namespace NuSysApp
             // reset the visibility of the drag rect
             _dragRect.IsVisible = false;
 
+            var dragDestination = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, null, 2);
+
+            if (_elementType == NusysConstants.ElementType.Variable || _elementType == NusysConstants.ElementType.Text)
+            {
+                if (dragDestination is CustomViewerDisplay || dragDestination is CustomDisplayElementRenderItem)
+                {
+                    await CustomViewerDisplay.AddElementToDisplay(_elementType);
+                    return;
+                }
+                else if (dragDestination.Parent is CustomViewerDisplay || dragDestination.Parent is CustomDisplayElementRenderItem)
+                {
+                    await CustomViewerDisplay.AddElementToDisplay(_elementType);
+                    return;
+                }
+            }
+
             // Add the element at the dropped location          
             await StaticServerCalls.AddElementToWorkSpace(pointer.CurrentPoint, _elementType).ConfigureAwait(false);
 

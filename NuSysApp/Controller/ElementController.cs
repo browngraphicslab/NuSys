@@ -72,10 +72,16 @@ namespace NuSysApp
                 return new Point2d(Model.X + Model.Width / 2, Model.Y + Model.Height / 2);
             }
         }
-        public ElementController() { }
+
+        public long LocalCreationTimestamp { get; private set; }
+
+        public ElementController()
+        {
+            LocalCreationTimestamp = DateTime.UtcNow.Ticks;
+        }
 
 
-        public ElementController(ElementModel model)
+        public ElementController(ElementModel model) : this()
         {
             _model = model;
 

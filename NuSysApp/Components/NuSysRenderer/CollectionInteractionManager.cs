@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
+using System.Threading.Tasks;
 using Windows.Devices.Input;
 using Windows.System;
 using Windows.UI.Core;
@@ -367,6 +368,41 @@ namespace NuSysApp
 
             // otherwise get a list of the elements which lie under the node that was released
             var hits = _freeFormViewer.RenderEngine.GetRenderItemsAt(pointer.CurrentPoint);
+
+            var custom = hits.OfType<CustomDisplayElementRenderItem>().FirstOrDefault();
+
+            CustomViewerDisplay display = hits.OfType<CustomViewerDisplay>().FirstOrDefault();
+            
+
+            if ((display != null || custom != null) && _selectedRenderItem != null)
+            {
+                var node = _selectedRenderItem as ElementRenderItem;
+                if (node != null)
+                {
+                    var p = new Vector2(50,50);
+
+                    p = Vector2.Transform(pointer.CurrentPoint, custom.Transform.ScreenToLocalMatrix);
+
+                    if (node.ViewModel.Controller.LibraryElementModel.Type == NusysConstants.ElementType.Variable)
+                    {
+                        Task.Run(async delegate
+                        {
+                            await CustomViewerDisplay.AddElementToDisplay(NusysConstants.ElementType.Variable,p.X,p.Y,node.Width,node.Height);
+                            var controller = CustomViewerDisplay.LastVariableNodeAdded;
+                            controller.SetMetadataKey(
+                                (node.ViewModel.Controller as VariableElementController).MetadataKey);
+                        });
+                    }
+                    else if (false)
+                    {
+                        
+                    }
+                    else
+                    {
+                        CustomViewerDisplay.AddElementToDisplay(NusysConstants.ElementType.Text, p.X, p.Y, node.Width, node.Height);
+                    }
+                }
+            }
 
             // get a list of the collections which lie under the thing we released
             var underlyingCollections = hits.OfType<CollectionRenderItem>().ToList();

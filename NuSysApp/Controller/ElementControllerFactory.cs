@@ -43,7 +43,7 @@ namespace NuSysApp
                     controller = new ElementCollectionController(elementModel);
                     break;
                 case NusysConstants.ElementType.Variable:
-                    controller = new VariableElementController((TextElementModel)elementModel);
+                    controller = new VariableElementController((VariableElementModel)elementModel);
                     break;
                 default:
                     controller = new ElementController(elementModel);

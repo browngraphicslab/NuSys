@@ -19,18 +19,12 @@ namespace NuSysApp
         public VariableElementRenderItem(VariableNodeViewModel vm, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(vm, parent, resourceCreator)
         {
             vm.VariableElementController.StoredLibraryIdChanged += VariableElementControllerOnStoredLibraryIdChanged;
-            vm.VariableElementController.VariableController.MetadataKeyChanged += VariableControllerOnMetadataKeyChanged;
             vm.VariableElementController.SizeChanged += VariableElementControllerOnSizeChanged;
             vm.VariableElementController.UpdateText();
             vm.VariableElementController.SetSize(vm.Model.Width, vm.Model.Height);
         }
 
         private void VariableElementControllerOnSizeChanged(object source, double width, double height)
-        {
-            IsDirty = true;
-        }
-
-        private void VariableControllerOnMetadataKeyChanged(object sender, string s)
         {
             IsDirty = true;
         }
@@ -60,7 +54,6 @@ namespace NuSysApp
         {
             Debug.Assert(ViewModel is VariableNodeViewModel);
             (ViewModel as VariableNodeViewModel).VariableElementController.StoredLibraryIdChanged -= VariableElementControllerOnStoredLibraryIdChanged;
-            (ViewModel as VariableNodeViewModel).VariableElementController.VariableController.MetadataKeyChanged -= VariableControllerOnMetadataKeyChanged;
             (ViewModel as VariableNodeViewModel).VariableElementController.SizeChanged -= VariableElementControllerOnSizeChanged;
             base.Dispose();
         }

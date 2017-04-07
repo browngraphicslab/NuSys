@@ -14,7 +14,7 @@ namespace NuSysApp
         
         public TextNodeController(TextElementModel model) : base(model)
         {
-            if (LibraryElementController.ContentDataController != null)
+            if (LibraryElementController?.ContentDataController != null)
             {
                 LibraryElementController.ContentDataController.ContentDataUpdated += ContentChanged;
             }

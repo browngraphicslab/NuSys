@@ -49,15 +49,16 @@ namespace NuSysApp
         public ElementRenderItem(ElementViewModel vm, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) :base(parent, resourceCreator)
         {
             _vm = vm;
-            if (_vm != null) { 
-                Transform.LocalPosition = new Vector2((float)_vm.X, (float)_vm.Y);
+            if (_vm != null)
+            {
+                Transform.LocalPosition = new Vector2((float) _vm.X, (float) _vm.Y);
                 _vm.Controller.PositionChanged += ControllerOnPositionChanged;
                 _vm.Controller.SizeChanged += ControllerOnSizeChanged;
                 if (_vm?.Controller?.LibraryElementController != null)
                 {
                     _vm.Controller.LibraryElementController.TitleChanged += LibraryElementControllerOnTitleChanged;
                 }
-                _tagRenderItem = new WrapRenderItem((float)_vm.Width, parent, resourceCreator);
+                _tagRenderItem = new WrapRenderItem((float) _vm.Width, parent, resourceCreator);
                 _vm.Tags.CollectionChanged += TagsOnCollectionChanged;
 
                 UpdateTextFormat();
@@ -74,6 +75,10 @@ namespace NuSysApp
 
                 _userBubbles = new UserBubbles(this, ResourceCreator);
                 AddChild(_userBubbles);
+            }
+            else
+            {
+                
             }
             if (vm?.Controller?.LibraryElementController != null)
             {

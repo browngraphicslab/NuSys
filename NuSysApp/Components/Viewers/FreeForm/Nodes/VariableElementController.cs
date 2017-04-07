@@ -25,27 +25,37 @@ namespace NuSysApp
             get { return Model as VariableElementModel; }
         }
 
-        public VariableElementController(TextElementModel model) : base(model)
+        public string MetadataKey
         {
-            VariableController.AspectRatioChanged += VariableControllerOnAspectRatioChanged;
-            VariableController.ContentDataController.ContentDataUpdated -= ContentChanged;
-            VariableController.MetadataKeyChanged += VariableControllerOnMetadataKeyChanged;
-            SessionController.Instance.EnterNewCollectionCompleted += InstanceOnEnterNewCollectionCompleted;
+            get { return VariableModel.MetadataKey; }
+            set
+            {
+                SetMetadataKey(value);
+            }
         }
-
-        private void InstanceOnEnterNewCollectionCompleted(object sender, string s)
+        public VariableElementController(VariableElementModel model) : base(model)
         {
-            UpdateText();
+            if (LibraryElementController?.ContentDataController != null)
+            {
+                LibraryElementController.ContentDataController.ContentDataUpdated -= ContentChanged;
+            }
         }
 
         private void VariableControllerOnMetadataKeyChanged(object sender, string s)
         {
-            UpdateText();
+            SetMetadataKey(s);
         }
-
-        private void VariableControllerOnAspectRatioChanged(object sender, double d)
+        public void SetMetadataKey(string metadataKey)
         {
-            SetSize(Model.Width, Model.Height);
+            metadataKey = metadataKey ?? "";
+
+            VariableModel.MetadataKey = metadataKey;
+            UpdateText();
+
+            if (_blockServerInteractionCount==0)
+            {
+                _debouncingDictionary.Add("metadataKey", metadataKey);
+            }
         }
 
         public override void SetSize(double width, double height, bool saveToServer = true)
@@ -73,9 +83,6 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            VariableController.AspectRatioChanged -= VariableControllerOnAspectRatioChanged;
-            VariableController.MetadataKeyChanged -= VariableControllerOnMetadataKeyChanged;
-            SessionController.Instance.EnterNewCollectionCompleted -= InstanceOnEnterNewCollectionCompleted;
             base.Dispose();
         }
 
@@ -85,22 +92,23 @@ namespace NuSysApp
             var text = GetText();
             RecalcAspectRatio(text);
             FireTextChanged(text);
+            SetSize(Model.Width,Model.Height);
         }
 
         private string GetText()
         {
-            if (VariableModel.StoredLibraryId != null && !string.IsNullOrEmpty(VariableController.VariableModel.MetadataKey))
+            if (VariableModel.StoredLibraryId != null && !string.IsNullOrEmpty(MetadataKey))
             {
                 var toShow = SessionController.Instance.ContentController.GetLibraryElementController(VariableModel.StoredLibraryId);
                 if (toShow != null)
                 {
-                    ValueString = InterpretKey(toShow, VariableController.VariableModel.MetadataKey);
+                    ValueString = InterpretKey(toShow, MetadataKey);
                     return ValueString;
                 }
             }
-            if (!string.IsNullOrEmpty(VariableController.VariableModel.MetadataKey))
+            if (!string.IsNullOrEmpty(MetadataKey))
             {
-                ValueString = "__" + VariableController.VariableModel.MetadataKey + "__";
+                ValueString = MetadataKey;
                 return ValueString;
             }
             ValueString = " ";
@@ -110,20 +118,25 @@ namespace NuSysApp
 
         private void RecalcAspectRatio(string text)
         {
-            text = text ?? " ";
+            if (text.Length <= 1)
+            {
+                ValueAspectRatio = 1;
+                return;
+            }
+
+            text = string.IsNullOrEmpty(text) ? " " :text;
             var format = new TextboxUIElement(RenderItemInteractionManager.Root, RenderItemInteractionManager.Root.ResourceCreator).CanvasTextFormat;
             format.VerticalAlignment = CanvasVerticalAlignment.Top;
             var layout = new CanvasTextLayout(RenderItemInteractionManager.Root.ResourceCreator, text, format, float.MaxValue, float.MaxValue);
 
             var b = layout.LayoutBoundsIncludingTrailingWhitespace;
-            ValueAspectRatio = (layout.GetLeadingCharacterSpacing(0)*text.Length +
-                                layout.ClusterMetrics.Sum(i => i.Width) + 1)/(layout.LineMetrics.First().Height + 1);
+            ValueAspectRatio = (b.Width)/(layout.LineMetrics.First().Height + 1);
         }
 
 
         private string InterpretKey(LibraryElementController controller, string key)
         {
-            return controller.FullMetadata.ContainsKey(key) ? string.Join(",",controller.FullMetadata[key].Values) : "";
+            return controller.FullMetadata.ContainsKey(key) ? string.Join(",",controller.FullMetadata[key].Values) : " ";
         }
 
 
@@ -148,6 +161,10 @@ namespace NuSysApp
             if (props.ContainsKey("StoredLibraryId"))
             {
                 SetStoredLibraryId(props.GetString("StoredLibraryId"));
+            }
+            if (props.ContainsKey("metadataKey"))
+            {
+                SetMetadataKey(props.GetString("metadataKey"));
             }
             return base.UnPack(props);
             _blockServerInteractionCount--;

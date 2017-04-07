@@ -1342,7 +1342,15 @@ namespace NuSysApp
                 var element = item as VariableElementRenderItem;
                 if (element != null)
                 {
-                    //TODO set static display node content
+                    CustomViewerDisplay.CurrentElement = SessionController.Instance.ContentController.GetLibraryElementController((element.ViewModel.Model as VariableElementModel).StoredLibraryId);
+                }
+            }
+            else if (item is CustomDisplayElementRenderItem)
+            {
+                var element = item as CustomDisplayElementRenderItem;
+                if (element != null)
+                {
+                    //TODO open editor mode
                 }
             }
             else //if we are in regular mode
