@@ -51,8 +51,22 @@ namespace NusysServer
             //create new args to return
             var returnArgs = new GetEntireWorkspaceRequestReturnArgs();
 
+            ////HACK
+            var query2 = new SQLSelectQuery(new SingleTable(Constants.SQLTableType.Alias),new SqlQueryEquals(Constants.SQLTableType.Alias,NusysConstants.ALIAS_LIBRARY_ID_KEY,"display"));
+            var results = query2.ExecuteCommand();
+            var aliases2 = new List<ElementModel>();
+            foreach (var result in results)
+            {
+                var m = new ElementModel(result.GetString(NusysConstants.ALIAS_ID_KEY));
+                m.UnPackFromDatabaseMessage(result);
+                aliases2.Add(m);
+            }
+
+
+            /// ////HACK
+
             returnArgs.ContentMessages = contentDataModels.Select(m => JsonConvert.SerializeObject(m));
-            returnArgs.AliasStrings = aliases.Select(m => JsonConvert.SerializeObject(m));
+            returnArgs.AliasStrings = aliases.Concat(aliases2).Select(m => JsonConvert.SerializeObject(m));
             returnArgs.PresentationLinks = GetAllPresentationLinks(workspaceId);
             returnArgs.InkStrokes = GetAllInkStrokes(workspaceId, contentDataModels.Select(cdm => cdm.ContentId));
 

@@ -16,7 +16,7 @@ namespace NuSysApp
     public class VariableElementRenderItem : TextElementRenderItem
     {
         private ICanvasImage _icon;
-        public VariableElementRenderItem(VariableNodeViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(vm, parent, resourceCreator)
+        public VariableElementRenderItem(VariableNodeViewModel vm, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(vm, parent, resourceCreator)
         {
             vm.VariableElementController.StoredLibraryIdChanged += VariableElementControllerOnStoredLibraryIdChanged;
             vm.VariableElementController.VariableController.MetadataKeyChanged += VariableControllerOnMetadataKeyChanged;

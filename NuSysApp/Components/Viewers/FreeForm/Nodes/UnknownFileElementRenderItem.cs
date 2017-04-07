@@ -7,7 +7,7 @@ namespace NuSysApp
     public class UnknownFileElementRenderItem : ElementRenderItem
     {
         private TextboxUIElement _text;
-        public UnknownFileElementRenderItem(UnknownFileViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(vm, parent, resourceCreator)
+        public UnknownFileElementRenderItem(UnknownFileViewModel vm, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(vm, parent, resourceCreator)
         {
             _text = new TextboxUIElement(this,resourceCreator);
             vm.Controller.LibraryElementController.TitleChanged += LibraryElementControllerOnTitleChanged;

@@ -24,7 +24,7 @@ namespace NuSysApp
         /// <param name="vm"></param>
         /// <param name="parent"></param>
         /// <param name="resourceCreator"></param>
-        public WordElementRenderItem(WordNodeViewModel vm, CollectionRenderItem parent,
+        public WordElementRenderItem(WordNodeViewModel vm, BaseRenderItem parent,
             ICanvasResourceCreatorWithDpi resourceCreator) : base(vm, parent, resourceCreator)
         {
         }

@@ -37,7 +37,7 @@ namespace NuSysApp
 
 
         private bool _isHitTestVisible = true;
-        public RenderItemTransform Transform { get; private set; } = new RenderItemTransform();
+        public RenderItemTransform Transform { get; set; } = new RenderItemTransform();
 
         public ICanvasResourceCreatorWithDpi ResourceCreator;
         public virtual bool IsDirty { get; set; } = true;

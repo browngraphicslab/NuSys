@@ -21,7 +21,7 @@ namespace NuSysApp
         private VideoNodeViewModel _vm;
         private CanvasBitmap _bmp;
 
-        public VideoElementRenderItem(VideoNodeViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) :base(vm, parent, resourceCreator)
+        public VideoElementRenderItem(VideoNodeViewModel vm, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) :base(vm, parent, resourceCreator)
         {
             _vm = vm;
         }

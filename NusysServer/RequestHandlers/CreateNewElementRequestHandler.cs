@@ -39,7 +39,7 @@ namespace NusysServer
                     message.GetString(NusysConstants.NEW_ELEMENT_REQUEST_LIBRARY_ELEMENT_ID_KEY)));
 
             var results = typeQuery.ExecuteCommand();
-            if (!results.Any())//if there was no library elements, return false
+            if (!results.Any() && message.GetString(NusysConstants.NEW_ELEMENT_REQUEST_LIBRARY_ELEMENT_ID_KEY) != "display")//if there was no library elements, return false
             {
                 return new Message(new Dictionary<string, object>() { { NusysConstants.REQUEST_SUCCESS_BOOL_KEY , false} });
             }

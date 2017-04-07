@@ -22,6 +22,9 @@ namespace NusysIntermediate
 
             switch (type)
             {
+                case NusysConstants.ElementType.Display:
+                    elementModel = new DisplayNodeModel(id);
+                    break;
                 case NusysConstants.ElementType.Variable:
                     elementModel = new VariableElementModel(id);
                     break;

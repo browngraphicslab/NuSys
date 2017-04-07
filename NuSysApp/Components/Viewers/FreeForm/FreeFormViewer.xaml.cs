@@ -1384,6 +1384,7 @@ namespace NuSysApp
                 {
                     element.ViewModel.Controller.SetTitleVisiblity(!element.ViewModel.Controller.Model.ShowTitle);
                 }, SessionController.Instance.NuSessionView.ResourceCreator);
+
                 if (element.GetType() == typeof (TextElementRenderItem))
                 {
                     string url = element.ViewModel?.Controller?.LibraryElementController?.ContentDataController?.ContentDataModel.Data ?? "";
@@ -1396,6 +1397,11 @@ namespace NuSysApp
 
                         }, SessionController.Instance.NuSessionView.ResourceCreator);
                     }
+                }
+                else if (element.GetType() == typeof(CustomDisplayElementRenderItem))
+                {
+                    var controller = (element as CustomDisplayElementRenderItem).ViewModel.Controller;
+                    CustomViewerDisplay.AddElementToDisplay(NusysConstants.ElementType.Text);
                 }
                 return;
             }

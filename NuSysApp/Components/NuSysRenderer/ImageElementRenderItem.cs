@@ -21,7 +21,7 @@ namespace NuSysApp
         private ImageDetailRenderItem _image;
         private InkableUIElement _inkable;
 
-        public ImageElementRenderItem(ImageElementViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) :base(vm, parent, resourceCreator)
+        public ImageElementRenderItem(ImageElementViewModel vm, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) :base(vm, parent, resourceCreator)
         {
             _vm = vm;
             _vm.Controller.SizeChanged += ControllerOnSizeChanged;

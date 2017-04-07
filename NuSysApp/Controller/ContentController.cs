@@ -97,6 +97,10 @@ namespace NuSysApp
         /// <returns></returns>
         public LibraryElementModel GetLibraryElementModel(string id)
         {
+            if (id == "display")
+            {
+                return CustomViewerDisplay.CurrentElement.LibraryElementModel;
+            }
             Debug.Assert(id != null);
             return _contents.ContainsKey(id) ? _contents[id] : null;
         }
@@ -108,6 +112,10 @@ namespace NuSysApp
         /// <returns></returns>
         public LibraryElementController GetLibraryElementController(string libraryElementModelId)
         {
+            if (libraryElementModelId == "display")
+            {
+                return CustomViewerDisplay.CurrentElement;
+            }
             if (libraryElementModelId == null)
             {
                 return null;
@@ -130,7 +138,7 @@ namespace NuSysApp
         public bool ContainsContentDataModel(string contentDataModelId)
         {
             Debug.Assert(contentDataModelId != null);
-            return _contentDataModels.ContainsKey(contentDataModelId);
+            return _contentDataModels.ContainsKey(contentDataModelId) || contentDataModelId == "display";
         }
 
         /// <summary>

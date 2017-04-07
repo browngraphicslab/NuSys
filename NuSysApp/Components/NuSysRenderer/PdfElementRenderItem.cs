@@ -28,7 +28,7 @@ namespace NuSysApp
         private PdfLibraryElementController _pdfLibraryElementController;
         private InkableUIElement _inkable;
 
-        public PdfElementRenderItem(PdfNodeViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator):base(vm, parent, resourceCreator)
+        public PdfElementRenderItem(PdfNodeViewModel vm, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator):base(vm, parent, resourceCreator)
         {
             _vm = vm;
             _vm.Controller.SizeChanged += ControllerOnSizeChanged;

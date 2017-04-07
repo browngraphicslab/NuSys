@@ -13,7 +13,7 @@ namespace NuSysApp
     {
 
         private ICanvasImage _htmlIcon;
-        public HtmlElementRenderItem(ImageElementViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(vm, parent, resourceCreator)
+        public HtmlElementRenderItem(ImageElementViewModel vm, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(vm, parent, resourceCreator)
         {
         }
         public override async Task Load()

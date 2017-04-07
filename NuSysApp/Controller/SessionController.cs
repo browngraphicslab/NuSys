@@ -279,6 +279,12 @@ namespace NuSysApp
         /// <returns></returns>
         public async Task<bool> AddElementAsync(ElementModel model)
         {
+            if (model.LibraryId == "display")
+            {
+                await CustomViewerDisplay.AddDisplayModel(model);
+                return true;
+            }
+
             var parentLibraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(model.ParentCollectionId);
             if (parentLibraryElementController == null) //if the parent collection that this node will be in is null
             {

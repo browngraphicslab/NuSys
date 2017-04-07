@@ -26,7 +26,7 @@ namespace NuSysApp
         private float _margin = 10;
         protected MarkdownConvertingTextbox _textBox;
 
-        public TextElementRenderItem(TextNodeViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator):base(vm, parent, resourceCreator)
+        public TextElementRenderItem(TextNodeViewModel vm, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator):base(vm, parent, resourceCreator)
         {
             _vm = vm;
             (_vm.Controller as TextNodeController).TextChanged += LibraryElementControllerOnContentChanged;

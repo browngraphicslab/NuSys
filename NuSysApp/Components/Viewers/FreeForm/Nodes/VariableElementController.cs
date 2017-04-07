@@ -112,8 +112,12 @@ namespace NuSysApp
         {
             text = text ?? " ";
             var format = new TextboxUIElement(RenderItemInteractionManager.Root, RenderItemInteractionManager.Root.ResourceCreator).CanvasTextFormat;
+            format.VerticalAlignment = CanvasVerticalAlignment.Top;
             var layout = new CanvasTextLayout(RenderItemInteractionManager.Root.ResourceCreator, text, format, float.MaxValue, float.MaxValue);
-            ValueAspectRatio = (layout.LayoutBounds.Width * .75) / layout.LayoutBounds.Height;
+
+            var b = layout.LayoutBoundsIncludingTrailingWhitespace;
+            ValueAspectRatio = (layout.GetLeadingCharacterSpacing(0)*text.Length +
+                                layout.ClusterMetrics.Sum(i => i.Width) + 1)/(layout.LineMetrics.First().Height + 1);
         }
 
 

@@ -407,6 +407,9 @@
     <Compile Include="Components\NuSysRenderer\CloseButtonRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\CollectionInteractionManager.cs" />
     <Compile Include="Components\NuSysRenderer\CollectionRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\CustomDisplayElementRenderItem.cs" />
+    <Compile Include="Components\NuSysRenderer\CustomDisplayElementViewModel.cs" />
+    <Compile Include="Components\NuSysRenderer\CustomViewerDisplay.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\BaseMediaPlayerUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\AddRegionPublicPrivateUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\AudioMediaContentUIElement.cs" />

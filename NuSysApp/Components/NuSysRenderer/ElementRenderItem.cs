@@ -46,7 +46,7 @@ namespace NuSysApp
         /// </summary>
         private Color _highlightBackground = UIDefaults.HighlightColor;
 
-        public ElementRenderItem(ElementViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) :base(parent, resourceCreator)
+        public ElementRenderItem(ElementViewModel vm, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) :base(parent, resourceCreator)
         {
             _vm = vm;
             if (_vm != null) { 
