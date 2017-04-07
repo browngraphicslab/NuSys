@@ -1,5 +1,6 @@
 ﻿using System;
 using Windows.UI.Xaml.Media;
+using NusysIntermediate;
 
 namespace NuSysApp
 {

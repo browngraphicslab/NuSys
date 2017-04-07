@@ -1337,6 +1337,14 @@ namespace NuSysApp
                     ShowWebPreview(url,p.X,p.Y);
                 }
             }
+            else if (item is VariableElementRenderItem)
+            {
+                var element = item as VariableElementRenderItem;
+                if (element != null)
+                {
+                    //TODO set static display node content
+                }
+            }
             else //if we are in regular mode
             {
                 if (item is ElementRenderItem)

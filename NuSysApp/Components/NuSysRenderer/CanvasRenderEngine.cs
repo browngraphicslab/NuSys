@@ -53,10 +53,10 @@ namespace NuSysApp
             }
         }
 
-        public virtual BaseRenderItem GetRenderItemAt(Vector2 sp, BaseRenderItem item = null, int maxLevel = int.MaxValue)
+        public virtual BaseRenderItem GetRenderItemAt(Vector2 sp, BaseRenderItem item = null, int maxLevel = int.MaxValue, BaseRenderItem ignoreHit = null)
         {
             item = item ?? Root;
-            var hit = _GetRenderItemAt(item, sp, 0, maxLevel);
+            var hit = _GetRenderItemAt(item, sp, 0, maxLevel, ignoreHit);
             return hit;
         }
 
@@ -68,7 +68,7 @@ namespace NuSysApp
             return output;
         }
 
-        protected virtual BaseRenderItem _GetRenderItemAt(BaseRenderItem item, Vector2 screenPoint, int currentLevel, int maxLevel)
+        protected virtual BaseRenderItem _GetRenderItemAt(BaseRenderItem item, Vector2 screenPoint, int currentLevel, int maxLevel, BaseRenderItem ignoreHit = null)
         {
             if (currentLevel < maxLevel)
             {
@@ -78,13 +78,13 @@ namespace NuSysApp
                 {
                     if (currentLevel + 1 < maxLevel)
                     {
-                        var result = _GetRenderItemAt(childItem, screenPoint, currentLevel + 1, maxLevel);
-                        if (result != null && result != item)
+                        var result = _GetRenderItemAt(childItem, screenPoint, currentLevel + 1, maxLevel, ignoreHit);
+                        if (result != null && result != item && result != ignoreHit)
                             return result;
                     }
                     else
                     {
-                        if (childItem.HitTest(screenPoint) != null)
+                        if (childItem.HitTest(screenPoint) != null && childItem != ignoreHit)
                         {
                             return childItem;
                         }
@@ -93,7 +93,7 @@ namespace NuSysApp
                 }
             }
 
-            if (item.HitTest(screenPoint) != null)
+            if (item.HitTest(screenPoint) != null && item != ignoreHit)
                 return item;
 
             return null;

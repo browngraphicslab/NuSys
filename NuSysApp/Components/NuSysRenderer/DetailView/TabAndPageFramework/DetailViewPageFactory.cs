@@ -77,6 +77,7 @@ namespace NuSysApp
                         case NusysConstants.ElementType.Video:
                         case NusysConstants.ElementType.Link:
                         case NusysConstants.ElementType.HTML:
+                        case NusysConstants.ElementType.Unknown:
                             rectangle = new DetailViewMetadataPage(parent, resourceCreator, controller);
                             break;
                         default:

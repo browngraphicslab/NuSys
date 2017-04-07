@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
+using Microsoft.Graphics.Canvas;
 
 namespace NuSysApp
 {
@@ -19,6 +22,7 @@ namespace NuSysApp
         public RenderItemInteractionManager(CanvasRenderEngine renderEngine, FrameworkElement pointerEventSource) : base(pointerEventSource)
         {
             _renderEngine = renderEngine;
+            Root = renderEngine.Root;
             PointerPressed += OnPointerPressed;
             Translated += OnTranslated;
             ItemTapped += OnItemTapped;
@@ -43,10 +47,34 @@ namespace NuSysApp
             _hit?.OnPointerWheelChanged(pointer, delta);
         }
 
+        public static void SetDrag(Func<CanvasPointer, BaseRenderItem, bool> func, Uri drag)
+        {
+            Debug.Assert(func != null && drag != null);
+            if (DragElement == null && DropFunc == null)
+            {
+                Task.Run(async delegate {
+                    DragElement = await MediaUtil.LoadCanvasBitmapAsync(Root.ResourceCreator, drag);
+                });
+                DropFunc = func;
+            }
+        }
+        public static Func<CanvasPointer, BaseRenderItem, bool> DropFunc { get; private set; } = null;
+        public static ICanvasImage DragElement { get; private set; } = null;
+        public static Point DragPoint;
+        public static BaseRenderItem Root { get; private set; }
         private void OnPointerReleased(CanvasPointer pointer)
         {
-            //_hit = _renderEngine.GetRenderItemAt(pointer.CurrentPoint, _renderEngine.Root) as InteractiveBaseRenderItem;
             _hit?.OnReleased(pointer);
+            if (DropFunc != null)
+            {
+                var droppedOnto = _renderEngine.GetRenderItemAt(pointer.CurrentPoint, _renderEngine.Root, int.MaxValue, _hit);
+                DragElement = null;
+                var f = DropFunc;
+                DropFunc = null;
+                f(pointer, droppedOnto);
+                DropFunc = null;
+                f = null;
+            }
         }
 
         private void OnAllPointersReleased()

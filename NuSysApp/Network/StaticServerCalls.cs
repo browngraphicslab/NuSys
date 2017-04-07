@@ -227,6 +227,9 @@ namespace NuSysApp
             // if we are creating empty content
             if (lec == null)
             {
+
+                string title = elementType == NusysConstants.ElementType.Collection? "Unnamed Collection" : "Unnamed Text";
+
                 // make sure that the element type requested can be empty, and filter out requests for non-content such as recording nodes
                 // both tools and recording nodes cannot be added to embedded collections!
                 switch (elementType)
@@ -234,6 +237,10 @@ namespace NuSysApp
                     case NusysConstants.ElementType.Collection:
                         break;
                     case NusysConstants.ElementType.Text:
+                        break;
+                    case NusysConstants.ElementType.Display:
+                    case NusysConstants.ElementType.Variable:
+                        title = "";
                         break;
                     case NusysConstants.ElementType.Tools:
 
@@ -261,6 +268,8 @@ namespace NuSysApp
                 }
 
 
+
+
                 // Create a new content request
                 var createNewContentRequestArgs = new CreateNewContentRequestArgs
                 {
@@ -269,7 +278,7 @@ namespace NuSysApp
                         AccessType =
                             SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementModel.AccessType,
                         LibraryElementType = elementType,
-                        Title = elementType == NusysConstants.ElementType.Collection ? "Unnamed Collection" : "Unnamed Text",
+                        Title = title,
                         LibraryElementId = SessionController.Instance.GenerateId()
                     },
                     ContentId = SessionController.Instance.GenerateId()

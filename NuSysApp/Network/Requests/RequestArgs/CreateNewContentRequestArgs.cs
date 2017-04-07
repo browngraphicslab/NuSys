@@ -64,7 +64,9 @@ namespace NuSysApp
 
             if (LibraryElementArgs.LibraryElementType != NusysConstants.ElementType.Collection &&
                 LibraryElementArgs.LibraryElementType != NusysConstants.ElementType.Text &&
-                LibraryElementArgs.LibraryElementType != NusysConstants.ElementType.Link)
+                LibraryElementArgs.LibraryElementType != NusysConstants.ElementType.Link &&
+                LibraryElementArgs.LibraryElementType != NusysConstants.ElementType.Display &&
+                LibraryElementArgs.LibraryElementType != NusysConstants.ElementType.Variable)
             {
                 Debug.Assert(DataBytes != null);
             }

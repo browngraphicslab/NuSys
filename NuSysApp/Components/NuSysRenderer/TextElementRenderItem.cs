@@ -13,21 +13,23 @@ using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.Text;
+using NusysIntermediate;
+
 namespace NuSysApp
 {
     public class TextElementRenderItem : ElementRenderItem
     {
-        private TextNodeViewModel _vm;
+        protected TextNodeViewModel _vm;
         private string _textboxtext = string.Empty;
         private CanvasGeometry _clippingRect;
         private CanvasStrokeStyle _strokeStyle;
         private float _margin = 10;
-        private MarkdownConvertingTextbox _textBox;
+        protected MarkdownConvertingTextbox _textBox;
 
         public TextElementRenderItem(TextNodeViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator):base(vm, parent, resourceCreator)
         {
             _vm = vm;
-            (_vm.Controller as TextNodeController).LibraryElementController.ContentDataController.ContentDataUpdated += LibraryElementControllerOnContentChanged;
+            (_vm.Controller as TextNodeController).TextChanged += LibraryElementControllerOnContentChanged;
             _vm.Controller.SizeChanged += Controller_SizeChanged;
             _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, _vm.Width, _vm.Height));
             _strokeStyle = new CanvasStrokeStyle {TransformBehavior = CanvasStrokeTransformBehavior.Fixed};
@@ -37,7 +39,7 @@ namespace NuSysApp
             {
                 Wrapping = CanvasWordWrapping.WholeWord,
                 TextVerticalAlignment = CanvasVerticalAlignment.Top,
-                Text = _vm?.Controller?.LibraryElementController?.ContentDataController?.ContentDataModel.Data ?? "",
+                Text = _textboxtext,
                 Scrollable = false
             };
             AddChild(_textBox);
@@ -53,6 +55,8 @@ namespace NuSysApp
         {
             if (IsDisposed)
                 return;
+
+            (_vm.Controller as TextNodeController).TextChanged -= LibraryElementControllerOnContentChanged;
 
             _vm = null;
             _textboxtext = null;
@@ -87,13 +91,15 @@ namespace NuSysApp
             if (!IsDirty)
                 return;
 
-            _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, _vm.Width, _vm.Height));
+            HackyUpdate();
 
+            _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, _vm.Width, _vm.Height));
             _textBox.Width = (float)(_vm.Width);
             _textBox.Height = (float)(_vm.Height);
             IsDirty = false;
         }
 
+        protected virtual void HackyUpdate(){}
 
 
         public override void Draw(CanvasDrawingSession ds)

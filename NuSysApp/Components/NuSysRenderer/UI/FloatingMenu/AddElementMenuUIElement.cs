@@ -19,12 +19,16 @@ namespace NuSysApp
         private ButtonUIElement _addCollectionNodeButton;
         private ButtonUIElement _addToolNodeButton;
         private ButtonUIElement _addRecordingNodeButton;
+        private ButtonUIElement _addVariableNode;
+        private ButtonUIElement _addDisplayNode;
 
         // images for the drag rect
         private CanvasBitmap _textNodeDragImg;
         private CanvasBitmap _collectionDragImg;
         private CanvasBitmap _toolDragImg;
         private CanvasBitmap _recordingDragImg;
+        private CanvasBitmap _variableDragImg;
+        private CanvasBitmap _displayDragImg;
 
         // drag rect used to display a drag image when we are moving items onto the canvas
         private RectangleUIElement _dragRect;
@@ -62,16 +66,19 @@ namespace NuSysApp
             AddChild(_addTextNodeButton);
 
             _addCollectionNodeButton = new TransparentButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "collection");
-
             AddChild(_addCollectionNodeButton);
 
             _addToolNodeButton = new TransparentButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "tools");
-
             AddChild(_addToolNodeButton);
 
             _addRecordingNodeButton = new TransparentButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "record");
-
             AddChild(_addRecordingNodeButton);
+
+            _addVariableNode = new TransparentButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "variable");
+            AddChild(_addVariableNode);
+
+            _addDisplayNode = new TransparentButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "display");
+            AddChild(_addDisplayNode);
 
             // initialize a list of menu buttons which is useful for writing short code
             _menuButtons = new List<ButtonUIElement>()
@@ -79,7 +86,9 @@ namespace NuSysApp
                 _addRecordingNodeButton,
                 _addTextNodeButton,
                 _addCollectionNodeButton,
-                _addToolNodeButton
+                _addToolNodeButton,
+                _addVariableNode,
+                _addDisplayNode
             };
 
             Background = Constants.LIGHT_BLUE;
@@ -113,6 +122,8 @@ namespace NuSysApp
             _addTextNodeButton.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/text.png"));
             _addCollectionNodeButton.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/collection.png"));
             _addToolNodeButton.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/tools.png"));
+            _addVariableNode.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/tools.png"));
+            _addDisplayNode.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/tools.png"));
 
             // load the images for the drag icon
             _textNodeDragImg =
@@ -122,6 +133,10 @@ namespace NuSysApp
             _recordingDragImg =
                 await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/recording.png"));
             _toolDragImg =
+                await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/tools.png"));
+            _displayDragImg =
+                await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/tools.png"));
+            _variableDragImg =
                 await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/tools.png"));
             base.Load();
         }
@@ -162,6 +177,26 @@ namespace NuSysApp
             // Add the element at the dropped location          
             await StaticServerCalls.AddElementToWorkSpace(pointer.CurrentPoint, _elementType).ConfigureAwait(false);
 
+            if (_elementType == NusysConstants.ElementType.Variable)
+            {
+                /*
+                var pop = new CenteredPopup(Parent.Parent,ResourceCreator,"Enter the metadata key: ");
+                var textBox = new ScrollableTextboxUIElement(pop,ResourceCreator, false, false);
+                textBox.TextChanged += delegate(InteractiveBaseRenderItem item, string text)
+                {
+                    var controller = SessionController.Instance.ContentController.AllLibraryElementControllers
+                        .OfType<VariableLibraryElementController>()
+                        .OrderBy(i => DateTime.Parse(i.LibraryElementModel.Timestamp))
+                        .Last();
+                    controller.SetMetadataKey(text);
+                };
+                pop.AddChild(textBox);
+                textBox.Width = 200;
+                textBox.Height = 75;
+                pop.Height += 120;
+                Parent.Parent.AddChild(pop);*/
+            }
+
         }
 
         /// <summary>
@@ -199,6 +234,14 @@ namespace NuSysApp
             {
                 _dragRect.Image = _toolDragImg;
             }
+            else if (type == NusysConstants.ElementType.Variable)
+            {
+                _dragRect.Image = _variableDragImg;
+            }
+            else if (type == NusysConstants.ElementType.Display)
+            {
+                _dragRect.Image = _displayDragImg;
+            }
             else
             {
                 Debug.Assert(false, "Load an image in the load method, and set it correctly here");
@@ -227,6 +270,14 @@ namespace NuSysApp
             {
                 _elementType = NusysConstants.ElementType.Tools;
             }
+            else if (button == _addVariableNode)
+            {
+                _elementType = NusysConstants.ElementType.Variable;
+            }
+            else if (button == _addDisplayNode)
+            {
+                _elementType = NusysConstants.ElementType.Display;
+            }
             else
             {
                 Debug.Assert(false, "Add support for the proper element type here");
@@ -248,6 +299,10 @@ namespace NuSysApp
             _addCollectionNodeButton.Transform.LocalPosition = new Vector2((float)(center.X + Math.Cos(5 * Math.PI / 6) * radius), (float)(center.Y + Math.Sin(5 * Math.PI / 6) * radius));
             _addToolNodeButton.Transform.LocalPosition = new Vector2((float)(center.X + Math.Cos(7 * Math.PI / 6) * radius), (float)(center.Y + Math.Sin(7 * Math.PI / 6)  * radius));
             _addRecordingNodeButton.Transform.LocalPosition = new Vector2((float)(center.X + Math.Cos(3 * Math.PI / 2) * radius), (float)(center.Y + Math.Sin(3 * Math.PI / 2)  * radius));
+
+            _addVariableNode.Transform.LocalPosition = new Vector2((float)(center.X + 105 + Math.Cos(Math.PI / 2) * radius), (float)(center.Y + Math.Sin(Math.PI / 2) * radius));
+            _addDisplayNode.Transform.LocalPosition = new Vector2((float)(center.X + 105 + Math.Cos(3 * Math.PI / 2) * radius), (float)(center.Y + Math.Sin(3 * Math.PI / 2) * radius));
+
 
             //_buttonLayoutManager.ArrangeItems();
             base.Update(parentLocalToScreenTransform);

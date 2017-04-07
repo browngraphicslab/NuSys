@@ -20,21 +20,26 @@ namespace NuSysApp
             }
         }
 
-        private void ContentChanged(object originalSenderViewModel, string newData)
+        protected void ContentChanged(object originalSenderViewModel, string newData)
         {
             var libraryElementController = SessionController.Instance.ContentController.GetLibraryElementController(Model.LibraryId);
-            TextChanged?.Invoke(this, libraryElementController.Data);
+            FireTextChanged(libraryElementController.Data);
         }
 
         public override void Dispose()
         {
-           
+
             if (LibraryElementController?.ContentDataController != null)
             {
                 LibraryElementController.ContentDataController.ContentDataUpdated -= ContentChanged;
             }
             base.Dispose();
 
+        }
+
+        protected void FireTextChanged(string data)
+        {
+            TextChanged?.Invoke(this, data);
         }
     }
 }

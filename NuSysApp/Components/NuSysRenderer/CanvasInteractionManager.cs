@@ -271,6 +271,7 @@ namespace NuSysApp
 
                 if (_pointers.Count == 1)
                 {
+                    RenderItemInteractionManager.DragPoint = pointer.CurrentPoint.ToPoint();
                     if (Math.Abs(pointer.DeltaSinceLastUpdate.X) > 0 || Math.Abs(pointer.DeltaSinceLastUpdate.Y) > 0)
                     {
                         Translated?.Invoke(pointer, pointer.CurrentPoint, pointer.DeltaSinceLastUpdate);

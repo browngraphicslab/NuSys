@@ -8,7 +8,8 @@ using Newtonsoft.Json.Converters;
 namespace NusysServer
 {
     public class UploadNewDocModel
-    {
+    { 
+
         public enum SelectionType
         {
             Website,
@@ -17,6 +18,7 @@ namespace NusysServer
             Img,
             Video
         }
+        public double ratio { get; set; }
         public string data { get; set; }
         public string msg { get; set; }
         public string selectionId { get; set; }

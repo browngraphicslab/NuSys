@@ -22,6 +22,9 @@ namespace NusysIntermediate
 
             switch (type)
             {
+                case NusysConstants.ElementType.Variable:
+                    elementModel = new VariableElementModel(id);
+                    break;
                 case NusysConstants.ElementType.Text:
                     elementModel = new TextElementModel(id);
                     break;
@@ -71,6 +74,9 @@ namespace NusysIntermediate
                 var elementModel = JsonConvert.DeserializeObject<ElementModel>(elementJSON);
                 switch (elementModel.ElementType)
                 {
+                    case NusysConstants.ElementType.Variable:
+                        elementModel = JsonConvert.DeserializeObject<VariableElementModel>(elementJSON);
+                        break;
                     case NusysConstants.ElementType.Unknown:
                         elementModel = JsonConvert.DeserializeObject<UnknownFileElementModel>(elementJSON);
                         break;

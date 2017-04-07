@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
+using System.Threading.Tasks;
 using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.System;
@@ -145,6 +146,7 @@ namespace NuSysApp
             }
         }
 
+
         /// <summary>
         ///If the point is located outside the tool, logically set the selection based on selection type (Multi/Single) and either create new tool or add to existing tool
         /// </summary>
@@ -169,10 +171,57 @@ namespace NuSysApp
                 //var sp = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
                 //var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(sp.X, sp.Y, 300, 300));
                 //var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(sp, null);
-                var dragDestination = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, null, 2) as ToolWindow; //maybe replace null w render engine.root
+                var dragDestination =
+                    SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(
+                        pointer.CurrentPoint, null, 2); //maybe replace null w render engine.root
+
+                if (dragDestination is VariableElementRenderItem)
+                {
+                    var controller = (dragDestination as VariableElementRenderItem).ViewModel.Controller as VariableElementController;
+
+                    var originalSet = Vm.Controller.GetOutputLibraryIds();
+
+                    var tempSelection = Vm.Selection.ToArray();
+
+                    Vm.Selection = new HashSet<string>() { selection };
+
+                    var finalSet = originalSet.Where(Vm.Controller.GetFunc()).ToArray();
+
+                    Vm.Selection = new HashSet<string>(tempSelection);
+
+                    if (finalSet.Length > 0)
+                    {
+                        controller.SetStoredLibraryId(finalSet[0]);
+
+                        var libraryController = controller.VariableController;
+
+                        var m = controller.Model;
+
+                        var width = m.Width;
+                        var padding = 25;
+
+                        Parallel.ForEach(finalSet.Skip(1), async (libraryId, state) =>
+                        {
+                            int i = Array.IndexOf(finalSet, libraryId);
+                            var elementId = await libraryController.AddElementAtPosition(m.X + i * (padding + width), m.Y, m.ParentCollectionId, m.Width, m.Height);
+
+                            Debug.Assert(SessionController.Instance.ElementModelIdToElementController.ContainsKey(elementId));
+                            if (SessionController.Instance.ElementModelIdToElementController.ContainsKey(elementId))
+                            {
+                                var ec = (SessionController.Instance.ElementModelIdToElementController[elementId] as VariableElementController);
+                                ec?.SetStoredLibraryId(libraryId);
+                            }
+                        });
+                    }
+
+
+                    return;
+                }
+
+
                 var canvasCoordinate = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(new Vector2(pointer.CurrentPoint.X, pointer.CurrentPoint.Y), SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection);
 
-                Vm.FilterIconDropped(dragDestination, canvasCoordinate.X, canvasCoordinate.Y);
+                var id = Vm.FilterIconDropped(dragDestination as ToolWindow, canvasCoordinate.X, canvasCoordinate.Y);
             }
 
 

@@ -146,6 +146,10 @@ namespace NuSysApp
             }
         }
 
+        public float? FuckedWidth { get; set; } = null;
+
+        public float? FuckedHeight { get; set; } = null;
+
         /// <summary>
         /// YOU MUST CALL LOAD ON THE MARKDWON CONVERTING TEXTBOX
         /// </summary>
@@ -275,8 +279,14 @@ namespace NuSysApp
         /// </summary>
         private void UpdateRenderTarget()
         {
+
+            var tempWidth = FuckedWidth == null ? Width:FuckedWidth.Value ;
+            var tempHeight = FuckedHeight == null ? Height : FuckedHeight.Value;
+
+            var dpi = FuckedHeight != null ? 16000/Math.Max(1,(float) (FuckedWidth/FuckedHeight)) : ResourceCreator.Dpi;
+
             _renderTarget?.Dispose();
-            _renderTarget = new CanvasRenderTarget(Canvas,(float)Math.Min(Width,Canvas.Size.Width),(float)Math.Min(Height,Canvas.Size.Height));
+            _renderTarget = new CanvasRenderTarget(Canvas,(float)Math.Min(tempWidth, Canvas.Size.Width),(float)Math.Min(tempHeight, Canvas.Size.Height),dpi);
 
             using (var dss = _renderTarget.CreateDrawingSession())
             {
@@ -287,8 +297,8 @@ namespace NuSysApp
                         dss.CreateLayer(1,
                             CanvasGeometry.CreateRectangle(_renderTarget, BorderWidth + UIDefaults.XTextPadding,
                                 BorderWidth + UIDefaults.YTextPadding,
-                                Width - 2 * (BorderWidth + UIDefaults.XTextPadding),
-                                Height - 2 * (BorderWidth + UIDefaults.YTextPadding))))
+                                tempWidth - 2 * (BorderWidth + UIDefaults.XTextPadding),
+                                tempHeight - 2 * (BorderWidth + UIDefaults.YTextPadding))))
                     {
                         // draw the text within the proper bounds
                         try
@@ -329,7 +339,7 @@ namespace NuSysApp
         private void CreateCanvasTextLayout()
         {
             // set the canvas text layout to a new canvas text layout
-            _canvasTextLayout = new CanvasTextLayout(ResourceCreator, Text, CanvasTextFormat, Width - 2 * (BorderWidth + UIDefaults.XTextPadding), Height - 2 * (BorderWidth + UIDefaults.YTextPadding));
+            _canvasTextLayout = new CanvasTextLayout(ResourceCreator, Text ?? "", CanvasTextFormat, Width - 2 * (BorderWidth + UIDefaults.XTextPadding), Height - 2 * (BorderWidth + UIDefaults.YTextPadding));
 
         }
             
@@ -481,8 +491,14 @@ namespace NuSysApp
             // save the current transform of the drawing session
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
-
-            ds.DrawImage(_renderTarget);
+            if (FuckedHeight != null && FuckedWidth != null)
+            {
+                ds.DrawImage(_renderTarget, new Rect(0,0,Width,Width * (FuckedHeight.Value/FuckedWidth.Value)));
+            }
+            else
+            {
+                ds.DrawImage(_renderTarget);
+            }
 
             ds.Transform = orgTransform;
         }

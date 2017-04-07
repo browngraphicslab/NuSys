@@ -19,6 +19,11 @@ namespace NusysServer
         /// </summary>
         public static readonly Dictionary<string, string> LibraryElementMapping = new BiDictionary<string, string>()
         {
+            { "metadataKey","metadataKey"},
+            { "aspectRatio","aspectRatio"},
+            {"StoredLibraryId","StoredLibraryId" },
+
+
             //base types start
             {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_CONTENT_ID_KEY, NusysConstants.LIBRARY_ELEMENT_CONTENT_ID_KEY },//content Id
             {NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY, NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY },//library Id

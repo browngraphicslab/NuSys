@@ -684,8 +684,7 @@ namespace NuSysApp
 
             LibraryListView.AddColumnOptions(new List<ListColumn<LibraryElementModel>> {listColumn5, listColumn8, listColumn7,listColumn6 });
 
-            LibraryListView.AddItems(
-                           SessionController.Instance.ContentController.ContentValues.ToList());
+            LibraryListView.AddItems(SessionController.Instance.ContentController.ContentValues.Except(SessionController.Instance.ContentController.ContentValues.OfType<VariableLibraryElementModel>()).ToList());
 
             BorderWidth = 5;
             BorderColor = Colors.Black;

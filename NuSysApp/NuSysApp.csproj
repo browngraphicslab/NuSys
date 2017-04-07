@@ -564,6 +564,7 @@
     <Compile Include="Components\NuSysRenderer\TextElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\TrailRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\RenderItemTransform.cs" />
+    <Compile Include="Components\NuSysRenderer\VariableElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\VideoElementRenderItem.cs" />
     <Compile Include="Components\NuSysRenderer\Win2dUtil.cs" />
     <Compile Include="Components\NuSysRenderer\WordElementRenderItem.cs" />
@@ -643,6 +644,8 @@
     <Compile Include="Components\Viewers\FreeForm\Nodes\UnknownFileElementController.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\UnknownFileElementRenderItem.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\UnknownFileViewModel.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\VariableElementController.cs" />
+    <Compile Include="Components\Viewers\FreeForm\Nodes\VariableNodeViewModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\Nodes\WebNode\WebPreviewUserControl.xaml.cs">
       <DependentUpon>WebPreviewUserControl.xaml</DependentUpon>
     </Compile>
@@ -675,6 +678,7 @@
     <Compile Include="Controller\LibraryElementController\HtmlLibraryElementController.cs" />
     <Compile Include="Controller\LibraryElementController\LibraryElementControllerFactory.cs" />
     <Compile Include="Controller\LibraryElementController\LinkLibraryElementController.cs" />
+    <Compile Include="Controller\LibraryElementController\VariableLibraryElementController.cs" />
     <Compile Include="Controller\LibraryElementController\WordNodeLibraryElementController.cs" />
     <Compile Include="Controller\LinksController.cs" />
     <Compile Include="Components\NuSysRenderer\PseudoElementRenderItem.cs" />

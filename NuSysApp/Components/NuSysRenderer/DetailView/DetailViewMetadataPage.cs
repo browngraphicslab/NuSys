@@ -135,7 +135,34 @@ namespace NuSysApp
             _controller.KeywordsChanged += _controller_KeywordsChanged;
             _addKeyBox.TextChanged += _addKeyBox_TextChanged;
             _metadata_listview.RowDoubleTapped += _metadata_listview_RowDoubleTapped;
+            _metadata_listview.RowDragged += MetadataListviewOnRowDragged;
             _deleteKeyButton.Tapped += _deleteKeyButton_Tapped;
+        }
+
+        private MetadataEntry _lastDragEntry;
+        private void MetadataListviewOnRowDragged(MetadataEntry item, string columnName, CanvasPointer pointer)
+        {
+            RenderItemInteractionManager.SetDrag(DropFunc,  _controller.LargeIconUri);
+            _lastDragEntry = item;
+        }
+
+        private bool DropFunc(CanvasPointer canvasPointer, BaseRenderItem baseRenderItem)
+        {
+            if (baseRenderItem is CollectionRenderItem)
+            {
+                Task.Run(async delegate
+                {
+                    await StaticServerCalls.AddElementToCollection(canvasPointer.CurrentPoint,
+                        NusysConstants.ElementType.Variable, null, baseRenderItem as CollectionRenderItem);
+
+                    var controller = SessionController.Instance.ContentController.AllLibraryElementControllers.OfType<VariableLibraryElementController>().OrderBy(i => DateTime.Parse(i.LibraryElementModel.Timestamp)).Last();
+                    if (_lastDragEntry != null)
+                    {
+                        controller.SetMetadataKey(_lastDragEntry.Key);
+                    }
+                });
+            }
+            return false;
         }
 
         /// <summary>
@@ -288,6 +315,7 @@ namespace NuSysApp
             _controller.KeywordsChanged -= _controller_KeywordsChanged;
             _addKeyBox.TextChanged -= _addKeyBox_TextChanged;
             _metadata_listview.RowDoubleTapped -= _metadata_listview_RowDoubleTapped;
+            _metadata_listview.RowDragged -= MetadataListviewOnRowDragged;
             _deleteKeyButton.Tapped -= _deleteKeyButton_Tapped;
 
 

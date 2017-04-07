@@ -67,6 +67,10 @@ namespace NusysServer
                         m[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY] = NusysConstants.ElementType.PDF.ToString();
                         m[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY] = title;
 
+                        m[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_EXISTING_SMALL_ICON_URL] = Constants.SERVER_ADDRESS +NusysConstants.GetDefaultThumbnailFileName(contentDataId, NusysConstants.ThumbnailSize.Small);
+                        m[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_EXISTING_MEDIUM_ICON_URL] = Constants.SERVER_ADDRESS + NusysConstants.GetDefaultThumbnailFileName(contentDataId, NusysConstants.ThumbnailSize.Medium);
+                        m[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_EXISTING_LARGE_ICON_URL] = Constants.SERVER_ADDRESS + NusysConstants.GetDefaultThumbnailFileName(contentDataId, NusysConstants.ThumbnailSize.Large);
+
                         m[NusysConstants.NEW_IMAGE_LIBRARY_ELEMENT_REQUEST_NORMALIZED_HEIGHT] = 1;
                         m[NusysConstants.NEW_IMAGE_LIBRARY_ELEMENT_REQUEST_NORMALIZED_WIDTH] = 1;
                         m[NusysConstants.NEW_IMAGE_LIBRARY_ELEMENT_REQUEST_TOP_LEFT_X] = 0;
@@ -132,6 +136,12 @@ namespace NusysServer
                         m[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY] = NusysConstants.ElementType.HTML.ToString();
                         m[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY] = title;
 
+                        m[NusysConstants.NEW_IMAGE_LIBRARY_ELEMENT_REQUEST_ASPECT_RATIO_KEY] = temp.ratio;
+
+                        m[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_EXISTING_SMALL_ICON_URL] = Constants.SERVER_ADDRESS + filepath;
+                        m[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_EXISTING_MEDIUM_ICON_URL] = Constants.SERVER_ADDRESS + filepath;
+                        m[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_EXISTING_LARGE_ICON_URL] = Constants.SERVER_ADDRESS + filepath;
+
                         m[NusysConstants.NEW_IMAGE_LIBRARY_ELEMENT_REQUEST_NORMALIZED_HEIGHT] = 1;
                         m[NusysConstants.NEW_IMAGE_LIBRARY_ELEMENT_REQUEST_NORMALIZED_WIDTH] = 1;
                         m[NusysConstants.NEW_IMAGE_LIBRARY_ELEMENT_REQUEST_TOP_LEFT_X] = 0;
@@ -159,6 +169,10 @@ namespace NusysServer
                         m[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY] = temp.selectionId;
                         m[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY] = NusysConstants.ElementType.Image.ToString();
                         m[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY] = title;
+
+                        m[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_EXISTING_SMALL_ICON_URL] = temp.data;
+                        m[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_EXISTING_MEDIUM_ICON_URL] = temp.data;
+                        m[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_EXISTING_LARGE_ICON_URL] = temp.data;
 
                         m[NusysConstants.NEW_IMAGE_LIBRARY_ELEMENT_REQUEST_NORMALIZED_HEIGHT] = 1;
                         m[NusysConstants.NEW_IMAGE_LIBRARY_ELEMENT_REQUEST_NORMALIZED_WIDTH] = 1;

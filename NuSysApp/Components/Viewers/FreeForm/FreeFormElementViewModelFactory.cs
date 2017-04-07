@@ -20,11 +20,19 @@ namespace NuSysApp
             ElementViewModel vm = null;
 
             var model = controller.Model;
+            if (controller.LibraryElementModel.Type == NusysConstants.ElementType.Variable)
+            {
+                model.ElementType = NusysConstants.ElementType.Variable;
+                
+            }
 
             switch (model.ElementType)
             {
                 case NusysConstants.ElementType.Unknown:
                     vm = new UnknownFileViewModel(controller);
+                    break;
+                case NusysConstants.ElementType.Variable:
+                    vm = new VariableNodeViewModel(controller);
                     break;
                 case NusysConstants.ElementType.Text:
                     vm = new TextNodeViewModel(controller);
@@ -61,15 +69,21 @@ namespace NuSysApp
                     break;
                 case NusysConstants.ElementType.Area:
                     vm = new AreaNodeViewModel((ElementCollectionController)controller);
-                    break;/*
-                case ElementType.Link:
-                    var linkModel = (LinkModel)controller.Model;
-                    if (linkModel.IsPresentationLink)
-                        view = new PresentationLinkView(new LinkViewModel((LinkController)controller));
-                    else
-                        view = new BezierLinkView(new LinkViewModel((LinkController)controller));
-                    break;*/
-            }
+                    break;
+                default:
+                    vm = new TextNodeViewModel(controller);
+                    break;
+
+                /*
+            
+            case ElementType.Link:
+                var linkModel = (LinkModel)controller.Model;
+                if (linkModel.IsPresentationLink)
+                    view = new PresentationLinkView(new LinkViewModel((LinkController)controller));
+                else
+                    view = new BezierLinkView(new LinkViewModel((LinkController)controller));
+                break;*/
+                }
             await vm.Init();
 
             return vm;

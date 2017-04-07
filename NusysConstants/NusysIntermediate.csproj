@@ -52,6 +52,8 @@
     <Compile Include="Models\LastUsedCollectionModel.cs" />
     <Compile Include="Models\LibraryElementOrigin.cs" />
     <Compile Include="Models\UnknownFileElementModel.cs" />
+    <Compile Include="Models\VariableElementModel.cs" />
+    <Compile Include="Models\VariableLibraryElementModel.cs" />
     <Compile Include="Models\VideoLibraryElementModel.cs" />
     <Compile Include="Models\WordLibraryElementModel.cs" />
     <Compile Include="RequestArgs\AddNewLastUsedCollectionServerRequestArgs.cs" />

@@ -68,6 +68,8 @@ namespace NusysServer
                     case NusysConstants.ContentType.Text:
                     case NusysConstants.ContentType.Collection:
                     case NusysConstants.ContentType.HTML:
+                    case NusysConstants.ContentType.Display:
+                    case NusysConstants.ContentType.Variable:
                         return contentUrl;
                 }
                 throw new Exception("the requested contentType is not supported yet for url-to-data conversion");
@@ -278,6 +280,8 @@ namespace NusysServer
                         }
                     case NusysConstants.ContentType.Text:
                     case NusysConstants.ContentType.Collection:
+                    case NusysConstants.ContentType.Display:
+                    case NusysConstants.ContentType.Variable:
                         filePath = "";
                         fileUrl = contentData ?? "";
                         break;

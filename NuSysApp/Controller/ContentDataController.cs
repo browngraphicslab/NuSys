@@ -278,6 +278,17 @@ namespace NuSysApp
             OnRegionRemoved?.Invoke(this,regionLibraryElementModelId);
         }
 
+        public void IncrementBlockServerInteraction()
+        {
+            _blockServerInteractionCount++;
+        }
+
+        public void DecrementBlockServerInteraction()
+        {
+            _blockServerInteractionCount--;
+        }
+
+
         /// <summary>
         /// This virtual method can be used to get the suggested tags of this content data controller's model.  
         /// It will return a dictionary of string to int, with the string being the lowercased, suggested tag and the int being the weight it is given.

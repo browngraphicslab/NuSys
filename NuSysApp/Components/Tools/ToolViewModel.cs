@@ -320,7 +320,7 @@ namespace NuSysApp
         /// <summary>
         /// Will either add this tool as a parent if dropped on top of an existing tool, or create a brand new tool filter chooser view.
         /// </summary>
-        public void FilterIconDropped(ToolWindow dragDestination, double x, double y)
+        public string FilterIconDropped(ToolWindow dragDestination, double x, double y)
         {
             //if (hitsStart.Where(uiElem => (uiElem is FrameworkElement) && (uiElem as FrameworkElement).DataContext is ToolViewModel).ToList().Any())
             //{
@@ -337,17 +337,18 @@ namespace NuSysApp
             {
                 var toolViewModel = dragDestination.Vm;
                 AddFilterToExistingTool(toolViewModel, null); //FIX THIS SHIT
+                return null;
             }
             else
             {
-                AddNewFilterTool(x, y);
+                return AddNewFilterTool(x, y);
             }
         }
 
         /// <summary>
         ///creates new filter tool at specified location
         /// </summary>
-        public void AddNewFilterTool(double x, double y)
+        public string AddNewFilterTool(double x, double y)
         {
             //var toolFilter = new ToolFilterView(x, y, this);
 
@@ -357,10 +358,13 @@ namespace NuSysApp
             //Canvas.SetZIndex(link, Canvas.GetZIndex(toolFilter) - 1);
             //wvm.AtomViewList.Add(toolFilter);
             //wvm.AtomViewList.Add(link);
+
+            var id = SessionController.Instance.GenerateId();
+
             UITask.Run(() =>
             {
 
-                BasicToolModel model = new BasicToolModel();
+                BasicToolModel model = new BasicToolModel(id);
                 BasicToolController controller = new BasicToolController(model);
                 BasicToolViewModel viewmodel = new BasicToolViewModel(controller);
                 viewmodel.Filter = ToolModel.ToolFilterTypeTitle.Title;
@@ -381,6 +385,7 @@ namespace NuSysApp
 
 
             });
+            return id;
         }
         
 

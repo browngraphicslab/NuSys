@@ -661,6 +661,12 @@ namespace NuSysApp
                 var link = new ToolLinkRenderitem((ToolLinkViewModelWin2d)vm, this, ResourceCreator);
                 _renderItems1?.Add(link);
             }
+            else if (vm is VariableNodeViewModel)
+            {
+                item = new VariableElementRenderItem((VariableNodeViewModel)vm, this, ResourceCreator);
+                await item.Load();
+                _renderItems2?.Add(item);
+            }
             else if (vm is TextNodeViewModel)
             {
                 item = new TextElementRenderItem((TextNodeViewModel)vm, this, ResourceCreator);

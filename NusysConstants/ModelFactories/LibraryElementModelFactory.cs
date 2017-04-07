@@ -47,6 +47,9 @@ namespace NusysIntermediate
                 case NusysConstants.ElementType.Word:
                     model = new WordLibraryElementModel(id);
                     break;
+                case NusysConstants.ElementType.Variable:
+                    model = new VariableLibraryElementModel(id);
+                    break;
                 default:
                     model = new LibraryElementModel(id, type);
                     break;
@@ -91,6 +94,9 @@ namespace NusysIntermediate
                         break;
                     case NusysConstants.ElementType.Image:
                         model = JsonConvert.DeserializeObject<ImageLibraryElementModel>(libraryElementJSON);
+                        break;
+                    case NusysConstants.ElementType.Variable:
+                        model = JsonConvert.DeserializeObject<VariableLibraryElementModel>(libraryElementJSON);
                         break;
                 }
                 //VERY IMPORTANT

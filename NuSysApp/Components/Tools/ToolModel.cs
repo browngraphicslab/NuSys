@@ -36,7 +36,7 @@ namespace NuSysApp
         public HashSet<string> OutputLibraryIds { get; private set; }
         public HashSet<string> ParentIds { get; private set; }
         public bool Selected { get; private set; }
-        public ToolModel() :base(SessionController.Instance.GenerateId())
+        public ToolModel(string id = null) :base(id ?? SessionController.Instance.GenerateId())
         {
             ParentIds = new HashSet<string>();
             OutputLibraryIds = new HashSet<string>();

@@ -951,7 +951,7 @@ namespace NuSysApp
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        public virtual async Task<bool> AddElementAtPosition(double x, double y, string collectionId = null, double width = Constants.DefaultNodeSize, double height = Constants.DefaultNodeSize)
+        public virtual async Task<string> AddElementAtPosition(double x, double y, string collectionId = null, double width = Constants.DefaultNodeSize, double height = Constants.DefaultNodeSize)
         {
             //the workspace id we are using is the passes in one, or the session's current workspace Id if it is null
             collectionId = collectionId ?? SessionController.Instance.ActiveFreeFormViewer.Model.LibraryId;
@@ -971,12 +971,13 @@ namespace NuSysApp
                 args.LibraryElementId = LibraryElementModel.LibraryElementId;
                 args.Height = height;
                 args.Width = width;
+                args.Id = SessionController.Instance.GenerateId();
 
                 // try to add the collection to the collection
                 var success = await StaticServerCalls.PutCollectionInstanceOnMainCollection(args);
 
                 // return whether the method succeeded
-                return success != null;
+                return success != null ? args.Id : null;
             }
 
             //create the request args 
@@ -987,7 +988,8 @@ namespace NuSysApp
             elementArgs.ParentCollectionId = collectionId;
             elementArgs.X = x;
             elementArgs.Y = y;
-            
+            elementArgs.Id = SessionController.Instance.GenerateId();
+
             //create the request
             var request = new NewElementRequest(elementArgs);
 
@@ -997,10 +999,10 @@ namespace NuSysApp
             if (request.WasSuccessful() == true) //if it returned sucesssfully
             {
                 await request.AddReturnedElementToSessionAsync();
-                return true;
+                return elementArgs.Id;
             }
             //maybe notify user
-            return false;
+            return null;
         }
 
         /// <summary>

@@ -60,6 +60,10 @@ namespace NuSysApp
                     controller = new LinkLibraryElementController(model as LinkLibraryElementModel);
                     //SessionController.Instance.LinksController.CreateVisualLinks(controller as LinkLibraryElementController);
                     break;
+                case NusysConstants.ElementType.Variable:
+                    Debug.Assert(model is VariableLibraryElementModel);
+                    controller = new VariableLibraryElementController(model as VariableLibraryElementModel);
+                    break;
                 default:
                     controller = new LibraryElementController(model);
                     break;

@@ -75,7 +75,6 @@ namespace NusysIntermediate
             get { return _height; }
             set
             {
-                
                 _height = value;
             }
         }

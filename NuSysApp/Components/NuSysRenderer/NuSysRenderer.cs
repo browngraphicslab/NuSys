@@ -12,6 +12,7 @@ using Windows.Foundation.Numerics;
 using Windows.UI;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
+using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.UI;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using Matrix3x2 = System.Numerics.Matrix3x2;
@@ -88,7 +89,7 @@ namespace NuSysApp
             return item.Transform.Parent.LocalToScreenMatrix;
         }
 
-        public override BaseRenderItem GetRenderItemAt(Vector2 sp, BaseRenderItem item = null, int maxLevel = int.MaxValue)
+        public override BaseRenderItem GetRenderItemAt(Vector2 sp, BaseRenderItem item = null, int maxLevel = int.MaxValue, BaseRenderItem ignoreHit = null)
         {
 
             var r = Root.HitTest(sp);
@@ -96,13 +97,13 @@ namespace NuSysApp
                 return r;
 
             item = item ?? Root;
-            var rr = _GetRenderItemAt(item, sp, 0, maxLevel);
+            var rr = _GetRenderItemAt(item, sp, 0, maxLevel, ignoreHit);
             
             return rr;
         }
 
    
-        protected override BaseRenderItem _GetRenderItemAt(BaseRenderItem item, Vector2 screenPoint,  int currentLevel, int maxLevel)
+        protected override BaseRenderItem _GetRenderItemAt(BaseRenderItem item, Vector2 screenPoint,  int currentLevel, int maxLevel, BaseRenderItem ignoreHit = null)
         {
             if (currentLevel < maxLevel)
             {
@@ -131,8 +132,8 @@ namespace NuSysApp
                         {
                             if (currentLevel + 1 < maxLevel)
                             {
-                                var result = _GetRenderItemAt(childCollection, screenPoint, currentLevel + 1, maxLevel);
-                                if (result != item)
+                                var result = _GetRenderItemAt(childCollection, screenPoint, currentLevel + 1, maxLevel, ignoreHit);
+                                if (result != item && result != ignoreHit)
                                     return result;
                             }
                             return childCollection;
@@ -145,7 +146,7 @@ namespace NuSysApp
                     if (currentLevel + 1 < maxLevel)
                     {
                         var h = childItem.HitTest(screenPoint);
-                        if (h != null)
+                        if (h != null && h != ignoreHit)
                         {
                             return h;
                         }
@@ -153,7 +154,7 @@ namespace NuSysApp
                     else
                     {
                         var h = childItem.HitTest(screenPoint);
-                        if (h != null)
+                        if (h != null && h != ignoreHit)
                         {
                             return childItem;
                         }
@@ -161,7 +162,7 @@ namespace NuSysApp
                 }
             }
 
-            if (item.HitTest(screenPoint) != null)
+            if (item.HitTest(screenPoint) != null && item != ignoreHit)
                 return item;
 
             return null;
@@ -235,6 +236,11 @@ namespace NuSysApp
                 ds.Clear(Colors.Transparent);
                 ds.Transform = Matrix3x2.Identity;
                 Root.Draw(ds);
+                if (RenderItemInteractionManager.DragElement != null && RenderItemInteractionManager.DragPoint != null)
+                {
+                    var p = RenderItemInteractionManager.DragPoint;
+                    ds.DrawImage((CanvasBitmap)RenderItemInteractionManager.DragElement, new Rect(p, new Size(50, 50)));
+                }
                 ds.Transform = Matrix3x2.Identity;
             }
         }

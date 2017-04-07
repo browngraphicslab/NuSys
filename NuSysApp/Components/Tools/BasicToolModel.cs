@@ -13,7 +13,7 @@ namespace NuSysApp
 
         public  HashSet<string> Selection { get; protected set; }
 
-        public BasicToolModel()
+        public BasicToolModel(string id = null) : base(id ?? SessionController.Instance.GenerateId())
         {
             Selection = new HashSet<string>();
         }
