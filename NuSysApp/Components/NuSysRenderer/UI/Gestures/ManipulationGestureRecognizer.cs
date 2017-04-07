@@ -92,7 +92,16 @@ namespace NuSysApp
 
         public void ProcessMouseWheelEvent(FrameworkElement sender, PointerRoutedEventArgs args)
         {
-            throw new NotImplementedException();
+            //if (!_pointerIdToPosition.ContainsKey(args.Pointer.PointerId))
+            //{
+            //    _pointerIdToPosition[args.Pointer.PointerId] = args.GetCurrentPoint(sender).Position.ToSystemVector2();
+            //}
+
+            //var focus = _pointerIdToPosition[args.Pointer.PointerId];
+
+            //_manipulationArgs.PreviousFocus = focus;
+            //_manipulationArgs.CurrentFocus = focus;
+
         }
 
         public void ProcessExitedEvent(FrameworkElement sender, PointerRoutedEventArgs args)

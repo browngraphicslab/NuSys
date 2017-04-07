@@ -792,9 +792,13 @@ namespace NuSysApp
         {
             base.OnManipulated(sender, args);
             Camera.LocalScale *= args.ScaleDelta;
+            Debug.WriteLine($"scl {Camera.LocalScale}");
             Camera.LocalPosition = Camera.LocalPosition + args.Translation;
-            //Camera.LocalScaleCenter = args.CurrentFocus;
-
+            Debug.WriteLine($"pos {Camera.LocalPosition}");
+            Debug.WriteLine($"curF {args.CurrentFocus}");
+            Camera.LocalScaleCenter = Vector2.Transform(args.CurrentFocus, Win2dUtil.Invert(Camera.S * Camera.T));
+            Debug.WriteLine($"cen {Camera.LocalScaleCenter}");
+            // small progress, this works better, location is wrong though
         }
 
         /// <summary>
