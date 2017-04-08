@@ -41,11 +41,17 @@ namespace NusysServer.Static_Classes
         /// </summary>
         private static DocumentClient client;
 
-        public static void Initialize()
+        public static async void Initialize()
         {
             client = new DocumentClient(new Uri(EndpointUrl), PrimaryKey);
             //CreateDatabaseIfNotExistsAsync().Wait();
             //CreateCollectionIfNotExistsAsync().Wait();
+
+            // Creates the database with the passed in id if it does not exist, otherwise returns the database with the passed in id
+            await client.CreateDatabaseIfNotExistsAsync(new Database { Id = Constants.DocumentDB_ID });
+
+            await client.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(Constants.DocumentDB_ID), new DocumentCollection { Id = "FamilyCollection" });
+
         }
 
     }
