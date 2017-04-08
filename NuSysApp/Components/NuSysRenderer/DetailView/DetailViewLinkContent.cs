@@ -121,7 +121,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void OutLinkedElementTextboxOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void OutLinkedElementTextboxOnTapped(TextboxUIElement sender, Vector2 position)
         {
             Debug.Assert(!string.IsNullOrEmpty(_controller?.LinkLibraryElementModel?.OutAtomId));
 
@@ -134,7 +134,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void InLinkedElementTextboxOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void InLinkedElementTextboxOnTapped(TextboxUIElement sender, Vector2 position)
         {
             Debug.Assert(!string.IsNullOrEmpty(_controller?.LinkLibraryElementModel?.InAtomId));
 
@@ -147,7 +147,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void _toggleDirectionButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void _toggleDirectionButton_Tapped(ButtonUIElement sender)
         {
             if (_controller.LinkLibraryElementModel.Direction == NusysConstants.LinkDirection.None)
             {
@@ -159,7 +159,7 @@ namespace NuSysApp
             }
         }
 
-        private void _reverseDirectionButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void _reverseDirectionButton_Tapped(ButtonUIElement sender)
         {
             if (_controller.LinkLibraryElementModel.Direction == NusysConstants.LinkDirection.Forward)
             {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
@@ -14,6 +15,10 @@ namespace NuSysApp
 {
     public class TextboxUIElement : RectangleUIElement
     {
+        public delegate void TapEventHandler(TextboxUIElement sender, Vector2 position);
+        public event TapEventHandler Tapped;
+        public event TapEventHandler DoubleTapped;
+
         /// <summary>
         /// private helper for the public property TextHorizontalAlignment
         /// </summary>
@@ -210,6 +215,22 @@ namespace NuSysApp
             _constructed = true;
 
             UpdateCanvasTextFormat();
+
+            var tapRecognizer = new TapGestureRecognizer();
+            this.GestureRecognizers.Add(tapRecognizer);
+            tapRecognizer.OnTapped += TapRecognizer_OnTapped;
+        }
+
+        private void TapRecognizer_OnTapped(TapGestureRecognizer sender, TapEventArgs args)
+        {
+            if (args.TapType == TapEventArgs.Tap.SingleTap)
+            {
+                Tapped?.Invoke(this, args.Position);
+            }
+            else if (args.TapType == TapEventArgs.Tap.DoubleTap)
+            {
+                DoubleTapped?.Invoke(this, args.Position);
+            }
         }
 
         protected virtual void UpdateCanvasTextFormat()

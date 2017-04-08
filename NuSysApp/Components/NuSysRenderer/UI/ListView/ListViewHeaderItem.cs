@@ -142,26 +142,6 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// This overrides the dragged event of the button so that if you are dragging the edge, the headerResizing event is invoked instead of the regular dragging event.
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        public override void OnDragged(DragGestureRecognizer sender, DragEventArgs args)
-        {
-            if (_borderBeingDragged)
-            {
-                Debug.Assert(_edgeBeingDragged != null);
-                HeaderResizing?.Invoke(this,args.Translation, _edgeBeingDragged);
-            }
-            else
-            {
-                base.OnDragged(sender, args);
-
-            }
-
-        }
-
-        /// <summary>
         /// This overrides the released handler of the button. If you were dragging the edge of a button, the headerresizeCompleted is invoked instead. 
         /// </summary>
         /// <param name="item"></param>

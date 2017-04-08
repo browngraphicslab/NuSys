@@ -88,6 +88,10 @@ namespace NuSysApp
             vm.AtomViewList.CollectionChanged += OnElementsChanged;
             vm.Controller.LibraryElementController.ContentDataController.ContentDataUpdated += ContentDataControllerOnContentDataUpdated;
             UpdateShapeStatus();
+
+            var manipulationGestureRecognizer = new ManipulationGestureRecognizer();
+            GestureRecognizers.Add(manipulationGestureRecognizer);
+            manipulationGestureRecognizer.OnManipulation += OnManipulated;
         }
 
 
@@ -782,15 +786,8 @@ namespace NuSysApp
             }
         }
 
-        //public override void OnDragged(DragGestureRecognizer sender, DragEventArgs args)
-        //{
-        //    base.OnDragged(sender, args);
-        //    Camera.LocalPosition = Camera.LocalPosition + args.Translation;
-        //}
-
-        public override void OnManipulated(ManipulationGestureRecognizer sender, ManipulationEventArgs args)
+        public void OnManipulated(ManipulationGestureRecognizer sender, ManipulationEventArgs args)
         {
-            base.OnManipulated(sender, args);
             Camera.LocalScale *= args.ScaleDelta;
             Debug.WriteLine($"scl {Camera.LocalScale}");
             Camera.LocalPosition = Camera.LocalPosition + args.Translation;

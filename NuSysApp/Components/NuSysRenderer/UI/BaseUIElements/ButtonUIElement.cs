@@ -14,6 +14,11 @@ namespace NuSysApp
 {
     public class ButtonUIElement : BaseInteractiveUIElement
     {
+        public delegate void TapEventHandler(ButtonUIElement sender);
+        public event TapEventHandler Tapped;
+        public event TapEventHandler DoubleTapped;
+        public event TapEventHandler RightTapped;
+
         /// <summary>
         /// The shape of the button. Can be one of Rectangle/Ellipse/RoudedRectangleUIElement.
         /// </summary>
@@ -174,9 +179,11 @@ namespace NuSysApp
         /// <param name="parent"></param>
         /// <param name="resourceCreator"></param>
         /// <param name="shapeElement"></param>
-        public ButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, BaseInteractiveUIElement shape = null) : base(parent, resourceCreator)
+        public ButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator,
+            BaseInteractiveUIElement shape = null) : base(parent, resourceCreator)
         {
-            Shape = shape ?? new RectangleUIElement(parent, ResourceCreator); //This is important so all buttons should have the same base appearence
+            Shape = shape ?? new RectangleUIElement(parent, ResourceCreator);
+                //This is important so all buttons should have the same base appearence
 
             // Add the shape that was passed in as a child of the button.
             base.AddChild(Shape);
@@ -185,12 +192,28 @@ namespace NuSysApp
             Shape.Pressed += Shape_Pressed;
             Shape.Released += Shape_Released;
             Shape.Dragged += Shape_Dragged;
-            Shape.Tapped += Shape_Tapped;
-            Shape.DoubleTapped += Shape_DoubleTapped;
             Shape.Holding += Shape_Holding;
             Enabled = true;
 
             Padding = 7;
+
+            var tapRecognizer = new TapGestureRecognizer();
+            shape.GestureRecognizers.Add(tapRecognizer);
+            tapRecognizer.OnTapped += TapRecognizer_OnTapped;
+        }
+
+        private void TapRecognizer_OnTapped(TapGestureRecognizer sender, TapEventArgs args)
+        {
+            if (args.TapType == TapEventArgs.Tap.SingleTap)
+            {
+                Tapped?.Invoke(this);
+            } else if (args.TapType == TapEventArgs.Tap.DoubleTap)
+            {
+                DoubleTapped?.Invoke(this);
+            } else if (args.TapType == TapEventArgs.Tap.RightTap)
+            {
+                RightTapped?.Invoke(this);
+            }
         }
 
 
@@ -206,30 +229,10 @@ namespace NuSysApp
             _originalImageBounds = GetImageBounds() ?? GetLocalBounds();
         }
 
-        /// <summary>
-        /// Fired the double tapped event on the button when the shape double tap event is fired
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void Shape_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            OnDoubleTapped(pointer);
-        }
 
         private void Shape_Holding(InteractiveBaseRenderItem item, Vector2 point)
         {
 
-        }
-
-
-        /// <summary>
-        /// Fired the tapped event on the button when the shape tap event is fired
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void Shape_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            OnTapped(pointer);
         }
 
         /// <summary>
@@ -420,8 +423,6 @@ namespace NuSysApp
             Shape.Pressed -= Shape_Pressed;
             Shape.Released -= Shape_Released;
             Shape.Dragged -= Shape_Dragged;
-            Shape.Tapped -= Shape_Tapped;
-            Shape.DoubleTapped -= Shape_DoubleTapped;
             base.Dispose();
         }
 
