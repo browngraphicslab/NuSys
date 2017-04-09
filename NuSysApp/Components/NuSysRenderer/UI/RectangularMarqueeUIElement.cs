@@ -14,25 +14,25 @@ namespace NuSysApp
    
     public class RectangularMarqueeUIElement : RectangleUIElement
     {
-
+        //The offset at which we set _dashoffset back to 0.
         private const float MAX_OFFSET = 15f;
-
+        //Offset we set the strokestyle's offset too
         private float _dashOffset = 0f;
-        
+        //Stroke style with dash style
+        private CanvasStrokeStyle _strokeStyle;
 
         public RectangularMarqueeUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
-            
-        }
-
-        public override void Draw(CanvasDrawingSession ds)
-        {
-            var strokeStyle = new CanvasStrokeStyle
+            _strokeStyle = new CanvasStrokeStyle
             {
                 DashCap = CanvasCapStyle.Flat,
                 DashStyle = CanvasDashStyle.Dash,
                 DashOffset = _dashOffset,
             };
+        }
+
+        public override void Draw(CanvasDrawingSession ds)
+        {
             ds.DrawRectangle(GetLocalBounds(), Colors.SlateGray, 3f, strokeStyle);
             base.Draw(ds);
         }
@@ -43,8 +43,10 @@ namespace NuSysApp
             
             if (_dashOffset > MAX_OFFSET)
             {
-                _dashOffset = 0;
+                _dashOffset -= MAX_OFFSET;
             }
+
+            _strokeStyle.DashOffset = _dashOffset;
             
             base.Update(parentLocalToScreenTransform);
         }
