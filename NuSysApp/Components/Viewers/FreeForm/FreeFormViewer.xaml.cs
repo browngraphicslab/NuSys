@@ -923,9 +923,10 @@ namespace NuSysApp
 
             if (item == RenderEngine.ElementSelectionRect.BtnTest)
             {
-                var collectionRenderItem = (CollectionRenderItem) Selections[0];
+                var collectionRenderItem = (CollectionRenderItem)Selections[0];
                 if (collectionRenderItem.HoldsList)
                 {
+                    //RenderEngine.ElementSelectionRect.RemoveChild(collectionRenderItem);
                     collectionRenderItem.RemoveChild(collectionRenderItem.Lib);
                     collectionRenderItem.Lib.LostFocus();
                 }
@@ -933,12 +934,23 @@ namespace NuSysApp
                 {
                     collectionRenderItem.Lib = _collectionList.ConstructListViewUIElementContainer(collectionRenderItem);
                     collectionRenderItem.AddChild(collectionRenderItem.Lib);
+                    //RenderEngine.ElementSelectionRect.AddChild(collectionRenderItem);
                     collectionRenderItem.Lib.GotFocus();
                 }
                 collectionRenderItem.HoldsList = !collectionRenderItem.HoldsList;
             }
 
+            if (item is CollectionRenderItem)
+            {
+                var collection = item as CollectionRenderItem;
+                if (collection.HoldsList)
+                {
+                    
+                }
+            }
+
         }
+
 
 
 

@@ -116,8 +116,35 @@ namespace NuSysApp.Components.NuSysRenderer.UI.ListView
             Lib.Width = (float)width;
             Lib.Height = (float)height;
 
+            Lib.RowTapped += OnLibraryItemSelected;
+
             return Lib;
         }
 
+        private void OnLibraryItemSelected(LibraryElementModel item, string columnName, CanvasPointer pointer,
+            bool isSelected)
+        {
+
+            // first we just try to get the content data model for the element that was selected since that it is important for loading images
+            if (!SessionController.Instance.ContentController.ContainsContentDataModel(item.ContentDataModelId))
+            {
+                Task.Run(async delegate
+                {
+                    if (item.Type == NusysConstants.ElementType.Collection)
+                    {
+                        var request = new GetEntireWorkspaceRequest(item.LibraryElementId);
+                        await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                        Debug.Assert(request.WasSuccessful() == true);
+                        await request.AddReturnedDataToSessionAsync();
+                        await request.MakeCollectionFromReturnedElementsAsync();
+                    }
+                    else
+                    {
+                        SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(
+                            item.ContentDataModelId);
+                    }
+                });
+            }
+        }
     }
 }

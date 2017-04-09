@@ -14,6 +14,7 @@ using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using Microsoft.Graphics.Canvas.UI;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using NusysIntermediate;
 using Matrix3x2 = System.Numerics.Matrix3x2;
 using Vector2 = System.Numerics.Vector2;
 
@@ -111,6 +112,12 @@ namespace NuSysApp
                 foreach (var childItem in childElements)
                 {
                     var childCollection = childItem as CollectionRenderItem;
+                    //// ---
+                    //if (childItem is ListViewUIElementContainer<LibraryElementModel>)
+                    //{
+                    //    return childItem;
+                    //}
+                    //// ---
                     if (childCollection != null)
                     {
 
