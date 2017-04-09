@@ -51,10 +51,10 @@ namespace NusysServer.Static_Classes
             // Creates the database with the passed in id if it does not exist, otherwise returns the database with the passed in id
             await client.CreateDatabaseIfNotExistsAsync(new Database { Id = DocumentDB_Database_ID });
 
+            // Creates the collection 
             await client.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(DocumentDB_Database_ID), new DocumentCollection { Id = DocumentDB_Collection_ID });
 
         }
-
     }
 
     public static class DocumentDBConstants
