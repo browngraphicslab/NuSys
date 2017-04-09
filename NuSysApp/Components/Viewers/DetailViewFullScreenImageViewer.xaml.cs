@@ -84,53 +84,26 @@ namespace NuSysApp
         {
             var point = xImage.TransformToVisual(Window.Current.Content);
             Point screenCoord = point.TransformPoint(new Point(xImage.ActualWidth / 2, xImage.ActualHeight / 2));
-           
-           // var toScreenCenter = xCanvas.TransformToVisual(Window.Current.Content);
-           // Point screenCenter = toScreenCenter.TransformPoint(new Point(xCanvas.ActualWidth * .25, xCanvas.ActualHeight * .25)); 
 
             RotateTransform rotate = new RotateTransform
             {
                 CenterX = screenCoord.X, CenterY = screenCoord.Y,
                 Angle = 0
             };
-
-            double scalefactor;
-            var screenRatio = xCanvas.ActualWidth / xCanvas.ActualHeight;
-
-            if (xImage.ActualWidth > xImage.ActualHeight * screenRatio)
-            {
-                scalefactor = xCanvas.ActualWidth / xImage.ActualWidth;
-                scalefactor /= 2;
-            }
-            else
-            {
-                scalefactor = xCanvas.ActualHeight / xImage.ActualHeight;
-                scalefactor /= 2;
-            }
-
+            
             TranslateTransform translate = new TranslateTransform
             {
-                X = xCanvas.ActualWidth * .25,
-                Y = xCanvas.ActualHeight * .25
+                X = (xCanvas.ActualWidth - xImage.ActualWidth) * .5,
+                Y = (xCanvas.ActualHeight - xImage.ActualHeight)*.5
             };
-           
-            ScaleTransform scale = new ScaleTransform
-            {
-                CenterX = screenCoord.X, CenterY = screenCoord.Y, 
-                ScaleX = scalefactor, ScaleY = scalefactor
-            };
+          
             
             TransformGroup composite = new TransformGroup();
-           // composite.Children.Add(translate);
+            composite.Children.Add(translate);
             composite.Children.Add(rotate);
-            composite.Children.Add(scale);
             xImage.RenderTransform = new MatrixTransform { Matrix = composite.Value };
 
-            double left = (xCanvas.ActualWidth - xImage.ActualWidth) / 2;
-            Canvas.SetLeft(xImage, left);
-
-            double top = (xCanvas.ActualHeight - xImage.ActualHeight) / 2;
-            Canvas.SetTop(xImage, top);
+          
             // 
             /* 
             (xImage.RenderTransform as TransformGroup).Children[0] = new CompositeTransform();
