@@ -73,8 +73,7 @@ namespace NuSysApp
             //if the requsted content will need a specific filetype server-side, require the file extension
             if (LibraryElementArgs.LibraryElementType == NusysConstants.ElementType.Audio ||
                 LibraryElementArgs.LibraryElementType == NusysConstants.ElementType.Video ||
-                LibraryElementArgs.LibraryElementType == NusysConstants.ElementType.PDF ||
-                LibraryElementArgs.LibraryElementType == NusysConstants.ElementType.Image)
+                LibraryElementArgs.LibraryElementType == NusysConstants.ElementType.PDF)
             {
                 Debug.Assert(FileExtension != null);
                 message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_FILE_EXTENTION] = FileExtension;

@@ -43,7 +43,7 @@ namespace NuSysApp
         const string userInfoEndpoint = "https://www.googleapis.com/oauth2/v3/userinfo";
         private const string listFilesEndpoint = "https://www.googleapis.com/drive/v2/files";
 
-        public GoogleDriveAuthPage()
+        public GoogleDriveAuthPage(String f)
         {
             this.InitializeComponent();
         }

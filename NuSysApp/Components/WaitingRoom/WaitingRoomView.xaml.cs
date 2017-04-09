@@ -107,9 +107,7 @@ namespace NuSysApp
 
             ellipse.Begin();
             _selectedCollection = null;
-            //GoogleDriveCommunicator comm = new GoogleDriveCommunicator();
-            var pls = new GoogleDriveAuthPage();
-            pls.run();
+            
             // Every time a new collection is added by another user, the list of collections is refreshed by calling Init
             SessionController.Instance.ContentController.OnNewLibraryElement += ContentController_OnNewLibraryElememt;
             SessionController.Instance.ContentController.OnLibraryElementDelete += ContentControllerOnOnLibraryElementDelete;

@@ -100,7 +100,7 @@ namespace NuSysApp
                 case NusysConstants.ContentType.Audio:
                 case NusysConstants.ContentType.Image:
                 case NusysConstants.ContentType.Video:
-                    Debug.Assert(_message.ContainsKey(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_FILE_EXTENTION));
+                    //Debug.Assert(_message.ContainsKey(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_FILE_EXTENTION));
                     break;
             }
 
