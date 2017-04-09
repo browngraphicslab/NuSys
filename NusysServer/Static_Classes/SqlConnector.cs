@@ -68,6 +68,8 @@ namespace NusysServer
         {
             var export_filepath = Constants.WWW_ROOT + "DocumentDBIntermediaryFiles/";
 
+            //TODO use the DEFAULTS to create these strings and be SAFE
+
             //import content
             var import_contents_cmd_text =
                 "SELECT c.content_id as content_id, content_type as content_type, content_ur as content_data, JSON_QUERY(a.analysis_model) as analysis_model, 'Content' as type, STRING_AGG(l.library_id, ',') as [Libary_Elements.libary_id] FROM contents c JOIN library_elements l ON c.content_id = l.content_id JOIN analysis_model a ON a.content_id = c.content_id GROUP BY c.content_id, content_type, content_ur, analysis_model FOR JSON PATH";

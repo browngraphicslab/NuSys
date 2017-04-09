@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Newtonsoft.Json;
+using NusysIntermediate;
 using static NusysServer.Static_Classes.DocumentDBConstants;
 
 namespace NusysServer.Static_Classes
@@ -42,6 +44,16 @@ namespace NusysServer.Static_Classes
         /// </summary>
         private static DocumentClient client;
 
+        /// <summary>
+        /// The documentDB database we are connecting to, only exists after a call to initialize
+        /// </summary>
+        private static Database _db;
+
+        /// <summary>
+        /// The documentDB collection we are connecting to, only exists after a call to initialize
+        /// </summary>
+        private static DocumentCollection _collection;
+
         public static async void Initialize()
         {
             client = new DocumentClient(new Uri(EndpointUrl), PrimaryKey);
@@ -49,12 +61,68 @@ namespace NusysServer.Static_Classes
             //CreateCollectionIfNotExistsAsync().Wait();
 
             // Creates the database with the passed in id if it does not exist, otherwise returns the database with the passed in id
-            await client.CreateDatabaseIfNotExistsAsync(new Database { Id = DocumentDB_Database_ID });
+            _db = await client.CreateDatabaseIfNotExistsAsync(new Database { Id = DocDB_Database_ID });
 
             // Creates the collection 
-            await client.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(DocumentDB_Database_ID), new DocumentCollection { Id = DocumentDB_Collection_ID });
+            _collection = await client.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(DocDB_Database_ID), new DocumentCollection { Id = DocDB_Collection_ID });
+
+
+            QueryAllDocuments(_collection.SelfLink);
 
         }
+
+        private static void QueryAllDocuments(string collectionLink)
+        {
+            //// LINQ Query
+            //var families =
+            //    from item in client.CreateDocumentQuery<PresentationLinkModel>(collectionLink)
+            //    where item.GetType() 
+            //    select presentation_link;
+
+            //// LINQ Lambda
+            //families = client.CreateDocumentQuery<PresentationLinkModel>(collectionLink);
+
+            // SQL
+            var pres_links = client.CreateDocumentQuery<PresentationLinkModel>(collectionLink, $"SELECT c.link_id AS LinkId, c.link_out_element_id AS OutElementId, c.link_in_element_id AS InElementId, c.parent_collection_id AS ParentCollectionId FROM c WHERE c.type='{DocDB_DocumentType.Presentation_Link}'");
+
+            var pres_links_result = pres_links.ToList();
+        }
+
+        //private static void QueryWithSqlQuerySpec(string collectionLink)
+        //{
+        //    // Simple query with a single property equality comparison
+        //    // in SQL with SQL parameterization instead of inlining the 
+        //    // parameter values in the query string
+        //    // LINQ Query -- Id == "value"
+        //    var query = client.CreateDocumentQuery<PresentationLinkModel>(collectionLink, new SqlQuerySpec()
+        //    {
+        //        QueryText = "SELECT * FROM Families f WHERE (f.id = @id)",
+        //        Parameters = new SqlParameterCollection()
+        //            {
+        //                new SqlParameter("@id", "AndersenFamily")
+        //            }
+        //    });
+
+        //    Debug.Assert("Expected only 1 family", query.ToList().Count == 1);
+
+        //    // Query using two properties within each document. WHERE Id == "" AND Address.City == ""
+        //    // notice here how we are doing an equality comparison on the string value of City
+
+        //    query = client.CreateDocumentQuery<Family>(
+        //        collectionLink,
+        //        new SqlQuerySpec()
+        //        {
+        //            QueryText = "SELECT * FROM Families f WHERE f.id = @id AND f.Address.City = @city",
+        //            Parameters = new SqlParameterCollection()
+        //            {
+        //                new SqlParameter("@id", "AndersenFamily"),
+        //                new SqlParameter("@city", "Seattle")
+        //            }
+        //        });
+
+        //    Debug.Assert("Expected only 1 family", query.ToList().Count == 1);
+
+        //}
     }
 
     public static class DocumentDBConstants
@@ -84,12 +152,28 @@ namespace NusysServer.Static_Classes
         /// <summary>
         /// The name of our document db database
         /// </summary>
-        public const string DocumentDB_Database_ID = "NuSysDocumentDB";
+        public const string DocDB_Database_ID = "NuSysDocumentDB";
 
         /// <summary>
         /// The name of our document db collection
         /// </summary>
-        public const string DocumentDB_Collection_ID = "NuSysMainDocumentCollection";
+        public const string DocDB_Collection_ID = "NuSysMainDocumentCollection";
+
+        /// <summary>
+        /// The type field of each document in the database is used to distinguish types of documents from one another. All valid types
+        /// are specified here
+        /// </summary>
+        public enum DocDB_DocumentType
+        {
+            Content,
+            Alias,
+            Ink,
+            User,
+            Last_used_collections,
+            Metadata,
+            Library_Element,
+            Presentation_Link
+        }
 
 
     }
