@@ -82,8 +82,55 @@ namespace NuSysApp
         /// </summary>
         private void ResetImage()
         {
+          //  /*
+            var point = xImage.TransformToVisual(Window.Current.Content);
+            Point center = new Point(xImage.ActualWidth / 2, xImage.ActualHeight / 2);
+            Point screenCoord = point.TransformPoint(center);
 
+            RotateTransform rotate = new RotateTransform
+            {
+                CenterX = screenCoord.X, CenterY = screenCoord.Y,
+                Angle = 0
+            };
 
+            TranslateTransform translate = new TranslateTransform();
+            ScaleTransform scale = new ScaleTransform
+            {
+                CenterX = screenCoord.X,
+                CenterY = screenCoord.Y
+            };
+
+            double scalefactor;
+            var screenRatio = xCanvas.ActualWidth / xCanvas.ActualHeight;
+
+            if (xImage.ActualWidth > xImage.ActualHeight * screenRatio)
+            {
+                scalefactor = xCanvas.ActualWidth / xImage.ActualWidth;
+                scalefactor /= 2;
+                scale.ScaleX = scalefactor;
+                scale.ScaleY = scalefactor;
+                translate.X = xCanvas.ActualWidth * .25;
+                translate.Y = xCanvas.ActualHeight * .25;
+            }
+            else
+            {
+                scalefactor = xCanvas.ActualHeight / xImage.ActualHeight;
+                scalefactor /= 2;
+                scale.ScaleX = scalefactor;
+                scale.ScaleY = scalefactor;
+//                translate.X = (xCanvas.ActualWidth - (xImage.ActualWidth * scalefactor)) / 2;
+                translate.X = xCanvas.ActualWidth * .25;
+                translate.Y = xCanvas.ActualHeight * .25;
+            }
+            
+            TransformGroup composite = new TransformGroup();
+            composite.Children.Add(translate);
+            composite.Children.Add(rotate);
+            composite.Children.Add(scale);
+            xImage.RenderTransform = new MatrixTransform { Matrix = composite.Value };
+           // */
+            // 
+            /* 
             (xImage.RenderTransform as TransformGroup).Children[0] = new CompositeTransform();
             var transform = (xImage.RenderTransform as TransformGroup)?.Children?.First() as CompositeTransform;
 
@@ -116,6 +163,7 @@ namespace NuSysApp
             //transform.CenterX = xCanvas.ActualWidth / 2;
             //transform.CenterY = xCanvas.ActualHeight / 2;
             transform.Rotation = 0;
+            */ 
         }
 
         /// <summary>
