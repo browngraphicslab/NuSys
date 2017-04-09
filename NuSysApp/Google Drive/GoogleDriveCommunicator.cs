@@ -73,7 +73,9 @@ namespace NuSysApp
                 code_challenge_method);
             output("Opening authorization request URI: " + authorizationRequest);
             // Opens the Authorization URI in the browser.
-            var success = Windows.System.Launcher.LaunchUriAsync(new Uri(authorizationRequest));
+            //var success = Windows.System.Launcher.LaunchUriAsync(new Uri(authorizationRequest));
+            SessionController.Instance.SessionView.FreeFormViewer.ShowWebPreview(authorizationRequest, 500, 500);
+
         }
         /// <summary>
         /// Processes the OAuth 2.0 Authorization Response
@@ -158,14 +160,21 @@ namespace NuSysApp
             client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
             // Makes a call to the Userinfo endpoint, and prints the results.
             output("Making API Call to Userinfo...");
+            
             HttpResponseMessage userinfoResponse = client.GetAsync(listFilesEndpoint).Result;
+
             string userinfoResponseContent = await userinfoResponse.Content.ReadAsStringAsync();
             var test = JObject.Parse(userinfoResponseContent);
             var driveItems = test["items"];
             var driveImageElements = new List<ImageLibraryElementController>();
+            var i = 0;
             foreach (var driveItem in driveItems)
             {
-                var libraryElementArgs = new CreateNewImageLibraryElementRequestArgs();
+                i++;
+                if(i > 5)
+                {
+                    break;
+                }
                 var imageArgs = new CreateNewImageLibraryElementRequestArgs();
                 imageArgs.AspectRatio = 1;
                 imageArgs.Title = driveItem["title"].ToString();
@@ -173,10 +182,16 @@ namespace NuSysApp
                 keywords.Add(new Keyword("drive"));
                 keywords.Add(new Keyword("google"));
                 imageArgs.Keywords = keywords;
+                var metadata = new List<MetadataEntry>();
+                var url = new List<String>();
+                url.Add(driveItem["alternateLink"].ToString());
+                metadata.Add(new MetadataEntry("URL", url, MetadataMutability.IMMUTABLE));
+                imageArgs.Metadata = metadata;
+                imageArgs.AccessType = NusysConstants.AccessType.Public;
 
                 var contentRequestArgs = new CreateNewContentRequestArgs();
-                var id = driveItem["id"].ToString();
-                contentRequestArgs.ContentId = id;
+                //var id = driveItem["id"].ToString() + "2";
+                //contentRequestArgs.ContentId = id;
                 if (driveItem["thumbnailLink"] != null)
                 {
                     contentRequestArgs.DataBytes = driveItem["thumbnailLink"].ToString();
@@ -186,7 +201,7 @@ namespace NuSysApp
                     contentRequestArgs.DataBytes = driveItem["iconLink"].ToString();
                 }
                 contentRequestArgs.FileExtension = null;
-                contentRequestArgs.LibraryElementArgs = libraryElementArgs;
+                contentRequestArgs.LibraryElementArgs = imageArgs;
                 var request = new CreateNewContentRequest(contentRequestArgs);
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
                 if (request.AddReturnedLibraryElementToLibrary())
@@ -194,15 +209,6 @@ namespace NuSysApp
                     var x = 4;
                 }
             }
-            //foreach (var lem in LibraryListView.GetSelectedItems().ToArray())
-            //{
-            //    var libraryElementController =
-            //        SessionController.Instance.ContentController.GetLibraryElementController(lem.LibraryElementId);
-            //    await
-            //        StaticServerCalls.AddElementToWorkSpace(pointer.CurrentPoint,
-            //                libraryElementController.LibraryElementModel.Type, libraryElementController)
-            //            .ConfigureAwait(false);
-            //}
         }
         /// <summary>
         /// Appends the given string to the on-screen log, and the debug console.
