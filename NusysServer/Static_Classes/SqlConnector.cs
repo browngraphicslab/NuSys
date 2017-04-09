@@ -22,11 +22,11 @@ namespace NusysServer
         /// 
         //Nusys  Live
         //private const string SQLSTRING = "Server=tcp:nureposql.database.windows.net,1433;Database=NuRepo_SQL;User ID=nusys@nureposql;Password=browngfx1!;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;MultipleActiveResultSets=True;";
-        private const string SQLSTRING = "Server=tcp:nusystestsql.database.windows.net,1433;Initial Catalog=NuRepo_SQL_Copy_2_Copy;Persist Security Info=False;User ID=nusys@nureposql;Password=browngfx1!;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+        //private const string SQLSTRING = "Server=tcp:nusystestsql.database.windows.net,1433;Initial Catalog=NuRepo_SQL_Copy_2_Copy;Persist Security Info=False;User ID=nusys@nureposql;Password=browngfx1!;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
 
         //Nusys Test
         //private const string SQLSTRING = "Server=tcp:nusystestsql.database.windows.net,1433;Database=NuSysTest;User ID=nusys@nusystest;Password=browngfx1!;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;MultipleActiveResultSets=True;";    /// <summary>
-        //private const string SQLSTRING = "Server=tcp:nusystestsql.database.windows.net,1433;Initial Catalog=NuRepo_SQL_Copy_2;Persist Security Info=False;User ID=nusys@nusystestsql;Password=browngfx1!;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+        private const string SQLSTRING = "Server=tcp:nusystestsql.database.windows.net,1433;Initial Catalog=NuRepo_SQL_Copy_2;Persist Security Info=False;User ID=nusys@nusystestsql;Password=browngfx1!;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
 
 
         /// <summary>
@@ -65,18 +65,70 @@ namespace NusysServer
             var changed = cmd.ExecuteNonQuery();
             ErrorLog.AddErrorString("ROWS CHANGED: "+changed);
             */
-            TestFunc();
             ErrorLog.AddError(new Exception("Server Starting..."));
+
+            //GetExportDataForDocumentDB();
+        }
+
+        private void GetExportDataForDocumentDB()
+        {
+            var export_filepath = Constants.WWW_ROOT + "DocumentDBIntermediaryFiles/";
+
+            var import_contents_cmd_text =
+                "SELECT c.content_id as content_id, content_type as content_type, content_ur as content_data, JSON_QUERY(a.analysis_model) as analysis_model, 'Content' as type, STRING_AGG(l.library_id, ',') as [Libary_Elements.libary_id] FROM contents c JOIN library_elements l ON c.content_id = l.content_id JOIN analysis_model a ON a.content_id = c.content_id GROUP BY c.content_id, content_type, content_ur, analysis_model FOR JSON PATH";
+            var import_contents_file = export_filepath + "contents.json";
+            GetJsonFileForDocumentDB(import_contents_cmd_text, import_contents_file);
+
+            var import_ink_cmd_text =
+                "SELECT stroke_id, content_id, color, thickness, JSON_QUERY(points) as points, 'Ink' AS type FROM ink FOR JSON PATH";
+            var import_ink_file = export_filepath + "ink.json";
+            GetJsonFileForDocumentDB(import_ink_cmd_text, import_ink_file);
+
+            var import_users_cmd_text =
+                "SELECT [user_id], user_password, user_salt_key, display_name, 'User' AS type FROM users FOR JSON PATH";
+            var import_users_file = export_filepath + "users.json";
+            GetJsonFileForDocumentDB(import_users_cmd_text, import_users_file);
+
+            var import_last_used_collection_cmd_text =
+                "SELECT last_used_date, [user_id], collection_library_id, 'Last_used_collections' AS type FROM last_used_collections FOR JSON PATH";
+            var import_last_used_collection_file = export_filepath + "last_used_collection.json";
+            GetJsonFileForDocumentDB(import_last_used_collection_cmd_text, import_last_used_collection_file);
+
+            var import_metadata_cmd_text =
+                "SELECT * FROM ( SELECT metadata_library_id, (SELECT metadata_key_string, JSON_QUERY(metadata_value_string) as metadata_value_string, metadata_mutability_string FROM metadata AS m1 WHERE m1.metadata_library_id = m.metadata_library_id AND metadata_key_string != 'Search_Url' FOR JSON PATH) as metadata, 'Metadata' AS type FROM metadata AS m ) as m2 WHERE metadata IS NOT NULL FOR JSON PATH";
+            var import_metadata_file = export_filepath + "metadata.json";
+            GetJsonFileForDocumentDB(import_metadata_cmd_text, import_metadata_file);
+
+            var import_presentation_links_cmd_text =
+                "SELECT link_id, link_in_element_id, link_out_element_id, parent_collection_id, 'Presentation_Link' AS type FROM presentation_link FOR JSON PATH ";
+            var import_presentation_links_file = export_filepath + "presentation_links.json";
+            GetJsonFileForDocumentDB(import_presentation_links_cmd_text, import_presentation_links_file);
+        }
+
+        private void GetJsonFileForDocumentDB(string cmd_text, string output_file_path)
+        {
+            File.Delete(output_file_path);
+
+            using (var cmd = _db.CreateCommand())
+            {
+                cmd.CommandText = cmd_text;
+                using(var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        using (StreamWriter sw = File.AppendText(output_file_path))
+                        {
+                            sw.Write(reader.GetString(0));
+                        }
+                    }
+                }
+            }
         }
 
         public void CloseSqlConnection()
         {
             _db?.Close();
             _db?.Dispose();
-        }
-
-        public void TestFunc()
-        {
         }
 
         /// <summary>

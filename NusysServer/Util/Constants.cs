@@ -370,10 +370,5 @@ namespace NusysServer
         }
 
         #endregion StaticMethods
-
-        /// <summary>
-        /// The id given to the documentDB database
-        /// </summary>
-        public const string DocumentDB_ID = "NuSysDocumentDB";
     }
 }
