@@ -82,7 +82,6 @@ namespace NuSysApp
         /// </summary>
         private void ResetImage()
         {
-          //  /*
             var point = xImage.TransformToVisual(Window.Current.Content);
             Point center = new Point(xImage.ActualWidth / 2, xImage.ActualHeight / 2);
             Point screenCoord = point.TransformPoint(center);
@@ -128,7 +127,7 @@ namespace NuSysApp
             composite.Children.Add(rotate);
             composite.Children.Add(scale);
             xImage.RenderTransform = new MatrixTransform { Matrix = composite.Value };
-           // */
+
             // 
             /* 
             (xImage.RenderTransform as TransformGroup).Children[0] = new CompositeTransform();
@@ -235,7 +234,7 @@ namespace NuSysApp
 
         private void XCanvas_OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-             var transform = (xImage.RenderTransform as TransformGroup)?.Children?.First() as CompositeTransform;
+             //var transform = (xImage.RenderTransform as TransformGroup)?.Children?.First() as CompositeTransform;
             // Debug.Assert(transform != null);                                                                                 // uncomment these?  
 
         }
@@ -381,7 +380,7 @@ namespace NuSysApp
 
         private void XImage_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-             var transform = (xImage.RenderTransform as TransformGroup)?.Children?.First() as CompositeTransform;
+            // var transform = (xImage.RenderTransform as TransformGroup)?.Children?.First() as CompositeTransform;
             // Debug.Assert(transform != null);                                                                                 // uncomment these  
 
             //transform.CenterX = e.Position.X;
@@ -394,6 +393,36 @@ namespace NuSysApp
 
         private void XImage_OnPointerWheelChanged(object sender, PointerRoutedEventArgs e)
         {
+            //  /* 
+            var delta = e.GetCurrentPoint(xImage).Properties.MouseWheelDelta;
+        //    var center = e.GetCurrentPoint(xImage).Position;
+            var point = xImage.TransformToVisual(Window.Current.Content);
+            Point center = new Point(xImage.ActualWidth / 2, xImage.ActualHeight / 2);
+            Point screenCoord = point.TransformPoint(center);
+            
+            ScaleTransform scale = new ScaleTransform
+            {
+                CenterX = screenCoord.X, CenterY = screenCoord.Y
+            };
+
+            if (delta > 0)
+            {
+                scale.ScaleX = 1.2;
+                scale.ScaleY = 1.2;
+            }
+            if (delta < 0)            
+            {
+                scale.ScaleX = 0.83333;
+                scale.ScaleY = 0.83333;
+            }
+
+            TransformGroup composite = new TransformGroup();
+            composite.Children.Add(xImage.RenderTransform);
+            composite.Children.Add(scale);
+            xImage.RenderTransform = new MatrixTransform { Matrix = composite.Value };
+
+           // */ 
+            /* 
             var transform = (xImage.RenderTransform as TransformGroup)?.Children?.First() as CompositeTransform;
             var delta = e.GetCurrentPoint(xImage).Properties.MouseWheelDelta;
             var compositeTransform = transform;
@@ -433,6 +462,8 @@ namespace NuSysApp
             transform.TranslateY += distance.Y;
             transform.CenterX = center.X;
             transform.CenterY = center.Y;
+
+            */ 
         }
 
         private void XLeftButton_OnClick(object sender, RoutedEventArgs e)
