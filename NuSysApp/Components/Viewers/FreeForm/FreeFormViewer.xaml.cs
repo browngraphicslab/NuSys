@@ -96,8 +96,7 @@ namespace NuSysApp
 
         public event EventHandler<bool> CanvasPanned;
 
-        //Testing CollectionList:
-        private CollectionListViewUIElement _collectionList;
+
 
         public FreeFormViewer()
         {
@@ -118,7 +117,7 @@ namespace NuSysApp
             xKeyboard.KeyboardKeyPressed += Keyboard_KeyboardKeyPressed;
             xKeyboard.KeyboardKeyReleased += Keyboard_KeyboardKeyReleased;
 
-            _collectionList = new CollectionListViewUIElement(RenderEngine);
+            //_collectionList = new CollectionListViewUIElement(RenderEngine);
 
         }
 
@@ -924,30 +923,33 @@ namespace NuSysApp
             if (item == RenderEngine.ElementSelectionRect.BtnTest)
             {
                 var collectionRenderItem = (CollectionRenderItem)Selections[0];
-                if (collectionRenderItem.HoldsList)
-                {
-                    //RenderEngine.ElementSelectionRect.RemoveChild(collectionRenderItem);
-                    collectionRenderItem.RemoveChild(collectionRenderItem.Lib);
-                    collectionRenderItem.Lib.LostFocus();
-                }
-                else
-                {
-                    collectionRenderItem.Lib = _collectionList.ConstructListViewUIElementContainer(collectionRenderItem);
-                    collectionRenderItem.AddChild(collectionRenderItem.Lib);
-                    //RenderEngine.ElementSelectionRect.AddChild(collectionRenderItem);
-                    collectionRenderItem.Lib.GotFocus();
-                }
+                //if (!collectionRenderItem.HoldsList)
+                //{
+                //    RenderEngine.ElementSelectionRect.RemoveChild(collectionRenderItem);
+                //    collectionRenderItem.RemoveChild(collectionRenderItem.Lib);
+                //    collectionRenderItem.Lib.LostFocus();
+                //}
+                //else
+                //{
+                    //collectionRenderItem.Lib = _collectionList.ConstructListViewUIElementContainer(collectionRenderItem);
+                    //collectionRenderItem.AddChild(collectionRenderItem.Lib);
+                    //RenderEngine.ElementSelectionRect.AddChild(collectionRenderItem.Lib);
+                    //collectionRenderItem.Lib.GotFocus();
+
+                //    RenderEngine.ElementSelectionRect.AddLibrary(_collectionList.ConstructListViewUIElementContainer(collectionRenderItem));
+                //}
                 collectionRenderItem.HoldsList = !collectionRenderItem.HoldsList;
+                RenderEngine.ElementSelectionRect.UpdateLib();
             }
 
-            if (item is CollectionRenderItem)
-            {
-                var collection = item as CollectionRenderItem;
-                if (collection.HoldsList)
-                {
+            //if (item is CollectionRenderItem)
+            //{
+            //    var collection = item as CollectionRenderItem;
+            //    if (collection.HoldsList)
+            //    {
                     
-                }
-            }
+            //    }
+            //}
 
         }
 

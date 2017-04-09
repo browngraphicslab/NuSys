@@ -13,6 +13,7 @@ using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using NusysIntermediate;
+using NuSysApp.Components.NuSysRenderer.UI.ListView;
 using WinRTXamlToolkit.IO.Serialization;
 
 
@@ -46,6 +47,10 @@ namespace NuSysApp
         private bool _isSinglePdfSelected;
         private bool _isSingleCollectionSelected;
 
+        //public bool HoldsList { get; set; }
+        public ListViewUIElementContainer<LibraryElementModel> Lib { get; set; }
+        private CollectionListViewUIElement _collectionList;
+
         public ElementSelectionRenderItem(ElementCollectionViewModel vm, BaseRenderItem parent, CanvasAnimatedControl resourceCreator) : base(parent, resourceCreator)
         {
             BtnDelete = new NodeMenuButtonRenderItem("ms-appx:///Assets/new icons/trash can white.png", parent, resourceCreator);
@@ -68,6 +73,9 @@ namespace NuSysApp
             BtnPdfLeft = new PdfPageButtonRenderItem(-1, parent, resourceCreator);
             BtnPdfRight = new PdfPageButtonRenderItem(1, parent, resourceCreator);
             Resizer = new NodeResizerRenderItem(parent, resourceCreator);
+
+            _collectionList = new CollectionListViewUIElement(resourceCreator);
+
             SetUpToolButton();
 
 
@@ -202,7 +210,18 @@ namespace NuSysApp
             BtnEnterCollection.IsVisible = _isSingleCollectionSelected;
             BtnTools.IsVisible = _isSingleCollectionSelected;
 
+            //CollectionListView and associated button showing or not:
             BtnTest.IsVisible = _isSingleCollectionSelected;
+            
+            //RemoveLibrary();
+            //if (_isSingleCollectionSelected)
+            //{
+            //    var collection = (CollectionRenderItem) _selectedItems[0];
+            //    if (collection.HoldsList)
+            //    {
+            //        AddLibrary();
+            //    }
+            //}
 
 
             BtnDelete.IsVisible = !SessionController.IsReadonly;
@@ -212,6 +231,64 @@ namespace NuSysApp
             Resizer.IsVisible = !SessionController.IsReadonly;
 
             IsDirty = true;
+        }
+
+        /// <summary>
+        /// Created to manage adding a library of collection's elements to the ElementSelectionRect.
+        /// </summary>
+        /// <param name="lib"></param>
+        public void AddLibrary()
+        {
+            Lib = _collectionList.ConstructListViewUIElementContainer((CollectionRenderItem)_selectedItems[0]);
+            AddChild(Lib);
+            SetLibDimensions();
+        }
+
+        private void SetLibDimensions()
+        {
+            if (_screenRect.Width < 200 || _screenRect.Height < 200)
+            {
+                Lib.IsVisible = false;
+            }
+            else
+            {
+                Lib.IsVisible = true;
+                Lib.Width = (float) _screenRect.Width - 12;
+                Lib.Height = (float) _screenRect.Height - 15;
+            }
+        }
+
+        public void UpdateLib()
+        {
+            if (_isSingleCollectionSelected)
+            {
+                var collection = (CollectionRenderItem) _selectedItems[0];
+                if (collection.HoldsList)
+                {
+                    if (Lib != null)
+                    {
+                        SetLibDimensions();
+                    }
+                    else
+                    {
+                        AddLibrary();
+                    }
+                }
+                else
+                {
+                    RemoveLibrary();
+                }
+            }
+        }
+
+        public void RemoveLibrary()
+        {
+            if (Lib != null)
+            {
+                RemoveChild(Lib);
+                Lib = null;
+            }
+
         }
 
 
@@ -224,6 +301,7 @@ namespace NuSysApp
         {
             IsDirty = true;
         }
+
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
@@ -255,6 +333,10 @@ namespace NuSysApp
             _screenRect.Y -= margin;
             _screenRect.Width += margin * 2;
             _screenRect.Height += margin * 2;
+
+            
+            UpdateLib();
+
 
             Transform.LocalPosition = new Vector2((float)_screenRect.X, (float)_screenRect.Y);
             _screenRect.X = 0;
@@ -336,7 +418,7 @@ namespace NuSysApp
             ds.DrawRectangle(_screenRect, Colors.SlateGray, 3f, new CanvasStrokeStyle { DashCap = CanvasCapStyle.Flat, DashStyle = CanvasDashStyle.Dash, DashOffset = 10f });
 
 
-
+            //Lib?.Draw(ds);
             base.Draw(ds);
 
             ds.Transform = old;

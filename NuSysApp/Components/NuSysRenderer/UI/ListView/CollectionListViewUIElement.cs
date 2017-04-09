@@ -31,19 +31,19 @@ namespace NuSysApp.Components.NuSysRenderer.UI.ListView
     {
 
         private CollectionRenderItem _collectionRenderItem;
-        private NuSysApp.NuSysRenderer _renderEngine;
+        private CanvasAnimatedControl ResourceCreator;
 
 
-        public CollectionListViewUIElement(NuSysApp.NuSysRenderer renderEngine)
+        public CollectionListViewUIElement(CanvasAnimatedControl resourceCreator)
         {
-            _renderEngine = renderEngine;
+            ResourceCreator = resourceCreator;
         }
 
         public ListViewUIElementContainer<LibraryElementModel> ConstructListViewUIElementContainer(CollectionRenderItem collectionRenderItem)
         {
             // Check parent later
             ListViewUIElementContainer<LibraryElementModel> Lib = new ListViewUIElementContainer<LibraryElementModel>(collectionRenderItem,
-                _renderEngine.CanvasAnimatedControl);
+                ResourceCreator);
 
             List<LibraryElementModel> libraryElementModelList = new List<LibraryElementModel>();
 
@@ -54,7 +54,7 @@ namespace NuSysApp.Components.NuSysRenderer.UI.ListView
                 libraryElementModelList.Add(SessionController.Instance.ContentController.GetLibraryElementModel(child));
             }
 
-            var imgColumn = new LibraryListImageColumn<LibraryElementModel>(_renderEngine.CanvasAnimatedControl);
+            var imgColumn = new LibraryListImageColumn<LibraryElementModel>(ResourceCreator);
             imgColumn.Title = "";
             imgColumn.RelativeWidth = 1;
             imgColumn.ColumnFunction = model => model.GetController().SmallIconUri;
@@ -107,44 +107,147 @@ namespace NuSysApp.Components.NuSysRenderer.UI.ListView
 
             Lib.BorderWidth = 5;
 
-            var width = _collectionRenderItem.ViewModel.Width;
-            var height = _collectionRenderItem.ViewModel.Height;
-
-            Debug.WriteLine("height: " + height);
-            Debug.WriteLine("width: " + width);
-
-            Lib.Width = (float)width;
-            Lib.Height = (float)height;
-
-            Lib.RowTapped += OnLibraryItemSelected;
-
+            //Lib.RowTapped += OnLibraryItemSelected;
+            //Lib.RowDragged += LibraryListView_RowDragged;
+            //Lib.RowDragCompleted += LibraryListView_RowDragCompleted;
+            //Lib.RowTapped += OnLibraryItemSelected;
+            //Lib.RowDoubleTapped += LibraryListView_RowDoubleTapped;
             return Lib;
         }
 
-        private void OnLibraryItemSelected(LibraryElementModel item, string columnName, CanvasPointer pointer,
-            bool isSelected)
-        {
+        //private void LibraryListView_RowDragged(LibraryElementModel item, string columnName, CanvasPointer pointer)
+        //{
+        //    if (_dragCanceled)
+        //    {
+        //        return;
+        //    }
+        //    // if we are currently dragging
+        //    if (_isDragVisible)
+        //    {
+        //        // simply move each of the element sto the new drag location
+        //        var position = Vector2.Transform(pointer.StartPoint, Transform.ScreenToLocalMatrix) + pointer.Delta;
 
-            // first we just try to get the content data model for the element that was selected since that it is important for loading images
-            if (!SessionController.Instance.ContentController.ContainsContentDataModel(item.ContentDataModelId))
-            {
-                Task.Run(async delegate
-                {
-                    if (item.Type == NusysConstants.ElementType.Collection)
-                    {
-                        var request = new GetEntireWorkspaceRequest(item.LibraryElementId);
-                        await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-                        Debug.Assert(request.WasSuccessful() == true);
-                        await request.AddReturnedDataToSessionAsync();
-                        await request.MakeCollectionFromReturnedElementsAsync();
-                    }
-                    else
-                    {
-                        SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(
-                            item.ContentDataModelId);
-                    }
-                });
-            }
-        }
+        //        //If we are on the listview, "put the elements back"
+        //        if (LibraryListView.HitTest(pointer.CurrentPoint) != null)
+        //        {
+        //            // remove each of the drag elements
+        //            foreach (var rect in _libraryDragElements)
+        //            {
+        //                RemoveChild(rect);
+        //            }
+        //            _libraryDragElements.Clear();
+        //            _isDragVisible = false;
+        //            _dragCanceled = true;
+        //        }
+        //        else
+        //        {
+        //            //Otherwise move each of the library drag elements
+        //            foreach (var element in _libraryDragElements)
+        //            {
+        //                element.Transform.LocalPosition = position + new Vector2(_itemDropOffset * _libraryDragElements.IndexOf(element));
+        //            }
+        //        }
+
+        //    }
+        //    else
+        //    {
+        //        // set drag visible to true so future calls of this event do not reach this control flow branch
+        //        _isDragVisible = true;
+
+        //        // get the current position of the pointer relative to the local matrix
+        //        var position = pointer.StartPoint;
+        //        // convert the list of selected library element models from the libraryListView into a list of controllers
+        //        var selectedControllers =
+        //            LibraryListView.GetSelectedItems()
+        //                .Select(
+        //                    model =>
+        //                        SessionController.Instance.ContentController.GetLibraryElementController(
+        //                            model.LibraryElementId))
+        //                .ToList();
+
+        //        foreach (var controller in selectedControllers)
+        //        {
+        //            var rect = new RectangleUIElement(this, ResourceCreator);
+        //            Task.Run(async delegate
+        //            {
+        //                rect.Image = await LoadCanvasBitmap(controller.SmallIconUri);
+        //                Debug.Assert(rect.Image is CanvasBitmap);
+        //                rect.Width = (float)(rect.Image as CanvasBitmap).SizeInPixels.Width / (rect.Image as CanvasBitmap).SizeInPixels.Height * 100;
+        //                rect.Height = 100;
+
+
+        //            });
+        //            rect.Transform.LocalPosition = position + new Vector2(_itemDropOffset * selectedControllers.IndexOf(controller));
+        //            _libraryDragElements.Add(rect);
+        //            position += new Vector2(_itemDropOffset, _itemDropOffset);
+        //            AddChild(rect);
+        //        }
+        //    }
+        //}
+
+        //private async void LibraryListView_RowDragCompleted(LibraryElementModel item, string columnName, CanvasPointer pointer)
+        //{
+        //    if (_dragCanceled)
+        //    {
+        //        _dragCanceled = false;
+        //        return;
+        //    }
+        //    // remove each of the drag elements
+        //    foreach (var rect in _libraryDragElements)
+        //    {
+        //        RemoveChild(rect);
+        //    }
+        //    _libraryDragElements.Clear();
+        //    _isDragVisible = false;
+
+        //    // add each of the items to the collection
+        //    foreach (var lem in LibraryListView.GetSelectedItems().ToArray())
+        //    {
+        //        var libraryElementController =
+        //            SessionController.Instance.ContentController.GetLibraryElementController(lem.LibraryElementId);
+        //        await
+        //            StaticServerCalls.AddElementToWorkSpace(pointer.CurrentPoint,
+        //                    libraryElementController.LibraryElementModel.Type, libraryElementController)
+        //                .ConfigureAwait(false);
+        //    }
+        //}
+
+        //private void LibraryListView_RowDoubleTapped(LibraryElementModel item, string columnName, CanvasPointer pointer)
+        //{
+        //    var controller = SessionController.Instance.ContentController.GetLibraryElementController(item.LibraryElementId);
+        //    Debug.Assert(controller != null);
+        //    if (controller == null)
+        //    {
+        //        return;
+        //    }
+        //    SessionController.Instance.NuSessionView.ShowDetailView(controller);
+
+        //}
+
+        //private void OnLibraryItemSelected(LibraryElementModel item, string columnName, CanvasPointer pointer,
+        //    bool isSelected)
+        //{
+
+        //    // first we just try to get the content data model for the element that was selected since that it is important for loading images
+        //    if (!SessionController.Instance.ContentController.ContainsContentDataModel(item.ContentDataModelId))
+        //    {
+        //        Task.Run(async delegate
+        //        {
+        //            if (item.Type == NusysConstants.ElementType.Collection)
+        //            {
+        //                var request = new GetEntireWorkspaceRequest(item.LibraryElementId);
+        //                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+        //                Debug.Assert(request.WasSuccessful() == true);
+        //                await request.AddReturnedDataToSessionAsync();
+        //                await request.MakeCollectionFromReturnedElementsAsync();
+        //            }
+        //            else
+        //            {
+        //                SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(
+        //                    item.ContentDataModelId);
+        //            }
+        //        });
+        //    }
+        //}
     }
 }
