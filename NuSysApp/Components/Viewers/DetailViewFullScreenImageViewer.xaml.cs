@@ -82,6 +82,8 @@ namespace NuSysApp
         /// </summary>
         private void ResetImage()
         {
+
+
             (xImage.RenderTransform as TransformGroup).Children[0] = new CompositeTransform();
             var transform = (xImage.RenderTransform as TransformGroup)?.Children?.First() as CompositeTransform;
 
@@ -193,7 +195,8 @@ namespace NuSysApp
         private void XCanvas_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var point = xImage.TransformToVisual(Window.Current.Content);
-            Point screenCoord = point.TransformPoint(new Point(0, 0));
+            Point center = new Point(xImage.ActualWidth / 2, xImage.ActualHeight / 2); 
+            Point screenCoord = point.TransformPoint(center);
 
             TranslateTransform translate = new TranslateTransform
             {
