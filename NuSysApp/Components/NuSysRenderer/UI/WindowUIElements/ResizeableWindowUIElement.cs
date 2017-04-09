@@ -496,7 +496,7 @@ namespace NuSysApp
                     if (Width + sizeDelta.X < MinWidth)
                     {
                         Debug.Assert(MinWidth != null);
-                        sizeDelta.X = (float) (MinWidth - Width);
+                        sizeDelta.X = (float) (Width - MinWidth);
                     }
 
                     if (Width + sizeDelta.X > MaxWidth)
@@ -584,14 +584,21 @@ namespace NuSysApp
                 }
             }
             // otherwise just use simple code
-            else
+            else 
             {
-                Width += sizeDelta.X;
-                Height += sizeDelta.Y;
-                // check the offset otherwise resizing the window below minwidth will just move the window across the screen
-                if (Width != MinWidth)
+                if (Width <= MinWidth & sizeDelta.X < 0)
                 {
-                    Transform.LocalPosition += offsetDelta;
+                    Width = (float) MinWidth;
+                }
+                else
+                {
+                    Width += sizeDelta.X;
+                    Height += sizeDelta.Y;
+                    // check the offset otherwise resizing the window below minwidth will just move the window across the screen
+                    if (Width != MinWidth)
+                    {
+                        Transform.LocalPosition += offsetDelta;
+                    }
                 }
             }
         }
