@@ -323,8 +323,8 @@ namespace NuSysApp
             {
                 LibraryElementId = libraryElementId,
                 ParentCollectionId = CollectionLibraryElementModel.LibraryElementId,
-                Height = Constants.DefaultNodeSize,
-                Width = Constants.DefaultNodeSize,
+                Height = elementType == NusysConstants.ElementType.Variable ? 35 : Constants.DefaultNodeSize,
+                Width = elementType == NusysConstants.ElementType.Variable ? Constants.DefaultNodeSize * .6 : Constants.DefaultNodeSize,
                 X = collectionPoint.X,
                 Y = collectionPoint.Y,
                 Id = id ?? SessionController.Instance.GenerateId()

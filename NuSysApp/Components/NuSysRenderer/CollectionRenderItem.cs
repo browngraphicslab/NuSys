@@ -68,7 +68,49 @@ namespace NuSysApp
 
         public void AddRect(Rect rect)
         {
-            _boundingRects.Add(rect);
+            var array = _renderItems2.OfType<VariableElementRenderItem>().ToArray();
+            var overlap = new List<VariableElementRenderItem>();
+            var rectsToFix = new List<Rect>();
+
+            foreach (var ri in array)
+            {
+                var tempRect = new Rect(new Point(ri.ViewModel.X, ri.ViewModel.Y),
+                    new Point(ri.ViewModel.X + ri.ViewModel.Width, ri.ViewModel.Y + ri.ViewModel.Height));
+                if (rect.Intersects(tempRect))
+                {
+                    overlap.Add(ri);
+                    rectsToFix.Add(tempRect);
+                }
+            }
+
+            List<Rect> fixedRects;
+            try
+            {
+                var cluster = new ClusterUtil();
+                fixedRects = cluster.FitRects(rectsToFix, 35, 5);
+            }
+            catch (Exception e)
+            {
+                fixedRects = rectsToFix;
+            }
+
+
+            int j = 0;
+            foreach (var renderItem in overlap)
+            {
+                var r = fixedRects[j];
+                var elController = renderItem.ViewModel.Controller as VariableElementController;
+                elController.SetSize(r.Width,r.Height);
+                elController.SetPosition(r.X,r.Y);
+                j++;
+            }
+            var fx = fixedRects;
+
+            var b = 5;
+
+            var minx = fx.Min(i => i.X);
+            var miny = fx.Min(i => i.Y);
+            _boundingRects.Add(new Rect(minx - b, miny - b, fx.Max(i => i.X + i.Width) - minx + b +b, fx.Max(i => i.Y + i.Height) - miny +b+ b));
         }
 
         public void SetNewController(LibraryElementController controller)

@@ -128,7 +128,7 @@ namespace NuSysApp
             if (!string.IsNullOrEmpty(MetadataKey))
             {
                 ValueString = MetadataKey;
-                return ValueString;
+                return "__"+ValueString+"__";
             }
             ValueString = " ";
             return ValueString;
