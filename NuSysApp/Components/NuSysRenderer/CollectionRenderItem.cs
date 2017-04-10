@@ -791,13 +791,9 @@ namespace NuSysApp
         public override void OnManipulated(ManipulationGestureRecognizer sender, ManipulationEventArgs args)
         {
             base.OnManipulated(sender, args);
-            Camera.LocalScale *= args.ScaleDelta;
-            Debug.WriteLine($"scl {Camera.LocalScale}");
-            Camera.LocalPosition = Camera.LocalPosition + args.Translation;
-            Debug.WriteLine($"pos {Camera.LocalPosition}");
-            Debug.WriteLine($"curF {args.CurrentFocus}");
             Camera.LocalScaleCenter = Vector2.Transform(args.CurrentFocus, Win2dUtil.Invert(Camera.T));
-            Debug.WriteLine($"cen {Camera.LocalScaleCenter}");
+            Camera.LocalScale *= args.ScaleDelta;
+            Camera.LocalPosition = Camera.LocalPosition + args.Translation;
             // small progress, this works better, location is wrong though
         }
 
