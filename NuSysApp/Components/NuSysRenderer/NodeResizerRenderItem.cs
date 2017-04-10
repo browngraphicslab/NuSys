@@ -31,8 +31,7 @@ namespace NuSysApp
 
         public float ResizerSize { set; get; }
         
-        private CanvasGeometry _triangle;
-
+        //Circle represents the resizer
         private EllipseUIElement _cornerCircle;
 
         public NodeResizerRenderItem(BaseRenderItem parent, CanvasAnimatedControl resourceCreator, ResizerPosition position) : base(parent, resourceCreator)
@@ -40,7 +39,7 @@ namespace NuSysApp
             ResizerSize = 30f;
             Position = position;
 
-
+            //Set up the circle handle
             _cornerCircle = new EllipseUIElement(this, ResourceCreator)
             {
                 Background = Colors.White,
@@ -52,14 +51,7 @@ namespace NuSysApp
             AddChild(_cornerCircle);
         }
 
-        public override void Dispose()
-        {
-            if (IsDisposed)
-                return;
-            _triangle?.Dispose();
-            _triangle = null;
-            base.Dispose();
-        }
+
 
         public override async Task Load()
         {
@@ -68,65 +60,19 @@ namespace NuSysApp
                 case ResizerPosition.TopLeft:
 
                     _cornerCircle.Transform.LocalPosition = new Vector2(-_cornerCircle.Width/2, -_cornerCircle.Height / 2);
-
-                    _triangle = CanvasGeometry.CreatePolygon(ResourceCreator, new System.Numerics.Vector2[4]{
-                        new Vector2(0, 0),
-                        new Vector2(0, ResizerSize),
-                        new Vector2(ResizerSize, 0),
-                        new Vector2(0, 0)
-                    });
                     break;
                 case ResizerPosition.TopRight:
                     _cornerCircle.Transform.LocalPosition = new Vector2(ResizerSize - _cornerCircle.Width/2, -_cornerCircle.Height/2);
-
-
-                    _triangle = CanvasGeometry.CreatePolygon(ResourceCreator, new System.Numerics.Vector2[4]{
-                        new Vector2(0, 0),
-                        new Vector2(ResizerSize, ResizerSize),
-                        new Vector2(ResizerSize, 0),
-                        new Vector2(0, 0)
-                    });
                     break;
                 case ResizerPosition.BottomLeft:
                     _cornerCircle.Transform.LocalPosition = new Vector2(-_cornerCircle.Width/2, ResizerSize - _cornerCircle.Height/2);
-
-                    _triangle = CanvasGeometry.CreatePolygon(ResourceCreator, new System.Numerics.Vector2[4]{
-                        new Vector2(0, 0),
-                        new Vector2(0, ResizerSize),
-                        new Vector2(ResizerSize, ResizerSize),
-                        new Vector2(0, 0)
-                    });
                     break;
                 case ResizerPosition.BottomRight:
                     _cornerCircle.Transform.LocalPosition = new Vector2(ResizerSize - _cornerCircle.Width/2, ResizerSize - _cornerCircle.Height/2);
-
-                    _triangle = CanvasGeometry.CreatePolygon(ResourceCreator, new System.Numerics.Vector2[4]{
-                        new Vector2(0, ResizerSize),
-                        new Vector2(ResizerSize, ResizerSize),
-                        new Vector2(ResizerSize, 0),
-                        new Vector2(0, ResizerSize)
-                    });
                     break;
                 default:
                     break;
             }
-        }
-
-        public override void Draw(CanvasDrawingSession ds)
-        {
-            if (IsDisposed)
-                return;
-
-            var orgTransform = ds.Transform;
-            ds.Transform = Transform.LocalToScreenMatrix;
-
-            if (_triangle != null)
-                ds.FillGeometry(_triangle, new Vector2(0, 0), Colors.Transparent);
-
-            ds.Transform = orgTransform;
-
-
-            base.Draw(ds);
         }
 
 
