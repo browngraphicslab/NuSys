@@ -43,7 +43,7 @@ namespace NuSysApp
 
             _cornerCircle = new EllipseUIElement(this, ResourceCreator)
             {
-                Background = Colors.Transparent,
+                Background = Colors.White,
                 BorderWidth = 3f,
                 BorderColor = Colors.SlateGray,
                 Width = 15f,
@@ -136,7 +136,7 @@ namespace NuSysApp
 
             if (cornerHT != null)
             {
-                return cornerHT;
+                return this;
             }
             return base.HitTest(screenPoint);
         }
