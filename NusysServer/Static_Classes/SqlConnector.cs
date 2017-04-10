@@ -60,8 +60,9 @@ namespace NusysServer
 
             ErrorLog.AddError(new Exception("Server Starting..."));
 
-            //DocumentDBExporter.ExportPresentationLinksToDocumentDB(_db);
-            //DocumentDBExporter.ExportInkToDocumentDB(_db);
+            DocumentDBExporter.ExportPresentationLinksToDocumentDB(_db);
+            DocumentDBExporter.ExportInkToDocumentDB(_db);
+            DocumentDBExporter.ExportUsersToDocumentDB(_db);
             //DocumentDBConnector.Initialize();
         }
 

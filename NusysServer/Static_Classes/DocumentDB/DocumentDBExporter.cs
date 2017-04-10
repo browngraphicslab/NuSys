@@ -51,8 +51,6 @@ namespace NusysServer
         public static async Task Initialize()
         {
             client = new DocumentClient(new Uri(EndpointUrl), PrimaryKey);
-            //CreateDatabaseIfNotExistsAsync().Wait();
-            //CreateCollectionIfNotExistsAsync().Wait();
 
             // Creates the database with the passed in id if it does not exist, otherwise returns the database with the passed in id
             _db = await client.CreateDatabaseIfNotExistsAsync(new Database { Id = NusysConstants.DocDB_Database_ID });
@@ -171,12 +169,14 @@ namespace NusysServer
                         // while there are more rows in the result
                         while (reader.Read())
                         {
-                            InkModel tmpInkModel = new InkModel();
-                            tmpInkModel.InkStrokeId = reader.GetString(0);
-                            tmpInkModel.ContentId = reader.GetString(1);
-                            tmpInkModel.Color = JsonConvert.DeserializeObject<ColorModel>(reader.GetString(2));
-                            tmpInkModel.Thickness = double.Parse(reader.GetString(3));
-                            tmpInkModel.InkPoints = JsonConvert.DeserializeObject<List<PointModel>>(reader.GetString(4));
+                            InkModel tmpInkModel = new InkModel
+                            {
+                                InkStrokeId = reader.GetString(0),
+                                ContentId = reader.GetString(1),
+                                Color = JsonConvert.DeserializeObject<ColorModel>(reader.GetString(2)),
+                                Thickness = double.Parse(reader.GetString(3)),
+                                InkPoints = JsonConvert.DeserializeObject<List<PointModel>>(reader.GetString(4))
+                            };
                             ink_model_list.Add(tmpInkModel);
                         }
                     }
@@ -187,7 +187,7 @@ namespace NusysServer
             await Initialize();
 
             // delete all the current ink models in the database
-            var currInkModelDocIds = client.CreateDocumentQuery<string>(_collection.SelfLink, $"SELECT c.id FROM c WHERE c.DocType='{NusysConstants.DocDB_DocumentType.Ink}'").ToList();
+            var currInkModelDocIds = client.CreateDocumentQuery<string>(_collection.SelfLink, $"SELECT VALUE c.id FROM c WHERE c.DocType='{NusysConstants.DocDB_DocumentType.Ink}'").ToList();
             foreach (var docId in currInkModelDocIds)
             {
                 await client.DeleteDocumentAsync(UriFactory.CreateDocumentUri(NusysConstants.DocDB_Database_ID, NusysConstants.DocDB_Collection_ID, docId));
@@ -198,9 +198,6 @@ namespace NusysServer
             {
                 await client.CreateDocumentAsync(_collection.SelfLink, model);
             }
-
-            
-
         }
 
 
@@ -238,12 +235,14 @@ namespace NusysServer
                         // while there are more rows in the result
                         while (reader.Read())
                         {
-                            PresentationLinkModel tmpPresLinkModel = new PresentationLinkModel();
-                            tmpPresLinkModel.LinkId = reader.GetString(0);
-                            tmpPresLinkModel.InElementId = reader.GetString(1);
-                            tmpPresLinkModel.OutElementId = reader.GetString(2);
-                            tmpPresLinkModel.ParentCollectionId = reader.GetString(3);
-                            tmpPresLinkModel.AnnotationText = reader.GetString(4);
+                            PresentationLinkModel tmpPresLinkModel = new PresentationLinkModel
+                            {
+                                LinkId = reader.GetString(0),
+                                InElementId = reader.GetString(1),
+                                OutElementId = reader.GetString(2),
+                                ParentCollectionId = reader.GetString(3),
+                                AnnotationText = reader.GetString(4)
+                            };
                             presentation_model_list.Add(tmpPresLinkModel);
                         }
                     }
@@ -254,7 +253,7 @@ namespace NusysServer
             await Initialize();
 
             // delete all the current ink models in the database
-            var currPresModelDocIds = client.CreateDocumentQuery<string>(_collection.SelfLink, $"SELECT c.id FROM c WHERE c.DocType='{NusysConstants.DocDB_DocumentType.Presentation_Link}'").ToList();
+            var currPresModelDocIds = client.CreateDocumentQuery<string>(_collection.SelfLink, $"SELECT VALUE c.id FROM c WHERE c.DocType='{NusysConstants.DocDB_DocumentType.Presentation_Link}'").ToList();
             foreach (var docId in currPresModelDocIds)
             {
                 await client.DeleteDocumentAsync(UriFactory.CreateDocumentUri(NusysConstants.DocDB_Database_ID, NusysConstants.DocDB_Collection_ID, docId));
@@ -265,9 +264,74 @@ namespace NusysServer
             {
                 await client.CreateDocumentAsync(_collection.SelfLink, model);
             }
+        }
 
 
+        public static async Task ExportUsersToDocumentDB(SqlConnection db)
+        {
+            // get a list of all the user ids
+            var user_ids = new List<string>();
 
+            using (var cmd = db.CreateCommand())
+            {
+                // set the sql for the db command
+                cmd.CommandText = "SELECT DISTINCT user_id FROM users";
+                using (var reader = cmd.ExecuteReader())
+                {
+                    // while there are more rows in the result
+                    while (reader.Read())
+                    {
+                        user_ids.Add(reader.GetString(0));
+                    }
+                }
+            }
+
+            // Create a list of user models
+            var user_model_list = new List<DocDBUserModel>();
+
+            // for each user id create the corresponding ink model
+            foreach (var user_id in user_ids)
+            {
+                using (var cmd = db.CreateCommand())
+                {
+                    // set the sql for the db command
+                    cmd.CommandText = $"SELECT * FROM users WHERE user_id = '{user_id}'";
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        // while there are more rows in the result
+                        while (reader.Read())
+                        {
+                            DocDBUserModel tmpUserModel = new DocDBUserModel
+                            {
+                                UserId = reader.GetString(0),
+                                UserPassword = reader.GetString(1),
+                                UserSaltKey = reader.GetString(2),
+                                DisplayName = reader.GetString(3),
+                                LastVisitedCollections =
+                                    JsonConvert.DeserializeObject<List<string>>(reader.GetString(4))
+                            };
+                            user_model_list.Add(tmpUserModel);
+                        }
+                    }
+                }
+            }
+
+            // make sure that we have a connection to the Document Database
+            await Initialize();
+
+            // delete all the current models in the database
+            var currUserModelIds = client.CreateDocumentQuery<string>(_collection.SelfLink, $"SELECT VALUE c.id FROM c WHERE c.DocType='{NusysConstants.DocDB_DocumentType.User}'").ToList();
+            foreach (var docId in currUserModelIds)
+            {
+                await client.DeleteDocumentAsync(UriFactory.CreateDocumentUri(NusysConstants.DocDB_Database_ID, NusysConstants.DocDB_Collection_ID, docId));
+            }
+
+            // transfer over all the new models
+            foreach (var model in user_model_list)
+            {
+                await client.CreateDocumentAsync(_collection.SelfLink, model);
+            }
         }
     }
+
 }
