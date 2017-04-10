@@ -796,7 +796,7 @@ namespace NuSysApp
             Camera.LocalPosition = Camera.LocalPosition + args.Translation;
             Debug.WriteLine($"pos {Camera.LocalPosition}");
             Debug.WriteLine($"curF {args.CurrentFocus}");
-            Camera.LocalScaleCenter = Vector2.Transform(args.CurrentFocus, Win2dUtil.Invert(Camera.S * Camera.T));
+            Camera.LocalScaleCenter = Vector2.Transform(args.CurrentFocus, Win2dUtil.Invert(Camera.T));
             Debug.WriteLine($"cen {Camera.LocalScaleCenter}");
             // small progress, this works better, location is wrong though
         }
