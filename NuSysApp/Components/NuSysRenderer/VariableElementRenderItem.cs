@@ -6,6 +6,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.Text;
@@ -22,6 +23,8 @@ namespace NuSysApp
             vm.VariableElementController.SizeChanged += VariableElementControllerOnSizeChanged;
             vm.VariableElementController.UpdateText();
             vm.VariableElementController.SetSize(vm.Model.Width, vm.Model.Height);
+            BorderWidth = 3.5f;
+            BorderColor = Color.FromArgb(150,76,124,153);
         }
 
         private void VariableElementControllerOnSizeChanged(object source, double width, double height)
@@ -73,8 +76,22 @@ namespace NuSysApp
             }
         }
 
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
+        {
+            Width = (float)ViewModel.Width;
+            Height = (float)ViewModel.Height;
+            base.Update(parentLocalToScreenTransform);
+        }
+
+        private static CanvasTextFormat _format;
+
         public override void Draw(CanvasDrawingSession ds)
         {
+            if (_format == null)
+            {
+                _format = new TextboxUIElement(this, ResourceCreator).CanvasTextFormat;
+                _format.HorizontalAlignment = CanvasHorizontalAlignment.Right;
+            }
             base.Draw(ds);
             if (_icon != null)
             {
@@ -85,8 +102,10 @@ namespace NuSysApp
 
                 using (ds.CreateLayer(1, CanvasGeometry.CreateRectangle(Canvas, new Rect(0, 0, ViewModel.Width, ViewModel.Height))))
                 {
-                    var b = _icon.GetBounds(ResourceCreator);
-                    ds.DrawImage(_icon, new Rect(ViewModel.Width-s, ViewModel.Height-s,s,s*(b.Height/b.Width)), _icon.GetBounds(Canvas));
+                    //var b = _icon.GetBounds(ResourceCreator);
+                    ds.DrawText((ViewModel as VariableNodeViewModel).VariableElementController.MetadataKey,
+                        new Rect(ViewModel.Width - 3*s, ViewModel.Height - (s/2), 3*s - 5.5, s/2), Color.FromArgb(150, 76, 124, 153),_format);
+                    //ds.DrawImage(_icon, new Rect(ViewModel.Width-s, ViewModel.Height-s,s,s*(b.Height/b.Width)), _icon.GetBounds(Canvas));
                 }
 
                 ds.Transform = orgTransform;
