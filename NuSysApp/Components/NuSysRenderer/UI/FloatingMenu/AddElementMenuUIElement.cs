@@ -75,10 +75,10 @@ namespace NuSysApp
             AddChild(_addRecordingNodeButton);
 
             _addVariableNode = new TransparentButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "variable");
-            AddChild(_addVariableNode);
+            //AddChild(_addVariableNode);
 
             _addDisplayNode = new TransparentButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "display");
-            AddChild(_addDisplayNode);
+            //AddChild(_addDisplayNode);
 
             // initialize a list of menu buttons which is useful for writing short code
             _menuButtons = new List<ButtonUIElement>()
@@ -192,10 +192,13 @@ namespace NuSysApp
             }*/
 
             // Add the element at the dropped location          
-            await StaticServerCalls.AddElementToWorkSpace(pointer.CurrentPoint, _elementType).ConfigureAwait(false);
+            var id = await StaticServerCalls.AddElementToWorkSpace(pointer.CurrentPoint, _elementType);
 
             if (_elementType == NusysConstants.ElementType.Variable)
             {
+
+                var pop = new CustomVariableKeyPopup(this, ResourceCreator, id);
+                Parent.Parent.AddChild(pop);
                 /*
                 var pop = new CenteredPopup(Parent.Parent,ResourceCreator,"Enter the metadata key: ");
                 var textBox = new ScrollableTextboxUIElement(pop,ResourceCreator, false, false);

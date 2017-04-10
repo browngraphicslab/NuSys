@@ -438,6 +438,7 @@
     <Compile Include="Components\NuSysRenderer\UI\Misc\CollectionSettingsPopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Misc\SearchResultsPopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Popup\ConfirmationPopupUIElement.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Popup\CustomVariableKeyPopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Popup\FlyoutPopupGroup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Misc\ColorPopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Misc\EditShapePopup.cs" />

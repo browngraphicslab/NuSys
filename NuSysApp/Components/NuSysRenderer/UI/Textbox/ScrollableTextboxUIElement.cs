@@ -381,12 +381,12 @@ namespace NuSysApp
         /// elements to the NuSessionViewer
         /// </summary>
         /// <returns></returns>
-        public override Task Load()
+        public override async Task Load()
         {
             // we have been loaded, so the proper resources exist at this point
             _loaded = true;
             CreateResources(ResourceCreator);
-            return base.Load();
+            await base.Load();
         }
 
         #region mouse-input

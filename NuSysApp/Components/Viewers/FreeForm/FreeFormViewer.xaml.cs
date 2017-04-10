@@ -862,10 +862,11 @@ namespace NuSysApp
             }
             if (item == RenderEngine.ElementSelectionRect.BtnMakeDisplay)
             {
-                var minX = Selections.Min(i => i.ViewModel.Model.X);
-                var maxX = Selections.Max(i => i.ViewModel.Model.X + i.ViewModel.Model.Width);
-                var minY = Selections.Min(i => i.ViewModel.Model.Y);
-                var maxY = Selections.Max(i => i.ViewModel.Model.Y + i.ViewModel.Model.Height);
+                var padding = 5;
+                var minX = Selections.Min(i => i.ViewModel.Model.X) - padding;
+                var maxX = Selections.Max(i => i.ViewModel.Model.X + i.ViewModel.Model.Width) + padding;
+                var minY = Selections.Min(i => i.ViewModel.Model.Y) - padding;
+                var maxY = Selections.Max(i => i.ViewModel.Model.Y + i.ViewModel.Model.Height) + padding;
                 CurrentCollection.AddRect(new Rect(minX,minY,maxX-minX,maxY-minY));
             }
             if (item == RenderEngine.ElementSelectionRect.BtnGroup)
@@ -1451,6 +1452,10 @@ namespace NuSysApp
         public void AddToSelections(ElementRenderItem element)
         {
             if (element is ToolWindow)
+            {
+                return;
+            }
+            if (Selections.Contains(element))
             {
                 return;
             }

@@ -362,9 +362,12 @@ namespace NuSysApp
             }
             _libraryElementModel.Metadata.TryAdd(entry.Key, entry);
             MetadataChanged?.Invoke(this);
+            StaticMetadataAdded?.Invoke(this, LibraryElementModel.LibraryElementId);
             return true;
 
         }
+
+        public static event EventHandler<string> StaticMetadataAdded; 
 
         /// <summary>
         /// Checks if the key string is valid, then updates the metadata dictionary and sends a message to the server with the new dictionary.

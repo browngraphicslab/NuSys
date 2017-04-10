@@ -190,7 +190,7 @@ namespace NuSysApp
         /// <param name="screenPoint"></param>
         /// <param name="elementType"></param>
         /// <param name="lec"></param>
-        public static async Task AddElementToWorkSpace(Vector2 screenPoint, NusysConstants.ElementType elementType, LibraryElementController lec = null)
+        public static async Task<string> AddElementToWorkSpace(Vector2 screenPoint, NusysConstants.ElementType elementType, LibraryElementController lec = null)
         {
             // get a list of the elements that lie under the passed in screen point
             var hits = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemsAt(screenPoint);
@@ -200,8 +200,12 @@ namespace NuSysApp
 
             // get the last thing we hit, if we dragged over nested collections this would be the inner most collection
             var hit = underlyingCollections.Last();
+
+            var id = SessionController.Instance.GenerateId();
+
             // add the element to that collection
-            await AddElementToCollection(screenPoint, elementType, lec, hit);
+            await AddElementToCollection(screenPoint, elementType, lec, hit, id);
+            return id;
         }
 
         /// <summary>

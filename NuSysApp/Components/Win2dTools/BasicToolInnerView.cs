@@ -103,10 +103,15 @@ namespace NuSysApp
             {
                 Vm.Selection = new HashSet<string> { selection };
             }
+            var coll = Parent.Parent as CollectionRenderItem;
+            var array = Vm.Controller.ToolModel.OutputLibraryIds.ToArray();
+            var r = new Random().Next(0,array.Length - 1);
+            var lem = SessionController.Instance.ContentController.GetLibraryElementController(array[r]);
+            coll?.SetNewController(lem);
             if (Vm.Selection.Count == 1 &&
                 Vm.Selection.First().Equals(selection))
             {
-                Vm.OpenDetailView();
+                //Vm.OpenDetailView();
             }
         }
 
@@ -238,6 +243,11 @@ namespace NuSysApp
                                     {
                                         var c = (SessionController.Instance.ElementModelIdToElementController[ids[j]] as VariableElementController);
                                         c.SetPosition(c.Model.X,total);
+                                        //Debug.Assert(!double.IsInfinity(c.Model.Height) && c.Model.Height != 0);
+                                        if (double.IsInfinity(c.Model.Height) || c.Model.Height == 0)
+                                        {
+                                            c.SetSize(c.Model.Width,m.Height);
+                                        }
                                         total += padding + c.Model.Height;
                                     }
                                 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -78,6 +79,7 @@ namespace NuSysApp
                 return;
             }
             var ratio =  ValueAspectRatio;
+            ratio = width/height;
             height = (1 / ratio) * width;
 
             if (width < Constants.MinNodeSize || height < Constants.MinNodeSize)
@@ -153,7 +155,22 @@ namespace NuSysApp
 
         private string InterpretKey(LibraryElementController controller, string key)
         {
-            return controller.FullMetadata.ContainsKey(key) ? string.Join(",",controller.FullMetadata[key].Values) : " ";
+            var metadata = controller.FullMetadata;
+            if (key == "TextContent")
+            {
+                if (controller?.ContentDataController == null)
+                {
+                    Task.Run(async delegate
+                    {
+                        await SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(
+                            controller.LibraryElementModel.ContentDataModelId);
+                        Debug.Assert(controller?.ContentDataController != null);
+                        this.UpdateText();
+                    });
+                }
+                return controller?.ContentDataController?.ContentDataModel?.Data ?? "";
+            }
+            return metadata.ContainsKey(key) ? string.Join(",",metadata[key].Values) : " ";
         }
 
 

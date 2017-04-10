@@ -183,7 +183,7 @@ namespace NuSysApp
 
         public override bool IsInteractable()
         {
-            return SessionController.Instance.SessionView.FreeFormViewer.Selections.Contains(this);
+            return false;//SessionController.Instance.SessionView.FreeFormViewer.Selections.Contains(this);
         }
         private void ControllerOnSizeChanged(object source, double width, double height)
         {

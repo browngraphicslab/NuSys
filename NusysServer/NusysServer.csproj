@@ -513,6 +513,7 @@
     <Compile Include="Controllers\MuPdfTextController.cs" />
     <Compile Include="Controllers\NusysLoginController.cs" />
     <Compile Include="Controllers\NusysConnectController.cs" />
+    <Compile Include="Controllers\UploadDocFieldModel.cs" />
     <Compile Include="Controllers\UploadNewDocController.cs" />
     <Compile Include="Controllers\UploadNewDocModel.cs" />
     <Compile Include="Controllers\UploadWordDocController.cs" />

@@ -317,15 +317,23 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void _metadataKeysList_RowDragCompleted(string item, string columnName, CanvasPointer pointer)
         {
-            if (_dragFilterItem.IsVisible)
+            var drop = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, null, 2);
+            if (drop is VariableElementRenderItem)
             {
                 _dragFilterItem.IsVisible = false;
+                var variable = drop as VariableElementRenderItem;
+                var c = variable.ViewModel.Controller as VariableElementController;
+                c.SetMetadataKey(_lastDraggedKey ?? "");
+            }
+            else if (_dragFilterItem.IsVisible)
+            {
                 var vm = (Vm as MetadataToolViewModel);
                 vm.Selection = new Tuple<string, HashSet<string>>(item, new HashSet<string>());
                 var dragDestination = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, null, 2) as ToolWindow; //maybe replace null w render engine.root
                 var canvasCoordinate = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(new Vector2(pointer.CurrentPoint.X, pointer.CurrentPoint.Y), SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection);
                 vm.FilterIconDropped(dragDestination, canvasCoordinate.X, canvasCoordinate.Y);
             }
+            _dragFilterItem.IsVisible = false;
         }
 
         /// <summary>
@@ -337,6 +345,20 @@ namespace NuSysApp
         private void _metadataKeysList_RowDragged(string item, string columnName, CanvasPointer pointer)
         {
             DragFilterIcon(pointer);
+            _lastDraggedKey = item;
+        }
+
+        private string _lastDraggedKey;
+
+        private bool Func(CanvasPointer canvasPointer, BaseRenderItem baseRenderItem)
+        {
+            if (baseRenderItem.Parent is VariableElementRenderItem)
+            {
+                var variable = baseRenderItem.Parent as VariableElementRenderItem;
+                var c = variable.ViewModel.Controller as VariableElementController;
+                c.SetMetadataKey(_lastDraggedKey ?? "");
+            }
+            return true;
         }
 
         /// <summary>
@@ -375,6 +397,7 @@ namespace NuSysApp
         public void DragFilterIcon(CanvasPointer pointer)
         {
             _dragFilterItem.Transform.LocalPosition = Vector2.Transform(pointer.CurrentPoint, this.Transform.ScreenToLocalMatrix);
+            _dragFilterItem.IsHitTestVisible = false;
             if (_dragFilterItem.Transform.LocalX > 0 && _dragFilterItem.Transform.LocalX < Width &&
                 _dragFilterItem.Transform.LocalY < Height && _dragFilterItem.Transform.LocalY > 0)
             {

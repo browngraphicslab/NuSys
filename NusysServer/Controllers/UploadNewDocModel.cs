@@ -16,7 +16,9 @@ namespace NusysServer
             Text,
             Pdf,
             Img,
-            Video
+            Video,
+            Doc,
+            Field
         }
         public double ratio { get; set; }
         public string data { get; set; }

@@ -39,6 +39,35 @@ namespace NusysServer
 
                 switch (temp.type)
                 {
+                    case UploadNewDocModel.SelectionType.Field:
+                        var model = JsonConvert.DeserializeObject<UploadDocFieldModel>(temp.data);
+
+                        Message message = new Message();
+                        message[NusysConstants.CREATE_NEW_METADATA_REQUEST_LIBRARY_ID_KEY] = temp.selectionId;
+                        message[NusysConstants.CREATE_NEW_METADATA_REQUEST_METADATA_KEY_KEY] = model.fieldname;
+                        message[NusysConstants.CREATE_NEW_METADATA_REQUEST_METADATA_VALUE_KEY] = JsonConvert.SerializeObject(new List<string>() {model.value.Replace("/n", "")});
+                        message[NusysConstants.CREATE_NEW_METADATA_REQUEST_METADATA_MUTABILITY_KEY] = MetadataMutability.MUTABLE;
+                        message[NusysConstants.REQUEST_TYPE_STRING_KEY] = NusysConstants.RequestType.CreateNewMetadataRequest.ToString();
+
+                        var metaHandler = new CreateNewMetadataRequestHandler();
+                        metaHandler.HandleRequest(new Request(message), null);
+
+                        return "success!";
+
+                        break;
+                    case UploadNewDocModel.SelectionType.Doc:
+                        m[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY] = contentDataId;
+                        m[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES] = "";
+                        m[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY] = NusysConstants.ContentType.Text;
+                        m[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_CONTENT_ID_KEY] = contentDataId;
+                        m[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_CREATOR_USER_ID_KEY] = "web_import";
+                        m[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_ACCESS_KEY] = NusysConstants.AccessType.Public.ToString();
+                        m[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_CREATION_TIMESTAMP_KEY] = DateTime.UtcNow.ToString();
+                        m[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LIBRARY_ID_KEY] = temp.selectionId;
+                        m[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TYPE_KEY] = NusysConstants.ElementType.Document.ToString();
+                        m[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY] = "New Document";
+
+                        break;
                     case UploadNewDocModel.SelectionType.Pdf: //download the pdf and then create a pdf content data model from it
                         var client = new HttpClient();
                         var result = await client.GetStreamAsync(new Uri(temp.url));
@@ -82,6 +111,7 @@ namespace NusysServer
                         try
                         {
                             title = temp.data.Substring(0,temp.data.IndexOfAny(new char[] {'.',';','!','?'}));
+                            title = title.Replace("/n", "");
                         }
                         catch (Exception e)
                         {

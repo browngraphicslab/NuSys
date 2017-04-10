@@ -10,6 +10,12 @@ namespace NuSysApp
     {
         public MetadataToolController(ToolModel model) : base(model)
         {
+            LibraryElementController.StaticMetadataAdded += LibraryElementControllerOnStaticMetadataAdded;
+        }
+
+        private void LibraryElementControllerOnStaticMetadataAdded(object sender, string s)
+        {
+            RefreshFromTopOfChain();
         }
 
         public MetadataToolModel MetadataToolModel
@@ -131,6 +137,12 @@ namespace NuSysApp
         public void FireSelectionChanged()
         {
             SelectionChanged?.Invoke(this);
+        }
+
+        public override void Dispose()
+        {
+            LibraryElementController.StaticMetadataAdded -= LibraryElementControllerOnStaticMetadataAdded;
+            base.Dispose();
         }
     }
 }

@@ -1884,7 +1884,7 @@ namespace NusysIntermediate
             Text, Image, Word, Powerpoint, Collection, PDF, Audio, Video, Tag, Web, Area, Link, Recording, Unknown,
 
             // weird type that possibly shouldn't be here
-            Tools, HTML, Variable, Display
+            Tools, HTML, Variable, Display, Document
         }
 
         /// <summary>
@@ -1946,6 +1946,8 @@ namespace NusysIntermediate
         {
             switch (type)
             {
+                case ElementType.Document:
+                    return ContentType.Text;
                 case ElementType.Image:
                     return ContentType.Image;
                 case ElementType.Video:

@@ -58,6 +58,7 @@ namespace NuSysApp
                             Debug.Assert(controller is WordNodeLibraryElementController);
                             rectangle = new DetailViewWordPage(parent, resourceCreator, controller as WordNodeLibraryElementController);
                             break;
+                        case NusysConstants.ElementType.Document:
                         case NusysConstants.ElementType.Unknown:
                             rectangle = new DetailViewUnknownFilePage(parent, resourceCreator, controller as LibraryElementController);
                             break;
@@ -76,6 +77,7 @@ namespace NuSysApp
                         case NusysConstants.ElementType.Audio:
                         case NusysConstants.ElementType.Video:
                         case NusysConstants.ElementType.Link:
+                        case NusysConstants.ElementType.Document:
                         case NusysConstants.ElementType.HTML:
                         case NusysConstants.ElementType.Unknown:
                             rectangle = new DetailViewMetadataPage(parent, resourceCreator, controller);

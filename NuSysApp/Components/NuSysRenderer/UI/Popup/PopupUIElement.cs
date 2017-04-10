@@ -51,7 +51,7 @@ namespace NuSysApp
         /// <summary>
         /// dismiss button for popup
         /// </summary>
-        private ButtonUIElement _dismissButton;
+        protected ButtonUIElement _dismissButton;
 
         private BaseRenderItem _parent;
         /// <summary>
