@@ -10,7 +10,9 @@ using System.Threading.Tasks;
 using System.Web;
 using Newtonsoft.Json;
 using NusysIntermediate;
+using NusysServer.Static_Classes;
 using NusysServer.Util.SQLQuery;
+
 
 namespace NusysServer
 {
@@ -58,84 +60,12 @@ namespace NusysServer
 
             ErrorLog.AddError(new Exception("Server Starting..."));
 
-            //GetExportDataForDocumentDB();
+            //DocumentDBExporter.ExportPresentationLinksToDocumentDB(_db);
+            //DocumentDBExporter.ExportInkToDocumentDB(_db);
+            //DocumentDBConnector.Initialize();
         }
 
-        /// <summary>
-        /// Creates all the exported data files which will be used for the import to DocumentDB using the docDB migration tool
-        /// </summary>
-        private void GetExportDataForDocumentDB()
-        {
-            var export_filepath = Constants.WWW_ROOT + "DocumentDBIntermediaryFiles/";
 
-            //TODO use the DEFAULTS to create these strings and be SAFE
-
-            //import content
-            var import_contents_cmd_text =
-                "SELECT c.content_id as content_id, content_type as content_type, content_ur as content_data, JSON_QUERY(a.analysis_model) as analysis_model, 'Content' as type, STRING_AGG(l.library_id, ',') as [Libary_Elements.libary_id] FROM contents c JOIN library_elements l ON c.content_id = l.content_id JOIN analysis_model a ON a.content_id = c.content_id GROUP BY c.content_id, content_type, content_ur, analysis_model FOR JSON PATH";
-            var import_contents_file = export_filepath + "contents.json";
-            GetJsonFileForDocumentDB(import_contents_cmd_text, import_contents_file);
-
-            //import ink
-            var import_ink_cmd_text =
-                "SELECT stroke_id, content_id, color, thickness, JSON_QUERY(points) as points, 'Ink' AS type FROM ink FOR JSON PATH";
-            var import_ink_file = export_filepath + "ink.json";
-            GetJsonFileForDocumentDB(import_ink_cmd_text, import_ink_file);
-
-            //import users
-            var import_users_cmd_text =
-                "SELECT [user_id], user_password, user_salt_key, display_name, 'User' AS type FROM users FOR JSON PATH";
-            var import_users_file = export_filepath + "users.json";
-            GetJsonFileForDocumentDB(import_users_cmd_text, import_users_file);
-
-            //import last used collections
-            var import_last_used_collection_cmd_text =
-                "SELECT last_used_date, [user_id], collection_library_id, 'Last_used_collections' AS type FROM last_used_collections FOR JSON PATH";
-            var import_last_used_collection_file = export_filepath + "last_used_collection.json";
-            GetJsonFileForDocumentDB(import_last_used_collection_cmd_text, import_last_used_collection_file);
-
-            //import metadata
-            var import_metadata_cmd_text =
-                "SELECT * FROM ( SELECT metadata_library_id, (SELECT metadata_key_string, JSON_QUERY(metadata_value_string) as metadata_value_string, metadata_mutability_string FROM metadata AS m1 WHERE m1.metadata_library_id = m.metadata_library_id AND metadata_key_string != 'Search_Url' FOR JSON PATH) as metadata, 'Metadata' AS type FROM metadata AS m ) as m2 WHERE metadata IS NOT NULL FOR JSON PATH";
-            var import_metadata_file = export_filepath + "metadata.json";
-            GetJsonFileForDocumentDB(import_metadata_cmd_text, import_metadata_file);
-
-            //import presentation links
-            var import_presentation_links_cmd_text =
-                "SELECT link_id, link_in_element_id, link_out_element_id, parent_collection_id, 'Presentation_Link' AS type FROM presentation_link FOR JSON PATH ";
-            var import_presentation_links_file = export_filepath + "presentation_links.json";
-            GetJsonFileForDocumentDB(import_presentation_links_cmd_text, import_presentation_links_file);
-        }
-
-        /// <summary>
-        /// Creates a json file using the output of the sql cmd stored in cmd_text. Outputs the json to the file output_file_path. Deletes the current file if one exists in output_file_path.
-        /// Creates a new file if none exists
-        /// </summary>
-        /// <param name="cmd_text"></param>
-        /// <param name="output_file_path"></param>
-        private void GetJsonFileForDocumentDB(string cmd_text, string output_file_path)
-        {
-            // delete current file
-            File.Delete(output_file_path);
-
-            using (var cmd = _db.CreateCommand())
-            {
-                // set the sql for the db command
-                cmd.CommandText = cmd_text;
-                using(var reader = cmd.ExecuteReader())
-                {
-                    // while there are more rows in the result
-                    while (reader.Read())
-                    {
-                        // append the result text to the file
-                        using (StreamWriter sw = File.AppendText(output_file_path))
-                        {
-                            sw.Write(reader.GetString(0));
-                        }
-                    }
-                }
-            }
-        }
 
         public void CloseSqlConnection()
         {

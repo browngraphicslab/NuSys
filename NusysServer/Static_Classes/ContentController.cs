@@ -56,7 +56,6 @@ namespace NusysServer
             _comparisonController = new ComparisonController();
             LockController = new LocksController();
             LockListeners = new LockListenersController(LockController);
-            DocumentDBConnector.Initialize();
         }
     }
 }

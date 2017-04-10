@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
+
 namespace NusysIntermediate
 {
     /// <summary>
@@ -38,5 +39,10 @@ namespace NusysIntermediate
         /// The LibraryId of the collection that this link will exist on.  
         /// </summary>
         public string ParentCollectionId { get; set; }
+
+        /// <summary>
+        /// The document type used to uniquely identify this model in the database
+        /// </summary>
+        public readonly string DocType = $"{NusysConstants.DocDB_DocumentType.Presentation_Link}";
     }
 }

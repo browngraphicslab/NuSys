@@ -1900,6 +1900,57 @@ namespace NusysIntermediate
 
         #endregion Enums
 
+#region DocDB
+
+        /// <summary>
+        /// The endpoint for the local document db emulator. If you do not have a document DB emulator you must install it from microsoft
+        /// </summary>
+        public static readonly string LocalEndpointUrl = "https://localhost:8081";
+
+        /// <summary>
+        /// The endpoint for the server document db database found on azure portal
+        /// </summary>
+        public static readonly string ServerEndpointUrl = "https://nusysdocdb.documents.azure.com:443/";
+
+        /// <summary>
+        /// The access key for the local document db emulator. This is default and is always the same
+        /// </summary>
+        public static readonly string LocalPrimaryKey =
+            "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==";
+
+        /// <summary>
+        /// The access key for the server document db database, this is secret and is found on the azure portal
+        /// </summary>
+        public static readonly string ServerPrimaryKey =
+            "Nx25qMvkeb1djgkNUzyHwrWAmMk68zpEhPsMAnRmq6kDWTjeGl2XDfZiv7a0LNbyaGkxEN76xzVbLk27KR2wqA==";
+
+        /// <summary>
+        /// The name of our document db database
+        /// </summary>
+        public const string DocDB_Database_ID = "NuSysDocumentDB";
+
+        /// <summary>
+        /// The name of our document db collection
+        /// </summary>
+        public const string DocDB_Collection_ID = "NuSysMainDocumentCollection";
+
+        /// <summary>
+        /// The type field of each document in the database is used to distinguish types of documents from one another. All valid types
+        /// are specified here
+        /// </summary>
+        public enum DocDB_DocumentType
+        {
+            Content,
+            Alias,
+            Ink,
+            User,
+            Last_used_collections,
+            Metadata,
+            Library_Element,
+            Presentation_Link
+        }
+#endregion DocDB
+
         #region Misc
 
         /// <summary>

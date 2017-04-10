@@ -381,7 +381,8 @@
     <Compile Include="Static_Classes\DocumentComparison\RetrieveSimilarDocs.cs" />
     <Compile Include="Static_Classes\DocumentComparison\Tfidf\Tfidf.cs" />
     <Compile Include="Static_Classes\DocumentComparison\VectorUtil.cs" />
-    <Compile Include="Static_Classes\DocumentDBConnector.cs" />
+    <Compile Include="Static_Classes\DocumentDB\DocumentDBConnector.cs" />
+    <Compile Include="Static_Classes\DocumentDB\DocumentDBExporter.cs" />
     <Compile Include="Static_Classes\ImageProcessor.cs" />
     <Compile Include="Static_Classes\MediaProcessor.cs" />
     <Compile Include="Static_Classes\NuWebSocketHandler.cs" />
