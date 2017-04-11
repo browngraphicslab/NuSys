@@ -23,6 +23,11 @@ namespace NusysIntermediate
         public NusysConstants.ContentType Type { get; set; }
 
         /// <summary>
+        /// The document type used to uniquely identify this model in the database
+        /// </summary>
+        public readonly string DocType = $"{NusysConstants.DocDB_DocumentType.Analysis_Model}";
+
+        /// <summary>
         /// the constructor for the abstract class.  
         /// Just sets content Data Model ID of the analysis model and the type of content data model this is an analysis model of
         /// </summary>

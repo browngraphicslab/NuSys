@@ -133,6 +133,11 @@ namespace NusysIntermediate
             }
         }
 
+        /// <summary>
+        /// The document type used to uniquely identify this model in the database
+        /// </summary>
+        public readonly string DocType = $"{NusysConstants.DocDB_DocumentType.Library_Element}";
+
         public void SetMetadata(Dictionary<string, MetadataEntry> metadata)
         {
             Metadata = new ConcurrentDictionary<string, MetadataEntry>(metadata);

@@ -45,5 +45,10 @@ namespace NusysIntermediate
             Data = null;
             Strokes = null;
         }
+
+        /// <summary>
+        /// The document type used to uniquely identify this model in the database
+        /// </summary>
+        public readonly string DocType = $"{NusysConstants.DocDB_DocumentType.Content}";
     }
 }

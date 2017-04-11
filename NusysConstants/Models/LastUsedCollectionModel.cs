@@ -37,5 +37,10 @@ namespace NusysIntermediate
             DateTime = message.GetString(NusysConstants.LAST_USED_COLLECTIONS_TABLE_LAST_USED_DATE, DateTime);
             CollectionId = message.GetString(NusysConstants.LAST_USED_COLLECTIONS_TABLE_COLLECTION_LIBRARY_ID, CollectionId);
         }
+
+        /// <summary>
+        /// The document type used to uniquely identify this model in the database
+        /// </summary>
+        public readonly string DocType = $"{NusysConstants.DocDB_DocumentType.Last_used_collections}";
     }
 }

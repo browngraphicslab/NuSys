@@ -60,13 +60,16 @@ namespace NusysServer
 
             ErrorLog.AddError(new Exception("Server Starting..."));
 
-            DocumentDBExporter.ExportPresentationLinksToDocumentDB(_db);
-            DocumentDBExporter.ExportInkToDocumentDB(_db);
-            DocumentDBExporter.ExportUsersToDocumentDB(_db);
-            //DocumentDBConnector.Initialize();
+
+            DocumentDBConnector.Initialize().Wait();
+            //DocumentDBExporter.ExportPresentationLinksToDocumentDB(_db).Wait();
+            //DocumentDBExporter.ExportInkToDocumentDB(_db).Wait();
+            //DocumentDBExporter.ExportUsersToDocumentDB(_db).Wait();
+            //DocumentDBExporter.ExportLastUsedCollectionsToDocumentDB(_db).Wait();
+            //DocumentDBExporter.ExportContentDataModelsToDocumentDB(_db).Wait();
+            //DocumentDBExporter.ExportAnalysisModelToDocumentDB(_db).Wait();
+            //DocumentDBExporter.ExportLibraryElementModelsToDocumentDB(_db).Wait();
         }
-
-
 
         public void CloseSqlConnection()
         {

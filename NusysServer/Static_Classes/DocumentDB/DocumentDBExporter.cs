@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -9,6 +11,8 @@ using Newtonsoft.Json;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using System.Threading.Tasks;
+using JetBrains.dotMemoryUnit;
+using Microsoft.Azure.Documents.Linq;
 
 namespace NusysServer
 {
@@ -187,16 +191,16 @@ namespace NusysServer
             await Initialize();
 
             // delete all the current ink models in the database
-            var currInkModelDocIds = client.CreateDocumentQuery<string>(_collection.SelfLink, $"SELECT VALUE c.id FROM c WHERE c.DocType='{NusysConstants.DocDB_DocumentType.Ink}'").ToList();
+            var currInkModelDocIds = await QueryAsyncWithRetries(client.CreateDocumentQuery<string>(_collection.SelfLink, $"SELECT VALUE c.id FROM c WHERE c.DocType='{NusysConstants.DocDB_DocumentType.Ink}'"));
             foreach (var docId in currInkModelDocIds)
             {
-                await client.DeleteDocumentAsync(UriFactory.CreateDocumentUri(NusysConstants.DocDB_Database_ID, NusysConstants.DocDB_Collection_ID, docId));
+                await ExecuteWithRetries(() => client.DeleteDocumentAsync(UriFactory.CreateDocumentUri(NusysConstants.DocDB_Database_ID, NusysConstants.DocDB_Collection_ID, docId)));
             }
 
             // transfer over all the new models
             foreach (var model in ink_model_list)
             {
-                await client.CreateDocumentAsync(_collection.SelfLink, model);
+                await ExecuteWithRetries(()=> client.CreateDocumentAsync(_collection.SelfLink, model));
             }
         }
 
@@ -253,16 +257,16 @@ namespace NusysServer
             await Initialize();
 
             // delete all the current ink models in the database
-            var currPresModelDocIds = client.CreateDocumentQuery<string>(_collection.SelfLink, $"SELECT VALUE c.id FROM c WHERE c.DocType='{NusysConstants.DocDB_DocumentType.Presentation_Link}'").ToList();
+            var currPresModelDocIds = await QueryAsyncWithRetries(client.CreateDocumentQuery<string>(_collection.SelfLink, $"SELECT VALUE c.id FROM c WHERE c.DocType='{NusysConstants.DocDB_DocumentType.Presentation_Link}'"));
             foreach (var docId in currPresModelDocIds)
             {
-                await client.DeleteDocumentAsync(UriFactory.CreateDocumentUri(NusysConstants.DocDB_Database_ID, NusysConstants.DocDB_Collection_ID, docId));
+                await ExecuteWithRetries(() => client.DeleteDocumentAsync(UriFactory.CreateDocumentUri(NusysConstants.DocDB_Database_ID, NusysConstants.DocDB_Collection_ID, docId)));
             }
 
             // transfer over all the new models
             foreach (var model in presentation_model_list)
             {
-                await client.CreateDocumentAsync(_collection.SelfLink, model);
+                await ExecuteWithRetries(() => client.CreateDocumentAsync(_collection.SelfLink, model));
             }
         }
 
@@ -320,18 +324,703 @@ namespace NusysServer
             await Initialize();
 
             // delete all the current models in the database
-            var currUserModelIds = client.CreateDocumentQuery<string>(_collection.SelfLink, $"SELECT VALUE c.id FROM c WHERE c.DocType='{NusysConstants.DocDB_DocumentType.User}'").ToList();
+            var currUserModelIds = await QueryAsyncWithRetries(client.CreateDocumentQuery<string>(_collection.SelfLink, $"SELECT VALUE c.id FROM c WHERE c.DocType='{NusysConstants.DocDB_DocumentType.User}'"));
             foreach (var docId in currUserModelIds)
             {
-                await client.DeleteDocumentAsync(UriFactory.CreateDocumentUri(NusysConstants.DocDB_Database_ID, NusysConstants.DocDB_Collection_ID, docId));
+                await ExecuteWithRetries(() => client.DeleteDocumentAsync(UriFactory.CreateDocumentUri(NusysConstants.DocDB_Database_ID, NusysConstants.DocDB_Collection_ID, docId)));
             }
 
             // transfer over all the new models
             foreach (var model in user_model_list)
             {
-                await client.CreateDocumentAsync(_collection.SelfLink, model);
+                await ExecuteWithRetries(() => client.CreateDocumentAsync(_collection.SelfLink, model));
+            }
+        }
+
+        public static async Task ExportLastUsedCollectionsToDocumentDB(SqlConnection db)
+        {
+            // Create a list of last used collection models
+            var last_used_collection_model_list = new List<LastUsedCollectionModel>();
+
+            // for each row in the database create a model and add it to the list
+            using (var cmd = db.CreateCommand())
+            {
+                // set the sql for the db command
+                cmd.CommandText = $"SELECT * FROM last_used_collections";
+                using (var reader = cmd.ExecuteReader())
+                {
+                    // while there are more rows in the result
+                    while (reader.Read())
+                    {
+                        var tmpLastUsedCollectionModel = new LastUsedCollectionModel
+                        {
+                            DateTime = reader.GetDateTime(0).ToString(),
+                            UserId = reader.GetString(1),
+                            CollectionId = reader.GetString(2)
+                        };
+                        last_used_collection_model_list.Add(tmpLastUsedCollectionModel);
+                    }
+                }
+            }
+
+            // make sure that we have a connection to the Document Database
+            await Initialize();
+
+            // delete all the current models in the database
+            var currLastUsedCollectionModels = await QueryAsyncWithRetries(client.CreateDocumentQuery<string>(_collection.SelfLink, $"SELECT VALUE c.id FROM c WHERE c.DocType='{NusysConstants.DocDB_DocumentType.Last_used_collections}'"));
+            foreach (var docId in currLastUsedCollectionModels)
+            {
+                await ExecuteWithRetries(() => client.DeleteDocumentAsync(UriFactory.CreateDocumentUri(NusysConstants.DocDB_Database_ID, NusysConstants.DocDB_Collection_ID, docId)));
+            }
+
+            // transfer over all the new models
+            foreach (var model in last_used_collection_model_list)
+            {
+                await ExecuteWithRetries(() => client.CreateDocumentAsync(_collection.SelfLink, model));
+            }
+        }
+
+        public static async Task ExportContentDataModelsToDocumentDB(SqlConnection db)
+        {
+            // Create a list of last used collection models
+            var regularContentDataModels = new List<ContentDataModel>();
+            var collectionContentDataModels = new List<CollectionContentDataModel>();
+            var pdfContentDataModels = new List<PdfContentDataModel>();
+
+            // make sure that we have a connection to the Document Database
+            await Initialize();
+
+            // for each row in the database create a model and add it to the list
+            using (var cmd = db.CreateCommand())
+            {
+                // set the sql for the db command
+                cmd.CommandText = $"SELECT * FROM contents";
+                using (var reader = cmd.ExecuteReader())
+                {
+                    // while there are more rows in the result
+                    while (reader.Read())
+                    {
+                        var contentId = reader.GetString(0);
+                        var contentType = (NusysConstants.ContentType) Enum.Parse(typeof(NusysConstants.ContentType), reader.GetString(1), true);
+                        var data = reader.GetString(2);
+                        var strokes = new List<InkModel>();
+                        try
+                        {
+                            var query = (from doc in client.CreateDocumentQuery<InkModel>(_collection.SelfLink)
+                                        where
+                                        doc.DocType == NusysConstants.DocDB_DocumentType.Ink.ToString() &&
+                                        doc.ContentId == contentId
+                                        select doc);
+                            strokes = (await QueryAsyncWithRetries(query)).ToList();
+                        }
+                        catch (DocumentClientException e)
+                        {
+                            Console.WriteLine(e);
+                            throw;
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e);
+                            throw;
+                        }
+                        
+                        // build the model based on its type
+                        switch (contentType)
+                        {
+                            case NusysConstants.ContentType.PDF:
+                            case NusysConstants.ContentType.Word:
+                                pdfContentDataModels.Add(new PdfContentDataModel(contentId, data) {ContentType = contentType, Strokes = strokes});
+                                break;
+                            case NusysConstants.ContentType.Collection:
+                                collectionContentDataModels.Add(new CollectionContentDataModel(contentId, data) { ContentType = contentType, Strokes = strokes });
+                                break;
+                            default:
+                                regularContentDataModels.Add(new ContentDataModel(contentId, data) { ContentType = contentType, Strokes = strokes });
+                                break;
+                        }
+                    }
+                }
+            }
+
+            // delete all the current models in the database
+            var currLastUsedCollectionModels = await QueryAsyncWithRetries(client.CreateDocumentQuery<string>(_collection.SelfLink, $"SELECT VALUE c.id FROM c WHERE c.DocType='{NusysConstants.DocDB_DocumentType.Content}'"));
+            foreach (var docId in currLastUsedCollectionModels)
+            {
+                await ExecuteWithRetries(() => client.DeleteDocumentAsync(UriFactory.CreateDocumentUri(NusysConstants.DocDB_Database_ID, NusysConstants.DocDB_Collection_ID, docId)));
+            }
+
+            // transfer over all the new models
+            foreach (var model in pdfContentDataModels)
+            {
+                await ExecuteWithRetries(() => client.CreateDocumentAsync(_collection.SelfLink, model));
+            }
+
+            foreach (var model in collectionContentDataModels)
+            {
+                await ExecuteWithRetries(() => client.CreateDocumentAsync(_collection.SelfLink, model));
+            }
+
+            foreach (var model in regularContentDataModels)
+            {
+                await ExecuteWithRetries(() => client.CreateDocumentAsync(_collection.SelfLink, model));
+            }
+        }
+
+
+        public static async Task ExportAnalysisModelToDocumentDB(SqlConnection db)
+        {
+            // Create a list of last used collection models
+            var ImageAnalysisModelList = new List<NusysImageAnalysisModel>();
+            var PdfAnalysisModelList = new List<NusysPdfAnalysisModel>();
+
+            // for each row in the database create a model and add it to the list
+            using (var cmd = db.CreateCommand())
+            {
+                // set the sql for the db command
+                cmd.CommandText = $"SELECT * FROM analysis_model";
+                using (var reader = cmd.ExecuteReader())
+                {
+                    // while there are more rows in the result
+                    while (reader.Read())
+                    {
+
+                        AnalysisModel model = JsonConvert.DeserializeObject<AnalysisModel>(reader.GetString(1));
+
+                        //switch on the content type
+                        switch (model.Type)
+                        {
+                            case NusysConstants.ContentType.Image:
+                                ImageAnalysisModelList.Add(JsonConvert.DeserializeObject<NusysImageAnalysisModel>(reader.GetString(1)));
+                                break;
+                            case NusysConstants.ContentType.PDF:
+                                PdfAnalysisModelList.Add(JsonConvert.DeserializeObject<NusysPdfAnalysisModel>(reader.GetString(1)));
+                                break;
+                            default:
+                                throw new Exception(" this content type does not support analysis models yet.");
+                        }
+                    }
+                }
+            }
+
+            // make sure that we have a connection to the Document Database
+            await Initialize();
+
+            // delete all the current models in the database
+            var currAnalysisModels = await QueryAsyncWithRetries(client.CreateDocumentQuery<string>(_collection.SelfLink, $"SELECT VALUE c.id FROM c WHERE c.DocType='{NusysConstants.DocDB_DocumentType.Analysis_Model}'"));
+            foreach (var docId in currAnalysisModels)
+            {
+                await ExecuteWithRetries(() => client.DeleteDocumentAsync(UriFactory.CreateDocumentUri(NusysConstants.DocDB_Database_ID, NusysConstants.DocDB_Collection_ID, docId)));
+            }
+
+            // transfer over all the new models
+            foreach (var model in ImageAnalysisModelList)
+            {
+                await ExecuteWithRetries(() => client.CreateDocumentAsync(_collection.SelfLink, model));
+            }
+
+            // transfer over all the new models
+            foreach (var model in PdfAnalysisModelList)
+            {
+                await ExecuteWithRetries(() => client.CreateDocumentAsync(_collection.SelfLink, model));
+            }
+        }
+
+        public static async Task ExportLibraryElementModelsToDocumentDB(SqlConnection db)
+        {
+            // Create a list of last used collection models
+            var lem_list = new List<LibraryElementModel>();
+
+            // for each row in the database create a model and add it to the list
+            using (var cmd = db.CreateCommand())
+            {
+                // set the sql for the db command
+                cmd.CommandText = $"SELECT TOP 10 PERCENT * FROM library_elements ORDER BY NEWID()";
+                //cmd.CommandText = $"SELECT * FROM library_elements";
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    // while there are more rows in the result
+                    while (reader.Read())
+                    {
+                        var library_id = reader.GetString(0);
+                        var elementType = (NusysConstants.ElementType)Enum.Parse(typeof(NusysConstants.ElementType), reader.GetString(2), true);
+                        var tmpLem = new LibraryElementModel(library_id, elementType)
+                        {
+                            ContentDataModelId = reader.GetString(1),
+                            Timestamp = reader.GetString(3),
+                            LastEditedTimestamp = reader.IsDBNull(4) ? string.Empty : reader.GetString(4),
+                            Creator = reader.GetString(5),
+                            Favorited = reader.IsDBNull(6) ? false : string.IsNullOrEmpty(reader.GetString(6)) ? false : bool.Parse(reader.GetString(6)),
+                            Keywords = reader.IsDBNull(7) ? new HashSet<Keyword>() : JsonConvert.DeserializeObject<HashSet<Keyword>>(reader.GetString(7)),
+                            Title = reader.IsDBNull(8) ? string.Empty : reader.GetString(8),
+                            SmallIconUrl = reader.IsDBNull(9) ? string.Empty : reader.GetString(9),
+                            MediumIconUrl = reader.IsDBNull(10) ? string.Empty : reader.GetString(10),                          
+                            AccessType = (NusysConstants.AccessType)Enum.Parse(typeof(NusysConstants.AccessType), reader.GetString(11), true),
+                            LargeIconUrl = reader.IsDBNull(12) ? string.Empty : reader.GetString(12)
+                        };
+                        lem_list.Add(tmpLem);
+                    }
+                }
+            }
+
+            // add the metadata to each lem
+            foreach (var lem_id in lem_list.Select(lem => lem.LibraryElementId).ToList())
+            {
+                // get the library element we are querying metadata for
+                var lem = lem_list.FirstOrDefault(e => e.LibraryElementId == lem_id);
+                lem.Metadata = new ConcurrentDictionary<string, MetadataEntry>();
+                Debug.Assert(lem != null);
+
+                // get all the metadata from the database
+                using (var cmd = db.CreateCommand())
+                {
+                    // set the sql for the db command
+                    cmd.CommandText = $"SELECT * FROM metadata WHERE metadata_library_id = '{lem_id}'";
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        // while there are more rows in the result
+                        while (reader.Read())
+                        {
+                            var metadata_key = reader.GetString(1);
+                            var metadata_value = JsonConvert.DeserializeObject<List<string>>(reader.GetString(2));
+                            var metadata_mutability = (MetadataMutability)Enum.Parse(typeof(MetadataMutability), reader.GetString(3), true);
+                            lem.Metadata[metadata_key] = new MetadataEntry(metadata_key, metadata_value, metadata_mutability);
+                        }
+                    }
+                }
+            }
+
+            var audioLibaryElementModelList = new List<AudioLibraryElementModel>();
+            var collectionLibaryElementModelList = new List<CollectionLibraryElementModel>();
+            var imageLibaryElementModelList = new List<ImageLibraryElementModel>();
+            var regularLibaryElementModelList = new List<LibraryElementModel>();
+            var linkLibaryElementModelList = new List<LinkLibraryElementModel>();
+            var pdfLibaryElementModelList = new List<PdfLibraryElementModel>();
+            var videoLibaryElementModelList = new List<VideoLibraryElementModel>();
+            var wordLibaryElementModelList = new List<WordLibraryElementModel>();
+
+            foreach (var lem in lem_list)
+            {
+                double height_key = 0;
+                List<PointModel> shape_points;
+                double width_key = 0;
+                double video_ratio = 0;
+                double end_time_key = 0;
+                LibraryElementOrigin origin_key = new LibraryElementOrigin();
+                string library_element_id_to_update;
+                double start_time_key = 0;
+                double top_left_point_x = 0;
+                double image_ratio = 0;
+                string parent_id_key = null;
+                string link_in_id = null;
+                string link_out_id = null;
+                bool finite_bool = false;
+                int page_end_number = 0;
+                int page_start_number = 0;
+                bool title_visibility;
+                ColorModel shape_color;
+                double aspect_ration;
+                NusysConstants.LinkDirection link_direction_enum = NusysConstants.LinkDirection.Forward;
+                double top_left_point_y = 0;
+
+                using (var cmd = db.CreateCommand())
+                {
+                    // set the sql for the db command
+                    cmd.CommandText = $"SELECT * FROM properties WHERE library_or_alias_id = '{lem.LibraryElementId}'";
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        // while there are more rows in the result
+                        while (reader.Read())
+                        {
+                            var property_key = reader.GetString(1);
+                            var property_value = reader.GetString(4);
+                            if (property_key == "height_key")
+                            {
+                                height_key = double.Parse(property_value);
+                            } else if (property_key == "shape_points")
+                            {
+                                shape_points = JsonConvert.DeserializeObject<List<PointModel>>(property_value);
+                            } else if (property_key == "width_key")
+                            {
+                                width_key = double.Parse(property_value);
+                            }
+                            else if (property_key == "video_ratio")
+                            {
+                                video_ratio = double.Parse(property_value);
+                            }
+                            else if (property_key == "end_time_key")
+                            {
+                                end_time_key = double.Parse(property_value);
+                            }
+                            else if (property_key == "origin_key")
+                            {
+                                origin_key = JsonConvert.DeserializeObject<LibraryElementOrigin>(property_value);
+                            }
+                            else if (property_key == "library_element_id_to_update")
+                            {
+                                library_element_id_to_update = property_value;
+                            }
+                            else if (property_key == "start_time_key")
+                            {
+                                start_time_key = double.Parse(property_value);
+                            }
+                            else if (property_key == "top_left_point_x")
+                            {
+                                top_left_point_x = double.Parse(property_value);
+                            }
+                            else if (property_key == "image_ratio")
+                            {
+                                image_ratio = double.Parse(property_value);
+                            }
+                            else if (property_key == "parent_id_key")
+                            {
+                                parent_id_key = property_value;
+                            }
+                            else if (property_key == "link_in_id")
+                            {
+                                link_in_id = property_value;
+                            }
+                            else if (property_key == "link_out_id")
+                            {
+                                link_out_id = property_value;
+                            }
+                            else if (property_key == "finite_bool")
+                            {
+                                finite_bool = bool.Parse(property_value);
+                            }
+                            else if (property_key == "page_end_number")
+                            {
+                                page_end_number = int.Parse(property_value);
+                            }
+                            else if (property_key == "page_start_number")
+                            {
+                                page_start_number = int.Parse(property_value);
+                            }
+                            else if (property_key == "title_visibility")
+                            {
+                                title_visibility = bool.Parse(property_value);
+                            }
+                            else if (property_key == "shape_color")
+                            {
+                                shape_color = JsonConvert.DeserializeObject<ColorModel>(property_value);
+                            }
+                            else if (property_key == "aspect_ration")
+                            {
+                                aspect_ration = double.Parse(property_value);
+                            }
+                            else if (property_key == "link_direction_enum")
+                            {
+                                link_direction_enum = (NusysConstants.LinkDirection) Enum.Parse(typeof(NusysConstants.LinkDirection), property_value, true);
+                            }
+                            else if (property_key == "top_left_point_y")
+                            {
+                                top_left_point_y = double.Parse(property_value);
+                            }
+                        }
+                    }
+                }
+                switch (lem.Type)
+                {
+                    case NusysConstants.ElementType.Image:
+                        imageLibaryElementModelList.Add(new ImageLibraryElementModel(lem.LibraryElementId, lem.Type)
+                        {
+                            Ratio = image_ratio,
+                            NormalizedHeight = height_key,
+                            NormalizedWidth = width_key,
+                            NormalizedX = top_left_point_x,
+                            NormalizedY = top_left_point_y,
+                            ContentDataModelId = lem.ContentDataModelId,
+                            Timestamp = lem.Timestamp,
+                            LastEditedTimestamp = lem.LastEditedTimestamp,
+                            Creator = lem.Creator,
+                            Favorited = lem.Favorited,
+                            Keywords = lem.Keywords,
+                            Title = lem.Title,
+                            SmallIconUrl = lem.SmallIconUrl,
+                            MediumIconUrl = lem.MediumIconUrl,
+                            AccessType = lem.AccessType,
+                            LargeIconUrl = lem.LargeIconUrl,
+                            ParentId = parent_id_key,
+                            Origin = origin_key,
+                            Metadata = lem.Metadata
+
+                        });
+                    break;
+                    case NusysConstants.ElementType.PDF:
+                        pdfLibaryElementModelList.Add(new PdfLibraryElementModel(lem.LibraryElementId, lem.Type)
+                        {
+                            Ratio = image_ratio,
+                            NormalizedHeight = height_key,
+                            NormalizedWidth = width_key,
+                            NormalizedX = top_left_point_x,
+                            NormalizedY = top_left_point_y,
+                            PageEnd = page_end_number,
+                            PageStart = page_start_number,
+                            ContentDataModelId = lem.ContentDataModelId,
+                            Timestamp = lem.Timestamp,
+                            LastEditedTimestamp = lem.LastEditedTimestamp,
+                            Creator = lem.Creator,
+                            Favorited = lem.Favorited,
+                            Keywords = lem.Keywords,
+                            Title = lem.Title,
+                            SmallIconUrl = lem.SmallIconUrl,
+                            MediumIconUrl = lem.MediumIconUrl,
+                            AccessType = lem.AccessType,
+                            LargeIconUrl = lem.LargeIconUrl,
+                            ParentId = parent_id_key,
+                            Origin = origin_key,
+                            Metadata = lem.Metadata
+                        });
+                        break;
+                    case NusysConstants.ElementType.Word:
+                        wordLibaryElementModelList.Add(new WordLibraryElementModel(lem.LibraryElementId)
+                        {
+                            Ratio = image_ratio,
+                            NormalizedHeight = height_key,
+                            NormalizedWidth = width_key,
+                            NormalizedX = top_left_point_x,
+                            NormalizedY = top_left_point_y,
+                            PageEnd = page_end_number,
+                            PageStart = page_start_number,
+                            ContentDataModelId = lem.ContentDataModelId,
+                            Timestamp = lem.Timestamp,
+                            LastEditedTimestamp = lem.LastEditedTimestamp,
+                            Creator = lem.Creator,
+                            Favorited = lem.Favorited,
+                            Keywords = lem.Keywords,
+                            Title = lem.Title,
+                            SmallIconUrl = lem.SmallIconUrl,
+                            MediumIconUrl = lem.MediumIconUrl,
+                            AccessType = lem.AccessType,
+                            LargeIconUrl = lem.LargeIconUrl,
+                            ParentId = parent_id_key,
+                            Origin = origin_key,
+                            Metadata = lem.Metadata
+                        });
+                        break;
+                    
+                    
+                    case NusysConstants.ElementType.Audio:
+                        audioLibaryElementModelList.Add(new AudioLibraryElementModel(lem.LibraryElementId)
+                        {
+                            NormalizedStartTime = start_time_key,
+                            NormalizedDuration = end_time_key,
+                            ContentDataModelId = lem.ContentDataModelId,
+                            Timestamp = lem.Timestamp,
+                            LastEditedTimestamp = lem.LastEditedTimestamp,
+                            Creator = lem.Creator,
+                            Favorited = lem.Favorited,
+                            Keywords = lem.Keywords,
+                            Title = lem.Title,
+                            SmallIconUrl = lem.SmallIconUrl,
+                            MediumIconUrl = lem.MediumIconUrl,
+                            AccessType = lem.AccessType,
+                            LargeIconUrl = lem.LargeIconUrl,
+                            ParentId = parent_id_key,
+                            Origin = origin_key,
+                            Metadata = lem.Metadata
+                        });
+                        break;
+                    case NusysConstants.ElementType.Video:
+                        videoLibaryElementModelList.Add(new VideoLibraryElementModel(lem.LibraryElementId)
+                        {
+                            NormalizedStartTime = start_time_key,
+                            NormalizedDuration = end_time_key,
+                            Ratio = video_ratio,
+                            ContentDataModelId = lem.ContentDataModelId,
+                            Timestamp = lem.Timestamp,
+                            LastEditedTimestamp = lem.LastEditedTimestamp,
+                            Creator = lem.Creator,
+                            Favorited = lem.Favorited,
+                            Keywords = lem.Keywords,
+                            Title = lem.Title,
+                            SmallIconUrl = lem.SmallIconUrl,
+                            MediumIconUrl = lem.MediumIconUrl,
+                            AccessType = lem.AccessType,
+                            LargeIconUrl = lem.LargeIconUrl,
+                            ParentId = parent_id_key,
+                            Origin = origin_key,
+                            Metadata = lem.Metadata
+                        });
+                        break;
+
+                    case NusysConstants.ElementType.Collection:
+                        collectionLibaryElementModelList.Add(new CollectionLibraryElementModel(lem.LibraryElementId)
+                        {
+                            IsFinite = finite_bool,
+                            ContentDataModelId = lem.ContentDataModelId,
+                            Timestamp = lem.Timestamp,
+                            LastEditedTimestamp = lem.LastEditedTimestamp,
+                            Creator = lem.Creator,
+                            Favorited = lem.Favorited,
+                            Keywords = lem.Keywords,
+                            Title = lem.Title,
+                            SmallIconUrl = lem.SmallIconUrl,
+                            MediumIconUrl = lem.MediumIconUrl,
+                            AccessType = lem.AccessType,
+                            LargeIconUrl = lem.LargeIconUrl,
+                            ParentId = parent_id_key,
+                            Origin = origin_key,
+                            Metadata = lem.Metadata
+                        });
+                        break;
+
+                    case NusysConstants.ElementType.Link:
+                        linkLibaryElementModelList.Add(new LinkLibraryElementModel(lem.LibraryElementId)
+                        {
+                            InAtomId = link_in_id,
+                            OutAtomId = link_out_id,
+                            Direction = link_direction_enum,
+                            ContentDataModelId = lem.ContentDataModelId,
+                            Timestamp = lem.Timestamp,
+                            LastEditedTimestamp = lem.LastEditedTimestamp,
+                            Creator = lem.Creator,
+                            Favorited = lem.Favorited,
+                            Keywords = lem.Keywords,
+                            Title = lem.Title,
+                            SmallIconUrl = lem.SmallIconUrl,
+                            MediumIconUrl = lem.MediumIconUrl,
+                            AccessType = lem.AccessType,
+                            LargeIconUrl = lem.LargeIconUrl,
+                            ParentId = parent_id_key,
+                            Origin = origin_key,
+                            Metadata = lem.Metadata
+                        });
+                        break;
+
+                    default:
+                        lem.ParentId = parent_id_key;
+                        lem.Origin = origin_key;
+                        regularLibaryElementModelList.Add(lem);
+                        break;
+                }
+            }
+
+
+
+            //// make sure that we have a connection to the Document Database
+            await Initialize();
+
+            //// delete all the current models in the database
+            //var currLastUsedCollectionModels = await QueryAsyncWithRetries(client.CreateDocumentQuery<string>(_collection.SelfLink, $"SELECT VALUE c.id FROM c WHERE c.DocType='{NusysConstants.DocDB_DocumentType.Last_used_collections}'"));
+            //foreach (var docId in currLastUsedCollectionModels)
+            //{
+            //    await ExecuteWithRetries(() => client.DeleteDocumentAsync(UriFactory.CreateDocumentUri(NusysConstants.DocDB_Database_ID, NusysConstants.DocDB_Collection_ID, docId)));
+            //}
+
+
+            //// transfer over all the new models
+            foreach (var model in audioLibaryElementModelList)
+            {
+                await ExecuteWithRetries(() => client.CreateDocumentAsync(_collection.SelfLink, model));
+            }
+
+            foreach (var model in collectionLibaryElementModelList)
+            {
+                await ExecuteWithRetries(() => client.CreateDocumentAsync(_collection.SelfLink, model));
+            }
+
+            foreach (var model in imageLibaryElementModelList)
+            {
+                await ExecuteWithRetries(() => client.CreateDocumentAsync(_collection.SelfLink, model));
+            }
+
+            foreach (var model in regularLibaryElementModelList)
+            {
+                await ExecuteWithRetries(() => client.CreateDocumentAsync(_collection.SelfLink, model));
+            }
+
+            foreach (var model in linkLibaryElementModelList)
+            {
+                await ExecuteWithRetries(() => client.CreateDocumentAsync(_collection.SelfLink, model));
+            }
+
+            foreach (var model in pdfLibaryElementModelList)
+            {
+                await ExecuteWithRetries(() => client.CreateDocumentAsync(_collection.SelfLink, model));
+            }
+
+            foreach (var model in videoLibaryElementModelList)
+            {
+                await ExecuteWithRetries(() => client.CreateDocumentAsync(_collection.SelfLink, model));
+            }
+
+            foreach (var model in wordLibaryElementModelList)
+            {
+                await ExecuteWithRetries(() => client.CreateDocumentAsync(_collection.SelfLink, model));
+            }
+        }
+
+        /// <summary>
+        /// Executes the documentdb query asynchronously with retries on throttle
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        private static async Task<IEnumerable<T>> QueryAsyncWithRetries<T>(IQueryable<T> query)
+        {
+            var docQuery = query.AsDocumentQuery();
+            var batches = new List<IEnumerable<T>>();
+
+            do
+            {
+                var batch = await ExecuteWithRetries(() => docQuery.ExecuteNextAsync<T>());
+
+                batches.Add(batch);
+            }
+            while (docQuery.HasMoreResults);
+
+            var docs = batches.SelectMany(b => b);
+
+            return docs;
+        }
+
+
+        /// <summary>
+        /// Execute the function with retries on throttle
+        /// </summary>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="function"></param>
+        /// <returns></returns>
+        private static async Task<V> ExecuteWithRetries<V>(Func<Task<V>> function)
+        {
+            TimeSpan sleepTime = TimeSpan.Zero;
+
+            while (true)
+            {
+                try
+                {
+                    return await function();
+                }
+                catch (DocumentClientException de)
+                {
+                    if ((int)de.StatusCode != 429)
+                    {
+                        throw;
+                    }
+                    sleepTime = de.RetryAfter;
+                }
+                catch (AggregateException ae)
+                {
+                    if (!(ae.InnerException is DocumentClientException))
+                    {
+                        throw;
+                    }
+
+                    DocumentClientException de = (DocumentClientException)ae.InnerException;
+                    if ((int)de.StatusCode != 429)
+                    {
+                        throw;
+                    }
+                    sleepTime = de.RetryAfter;
+                }
+
+                await Task.Delay(sleepTime);
             }
         }
     }
+
+
 
 }

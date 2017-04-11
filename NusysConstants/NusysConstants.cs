@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace NusysIntermediate
 {
@@ -1658,9 +1660,9 @@ namespace NusysIntermediate
             /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
             /// </summary>
             public static readonly string IMAGE_ELEMENT_FILE_PATH_KEY = "filepath";
-            #endregion ImageElement
+        #endregion ImageElement
 
-            #endregion ElementModel
+        #endregion ElementModel
 
 
 
@@ -1671,6 +1673,7 @@ namespace NusysIntermediate
         /// The base types for every content.  ElementTypes can have the same content Types.
         /// For instance, Image and ImageRegion both have ContentType Image
         /// </summary>
+        [JsonConverter(typeof(StringEnumConverter))]
         public enum ContentType
         {
             Text,
@@ -1947,7 +1950,8 @@ namespace NusysIntermediate
             Last_used_collections,
             Metadata,
             Library_Element,
-            Presentation_Link
+            Presentation_Link,
+            Analysis_Model
         }
 #endregion DocDB
 

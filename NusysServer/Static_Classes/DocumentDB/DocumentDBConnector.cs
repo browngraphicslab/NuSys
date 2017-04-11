@@ -9,6 +9,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
+using Microsoft.Azure.Documents.Linq;
 using Newtonsoft.Json;
 using NusysIntermediate;
 
@@ -53,7 +54,7 @@ namespace NusysServer.Static_Classes
         /// </summary>
         private static DocumentCollection _collection;
 
-        public static async void Initialize()
+        public static async Task Initialize()
         {
             client = new DocumentClient(new Uri(EndpointUrl), PrimaryKey);
             //CreateDatabaseIfNotExistsAsync().Wait();
@@ -66,7 +67,9 @@ namespace NusysServer.Static_Classes
             _collection = await client.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(NusysConstants.DocDB_Database_ID), new DocumentCollection { Id = NusysConstants.DocDB_Collection_ID });
 
             //QueryAllPresentationLinks(_collection.SelfLink);
-            QueryAllInkStrokes(_collection.SelfLink);
+            //QueryAllInkStrokes(_collection.SelfLink);
+            await QueryAllLibraryElements(_collection.SelfLink);
+            await QueryAllContentDataModels(_collection.SelfLink);
         }
 
         private static void QueryAllInkStrokes(string collectionSelfLink)
@@ -109,6 +112,135 @@ namespace NusysServer.Static_Classes
             result = client.CreateDocumentQuery<PresentationLinkModel>(collectionSelfLink, $"SELECT * FROM c WHERE c.DocType='{NusysConstants.DocDB_DocumentType.Presentation_Link}'");
 
             presentation_links = result.ToList();
+        }
+
+        private static async Task QueryAllLibraryElements(string collectionSelfLink)
+        {
+            //// LINQ Query
+            var linq_query_sw = new Stopwatch();
+            linq_query_sw.Start();
+            var query =
+                from item in client.CreateDocumentQuery<LibraryElementModel>(collectionSelfLink)
+                where item.DocType == NusysConstants.DocDB_DocumentType.Library_Element.ToString()
+                select item;
+
+            var lem_list = (await QueryAsyncWithRetries(query)).ToList();
+            linq_query_sw.Stop();
+
+            //// LINQ Lambda
+            var linq_lambda_sw = new Stopwatch();
+            linq_lambda_sw.Start();
+            query = client.CreateDocumentQuery<LibraryElementModel>(collectionSelfLink).Where(e => e.DocType == NusysConstants.DocDB_DocumentType.Library_Element.ToString());
+
+            lem_list = (await QueryAsyncWithRetries(query)).ToList();
+            linq_lambda_sw.Stop();
+
+            // SQL
+            var sql_sw = new Stopwatch();
+            sql_sw.Start();
+            query = client.CreateDocumentQuery<LibraryElementModel>(collectionSelfLink, $"SELECT * FROM c WHERE c.DocType='{NusysConstants.DocDB_DocumentType.Library_Element}'");
+
+            lem_list = (await QueryAsyncWithRetries(query)).ToList();
+            sql_sw.Stop();
+        }
+
+        private static async Task QueryAllContentDataModels(string collectionSelfLink)
+        {
+            //// LINQ Query
+            var linq_query_sw = new Stopwatch();
+            linq_query_sw.Start();
+            var query =
+                from item in client.CreateDocumentQuery<ContentDataModel>(collectionSelfLink)
+                where item.DocType == NusysConstants.DocDB_DocumentType.Content.ToString()
+                select item;
+
+            var lem_list = (await QueryAsyncWithRetries(query)).ToList();
+            linq_query_sw.Stop();
+
+            //// LINQ Lambda
+            var linq_lambda_sw = new Stopwatch();
+            linq_lambda_sw.Start();
+            query = client.CreateDocumentQuery<ContentDataModel>(collectionSelfLink).Where(e => e.DocType == NusysConstants.DocDB_DocumentType.Content.ToString());
+
+            lem_list = (await QueryAsyncWithRetries(query)).ToList();
+            linq_lambda_sw.Stop();
+
+            // SQL
+            var sql_sw = new Stopwatch();
+            sql_sw.Start();
+            query = client.CreateDocumentQuery<ContentDataModel>(collectionSelfLink, $"SELECT * FROM c WHERE c.DocType='{NusysConstants.DocDB_DocumentType.Content}'");
+
+            lem_list = (await QueryAsyncWithRetries(query)).ToList();
+            sql_sw.Stop();
+        }
+
+        /// <summary>
+        /// Executes the documentdb query asynchronously with retries on throttle
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        private static async Task<IEnumerable<T>> QueryAsyncWithRetries<T>(IQueryable<T> query)
+        {
+            var docQuery = query.AsDocumentQuery();
+            var batches = new List<IEnumerable<T>>();
+
+            do
+            {
+                var batch = await ExecuteWithRetries(() => docQuery.ExecuteNextAsync<T>());
+
+                batches.Add(batch);
+            }
+            while (docQuery.HasMoreResults);
+
+            var docs = batches.SelectMany(b => b);
+
+            return docs;
+        }
+
+
+        /// <summary>
+        /// Execute the function with retries on throttle
+        /// </summary>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="function"></param>
+        /// <returns></returns>
+        private static async Task<V> ExecuteWithRetries<V>(Func<Task<V>> function)
+        {
+            TimeSpan sleepTime = TimeSpan.Zero;
+
+            while (true)
+            {
+                try
+                {
+                    return await function();
+                }
+                catch (DocumentClientException de)
+                {
+                    if ((int)de.StatusCode != 429)
+                    {
+                        throw;
+                    }
+                    sleepTime = de.RetryAfter;
+                }
+                catch (AggregateException ae)
+                {
+                    if (!(ae.InnerException is DocumentClientException))
+                    {
+                        throw;
+                    }
+
+                    DocumentClientException de = (DocumentClientException)ae.InnerException;
+                    if ((int)de.StatusCode != 429)
+                    {
+                        throw;
+                    }
+                    sleepTime = de.RetryAfter;
+                }
+
+                await Task.Delay(sleepTime);
+            }
         }
     }
 }

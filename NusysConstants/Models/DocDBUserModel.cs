@@ -21,7 +21,10 @@ namespace NusysIntermediate
 
         public List<string> LastVisitedCollections { get; set; }
 
-        public string DocType = NusysConstants.DocDB_DocumentType.User.ToString();
+        /// <summary>
+        /// The document type used to uniquely identify this model in the database
+        /// </summary>
+        public readonly string DocType = $"{NusysConstants.DocDB_DocumentType.User}";
 
     }
 }
