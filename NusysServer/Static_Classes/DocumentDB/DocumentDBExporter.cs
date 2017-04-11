@@ -534,8 +534,8 @@ namespace NusysServer
             using (var cmd = db.CreateCommand())
             {
                 // set the sql for the db command
-                cmd.CommandText = $"SELECT TOP 10 PERCENT * FROM library_elements ORDER BY NEWID()";
-                //cmd.CommandText = $"SELECT * FROM library_elements";
+                //cmd.CommandText = $"SELECT TOP 10 PERCENT * FROM library_elements ORDER BY NEWID()";
+                cmd.CommandText = $"SELECT * FROM library_elements";
 
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -556,7 +556,7 @@ namespace NusysServer
                             SmallIconUrl = reader.IsDBNull(9) ? string.Empty : reader.GetString(9),
                             MediumIconUrl = reader.IsDBNull(10) ? string.Empty : reader.GetString(10),                          
                             AccessType = (NusysConstants.AccessType)Enum.Parse(typeof(NusysConstants.AccessType), reader.GetString(11), true),
-                            LargeIconUrl = reader.IsDBNull(12) ? string.Empty : reader.GetString(12)
+                            LargeIconUrl = reader.IsDBNull(12) ? string.Empty : reader.GetString(12),
                         };
                         lem_list.Add(tmpLem);
                     }
