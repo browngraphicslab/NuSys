@@ -43,13 +43,13 @@ namespace NuSysApp
         public delegate void BarChartElementDragCompletedEventHandler(object source, BarChartElement element, CanvasPointer pointer);
         public event BarChartElementDragCompletedEventHandler BarDragCompleted;
 
-        public delegate void BarChartElementTappedEventHandler(object source, BarChartElement bar, CanvasPointer pointer);
+        public delegate void BarChartElementTappedEventHandler(object source, BarChartElement bar);
 
 
 
         public event BarChartElementTappedEventHandler BarTapped;
 
-        public delegate void BarChartElementDoubleTappedEventHandler(object source, BarChartElement bar, CanvasPointer pointer);
+        public delegate void BarChartElementDoubleTappedEventHandler(object source, BarChartElement bar);
 
         public event BarChartElementDoubleTappedEventHandler BarDoubleTapped;
 
@@ -113,17 +113,26 @@ namespace NuSysApp
         public void AddBarHandlers(BarChartElement element)
         {
             element.Dragged += Element_Dragged;
-            element.Tapped += Element_Tapped;
-            element.DoubleTapped += Element_DoubleTapped;
             element.DragCompleted += Element_DragCompleted;
+
+            var tapRecognizer = new TapGestureRecognizer();
+            element.GestureRecognizers.Add(tapRecognizer);
+            tapRecognizer.OnTapped += new TapGestureRecognizer.TapEventHandler(delegate (TapGestureRecognizer sender, TapEventArgs args)
+            {
+                if (args.TapType == TapEventArgs.Tap.SingleTap)
+                {
+                    Element_Tapped(element);
+                }
+                else if (args.TapType == TapEventArgs.Tap.DoubleTap)
+                {
+                    Element_DoubleTapped(element);
+                }
+            });
         }
 
         public void RemoveBarHandlers(BarChartElement element)
         {
-            element.Dragged -= Element_Dragged;
-            element.Tapped -= Element_Tapped;
-            element.DoubleTapped -= Element_DoubleTapped;
-            element.DragCompleted -= Element_DragCompleted;
+            element.GestureRecognizers.Clear();
         }
 
         public void DeselectAllItems()
@@ -145,15 +154,14 @@ namespace NuSysApp
 
         }
 
-        private void Element_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void Element_DoubleTapped(BarChartElement bar)
         {
-            BarDoubleTapped?.Invoke(this, item as BarChartElement, pointer);
+            BarDoubleTapped?.Invoke(this, bar);
         }
 
-        private void Element_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void Element_Tapped(BarChartElement bar)
         {
-            var bar = item as BarChartElement;
-            BarTapped?.Invoke(this, bar, pointer);
+            BarTapped?.Invoke(this, bar);
 
             //Here we select/deselect the bar.
             if (_selectedElements.Contains(bar))

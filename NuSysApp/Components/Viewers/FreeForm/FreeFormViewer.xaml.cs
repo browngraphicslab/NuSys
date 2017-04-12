@@ -211,13 +211,27 @@ namespace NuSysApp
 
             RenderEngine.Start();
 
-            RenderEngine.BtnDelete.Tapped -= BtnDeleteOnTapped;
-            RenderEngine.BtnDelete.Tapped += BtnDeleteOnTapped;
+            RenderEngine.BtnDelete.GestureRecognizers.Clear();
+            var tapRecognizer = new TapGestureRecognizer();
+            RenderEngine.BtnDelete.GestureRecognizers.Add(tapRecognizer);
+            tapRecognizer.OnTapped += TapRecognizer_OnTappedBnDelete;
 
-            RenderEngine.BtnExportTrail.Tapped -= BtnExportTrailOnTapped;
-            RenderEngine.BtnExportTrail.Tapped += BtnExportTrailOnTapped;
-
+            RenderEngine.BtnExportTrail.GestureRecognizers.Clear();
+            tapRecognizer = new TapGestureRecognizer();
+            RenderEngine.BtnExportTrail.GestureRecognizers.Add(tapRecognizer);
+            tapRecognizer.OnTapped += TapRecognizer_OnTappedBtnExportTrail;
+        
             _minimap = new MinimapRenderItem(InitialCollection, null, xMinimapCanvas);
+        }
+
+        private void TapRecognizer_OnTappedBnDelete(TapGestureRecognizer sender, TapEventArgs args)
+        {
+            BtnDeleteOnTapped();
+        }
+
+        private void TapRecognizer_OnTappedBtnExportTrail(TapGestureRecognizer sender, TapEventArgs args)
+        {
+            BtnExportTrailOnTapped();
         }
 
         /// <summary>
@@ -225,7 +239,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private async void BtnExportTrailOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private async void BtnExportTrailOnTapped()
         {
             if (_selectedLink is TrailRenderItem)
             {
@@ -403,7 +417,7 @@ namespace NuSysApp
             _minimap.Invalidate();
         }
 
-        private async void BtnDeleteOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private async void BtnDeleteOnTapped()
         {
             if (_selectedLink is LinkRenderItem)
             {
