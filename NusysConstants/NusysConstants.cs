@@ -1877,7 +1877,7 @@ namespace NusysIntermediate
             Text, Image, Word, Powerpoint, Collection, PDF, Audio, Video, Tag, Web, Area, Link, Recording,
 
             // weird type that possibly shouldn't be here
-            Tools
+            Tools, GoogleDrive
         }
 
         /// <summary>

@@ -39,6 +39,9 @@ namespace NuSysApp
         const string tokenEndpoint = "https://www.googleapis.com/oauth2/v4/token";
         const string userInfoEndpoint = "https://www.googleapis.com/oauth2/v3/userinfo";
         private const string listFilesEndpoint = "https://www.googleapis.com/drive/v2/files";
+        private const string searchListFilesEndpoint = "https://www.googleapis.com/drive/v2/files?q=";
+        private string accessToken;
+
 
         public GoogleDriveCommunicator()
         {
@@ -156,59 +159,10 @@ namespace NuSysApp
             }
             // Sets the Authentication header of our HTTP client using the acquired access token.
             JsonObject tokens = JsonObject.Parse(responseString);
-            string accessToken = tokens.GetNamedString("access_token");
-            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+            accessToken = tokens.GetNamedString("access_token");
             // Makes a call to the Userinfo endpoint, and prints the results.
-            output("Making API Call to Userinfo...");
+            SearchDrive("design");
             
-            HttpResponseMessage userinfoResponse = client.GetAsync(listFilesEndpoint).Result;
-
-            string userinfoResponseContent = await userinfoResponse.Content.ReadAsStringAsync();
-            var test = JObject.Parse(userinfoResponseContent);
-            var driveItems = test["items"];
-            var driveImageElements = new List<ImageLibraryElementController>();
-            var i = 0;
-            foreach (var driveItem in driveItems)
-            {
-                i++;
-                if(i > 5)
-                {
-                    break;
-                }
-                var imageArgs = new CreateNewImageLibraryElementRequestArgs();
-                imageArgs.AspectRatio = 1;
-                imageArgs.Title = driveItem["title"].ToString();
-                var keywords = new HashSet<Keyword>();
-                keywords.Add(new Keyword("drive"));
-                keywords.Add(new Keyword("google"));
-                imageArgs.Keywords = keywords;
-                var metadata = new List<MetadataEntry>();
-                var url = new List<String>();
-                url.Add(driveItem["alternateLink"].ToString());
-                metadata.Add(new MetadataEntry("URL", url, MetadataMutability.IMMUTABLE));
-                imageArgs.Metadata = metadata;
-                imageArgs.AccessType = NusysConstants.AccessType.Public;
-
-                var contentRequestArgs = new CreateNewContentRequestArgs();
-                //var id = driveItem["id"].ToString() + "2";
-                //contentRequestArgs.ContentId = id;
-                if (driveItem["thumbnailLink"] != null)
-                {
-                    contentRequestArgs.DataBytes = driveItem["thumbnailLink"].ToString();
-                }
-                else
-                {
-                    contentRequestArgs.DataBytes = driveItem["iconLink"].ToString();
-                }
-                contentRequestArgs.FileExtension = null;
-                contentRequestArgs.LibraryElementArgs = imageArgs;
-                var request = new CreateNewContentRequest(contentRequestArgs);
-                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-                if (request.AddReturnedLibraryElementToLibrary())
-                {
-                    var x = 4;
-                }
-            }
         }
         /// <summary>
         /// Appends the given string to the on-screen log, and the debug console.
@@ -254,6 +208,77 @@ namespace NuSysApp
             // Strips padding.
             base64 = base64.Replace("=", "");
             return base64;
+        }
+
+        public async void SearchDrive(String searchString)
+        {
+            if(accessToken != null && !accessToken.Equals(""))
+            {
+                var qValue = "title contains '" + searchString + "'";
+                var encodedValue = Uri.EscapeDataString(qValue);
+                var finalURL = searchListFilesEndpoint + encodedValue;
+                HttpClientHandler handler = new HttpClientHandler();
+                handler.AllowAutoRedirect = true;
+                HttpClient client = new HttpClient(handler);
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+                // Makes a call to the Userinfo endpoint, and prints the results.
+                output("Making API Call to Userinfo...");
+
+                HttpResponseMessage userinfoResponse = client.GetAsync(finalURL).Result;
+
+                string userinfoResponseContent = await userinfoResponse.Content.ReadAsStringAsync();
+                var test = JObject.Parse(userinfoResponseContent);
+                var driveItems = test["items"];
+                var driveImageElements = new List<ImageLibraryElementController>();
+                var i = 0;
+                foreach (var driveItem in driveItems)
+                {
+                    i++;
+                    if (i > 5)
+                    {
+                        break;
+                    }
+                    var imageArgs = new CreateNewImageLibraryElementRequestArgs();
+                    imageArgs.AspectRatio = 1;
+                    imageArgs.Title = driveItem["title"].ToString();
+                    var keywords = new HashSet<Keyword>();
+                    keywords.Add(new Keyword("drive"));
+                    keywords.Add(new Keyword("google"));
+                    imageArgs.Keywords = keywords;
+                    var metadata = new List<MetadataEntry>();
+                    var url = new List<String>();
+                    url.Add(driveItem["alternateLink"].ToString());
+                    metadata.Add(new MetadataEntry("URL", url, MetadataMutability.IMMUTABLE));
+                    imageArgs.Metadata = metadata;
+                    imageArgs.AccessType = NusysConstants.AccessType.Public;
+
+                    var contentRequestArgs = new CreateNewContentRequestArgs();
+                    //var id = driveItem["id"].ToString() + "2";
+                    //contentRequestArgs.ContentId = id;
+                    if (driveItem["thumbnailLink"] != null)
+                    {
+                        contentRequestArgs.DataBytes = driveItem["thumbnailLink"].ToString();
+                    }
+                    else
+                    {
+                        contentRequestArgs.DataBytes = driveItem["iconLink"].ToString();
+                    }
+                    contentRequestArgs.FileExtension = null;
+                    contentRequestArgs.LibraryElementArgs = imageArgs;
+                    var request = new CreateNewContentRequest(contentRequestArgs);
+                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+                    if (request.AddReturnedLibraryElementToLibrary())
+                    {
+                        var x = 4;
+                    }
+                }
+            }
+            else
+            {
+
+            }
+
+
         }
     }
 }

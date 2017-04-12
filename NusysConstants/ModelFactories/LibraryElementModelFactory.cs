@@ -44,6 +44,9 @@ namespace NusysIntermediate
                 case NusysConstants.ElementType.Word:
                     model = new WordLibraryElementModel(id);
                     break;
+                case NusysConstants.ElementType.GoogleDrive:
+                    model = new GoogleDriveLibraryElementModel(id);
+                    break;
                 default:
                     model = new LibraryElementModel(id, type);
                     break;
