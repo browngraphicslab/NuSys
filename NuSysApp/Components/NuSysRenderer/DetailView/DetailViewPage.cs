@@ -313,7 +313,17 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private async void _dragToCollectionButton_DragCompleted(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            await StaticServerCalls.AddElementToCurrentCollection(pointer.CurrentPoint, _controller.LibraryElementModel.Type, _controller);
+            var dragDestination =SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(new Vector2((float)Math.Floor(pointer.CurrentPoint.X), (float)Math.Floor(pointer.CurrentPoint.Y)), null, 2); //maybe replace null w render engine.root
+
+            if (dragDestination is VariableElementRenderItem)
+            {
+                var controller = (dragDestination as VariableElementRenderItem).ViewModel.Controller as VariableElementController;
+                controller?.SetStoredLibraryId(_controller.LibraryElementModel.LibraryElementId);
+            }
+            else
+            {
+                await StaticServerCalls.AddElementToCurrentCollection(pointer.CurrentPoint, _controller.LibraryElementModel.Type, _controller);
+            }
             _dragRect.Image = null;
             _dragRect.IsVisible = false;
         }
