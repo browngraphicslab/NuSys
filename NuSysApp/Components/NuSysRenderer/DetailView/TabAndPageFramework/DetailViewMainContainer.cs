@@ -19,6 +19,8 @@ namespace NuSysApp
         /// </summary>
         private TabContainerUIElement<string> _mainTabContainer;
 
+        private TabControlUIElement _tabControl;
+
         /// <summary>
         /// The page displayed in the main tab container
         /// </summary>
@@ -69,7 +71,37 @@ namespace NuSysApp
                 Underlined = true,
                 MaxTabs = 7
             };
-            AddChild(_mainTabContainer);
+            //AddChild(_mainTabContainer);
+
+            _tabControl = new TabControlUIElement(this, Canvas);
+            TabPageUIElement page1 = new TabPageUIElement(this, Canvas, "Page 1");
+            TextboxUIElement tb1 = new TextboxUIElement(this, Canvas);
+            tb1.Text = "TextBox 1";
+            page1.AddChild(tb1);
+            page1.Background = Colors.Green;
+            TabPageUIElement page2 = new TabPageUIElement(this, Canvas, "Page 2");
+            TextboxUIElement tb2 = new TextboxUIElement(this, Canvas);
+            tb2.Text = "TextBox 2";
+            page2.AddChild(tb2);
+            page2.Background = Colors.Red;
+            TabPageUIElement page3 = new TabPageUIElement(this, Canvas, "Page 3");
+            TextboxUIElement tb3 = new TextboxUIElement(this, Canvas);
+            tb3.Text = "TextBox 3";
+            page3.AddChild(tb3);
+            page3.Background = Colors.Orange;
+            TabPageUIElement page4 = new TabPageUIElement(this, Canvas, "Page 4");
+            TextboxUIElement tb4 = new TextboxUIElement(this, Canvas);
+            tb4.Text = "TextBox 4";
+            page4.AddChild(tb4);
+            page4.Background = Colors.DarkBlue;
+            _tabControl.AddTab(page1);
+            _tabControl.AddTab(page2);
+            _tabControl.AddTab(page3);
+            _tabControl.AddTab(page4);
+            _tabControl.Transform.LocalY += 50;
+            _tabControl.Height = Height - 20;
+            _tabControl.Width = Width - 20;
+            AddChild(_tabControl);
 
             TopBarColor = Constants.MED_BLUE;
             TopBarHeight = 25;
@@ -281,6 +313,10 @@ namespace NuSysApp
             // this makes the mainTabContainer fill the entire window
             _mainTabLayoutManager.SetSize(Width, Height);
             _mainTabLayoutManager.ArrangeItems();
+
+            _tabControl.Transform.LocalX = 10;
+            _tabControl.Width = Width - 20;
+            _tabControl.Height = Height - 20;
 
             if (_userLayoutManager != null)
             {

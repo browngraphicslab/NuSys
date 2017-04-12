@@ -30,17 +30,20 @@ namespace NuSysApp
             public TabButtonUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, TabPageUIElement tabPage, BaseInteractiveUIElement shape = null) : base(parent, resourceCreator, shape)
             {
                 TabPage = tabPage;
+                SelectedBackground = Colors.Green;
             }
 
             public override void Draw(CanvasDrawingSession ds)
             {
-                if(Selected)
+                if (Selected)
                 {
-                    Background = Colors.Blue;
-                } else
+                    Background = TabPage.Background;
+                }
+                else
                 {
                     Background = Colors.Yellow;
                 }
+                Height = 50;
                 ButtonText = TabPage.Name;
                 base.Draw(ds);
             }
@@ -56,7 +59,7 @@ namespace NuSysApp
 
         protected StackLayoutManager _buttonLayoutManager = new StackLayoutManager();
 
-        private TabPageUIElement _selectedTab;
+        private TabPageUIElement _selectedTab = null;
         public TabPageUIElement SelectedTab
         {
             get
@@ -65,10 +68,13 @@ namespace NuSysApp
             }
             set
             {
-                RemoveChild(_selectedTab);
-                _tabDict[_selectedTab].Selected = false;
+                if (_selectedTab != null)
+                {
+                    _selectedTab.IsVisible = false;
+                    _tabDict[_selectedTab].Selected = false;
+                }
                 _selectedTab = value;
-                AddChild(_selectedTab);
+                _selectedTab.IsVisible = true;
                 _tabDict[_selectedTab].Selected = true;
             }
         }
@@ -84,6 +90,16 @@ namespace NuSysApp
                 SelectedTab = _tabs[value];
             }
         }
+
+        public int TabButtonHeight
+        {
+            get; set;
+        } = 50;
+
+        public int TabButtonWidth
+        {
+            get; set;
+        } = 100;
 
         /// <summary>
         /// Default constructor for TabControl
@@ -124,7 +140,7 @@ namespace NuSysApp
             return _tabs.FindIndex((TabPageUIElement t) => t.Name.Equals(name));
         }
 
-        void AddTab(TabPageUIElement newTab, bool select = false)
+        public void AddTab(TabPageUIElement newTab, bool select = false)
         {
             newTab.Parent = this;
             _tabs.Add(newTab);
@@ -134,7 +150,10 @@ namespace NuSysApp
             _buttonLayoutManager.AddElement(button);
             button.Tapped += TabButton_Tapped;
             _tabDict.Add(newTab, button);
-            if(select)
+            newTab.Transform.LocalY = TabButtonHeight;
+            newTab.IsVisible = false;
+            AddChild(newTab);
+            if(select || SelectedTab == null)
             {
                 SelectedTab = newTab;
             }
@@ -150,12 +169,12 @@ namespace NuSysApp
             SelectedTab = button.TabPage;
         }
 
-        void RemoveTab(TabPageUIElement tab)
+        public void RemoveTab(TabPageUIElement tab)
         {
             RemoveTabAt(_tabs.IndexOf(tab));
         }
 
-        void RemoveTabAt(int index)
+        public void RemoveTabAt(int index)
         {
             if(SelectedIndex == index)
             {
@@ -171,70 +190,71 @@ namespace NuSysApp
             RemoveChild(button);
             _buttonLayoutManager.Remove(button);
             button.Tapped -= TabButton_Tapped;
+            RemoveChild(_tabs[index]);
             _tabs.RemoveAt(index);
             _tabDict.Remove(t);
         }
 
-        void RemoveTabWithName(string name)
+        public void RemoveTabWithName(string name)
         {
             TabPageUIElement t = GetTabWithName(name);
             RemoveTab(t);
         }
 
-        void Clear()
+        public void Clear()
         {
             _tabs.Clear();
             SelectedTab = null;
         }
 
-        void SelectTab(TabPageUIElement tab)
+        public void SelectTab(TabPageUIElement tab)
         {
             SelectedTab = tab;
         }
 
-        void SelectTabAt(int index)
+        public void SelectTabAt(int index)
         {
             SelectedIndex = index;
         }
 
-        void SelectTabWithName(string name)
+        public void SelectTabWithName(string name)
         {
             SelectedTab = GetTabWithName(name);
         }
 
-        void DeselectTab(TabPageUIElement tab)
+        public void DeselectTab(TabPageUIElement tab)
         {
             DeselectTabAt(_tabs.IndexOf(tab));
         }
 
-        void DeselectTabAt(int index)
+        public void DeselectTabAt(int index)
         {
             SelectedIndex = (index + 1) % _tabs.Count;
         }
 
-        void DeselectTabWithName(string name)
+        public void DeselectTabWithName(string name)
         {
             DeselectTab(GetTabWithName(name));
         }
 
-        Rect GetTabLocalBounds(int index)
+        public Rect GetTabLocalBounds(int index)
         {
             return _tabs[index].GetLocalBounds();
         }
-        
-        Rect GetTabScreenBounds(int index)
+
+        public Rect GetTabScreenBounds(int index)
         {
             return _tabs[index].GetScreenBounds();
         }
 
-        void SwapTabs(int index1, int index2)
+        public void SwapTabs(int index1, int index2)
         {
             TabPageUIElement t = _tabs[index1];
             _tabs[index1] = _tabs[index2];
             _tabs[index2] = t;
         }
 
-        void MoveTab(int oldIndex, int newIndex)
+        public void MoveTab(int oldIndex, int newIndex)
         {
             TabPageUIElement t = _tabs[oldIndex];
             _tabs.RemoveAt(oldIndex);
@@ -243,13 +263,17 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
-            _buttonLayoutManager.ItemWidth = 100;
-            _buttonLayoutManager.Height = 200;
+            _buttonLayoutManager.ItemWidth = TabButtonWidth;
+            _buttonLayoutManager.ItemHeight = TabButtonHeight;
+            _buttonLayoutManager.Height = TabButtonHeight;
             _buttonLayoutManager.Width = Width;
             _buttonLayoutManager.ArrangeItems();
 
-            SelectedTab.Transform.LocalPosition = new System.Numerics.Vector2(0, 200);
-            SelectedTab.Transform.Size = new Size(Width, Height - 200);
+            if (SelectedTab != null)
+            {
+                SelectedTab.Width = Width;
+                SelectedTab.Height = Height - TabButtonHeight;
+            }
             base.Draw(ds);
         }
 
