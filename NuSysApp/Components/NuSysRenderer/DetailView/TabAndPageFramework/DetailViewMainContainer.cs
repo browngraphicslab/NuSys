@@ -128,7 +128,7 @@ namespace NuSysApp
             };
             _mainTabLayoutManager.SetMargins(15,BorderWidth,15,BorderWidth);
             _mainTabLayoutManager.TopMargin = TopBarHeight;
-            _mainTabLayoutManager.AddElement(_mainTabContainer);
+            _mainTabLayoutManager.AddElement(_tabControl);
 
             // detail view defaults to invisible. visible on click
             IsVisible = false;
@@ -313,10 +313,6 @@ namespace NuSysApp
             // this makes the mainTabContainer fill the entire window
             _mainTabLayoutManager.SetSize(Width, Height);
             _mainTabLayoutManager.ArrangeItems();
-
-            _tabControl.Transform.LocalX = 10;
-            _tabControl.Width = Width - 20;
-            _tabControl.Height = Height - 20;
 
             if (_userLayoutManager != null)
             {
