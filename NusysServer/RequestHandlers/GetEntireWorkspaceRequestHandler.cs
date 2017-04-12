@@ -26,7 +26,15 @@ namespace NusysServer
             }
             
             var returnedMessages = ContentController.Instance.SqlConnector.ExecuteSelectQueryAsMessages(CreateGetEntireWorkspaceSqlQuery(workspaceId, userId, 2));
-            
+
+
+            var cmd = new SQLSelectQuery(new JoinedTable(new SqlJoinOperationArgs() {Column1 = Constants.GetFullColumnTitle(Constants.SQLTableType.Content, NusysConstants.CONTENT_TABLE_CONTENT_ID_KEY).First(),
+                Column2 = Constants.GetFullColumnTitle(Constants.SQLTableType.LibraryElement,NusysConstants.LIBRARY_ELEMENT_CONTENT_ID_KEY).First(),JoinOperator = Constants.JoinedType.InnerJoin, LeftTable = new SingleTable(Constants.SQLTableType.Content),RightTable = new SingleTable(Constants.SQLTableType.LibraryElement)}), new SqlQueryEquals(Constants.SQLTableType.LibraryElement, NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY, workspaceId));
+            var currCollectionContentDataModelMessages = cmd.ExecuteCommand();
+            var contentDataModel = ContentDataModelFactory.CreateFromMessage(currCollectionContentDataModelMessages.Select(strippedMessage => new Message(strippedMessage.Concat(new List<KeyValuePair<string, object>>() {new KeyValuePair<string, object>(
+                NusysConstants.CONTENT_DATA_MODEL_DATA_STRING_KEY, FileHelper.GetDataFromContentURL( strippedMessage.GetString(NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY),strippedMessage.GetEnum<NusysConstants.ContentType>(NusysConstants.CONTENT_TABLE_TYPE_KEY)))}).ToDictionary(x => x.Key, y => y.Value))).FirstOrDefault());
+
+
             PropertiesParser propertiesParser = new PropertiesParser();
             var concatPropertiesReturnedMessages = propertiesParser.ConcatMessageProperties(returnedMessages);
 
@@ -38,7 +46,7 @@ namespace NusysServer
                          strippedMessage.GetString(NusysConstants.CONTENT_TABLE_CONTENT_URL_KEY),
                          strippedMessage.GetEnum<NusysConstants.ContentType>(NusysConstants.CONTENT_TABLE_TYPE_KEY)))}).ToDictionary(x => x.Key, y => y.Value)));
 
-            var contentDataModels = cleaned.Select(m => ContentDataModelFactory.CreateFromMessage(m));
+            var contentDataModels = cleaned.Select(m => ContentDataModelFactory.CreateFromMessage(m)).Concat(new List<ContentDataModel>() {contentDataModel});
             var aliases = cleaned.Select(m => ElementModelFactory.CreateFromMessage(m));
             //create new args to return
             var returnArgs = new GetEntireWorkspaceRequestReturnArgs();
@@ -46,7 +54,7 @@ namespace NusysServer
             returnArgs.ContentMessages = contentDataModels.Select(m => JsonConvert.SerializeObject(m));
             returnArgs.AliasStrings = aliases.Select(m => JsonConvert.SerializeObject(m));
             returnArgs.PresentationLinks = GetAllPresentationLinks(workspaceId);
-            returnArgs.InkStrokes = GetAllInkStrokes(workspaceId);
+            returnArgs.InkStrokes = GetAllInkStrokes(workspaceId, contentDataModels.Select(cdm => cdm.ContentId));
 
             var returnMessage = new Message();
             returnMessage[NusysConstants.GET_ENTIRE_WORKSPACE_REQUEST_RETURN_ARGUMENTS_KEY] = returnArgs;
@@ -62,8 +70,8 @@ namespace NusysServer
             {
                 PresentationLinkModel linkModel = new PresentationLinkModel();
                 linkModel.AnnotationText = linkRow.GetString(NusysConstants.PRESENTATION_LINKS_TABLE_ANNOTATION_TEXT_KEY);
-                linkModel.InElementId = linkRow.GetString(NusysConstants.PRESENTATION_LINKS_TABLE_IN_ELEMENT_ID_KEY);
-                linkModel.OutElementId = linkRow.GetString(NusysConstants.PRESENTATION_LINKS_TABLE_OUT_ELEMENT_ID_KEY);
+                linkModel.OutElementId = linkRow.GetString(NusysConstants.PRESENTATION_LINKS_TABLE_IN_ELEMENT_ID_KEY);
+                linkModel.InElementId = linkRow.GetString(NusysConstants.PRESENTATION_LINKS_TABLE_OUT_ELEMENT_ID_KEY);
                 linkModel.LinkId = linkRow.GetString(NusysConstants.PRESENTATION_LINKS_TABLE_LINK_ID_KEY);
                 linkModel.ParentCollectionId =
                     linkRow.GetString(NusysConstants.PRESENTATION_LINKS_TABLE_PARENT_COLLECTION_LIBRARY_ID_KEY);
@@ -76,7 +84,7 @@ namespace NusysServer
         /// returns the json serialized version of all the ink strokes for any of the content ids given
         /// </summary>
         /// <returns></returns>
-        private IEnumerable<string> GetAllInkStrokes(string collectionId)
+        private IEnumerable<string> GetAllInkStrokes(string collectionId, IEnumerable<string> contentIds)
         {
             var query = new SQLSelectQuery(new JoinedTable(new SqlJoinOperationArgs() {
                 JoinOperator = Constants.JoinedType.InnerJoin,
@@ -85,6 +93,7 @@ namespace NusysServer
                 Column1 = Constants.GetFullColumnTitle(Constants.SQLTableType.LibraryElement, NusysConstants.LIBRARY_ELEMENT_CONTENT_ID_KEY).First(),
                 Column2 = Constants.GetFullColumnTitle(Constants.SQLTableType.Ink, NusysConstants.INK_TABLE_CONTENT_ID).First(),
             }), new SqlQueryEquals(Constants.SQLTableType.LibraryElement, NusysConstants.LIBRARY_ELEMENT_LIBRARY_ID_KEY, collectionId));
+            query = new SQLSelectQuery(new SingleTable(Constants.SQLTableType.Ink),new SqlQueryContains(Constants.SQLTableType.Ink, NusysConstants.INK_TABLE_CONTENT_ID,contentIds));
             var inkStrokes = query.ExecuteCommand();
             return inkStrokes.Select(stroke => JsonConvert.SerializeObject(InkModelFactory.ParseFromDatabaseMessage(stroke)));
         }

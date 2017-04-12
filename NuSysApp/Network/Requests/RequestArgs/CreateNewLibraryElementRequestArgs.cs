@@ -93,6 +93,12 @@ namespace NuSysApp
         /// </summary>
         public string ParentLibraryElementId { get; set; }
 
+        /// <summary>
+        /// the origin object describing where this library element came from.
+        /// Will default to library if not set
+        /// </summary>
+        public LibraryElementOrigin Origin { get; set; }
+
         #region Required
 
         /// <summary>
@@ -195,6 +201,15 @@ namespace NuSysApp
             if(ParentLibraryElementId != null)
             {
                 message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_PARENT_ID_KEY] = ParentLibraryElementId;
+            }
+
+            if (Origin != null)
+            {
+                message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_ORIGIN_OBJECT_KEY] = Origin;
+            }
+            else
+            {
+                message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_ORIGIN_OBJECT_KEY] = new LibraryElementOrigin();
             }
 
             //set the default library element's content ID

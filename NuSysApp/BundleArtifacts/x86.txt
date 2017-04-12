@@ -1,5 +1,1 @@
-MainPackage=S:\NuSys\NuSysApp\bin\x86\Debug\NuSysApp_1.0.107.0_x86_Debug.appx
-ResourcePack=S:\NuSys\NuSysApp\bin\x86\Debug\NuSysApp_1.0.107.0_scale-100.appx
-ResourcePack=S:\NuSys\NuSysApp\bin\x86\Debug\NuSysApp_1.0.107.0_scale-125.appx
-ResourcePack=S:\NuSys\NuSysApp\bin\x86\Debug\NuSysApp_1.0.107.0_scale-150.appx
-ResourcePack=S:\NuSys\NuSysApp\bin\x86\Debug\NuSysApp_1.0.107.0_scale-400.appx
+MainPackage=C:\Users\Trent\Documents\nusys_repo\main\nusys\NuSysApp\bin\x86\Release\NuSysApp_1.1.20.0_x86.appx

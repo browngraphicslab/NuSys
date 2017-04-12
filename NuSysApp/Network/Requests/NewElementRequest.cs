@@ -36,7 +36,7 @@ namespace NuSysApp
         /// this checker just debug.asserts() the required keys.
         /// </summary>
         /// <returns></returns>
-        public override async Task CheckOutgoingRequest()
+        public override void CheckOutgoingRequest()
         {
             var m = _message;
             Debug.Assert(_message.ContainsKey(NusysConstants.NEW_ELEMENT_REQUEST_ELEMENT_ID_KEY));
@@ -76,6 +76,7 @@ namespace NuSysApp
             CheckWasSuccessfull();
             //get and add the requested element model.
             var model = GetReturnedElementModel();
+            
             var success = await SessionController.Instance.AddElementAsync(model);
             return success;
         }
@@ -109,6 +110,8 @@ namespace NuSysApp
         /// <returns></returns>
         public override async Task ExecuteRequestFunction()
         {
+
+
             Debug.Assert(_message.ContainsKey(NusysConstants.NEW_ELEMENT_REQUEST_RETURNED_ELEMENT_MODEL_KEY));
             var model = ElementModelFactory.DeserializeFromString(_message.GetString(NusysConstants.NEW_ELEMENT_REQUEST_RETURNED_ELEMENT_MODEL_KEY));
 

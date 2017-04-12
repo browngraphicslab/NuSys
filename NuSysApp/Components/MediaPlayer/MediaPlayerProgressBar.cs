@@ -72,7 +72,7 @@ namespace NuSysApp
 
         private void BackgroundRectangleOnDoubleTapped(object sender, DoubleTappedRoutedEventArgs doubleTappedRoutedEventArgs)
         {
-            SessionController.Instance.SessionView.DetailViewerView.ShowElement(CurrentLibraryElementController);
+            SessionController.Instance.NuSessionView.ShowDetailView(CurrentLibraryElementController);
         }
 
         private void BackgroundRectangleOnPointerPressed(object sender, PointerRoutedEventArgs pointerRoutedEventArgs)
@@ -114,8 +114,8 @@ namespace NuSysApp
             Debug.Assert(libaryElementController != null);
             RemoveOldController(CurrentLibraryElementController);
             
-            libaryElementController.ContentDataController.ContentDataModel.OnRegionAdded += ContentDataModelOnOnRegionAdded;
-            libaryElementController.ContentDataController.ContentDataModel.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
+            libaryElementController.ContentDataController.OnRegionAdded += ContentDataModelOnOnRegionAdded;
+            libaryElementController.ContentDataController.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
 
 
             CurrentLibraryElementController = libaryElementController;
@@ -144,7 +144,7 @@ namespace NuSysApp
             }
         }
 
-        private void ContentDataModelOnOnRegionRemoved(string regionLibraryElementModelId)
+        private void ContentDataModelOnOnRegionRemoved(object sender, string regionLibraryElementModelId)
         {
             foreach (var region in _regionViews)
             {
@@ -157,7 +157,7 @@ namespace NuSysApp
             }
         }
 
-        private void ContentDataModelOnOnRegionAdded(string regionLibraryElementModelId)
+        private void ContentDataModelOnOnRegionAdded(object sender, string regionLibraryElementModelId)
         {
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(regionLibraryElementModelId) as AudioLibraryElementController;
             if (controller != null && controller != CurrentLibraryElementController)
@@ -189,8 +189,8 @@ namespace NuSysApp
             }
             if (controller.ContentDataController?.ContentDataModel != null)
             {
-                controller.ContentDataController.ContentDataModel.OnRegionAdded -= ContentDataModelOnOnRegionAdded;
-                controller.ContentDataController.ContentDataModel.OnRegionRemoved -= ContentDataModelOnOnRegionRemoved;
+                controller.ContentDataController.OnRegionAdded -= ContentDataModelOnOnRegionAdded;
+                controller.ContentDataController.OnRegionRemoved -= ContentDataModelOnOnRegionRemoved;
             }
             
         }
@@ -227,8 +227,8 @@ namespace NuSysApp
 
             if (CurrentLibraryElementController.ContentDataController?.ContentDataModel != null)
             {
-                CurrentLibraryElementController.ContentDataController.ContentDataModel.OnRegionAdded -= ContentDataModelOnOnRegionAdded;
-                CurrentLibraryElementController.ContentDataController.ContentDataModel.OnRegionRemoved -= ContentDataModelOnOnRegionRemoved;
+                CurrentLibraryElementController.ContentDataController.OnRegionAdded -= ContentDataModelOnOnRegionAdded;
+                CurrentLibraryElementController.ContentDataController.OnRegionRemoved -= ContentDataModelOnOnRegionRemoved;
             }
         }
 
@@ -368,7 +368,7 @@ namespace NuSysApp
 
             private void OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs doubleTappedRoutedEventArgs)
             {
-                SessionController.Instance.SessionView.DetailViewerView.ShowElement(LibraryElementController,DetailViewTabType.Home);
+                SessionController.Instance.NuSessionView.ShowDetailView(LibraryElementController);
             }
 
 
@@ -448,9 +448,13 @@ namespace NuSysApp
 
             public void SetLeft(object sender, double newNormalizedStartTime)
             {
-                Debug.Assert(RenderTransform is TranslateTransform);
-                Debug.Assert(_progressBar?.CurrentLibraryElementController?.AudioLibraryElementModel != null);
-                (RenderTransform as TranslateTransform).X = (newNormalizedStartTime - _progressBar.CurrentLibraryElementController.AudioLibraryElementModel.NormalizedStartTime) * (_progressBar.Width/_progressBar.NormalizedWidth);
+                UITask.Run(() =>
+                {
+                    Debug.Assert(RenderTransform is TranslateTransform);
+                    Debug.Assert(_progressBar?.CurrentLibraryElementController?.AudioLibraryElementModel != null);
+                    (RenderTransform as TranslateTransform).X = (newNormalizedStartTime - _progressBar.CurrentLibraryElementController.AudioLibraryElementModel.NormalizedStartTime) * (_progressBar.Width / _progressBar.NormalizedWidth);
+
+                });
             }
 
             public void SetDuration(object sender, double newNormalizedDuration)

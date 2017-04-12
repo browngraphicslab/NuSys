@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -12,6 +13,7 @@ using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using NusysIntermediate;
+using WinRTXamlToolkit.IO.Serialization;
 
 
 namespace NuSysApp
@@ -23,13 +25,19 @@ namespace NuSysApp
         private FreeFormViewerViewModel _vm;
         private List<ElementRenderItem> _selectedItems = new List<ElementRenderItem>();
 
+        public delegate void ElementSelectionSizeChanged(Size size);
+        public event ElementSelectionSizeChanged ElementSelectionRenderItemSizeChanged;
         public NodeMenuButtonRenderItem BtnDelete;
         public NodeMenuButtonRenderItem BtnPresent;
         public NodeMenuButtonRenderItem BtnGroup;
         public NodeMenuButtonRenderItem BtnEnterCollection;
+        public NodeMenuButtonRenderItem BtnLayoutTool;
+        public NodeMenuButtonRenderItem BtnEditTags;
         public PdfPageButtonRenderItem BtnPdfLeft;
         public PdfPageButtonRenderItem BtnPdfRight;
         public NodeResizerRenderItem Resizer;
+        public ButtonUIElement BtnTools;
+        private RectangleUIElement DragToolsRect;
         public List<BaseRenderItem> Buttons = new List<BaseRenderItem>();
         private List<BaseRenderItem> _menuButtons = new List<BaseRenderItem>();
         private bool _isSinglePdfSelected;
@@ -37,14 +45,24 @@ namespace NuSysApp
 
         public ElementSelectionRenderItem(ElementCollectionViewModel vm, BaseRenderItem parent, CanvasAnimatedControl resourceCreator) : base(parent, resourceCreator)
         {
-            BtnDelete = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/delete.png", parent, resourceCreator);
-            BtnPresent = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/presentation-mode-dark.png", parent, resourceCreator);
-            BtnGroup = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/collection icon bluegreen.png", parent, resourceCreator);
-            BtnEnterCollection = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/icon_enter.png", parent, resourceCreator);
-            
-            BtnPdfLeft = new PdfPageButtonRenderItem(-1,parent, resourceCreator);
-            BtnPdfRight = new PdfPageButtonRenderItem(1,parent, resourceCreator);
+            BtnDelete = new NodeMenuButtonRenderItem("ms-appx:///Assets/new icons/trash can white.png", parent, resourceCreator);
+            BtnDelete.Label = "delete";
+            BtnPresent = new NodeMenuButtonRenderItem("ms-appx:///Assets/new icons/present white.png", parent, resourceCreator);
+            BtnPresent.Label = "present";
+            BtnGroup = new NodeMenuButtonRenderItem("ms-appx:///Assets/new icons/collection white.png", parent, resourceCreator);
+            BtnGroup.Label = "collection";
+            BtnEnterCollection = new NodeMenuButtonRenderItem("ms-appx:///Assets/new icons/enter collection white.png", parent, resourceCreator);
+            BtnEnterCollection.Label = "enter collection";
+            BtnLayoutTool = new NodeMenuButtonRenderItem("ms-appx:///Assets/layout_icons/layout_icon.png", parent, resourceCreator);
+            BtnLayoutTool.Label = "edit layout";
+            BtnEditTags = new NodeMenuButtonRenderItem("ms-appx:///Assets/new icons/multitag.png", parent, resourceCreator);
+            BtnEditTags.Label = "add tags";
+
+            BtnPdfLeft = new PdfPageButtonRenderItem(-1, parent, resourceCreator);
+            BtnPdfRight = new PdfPageButtonRenderItem(1, parent, resourceCreator);
             Resizer = new NodeResizerRenderItem(parent, resourceCreator);
+            SetUpToolButton();
+
 
 
             Buttons = new List<BaseRenderItem>
@@ -52,12 +70,15 @@ namespace NuSysApp
                 BtnDelete,
                 BtnGroup,
                 BtnPresent,
+                BtnLayoutTool,
+                BtnEditTags,
                 BtnPdfLeft,
                 BtnPdfRight,
                 BtnEnterCollection,
-                Resizer
+                Resizer,
+                BtnTools
             };
-            _menuButtons = new List<BaseRenderItem> {BtnDelete, BtnGroup, BtnPresent, BtnEnterCollection};
+            _menuButtons = new List<BaseRenderItem> { BtnDelete, BtnGroup, BtnPresent, BtnLayoutTool, BtnEditTags, BtnEnterCollection, BtnTools };
 
             IsHitTestVisible = false;
             IsChildrenHitTestVisible = true;
@@ -70,11 +91,75 @@ namespace NuSysApp
             AddChild(Resizer);
 
             SessionController.Instance.SessionView.FreeFormViewer.Selections.CollectionChanged += SelectionsOnCollectionChanged;
+        }
+
+        public override void Dispose()
+        {
+            BtnTools.Dragged -= BtnTools_Dragged;
+            base.Dispose();
+        }
+
+        /// <summary>
+        /// Sets up the tool button to be dragged and the dragging rectangle that shows up when you start to drag.
+        /// </summary>
+        /// <returns></returns>
+        private async Task SetUpToolButton()
+        {
+
+            BtnTools = new TransparentButtonUIElement(this, ResourceCreator, UIDefaults.SecondaryStyle, "drag tools");
+            BtnTools.DragCompleted += BtnTools_DragCompleted;
+            BtnTools.Dragged += BtnTools_Dragged;
+
+            DragToolsRect = new RectangleUIElement(this, ResourceCreator)
+            {
+                Height = 20,
+                Width = 20,
+                Background = Colors.Transparent,
+            };
+            DragToolsRect.IsVisible = false;
+            AddChild(DragToolsRect);
 
 
         }
 
- 
+        /// <summary>
+        /// Make the drag tools rect follow the pointer when trying to drag out a new tool
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void BtnTools_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            DragToolsRect.IsVisible = true;
+            DragToolsRect.Transform.LocalPosition = Vector2.Transform(pointer.CurrentPoint, this.Transform.ScreenToLocalMatrix);
+        }
+
+        /// <summary>
+        /// When the tool button has been dragged, either create new tool or add the collection as a parent to the tool dragged ontop of
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void BtnTools_DragCompleted(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            DragToolsRect.IsVisible = false;
+
+            Debug.Assert(_isSingleCollectionSelected);
+            var collectionVm = (_selectedItems.First()?.ViewModel as ElementViewModel)?.Controller as ElementCollectionController;
+            Debug.Assert(collectionVm != null);
+            collectionVm.CreateToolFromCollection(pointer.CurrentPoint.X, pointer.CurrentPoint.Y);
+        }
+
+
+
+        public override async Task Load()
+        {
+            base.Load();
+            BtnTools.Image =
+                await MediaUtil.LoadCanvasBitmapAsync(ResourceCreator, new Uri("ms-appx:///Assets/new icons/tools red.png"));
+            DragToolsRect.Image =
+                await MediaUtil.LoadCanvasBitmapAsync(ResourceCreator, new Uri("ms-appx:///Assets/new icons/tools red.png"));
+        }
+
+
         private void SelectionsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
         {
             if (args.Action == NotifyCollectionChangedAction.Reset)
@@ -92,10 +177,11 @@ namespace NuSysApp
                 }
             }
 
-            if (args.NewItems != null) { 
+            if (args.NewItems != null)
+            {
                 foreach (var newItem in args.NewItems)
                 {
-                    var item = (ElementRenderItem) newItem;
+                    var item = (ElementRenderItem)newItem;
                     _selectedItems.Add(item);
                     item.ViewModel.Controller.PositionChanged += OnSelectedItemPositionChanged;
                     item.ViewModel.Controller.SizeChanged += OnSelectedItemSizeChanged;
@@ -106,11 +192,14 @@ namespace NuSysApp
             _isSingleCollectionSelected = _selectedItems.Count == 1 && _selectedItems[0] is CollectionRenderItem;
 
             BtnEnterCollection.IsVisible = _isSingleCollectionSelected;
+            BtnTools.IsVisible = _isSingleCollectionSelected;
 
 
-            BtnDelete.IsVisible = !SessionController.Instance.SessionView.IsReadonly;
-            BtnGroup.IsVisible = !SessionController.Instance.SessionView.IsReadonly;
-            Resizer.IsVisible = !SessionController.Instance.SessionView.IsReadonly;
+            BtnDelete.IsVisible = !SessionController.IsReadonly;
+            BtnGroup.IsVisible = !SessionController.IsReadonly;
+            // Layout tool only available when editing more than one node
+            BtnLayoutTool.IsVisible = !SessionController.IsReadonly && _selectedItems.Count > 1;
+            Resizer.IsVisible = !SessionController.IsReadonly;
 
             IsDirty = true;
         }
@@ -140,9 +229,11 @@ namespace NuSysApp
                 return;
             }
 
-            var bbs = _selectedItems.ToArray().Select(elem => elem.GetSelectionBoundingRect()).ToList();
+            // get the bounding boxes of all the selected items
+            var boundingBoxes = _selectedItems.ToList().Select(elem => elem.GetSelectionBoundingRect()).ToList();
 
-            _selectionBoundingRect = GetBoundingRect(bbs);
+            // get the bounding rect containing all the boundign boxes
+            _selectionBoundingRect = GetBoundingRect(boundingBoxes);
 
 
             var tl = new Vector2((float)_selectionBoundingRect.X, (float)_selectionBoundingRect.Y);
@@ -162,7 +253,7 @@ namespace NuSysApp
 
             Resizer.Transform.LocalPosition = new Vector2((float)(_screenRect.X + _screenRect.Width - 30 + 1.5f), (float)(_screenRect.Y + _screenRect.Height - 30 + 1.5f));
 
-        
+
             float leftOffset = -40;
             if (_isSinglePdfSelected)
             {
@@ -177,7 +268,16 @@ namespace NuSysApp
             {
                 if (!btn.IsVisible)
                     continue;
-                btn.Transform.LocalPosition = new Vector2((float)_screenRect.X + leftOffset, (float)_screenRect.Y + 20 + count * 35);
+                //Make sure the tool button is a ligned because its a different type of button from the rest
+                if (btn == BtnTools)
+                {
+                    btn.Transform.LocalPosition = new Vector2((float)_screenRect.X + 20 + (float)_screenRect.Width,
+                        (float)_screenRect.Y);
+                }
+                else
+                {
+                    btn.Transform.LocalPosition = new Vector2((float)_screenRect.X + leftOffset, (float)_screenRect.Y + 20 + count * 72);
+                }
                 count++;
             }
             BtnPdfLeft.IsVisible = _isSinglePdfSelected;
@@ -218,36 +318,36 @@ namespace NuSysApp
             _screenRect.X = 0;
             _screenRect.Y = 0;
 
-            
+
             Resizer.Transform.LocalPosition = new Vector2((float)(_screenRect.X + _screenRect.Width - 30 + 1.5f), (float)(_screenRect.Y + _screenRect.Height - 30 + 1.5f));
 
             var old = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
             ds.DrawRectangle(_screenRect, Colors.SlateGray, 3f, new CanvasStrokeStyle { DashCap = CanvasCapStyle.Flat, DashStyle = CanvasDashStyle.Dash, DashOffset = 10f });
 
-          
+
 
             base.Draw(ds);
 
             ds.Transform = old;
         }
 
-        private Rect GetBoundingRect(List<Rect> rects )
+        private Rect GetBoundingRect(List<Rect> rects)
         {
             var minX = double.PositiveInfinity;
-            var  minY = double.PositiveInfinity;
+            var minY = double.PositiveInfinity;
             var maxW = double.NegativeInfinity;
             var maxH = double.NegativeInfinity;
             foreach (var rect in rects)
             {
-                if (double.IsNaN(rect.X) || double.IsNaN(rect.Y) || double.IsNaN(rect.Width) || double.IsNaN(rect.Height) )
-                    return new Rect(0,0,0,0);
+                if (double.IsNaN(rect.X) || double.IsNaN(rect.Y) || double.IsNaN(rect.Width) || double.IsNaN(rect.Height))
+                    return new Rect(0, 0, 0, 0);
                 minX = rect.X < minX ? rect.X : minX;
                 minY = rect.Y < minY ? rect.Y : minY;
                 maxW = rect.X + rect.Width > maxW ? rect.X + rect.Width : maxW;
                 maxH = rect.Y + rect.Height > maxH ? rect.Y + rect.Height : maxH;
             }
-            return new Rect(minX, minY, maxW-minX, maxH-minY);
+            return new Rect(minX, minY, maxW - minX, maxH - minY);
         }
 
         public override Rect GetLocalBounds()
@@ -255,5 +355,14 @@ namespace NuSysApp
             return new Rect(0, 0, _screenRect.Width, _screenRect.Height);
         }
 
+        public override bool IsDirty
+        {
+            set
+            {
+                base.IsDirty = value;
+                var rect = GetLocalBounds();
+                ElementSelectionRenderItemSizeChanged?.Invoke(new Size(rect.Width, rect.Height));
+            }
+        }
     }
 }

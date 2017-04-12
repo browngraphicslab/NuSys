@@ -62,7 +62,7 @@ namespace NuSysApp
                     break;
                 // no icon support          
                 default:
-                    Debug.Fail($"The element type {element.Type} passed in does not have thumbnail support or it should be listed above");
+                    Debug.Assert(false, $"The element type {element.Type} passed in does not have thumbnail support or it should be listed above");
                     break;
             }
 
@@ -105,7 +105,7 @@ namespace NuSysApp
                     break;
                 // no default icon support          
                 default:
-                    Debug.Fail(
+                    Debug.Assert(false,
                         "The element passed in does not have a default thumbnail, or it's default thumbnail is not listed here." +
                         "If you passed in an image or a video, please use the LibraryElementModel overload");
                     return;

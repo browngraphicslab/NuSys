@@ -32,7 +32,7 @@ namespace NuSysApp.Network.Requests
         /// just checks to see if the message contains the necessary keys
         /// </summary>
         /// <returns></returns>
-        public override async Task CheckOutgoingRequest()
+        public override void CheckOutgoingRequest()
         {
             Debug.Assert(_message.ContainsKey(NusysConstants.CREATE_SNAPSHOT_OF_COLLECTION_REQUEST_COLLECTION_ID));
         }
@@ -67,6 +67,8 @@ namespace NuSysApp.Network.Requests
             var model = LibraryElementModelFactory.DeserializeFromString(_returnMessage.GetString(NusysConstants.CREATE_SNAPSHOT_OF_COLLECTION_REQUEST_RETURNED_COLLECTION_LIBRARY_ELEMENT_MODEL));
 
             SessionController.Instance.ContentController.Add(model);
+
+            SessionController.Instance.ContentController.GetLibraryElementController(model.LibraryElementId)?.SetAccessType(NusysConstants.AccessType.Private);
 
         }
     }

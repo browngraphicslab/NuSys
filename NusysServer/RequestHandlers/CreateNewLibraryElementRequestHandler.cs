@@ -38,7 +38,7 @@ namespace NusysServer
             //create message of database keys from request keys
             var addLibraryElementMessage = RequestToSqlKeyMappings.LibraryElementRequestKeysToDatabaseKeys(message);
 
-            addLibraryElementMessage[NusysConstants.LIBRARY_ELEMENT_CREATOR_USER_ID_KEY] = NusysClient.IDtoUsers[senderHandler]?.UserID;
+            addLibraryElementMessage[NusysConstants.LIBRARY_ELEMENT_CREATOR_USER_ID_KEY] = senderHandler?.UserId;
             addLibraryElementMessage = SetUpIconUrls(message, addLibraryElementMessage, libraryId);
             
             //if the request didn't specify a access Control type,
@@ -63,11 +63,10 @@ namespace NusysServer
             var model = LibraryElementModelFactory.CreateFromMessage(addLibraryElementMessage);
             var modelJson = JsonConvert.SerializeObject(model);
 
-            //if the library element doesn't have the access Type of private,
-            if(addLibraryElementMessage.GetEnum<NusysConstants.AccessType>(NusysConstants.LIBRARY_ELEMENT_ACCESS_KEY) != NusysConstants.AccessType.Private) { 
+
                 //forward the message to everyone else, and just add the new model json
-                ForwardMessage(new Message(message) { { NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY, modelJson }},senderHandler);
-            }
+            ForwardMessage(new Message(message) { { NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY, modelJson }},senderHandler);
+            
 
             var returnMessage = new Message();
             returnMessage[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_RETURNED_LIBRARY_ELEMENT_MODEL_KEY] = modelJson;

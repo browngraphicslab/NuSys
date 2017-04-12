@@ -67,7 +67,7 @@ namespace NuSysApp
             PresentationLinkModel model = JsonConvert.DeserializeObject<PresentationLinkModel>( _message.GetString(NusysConstants.CREATE_NEW_PRESENTATION_LINK_REQUEST_RETURNED_PRESENTATION_LINK_MODEL_KEY));
 
             // since we always create presentation links client side the same way, just call AddPresenationLinkToLibrary
-            if (SessionController.Instance.IdToControllers.ContainsKey(model.InElementId) && SessionController.Instance.IdToControllers.ContainsKey(model.OutElementId))
+            if (SessionController.Instance.ElementModelIdToElementController.ContainsKey(model.OutElementId) && SessionController.Instance.ElementModelIdToElementController.ContainsKey(model.InElementId))
             {
                 await UITask.Run(async delegate
                 {
@@ -80,7 +80,7 @@ namespace NuSysApp
         /// just checks to see if the message contains the necessary keys
         /// </summary>
         /// <returns></returns>
-        public override async Task CheckOutgoingRequest()
+        public override void CheckOutgoingRequest()
         {
             Debug.Assert(_message.ContainsKey(NusysConstants.CREATE_NEW_PRESENTATION_LINK_REQUEST_LINK_ID_KEY));
             Debug.Assert(_message.ContainsKey(NusysConstants.CREATE_NEW_PRESENTATION_LINK_REQUEST_LINK_IN_ID_KEY));

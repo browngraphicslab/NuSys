@@ -3,31 +3,28 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.ApplicationModel.Core;
 using Windows.Devices.Input;
-using Windows.Foundation;
-using Windows.System;
-using Windows.UI.Core;
-using Windows.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
-using Microsoft.Graphics.Canvas.UI.Xaml;
-using SharpDX.Direct2D1;
-using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
 {
 
    public class CanvasInteractionManager : IDisposable
     {
+        public enum InteractionType
+        {
+            Mouse,
+            Pen,
+            Touch
+        }
         public delegate void TappedHandler(BaseRenderItem element, PointerRoutedEventArgs args);
         public delegate void TwoPointerPressedHandler(CanvasPointer pointer1, CanvasPointer pointer2);
         public delegate void PointerPressedHandler(CanvasPointer pointer);
         public delegate void MarkingMenuPointerReleasedHandler();
         public delegate void MarkingMenuPointerMoveHandler(Vector2 p);
         public delegate void PointerWheelHandler(CanvasPointer pointer, float delta);
+        public delegate void HoldingHandler(Vector2 point);
         public delegate void TranslateHandler(CanvasPointer pointer, Vector2 point, Vector2 delta );
         public delegate void PanZoomHandler(Vector2 center, Vector2 deltaTranslation, float deltaZoom);
         public event TranslateHandler Translated;
@@ -40,8 +37,15 @@ namespace NuSysApp
         public event PointerPressedHandler ItemLongTapped;
         public event PointerPressedHandler ItemDoubleTapped;
         public event PointerWheelHandler PointerWheelChanged;
+        public event HoldingHandler Holding;
         public event TwoPointerPressedHandler TwoPointerPressed;
         public event MarkingMenuPointerMoveHandler MarkingMenuPointerMove;
+
+        /// <summary>
+        /// Event fired whenever the last interaction changed the stored type of interaction.
+        /// The passed InteractionType is the latest interation type 
+        /// </summary>
+        public event EventHandler<InteractionType> InteractionTypeChanged;
 
         private CanvasPointer _lastTappedPointer = new CanvasPointer();
         private Vector2 _centerPoint;
@@ -51,8 +55,16 @@ namespace NuSysApp
         private FrameworkElement _canvas;
         private bool _cancelLongTapped;
         private bool _isEnabled = true;
+        private InteractionType _lastInteractionType = InteractionType.Touch;
 
-       public List<CanvasPointer> ActiveCanvasPointers { get { return _pointers; } } 
+        /// <summary>
+        /// The interaction type of the last pointer down event.
+        /// </summary>
+        public InteractionType LastInteractionType
+        {
+            get { return _lastInteractionType;}
+        }
+        public List<CanvasPointer> ActiveCanvasPointers { get { return _pointers; } } 
         
         public CanvasInteractionManager(FrameworkElement pointerEventSource)
         {
@@ -63,6 +75,7 @@ namespace NuSysApp
             _canvas.PointerCaptureLost += CanvasOnPointerExited;
             _canvas.PointerCanceled += CanvasOnPointerExited;
             _canvas.PointerExited += CanvasOnPointerExited;
+            _canvas.Holding += OnHolding;
             AllPointersReleased += OnAllPointersReleased;
             SetEnabled(true);
         }
@@ -74,6 +87,7 @@ namespace NuSysApp
             _canvas.PointerPressed -= OnPointerPressed;
             _canvas.PointerReleased -= OnPointerReleased;
             _canvas.PointerWheelChanged -= ResourceCreatorOnPointerWheelChanged;
+            _canvas.Holding -= OnHolding;
             _canvas.PointerCaptureLost -= CanvasOnPointerExited;
             _canvas.PointerCanceled -= CanvasOnPointerExited;
             _canvas.PointerExited -= CanvasOnPointerExited;
@@ -111,6 +125,18 @@ namespace NuSysApp
             PointerWheelChanged?.Invoke(new CanvasPointer(point), delta);
         }
 
+
+        private void OnHolding(object sender, HoldingRoutedEventArgs args)
+        {
+            if (!_isEnabled)
+            {
+                return;
+            }
+            var point = args.GetPosition(_canvas).ToSystemVector2();
+            Holding?.Invoke(point);
+
+        }
+
         private void OnPointerReleased(object sender, PointerRoutedEventArgs args)
         {
             if (!_isEnabled)
@@ -121,6 +147,11 @@ namespace NuSysApp
 
         private void OnPointerPressed(object sender, PointerRoutedEventArgs args)
         {
+            if (_lastInteractionType != PointerToInteractionType(args.Pointer))
+            {
+                _lastInteractionType = PointerToInteractionType(args.Pointer);
+                InteractionTypeChanged?.Invoke(this, _lastInteractionType);
+            }
             if (!_isEnabled)
                 return;
             OnPointerTouchPressed(sender, args);
@@ -175,8 +206,11 @@ namespace NuSysApp
                     TwoPointerPressed?.Invoke(_pointers[0], _pointers[1]);
                 } 
             }
-            _canvas.PointerMoved -= OnPointerMoved;
+
+            //these lines actually do something, trust me
+            _canvas.PointerMoved -= OnPointerMoved; 
             _canvas.PointerMoved += OnPointerMoved;
+
         }
 
         private async void OnPointerTouchReleased(object sender, PointerRoutedEventArgs e)
@@ -228,8 +262,6 @@ namespace NuSysApp
 
         private void OnPointerTouchMoved(object sender, PointerRoutedEventArgs args)
         {
-            unsafe
-            {
                 var exisitingPointer = _pointers.Where(p => p.PointerId == args.Pointer.PointerId);
                 if (!exisitingPointer.Any())
                     return;
@@ -240,7 +272,9 @@ namespace NuSysApp
                 if (_pointers.Count == 1)
                 {
                     if (Math.Abs(pointer.DeltaSinceLastUpdate.X) > 0 || Math.Abs(pointer.DeltaSinceLastUpdate.Y) > 0)
+                    {
                         Translated?.Invoke(pointer, pointer.CurrentPoint, pointer.DeltaSinceLastUpdate);
+                    }
                 }
                 if (_pointers.Count >= 2)
                 {
@@ -252,12 +286,36 @@ namespace NuSysApp
                     var dy = _centerPoint.Y - prevCenterPoint.Y;
                     var ds = (float)(_twoFingerDist / prevDist);
                     if (Math.Abs(ds) > 0.9)
+                    {
                         PanZoomed?.Invoke(_centerPoint, new Vector2(dx, dy), ds);
+                    }
                 }
 
                 PointerMoved?.Invoke(pointer);
-            }
            
+        }
+
+        /// <summary>
+        /// method to call to forcibly forget all current canvas pointers
+        /// </summary>
+        public void ClearAllPointers()
+        {
+            Debug.Assert(_canvas != null && _pointers != null);
+            _canvas?.ReleasePointerCaptures();
+            _pointers?.Clear();
+        }
+
+        private InteractionType PointerToInteractionType(Pointer pointer)
+        {
+            if (pointer.PointerDeviceType == PointerDeviceType.Pen)
+            {
+                return InteractionType.Pen;
+            }
+            else if (pointer.PointerDeviceType == PointerDeviceType.Mouse)
+            {
+                return InteractionType.Mouse;
+            }
+            return InteractionType.Touch;
         }
     }
 }

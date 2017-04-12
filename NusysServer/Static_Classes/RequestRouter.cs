@@ -20,7 +20,7 @@ namespace NusysServer
         /// <param name="originalMessage"></param>
         /// <param name="webSocketHandler"></param>
         /// <returns></returns>
-        public static async Task<bool> HandleRequest(Message originalMessage, NuWebSocketHandler webSocketHandler)
+        public static bool HandleRequest(Message originalMessage, NuWebSocketHandler webSocketHandler)
         {
             try
             {
@@ -121,6 +121,33 @@ namespace NusysServer
                             break;
                         case NusysConstants.RequestType.GetLastUsedCollectionsRequest:
                             requestHandler = new GetLastUsedCollectionsRequestHandler();
+                            break;
+                        case NusysConstants.RequestType.UploadCollectionImageRequest:
+                            requestHandler = new UploadCollectionBackgroundImageRequestHandler();
+                            break;
+                        case NusysConstants.RequestType.GetWordDocumentRequest:
+                            requestHandler = new GetWordDocumentRequestHandler();
+                            break;
+                        case NusysConstants.RequestType.WebSearchRequest:
+                            requestHandler = new WebSearchRequestHandler();
+                            break;
+                        case NusysConstants.RequestType.SubscribeToLockRequest:
+                            requestHandler = new SubscribeToLockRequestHandler();
+                            break;
+                        case NusysConstants.RequestType.UnSubscribeToLockRequest:
+                            requestHandler = new UnSubscribeToLockRequestHandler();
+                            break;
+                        case NusysConstants.RequestType.GetLockRequest:
+                            requestHandler = new GetLockRequestHandler();
+                            break;
+                        case NusysConstants.RequestType.ReturnLockRequest:
+                            requestHandler =new ReturnLockRequestHandler();
+                            break;
+                        case NusysConstants.RequestType.GetCollaboratorCoordinatesRequest:
+                            requestHandler = new GetCollaboratorCoordinatesRequestHandler();
+                            break;
+                        case NusysConstants.RequestType.SendCollaboratorCoordinatesRequest:
+                            requestHandler = new SendCollaboratorCoordinatesRequestHandler();
                             break;
                         default:
                             throw new Exception("request type not supported on the server yet!");

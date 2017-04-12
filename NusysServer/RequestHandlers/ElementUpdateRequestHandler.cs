@@ -27,7 +27,6 @@ namespace NusysServer
             {
                 throw new Exception("An elementUpdateRequest must have an element ID to update");
             }
-            ForwardMessage(message, senderHandler);
 
             try
             {
@@ -35,6 +34,11 @@ namespace NusysServer
                 if (message.GetBool(NusysConstants.ELEMENT_UPDATE_REQUEST_SAVE_TO_SERVER_BOOLEAN))
                 {
                     SaveUpdateToServer(message);
+                }
+                else
+                {
+                    //Debug.WriteLine($"updating element {message.GetString(NusysConstants.ELEMENT_UPDATE_REQUEST_ELEMENT_ID_KEY)} at time {DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond}");
+                    ForwardMessage(message, senderHandler);
                 }
             }
             catch (Exception e)

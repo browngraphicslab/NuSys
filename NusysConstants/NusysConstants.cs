@@ -14,6 +14,16 @@ namespace NusysIntermediate
         /// </summary>
         public static bool TEST_LOCAL_BOOLEAN = false;
 
+        /// <summary>
+        /// a boolean representing whether we are using the test server by default or the live server
+        /// </summary>
+        public const bool TEST_SERVER_BOOLEAN = true;
+
+        /// <summary>
+        /// the name of the currently used server
+        /// </summary>
+        public static string ServerName { get; set; } = TEST_LOCAL_BOOLEAN ? "localhost:2776" : (TEST_SERVER_BOOLEAN ? "nusystest.azurewebsites.net" : "nusysrepo.azurewebsites.net");
+
         #region RequestManagementKeys
 
         /// <summary>
@@ -35,15 +45,25 @@ namespace NusysIntermediate
         /// </summary>
         public static readonly string SERVER_ARGS_REQUEST_ARGS_CLASS_KEY = "args_class_key";
 
+        /// <summary>
+        /// the request key used to hold the serializable return args class.
+        /// </summary>
+        public static readonly string FULL_ARGS_REQUEST_RETURN_ARGS_KEY = "return_args";
+
+        /// <summary>
+        /// the request key used to hold the exact type of the request args class used.
+        /// This is used for custom deserializtion to the correct type.
+        /// </summary>
+        public static readonly string FULL_ARGS_REQUEST_ARGS_INSTANCE_TYPE_KEY = "instance_type";
         #endregion RequestManagementKeys
 
         #region RequestKeys
 
-            #region AllRequests
-            /// <summary>
-            /// should be returned by all requests if it is successful
-            /// </summary>
-            public static readonly string REQUEST_SUCCESS_BOOL_KEY = "successful_request";
+        #region AllRequests
+        /// <summary>
+        /// should be returned by all requests if it is successful
+        /// </summary>
+        public static readonly string REQUEST_SUCCESS_BOOL_KEY = "successful_request";
 
             /// <summary>
             /// MIGHT be returned as the key that hold the error message 
@@ -113,12 +133,12 @@ namespace NusysIntermediate
 
         #endregion GetEntireWorkspaceRequest
 
-            #region CreateNewContentRequest
+        #region CreateNewContentRequest
 
-        /// <summary>
-        /// The key used to hold the type of content being added
-        /// </summary>
-        public static readonly string CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY = "content_type_key";
+            /// <summary>
+            /// The key used to hold the type of content being added
+            /// </summary>
+            public static readonly string CREATE_NEW_CONTENT_REQUEST_CONTENT_TYPE_KEY = "content_type_key";
 
             /// <summary>
             /// The key used to hold the content id.
@@ -233,6 +253,12 @@ namespace NusysIntermediate
             /// the key used to send the access level of the element request key
             /// </summary>
             public static readonly string NEW_ELEMENT_REQUEST_ACCESS_KEY = "access";
+
+            /// <summary>
+            /// the key used to send the visibility bool of titles
+            /// </summary>
+            public static readonly string NEW_ELEMENT_REQUEST_TITLE_VISIBILITY_KEY = "titles_visible";
+
 
             /// <summary>
             /// This is returned when the NewElementReqeust request is succesfull. 
@@ -396,6 +422,12 @@ namespace NusysIntermediate
                 public static readonly string NEW_PDF_LIBRARY_ELEMENT_REQUEST_PAGE_END_KEY = "pdf_page_end";
 
                 /// <summary>
+                /// the key that will hold the final page number of the requested pdf library element model
+                /// Used during a region libraryElementRequest.  
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_ORIGIN_OBJECT_KEY = "origin_object_key";
+
+                /// <summary>
                 /// the key that will hold the start of the interval of the audio library elment model 
                 /// Used during a region libraryElementRequest.  
                 /// </summary>
@@ -424,6 +456,11 @@ namespace NusysIntermediate
                 /// Used during a link libraryElementRequest.  
                 /// </summary>
                 public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_OUT_KEY = "link_library_element_model_id_out";
+
+                /// <summary>
+                /// The requset key that will hold the direction enum for the requested link
+                /// </summary>
+                public static readonly string NEW_LIBRARY_ELEMENT_REQUEST_LINK_DIRECTIONALITY_KEY = "link_library_element_model_direction_key";
 
                 /// <summary>
                 /// the key that will hold the serialized dictionary from string to metadataentry when creating a new library element
@@ -759,18 +796,46 @@ namespace NusysIntermediate
             /// collection
             /// </summary>
             public static readonly string MOVE_ELEMENT_TO_COLLECTION_REQUEST_Y_KEY = "y";
-            #endregion MoveElementToCollectionRequest
+        #endregion MoveElementToCollectionRequest
 
         #endregion RequestKeys
 
         #region NotificationKeys
 
-            #region AddNetworkUserNotification
+        #region LockHolderChanged
 
-            /// <summary>
-            /// key used in the Add user notification that represents the json-ified BaseClient class that is being added
-            /// </summary>
-            public static readonly string ADD_USER_NOTIFICATION_USER_JSON_KEY = "add_user_notification_json";
+        /// <summary>
+        /// the string key used in the lock holder changed notification to denote the holder id
+        /// </summary>
+        public static readonly string LOCK_HOLDER_CHANGED_NOTIFICATION_USER_ID_KEY = "lock_user_holder_id";
+
+        /// <summary>
+        /// the string key used in the lock holder cahnged notificartion used to represnt the id of the lock that has changed
+        /// </summary>
+        public static readonly string LOCK_HOLDER_CHANGED_NOTIFICATION_LOCKABLE_ID_KEY = "lockable_id";
+
+        #endregion LockHolderChanged
+
+        #region WebSearchCompleted
+
+        /// <summary>
+        /// The string in the web search completed notification containing the original string search
+        /// </summary>
+        public static readonly string WEB_SEARCH_COMPLETED_NOTIFICATION_SEARCH_STRING_KEY = "search_string_key";
+
+        /// <summary>
+        /// The string in the web search completed notification containing the list of library element ids for the created library elements
+        /// </summary>
+        public static readonly string WEB_SEARCH_COMPLETED_NOTIFICATION_LIBRARY_IDS_KEY = "library_ids_made";
+
+        #endregion WebSearchCompleted
+
+        #region AddNetworkUserNotification
+
+        /// <summary>
+        /// key used in the Add user notification that represents the json-ified BaseClient class that is being added
+        /// </summary>
+        public static readonly string ADD_USER_NOTIFICATION_USER_JSON_KEY = "add_user_notification_json";
 
             #endregion AddNetworkUserNotification
 
@@ -791,6 +856,15 @@ namespace NusysIntermediate
             public static readonly string ANALYSIS_MODEL_MADE_NOTIFICATION_CONTENT_ID_KEY = "content_id_of_analysis_model";
 
             #endregion AnalysisModelMade
+
+            #region WordChanged
+
+            /// <summary>
+            /// key used in the Word Document Changed notification that represents the content data model id of the word document
+            /// </summary>
+            public static readonly string WORD_CHANGED_NOTIFICATION_CONTENT_DATA_MODEL_ID_KEY = "content_data_model_id";
+
+            #endregion WordChanged
 
         #endregion NotificationKeys
 
@@ -833,6 +907,11 @@ namespace NusysIntermediate
         /// double, the width of this alias
         /// </summary>
         public static readonly string ALIAS_SIZE_WIDTH_KEY = "width";
+
+        /// <summary>
+        /// bool the visibility of the titles on the current node
+        /// </summary>
+        public static readonly string ALIAS_TITLE_VISIBILITY_KEY = "title_visibility";
 
         /// <summary>
         /// double, the height of this alias
@@ -1372,13 +1451,20 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string LIBRARY_ELEMENT_MODEL_PARENT_ID_KEY = "parent_id_key";
 
-            #region RectangleRegion
 
             /// <summary>
-            /// This key is used to hold the width of the image library element model when represented in message form.
+            /// This key is used to hold the serialized origin object.
             /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
             /// </summary>
-            public static readonly string IMAGE_LIBRARY_ELEMENT_MODEL_NORMALIZED_WIDTH_KEY = "width_key";
+            public static readonly string LIBRARY_ELEMENT_MODEL_ORIGIN_OBJECT_KEY = "origin_key";
+
+        #region RectangleRegion
+
+        /// <summary>
+        /// This key is used to hold the width of the image library element model when represented in message form.
+        /// This key SHOULD NOT BE A COLUMN IN ANY DATABASE.  
+        /// </summary>
+        public static readonly string IMAGE_LIBRARY_ELEMENT_MODEL_NORMALIZED_WIDTH_KEY = "width_key";
 
             /// <summary>
             /// This key is used to hold the height of the image library element model when represented in message form.
@@ -1487,12 +1573,17 @@ namespace NusysIntermediate
             /// </summary>
             public static readonly string LINK_LIBRARY_ELEMENT_IN_ID_KEY = "link_in_id";
 
-                                /// <summary>
-                                /// The key that will hold the LibraryElementId for the OUT libary element
-                                /// </summary>
-                                public static readonly string LINK_LIBRARY_ELEMENT_OUT_ID_KEY = "link_out_id";
+            /// <summary>
+            /// The database key that will hold the string representing the directionality of the link
+            /// </summary>
+            public static readonly string LINK_LIBRARY_ELEMENT_DIRECTIONALITY_KEY = "link_direction_enum";
 
-                            #endregion LinkLibraryElementModel
+            /// <summary>
+            /// The key that will hold the LibraryElementId for the OUT libary element
+            /// </summary>
+            public static readonly string LINK_LIBRARY_ELEMENT_OUT_ID_KEY = "link_out_id";
+
+            #endregion LinkLibraryElementModel
 
             #endregion LibraryElementModel
 
@@ -1587,7 +1678,8 @@ namespace NusysIntermediate
             Image,
             Video,
             Audio,
-            Word
+            Word, 
+            Collection
         }
 
         /// <summary>
@@ -1655,6 +1747,41 @@ namespace NusysIntermediate
             GetLastUsedCollectionsRequest,
 
             /// <summary>
+            /// Request used to fetch a lock
+            /// </summary>
+            GetLockRequest,
+
+            /// <summary>
+            /// Reuqest used to release a lock
+            /// </summary>
+            ReturnLockRequest,
+
+            /// <summary>
+            /// Request type used to unsubscribe from getting changes to a specific lock instance
+            /// </summary>
+            UnSubscribeToLockRequest,
+
+            /// <summary>
+            /// Request type used to subscribe to get changes to a specific lock instance
+            /// </summary>
+            SubscribeToLockRequest,
+
+            /// <summary>
+            /// Web search used to fetch and parse html
+            /// </summary>
+            WebSearchRequest,
+
+            /// <summary>
+            /// Request used to fetch the bytes of a specified word document from the server
+            /// </summary>
+            GetWordDocumentRequest,
+
+            /// <summary>
+            /// request used to upload an image to the server to be saved on the WWWRoot
+            /// </summary>
+            UploadCollectionImageRequest,
+
+            /// <summary>
             /// this request type is used to create a new collection content and default library element with a pre-populated collection.
             /// you are able to add elements to the request be default. 
             /// </summary>
@@ -1697,7 +1824,11 @@ namespace NusysIntermediate
             /// request used to fetch the dictionary of ALL user ID's to DisplayNames.  
             /// This will be used to show the display names of people instead of the seemingly random hash
             /// </summary>
-            GetUserIdToDisplayNameDictionaryRequest
+            GetUserIdToDisplayNameDictionaryRequest,
+
+            GetCollaboratorCoordinatesRequest,
+            SendCollaboratorCoordinatesRequest,
+
         }
 
         /// <summary>
@@ -1718,7 +1849,22 @@ namespace NusysIntermediate
             /// <summary>
             /// to notify that an analysis model for an uploaded content has finished being made
             /// </summary>
-            AnalysisModelMade
+            AnalysisModelMade,
+
+            /// <summary>
+            /// Notification for telling all clients about an updated word document.
+            /// </summary>
+            WordChanged,
+
+            /// <summary>
+            /// Notification type used to tell the clients when a new user has taken control of a lock they were watching
+            /// </summary>
+            LockHolderChanged,
+
+            /// <summary>
+            /// Notification for telling the clients when their web search has finished
+            /// </summary>
+            WebSearchCompleted
         }
 
         /// <summary>
@@ -1742,6 +1888,16 @@ namespace NusysIntermediate
             Small, Medium, Large
         }
 
+        /// <summary>
+        /// enum for representing the direction of arrows on links, if there is any
+        /// </summary>
+        public enum LinkDirection
+        {
+            Forward,
+            Backward,
+            None
+        }
+
         #endregion Enums
 
         #region Misc
@@ -1756,6 +1912,11 @@ namespace NusysIntermediate
         /// the default file extension for pdf page images.  
         /// </summary>
         public static readonly string DEFAULT_PDF_PAGE_IMAGE_EXTENSION = ".jpg";
+
+        /// <summary>
+        /// the default file extension for word documents  
+        /// </summary>
+        public static readonly string DEFAULT_WORD_DOCUMENT_EXTENSION = ".docx";
         #endregion Misc
 
         #region staticMethods
@@ -1788,6 +1949,10 @@ namespace NusysIntermediate
                     return ContentType.PDF;
                 case ElementType.Word:
                     return ContentType.Word;
+                case ElementType.Collection:
+                    return ContentType.Collection;
+                case ElementType.Text:
+                    return ContentType.Text;
                 default:
                     return ContentType.Text;
             }

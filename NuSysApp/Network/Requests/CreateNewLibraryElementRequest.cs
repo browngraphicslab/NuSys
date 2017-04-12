@@ -34,7 +34,7 @@ namespace NuSysApp
         /// <param name="title"></param>
         public CreateNewLibraryElementRequest(string id, string data, NusysConstants.ElementType type, string title = ""): base(NusysConstants.RequestType.CreateNewLibraryElementRequest)
         {
-            Debug.Fail("Congrats you found a deprecated method that's causing randon bad shit to happen in NuSys!  " +
+            Debug.Assert(false, "Congrats you found a deprecated method that's causing randon bad shit to happen in NuSys!  " +
                        "You should tell Me (Trent) so we can fix this so we don't call this method anymore.");
             _message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_ID_KEY] = id;
             _message[NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES] = data;
@@ -83,7 +83,38 @@ namespace NuSysApp
         private bool AddModelStringToSession(string libraryElementModelString)
         {
             var libraryElement = LibraryElementModelFactory.DeserializeFromString(libraryElementModelString);
-            return SessionController.Instance.ContentController.Add(libraryElement) != null;
+            if (!libraryElement.AllowedToSee())
+            {
+                return false;
+            }
+            if (!IsInvalidLink(libraryElement))
+            {
+                return SessionController.Instance.ContentController.Add(libraryElement) != null;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// returns true if the item is a link and is linked to inaccessible elements (aka ACL's)
+        /// </summary>
+        /// <param name="libraryElement"></param>
+        /// <returns></returns>
+        private bool IsInvalidLink(LibraryElementModel libraryElement)
+        {
+            var link = libraryElement as LinkLibraryElementModel;
+            if (link == null)
+            {
+                return false;
+            }
+            if (SessionController.Instance.ContentController.GetLibraryElementController(link?.InAtomId) == null)
+            {
+                return true;
+            }
+            if (SessionController.Instance.ContentController.GetLibraryElementController(link?.OutAtomId) == null)
+            {
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -91,7 +122,7 @@ namespace NuSysApp
         /// Then adds a couple timestamps to the outgoing request message;
         /// </summary>
         /// <returns></returns>
-        public override async Task CheckOutgoingRequest()
+        public override void CheckOutgoingRequest()
         {
             var time = DateTime.UtcNow.ToString();
             Debug.Assert(_message.ContainsKey(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_CONTENT_ID_KEY));

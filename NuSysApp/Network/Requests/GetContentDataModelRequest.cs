@@ -33,7 +33,7 @@ namespace NuSysApp
         /// Throws exceptions if it doesn't
         /// </summary>
         /// <returns></returns>
-        public override async Task CheckOutgoingRequest()
+        public override void CheckOutgoingRequest()
         {
             if (!_message.ContainsKey(NusysConstants.GET_CONTENT_DATA_MODEL_REQUEST_CONTENT_ID_KEY))
             {

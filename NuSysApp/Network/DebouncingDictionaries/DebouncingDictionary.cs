@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using NusysIntermediate;
+using WinRTXamlToolkit.Tools;
 
 namespace NuSysApp
 {
@@ -28,12 +29,12 @@ namespace NuSysApp
         /// <summary>
         /// the list of all the debouncing dictionaries currently waiting for the timer to send the signal to save their waiting dictionaries;
         /// </summary>
-        private static List<DebouncingDictionary> _debouncingDictionariesToSave = new List<DebouncingDictionary>();
+        private static ConcurrentDictionary<DebouncingDictionary,byte> _debouncingDictionariesToSave = new ConcurrentDictionary<DebouncingDictionary, byte>();
 
         /// <summary>
         /// a queue of dictionaries waiting to be updated
         /// </summary>
-        private static ConcurrentQueue<DebouncingDictionary> _debouncingDictionariesToUpdate = new ConcurrentQueue<DebouncingDictionary>();
+        private static ConcurrentDictionary<DebouncingDictionary,byte> _debouncingDictionariesToUpdate = new ConcurrentDictionary<DebouncingDictionary, byte>();
 
         /// <summary>
         /// the delay that the debouncing dicitonary must be left alone before a saving update 
@@ -54,6 +55,11 @@ namespace NuSysApp
         /// the time between each non-saving message sent to the server
         /// </summary>
         private static int _milliSecondDebounce = 30;
+
+        /// <summary>
+        /// bool representing whether the debouncing dict is already mid-tick
+        /// </summary>
+        private static bool _alreadyTicking = false;
 
         /// <summary>
         /// the id of the object this debouncing dictionary updates
@@ -112,13 +118,13 @@ namespace NuSysApp
             }
 
             //if we are not already timing
-            if (!_debouncingDictionariesToUpdate.Contains(this))
+            if (!_debouncingDictionariesToUpdate.ContainsKey(this))
             {
-                _debouncingDictionariesToUpdate.Enqueue(this);//add itself
+                _debouncingDictionariesToUpdate.TryAdd(this,0);//add itself
             }
-            if (!_debouncingDictionariesToSave.Contains(this))
+            if (!_debouncingDictionariesToSave.ContainsKey(this))
             {
-                _debouncingDictionariesToSave.Add(this);
+                _debouncingDictionariesToSave.TryAdd(this,0);
             }
             TicksWhenSaveTimerStarted = DateTime.Now.Ticks;
         }
@@ -128,7 +134,7 @@ namespace NuSysApp
         /// the state is a boolean representing whether the request should save
         /// </summary>
         /// <param name="state"></param>
-        private async void SendMessage(bool saveToServer)
+        private async Task SendMessage(bool saveToServer)
         {
             Message messageToSend;
             if (!saveToServer)
@@ -141,11 +147,7 @@ namespace NuSysApp
                 messageToSend = new Message(_serverDict.ToDictionary(kvp => kvp.Key, kvp => kvp.Value));
                 _serverDict.Clear();
             }
-            Task.Run(async delegate
-            {
-                SendToServer(messageToSend, saveToServer, _id);
-                //call the virtual method that should actually send the update request for each sub classs
-            });
+            await SendToServer(messageToSend, saveToServer, _id).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -154,35 +156,40 @@ namespace NuSysApp
         /// this method will check the dictionaries waiting to update or save and will check if they have expired. 
         /// </summary>
         /// <param name="state"></param>
-        private static void DebouncingTimerTick(object state)
+        private static async void DebouncingTimerTick(object state)
         {
-            while (_debouncingDictionariesToUpdate.Count > 0)//send message for every update timer
+            if (_alreadyTicking)
             {
-                DebouncingDictionary result;
-                _debouncingDictionariesToUpdate.TryDequeue(out result);
-                result?.SendMessage(false);
+                return;
             }
+            _alreadyTicking = true;
 
-            foreach (var dict in _debouncingDictionariesToSave.ToList())//check every waiting save timer
+            var array = _debouncingDictionariesToUpdate.ToArray();
+            _debouncingDictionariesToUpdate.Clear();
+            array.ForEach(async i => await i.Key.SendMessage(false).ConfigureAwait(false));
+
+            var nowTicks = DateTime.Now.Ticks;
+            var delay = TimeSpan.TicksPerMillisecond*_milliSecondServerSaveDelay;
+            var saveList = _debouncingDictionariesToSave.Where(d => d.Key?.TicksWhenSaveTimerStarted == null || nowTicks - d.Key.TicksWhenSaveTimerStarted > delay).ToList();
+
+            int count = 0;
+            foreach(var dict in saveList)//check every waiting save timer
             {
-                if (dict?.TicksWhenSaveTimerStarted == null)
-                {
-                    _debouncingDictionariesToSave.Remove(dict);
-                }
-                else
-                {
-                    if (DateTime.Now.Ticks - dict.TicksWhenSaveTimerStarted > TimeSpan.TicksPerMillisecond * _milliSecondServerSaveDelay)
-                    {
-                        dict.SendMessage(true);
-                        _debouncingDictionariesToSave.Remove(dict);
-                    }
-                }
+                var c = count++;
+
+                byte outByte;
+                _debouncingDictionariesToSave.TryRemove(dict.Key, out outByte);
+
+                await dict.Key.SendMessage(true).ConfigureAwait(false);
             }
+            
+
             if (_debouncingDictionariesToSave.Count == 0)//if theres nothing waiting, set the timeout to be infinite
             {
                 _debouncingTimer.Change(Timeout.Infinite, Timeout.Infinite);
                 _timing = false;
             }
+            _alreadyTicking = false;
         }
 
 

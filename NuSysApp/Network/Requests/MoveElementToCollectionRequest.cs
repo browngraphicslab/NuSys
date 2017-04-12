@@ -31,7 +31,7 @@ namespace NuSysApp
         /// the new parent collection id, and the new coordinates of the element
         /// </summary>
         /// <returns></returns>
-        public override async Task CheckOutgoingRequest()
+        public override void CheckOutgoingRequest()
         {
             Debug.Assert(_message.ContainsKey(NusysConstants.MOVE_ELEMENT_TO_COLLECTION_REQUEST_ELEMENT_ID_KEY));
             Debug.Assert(_message.ContainsKey(NusysConstants.MOVE_ELEMENT_TO_COLLECTION_REQUEST_NEW_PARENT_COLLECTION_ID_KEY));
@@ -93,15 +93,13 @@ namespace NuSysApp
         private async Task<bool> MoveElementToCollection(string elementId, string newParentCollectionId, double x, double y)
         {
             if (string.IsNullOrEmpty(elementId) || string.IsNullOrEmpty(newParentCollectionId) ||
-                !SessionController.Instance.IdToControllers.ContainsKey(elementId)) //if it fails those debugs, return false.
+                !SessionController.Instance.ElementModelIdToElementController.ContainsKey(elementId)) //if it fails those debugs, return false.
             {
                 return false;
             }
 
 
-            ElementController elementController;  
-            SessionController.Instance.IdToControllers.TryRemove(elementId, out elementController);//get the controller for the given id
-            var model = elementController?.Model; //get the existing element model for the given id
+            var model = SessionController.Instance.ElementModelIdToElementController[elementId]?.Model; //get the existing element model for the given id
 
 
             Debug.Assert(model != null);
@@ -111,9 +109,9 @@ namespace NuSysApp
 
             Debug.Assert(parent != null);
 
-            parent.Children?.Remove(elementId);
-
-            elementController.Delete(this);
+            ElementController elementController;
+            SessionController.Instance.ElementModelIdToElementController[elementId].Delete(this);
+            SessionController.Instance.ElementModelIdToElementController.TryRemove(elementId, out elementController);//get the controller for the given id
             elementController.Dispose();
 
             if (!SessionController.Instance.CollectionIdsInUse.Contains(newParentCollectionId))//if the new collection is not one of the ones we care about

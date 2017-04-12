@@ -20,7 +20,7 @@ namespace NuSysApp
             _message["tags"] = tags;
         }
 
-        public override async Task CheckOutgoingRequest()
+        public override void CheckOutgoingRequest()
         {
             if (!_message.ContainsKey("id"))
             {
@@ -37,7 +37,7 @@ namespace NuSysApp
             {
                 tagKeywords.Add(new Keyword(tag));
             }
-            SessionController.Instance.IdToControllers[_message.GetString("id")].LibraryElementController.SetKeywords(new HashSet<Keyword>(tagKeywords));
+            SessionController.Instance.ElementModelIdToElementController[_message.GetString("id")].LibraryElementController.SetKeywords(new HashSet<Keyword>(tagKeywords));
         }
     }
 }

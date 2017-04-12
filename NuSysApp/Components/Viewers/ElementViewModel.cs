@@ -199,20 +199,6 @@ namespace NuSysApp
             }
         }
 
-    
-        /// <summary>
-        /// When a tag block is tapped, it should signal the session view to show a box
-        /// with related elements (elements with the same tag)
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnTagBlockTapped(object sender, TappedRoutedEventArgs e)
-        {
-            var button = sender as Button;
-            var text = button.Content.ToString();
-            SessionController.Instance.SessionView.ShowRelatedElements(text);
-        }
-
       
 
         #region Atom Manipulations

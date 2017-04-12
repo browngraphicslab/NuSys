@@ -8,11 +8,11 @@ namespace NusysServer
 {
     public class ErrorLog
     {
-        private static readonly string _filepath = Constants.FILE_FOLDER + "errorlog";
+        private static readonly string _filepath = Constants.WWW_ROOT + "errorlog";
 
         public static void AddError(Exception e)
         {
-            AddErrorString(e.Message + "  " + e.Source + "  " + e.StackTrace);
+            AddErrorString(e.Message + "  " + e.Source + "  " + e.StackTrace + "\n");
         }
         public static void AddErrorString(string error, bool secondAttempt = false)
         {
@@ -29,14 +29,13 @@ namespace NusysServer
                 lines += DateTime.UtcNow + "   " + error;
                 using (StreamWriter outputFile = new StreamWriter(_filepath))
                 {
-                    outputFile.WriteLine(lines);
+                    outputFile.Write(lines);
                 }
             }
             catch (Exception e)
             {
                 try
                 {
-                    Directory.CreateDirectory(Constants.FILE_FOLDER);
                     var s = File.Create(_filepath);
                     if (!secondAttempt)
                     {

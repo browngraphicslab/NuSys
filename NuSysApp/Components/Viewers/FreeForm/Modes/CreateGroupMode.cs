@@ -128,19 +128,19 @@ namespace NuSysApp
             p.X -= 150;
             p.Y -= 150;//TODO not have this heere, factor out to half on a constantly-defined default width and height
 
-            if (!SessionController.Instance.IdToControllers.ContainsKey(draggedId))
+            if (!SessionController.Instance.ElementModelIdToElementController.ContainsKey(draggedId))
             {
                 return;
             }
 
-            if (!SessionController.Instance.IdToControllers.ContainsKey(hoveredId))
+            if (!SessionController.Instance.ElementModelIdToElementController.ContainsKey(hoveredId))
             {
                 return;
             }
 
             // get the element controllers from the ids
-            var draggedController = SessionController.Instance.IdToControllers[draggedId];
-            var hoveredController = SessionController.Instance.IdToControllers[hoveredId];
+            var draggedController = SessionController.Instance.ElementModelIdToElementController[draggedId];
+            var hoveredController = SessionController.Instance.ElementModelIdToElementController[hoveredId];
 
             var draggedIsCollection = draggedController is ElementCollectionController;
             var hoverIsCollection = hoveredController is ElementCollectionController;
@@ -166,8 +166,8 @@ namespace NuSysApp
                 };
                 foreach(var preslink in PresentationLinkViewModel.Models.ToList())
                 {
-                    if (draggedId == preslink.InElementId || draggedId == preslink.OutElementId ||
-                        hoveredId == preslink.InElementId || hoveredId == preslink.OutElementId)
+                    if (draggedId == preslink.OutElementId || draggedId == preslink.InElementId ||
+                        hoveredId == preslink.OutElementId || hoveredId == preslink.InElementId)
                     {
                         var request = new DeletePresentationLinkRequest(preslink.LinkId);
                     //    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);

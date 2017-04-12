@@ -1,0 +1,10 @@
+diff a/NuSysApp/Components/NuSysRenderer/DetailView/ImageDetailRenderItem.cs b/NuSysApp/Components/NuSysRenderer/DetailView/ImageDetailRenderItem.cs	(rejected hunks)
+@@ -20,7 +20,7 @@
+         private bool _isLoading;
+         protected ImageLibraryElementController _controller;
+         protected CanvasBitmap _bmp;
+-        protected Rect _croppedImageTarget;
++        public Rect CroppedImageTarget;
+         protected Rect _rectToCropFromContent;
+         protected Rect _normalizedCroppedRect;
+         protected double _scaleOrgToDisplay;

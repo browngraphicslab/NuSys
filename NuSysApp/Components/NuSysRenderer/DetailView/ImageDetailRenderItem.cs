@@ -20,7 +20,7 @@ namespace NuSysApp
         private bool _isLoading;
         protected ImageLibraryElementController _controller;
         protected CanvasBitmap _bmp;
-        protected Rect _croppedImageTarget;
+        public Rect CroppedImageTarget;
         protected Rect _rectToCropFromContent;
         protected Rect _normalizedCroppedRect;
         protected double _scaleOrgToDisplay;
@@ -42,15 +42,15 @@ namespace NuSysApp
         public ImageDetailRenderItem(ImageLibraryElementController controller, Size maxSize, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             ImageUrl = controller.ContentDataController.ContentDataModel.Data;
-
+            Debug.WriteLine(ImageUrl);
             _controller = controller;
             _canvasSize = maxSize;
 
             _controller.LocationChanged += ControllerOnLocationChanged;
             _controller.SizeChanged += ControllerOnSizeChanged;
 
-            controller.ContentDataController.ContentDataModel.OnRegionAdded += ContentDataModelOnOnRegionAdded;
-            controller.ContentDataController.ContentDataModel.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
+            controller.ContentDataController.OnRegionAdded += ContentDataModelOnOnRegionAdded;
+            controller.ContentDataController.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
         }
 
         public ImageDetailRenderItem(PdfLibraryElementController controller, Size maxSize, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
@@ -64,19 +64,21 @@ namespace NuSysApp
             _controller.LocationChanged += ControllerOnLocationChanged;
             _controller.SizeChanged += ControllerOnSizeChanged;
 
-            controller.ContentDataController.ContentDataModel.OnRegionAdded += ContentDataModelOnOnRegionAdded;
-            controller.ContentDataController.ContentDataModel.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
+            controller.ContentDataController.OnRegionAdded += ContentDataModelOnOnRegionAdded;
+            controller.ContentDataController.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
         }
 
         public override void Dispose()
         {
-            if (!IsDisposed)
+            if (IsDisposed)
                 return;
 
-            _controller.ContentDataController.ContentDataModel.OnRegionAdded -= ContentDataModelOnOnRegionAdded;
-            _controller.ContentDataController.ContentDataModel.OnRegionRemoved -= ContentDataModelOnOnRegionRemoved;
+            _controller.ContentDataController.OnRegionAdded -= ContentDataModelOnOnRegionAdded;
+            _controller.ContentDataController.OnRegionRemoved -= ContentDataModelOnOnRegionRemoved;
             _controller.LocationChanged -= ControllerOnLocationChanged;
             _controller.SizeChanged -= ControllerOnSizeChanged;
+
+            _activeRegion?.Dispose();
 
             foreach (var child in GetChildren())
             {
@@ -96,6 +98,10 @@ namespace NuSysApp
 
         protected void ReRender()
         {
+            if (_bmp == null || _bmp.Device == null)
+            {
+                return;
+            }
             var lib = (_controller.LibraryElementModel as ImageLibraryElementModel);
             var nx = lib.NormalizedX * _bmp.Size.Width;
             var ny = lib.NormalizedY * _bmp.Size.Height;
@@ -121,11 +127,11 @@ namespace NuSysApp
             ReRender();
         }
 
-        protected async void ContentDataModelOnOnRegionAdded(string regionLibraryElementModelId)
+        protected async void ContentDataModelOnOnRegionAdded(object sender, string regionLibraryElementModelId)
         {
             ComputeRegions();
         }
-        protected void ContentDataModelOnOnRegionRemoved(string regionLibraryElementModelId)
+        protected void ContentDataModelOnOnRegionRemoved(object sender, string regionLibraryElementModelId)
         {
             ComputeRegions();
         }
@@ -133,13 +139,16 @@ namespace NuSysApp
         public override async Task Load()
         {
             _isLoading = true;
-               _bmp?.Dispose();
+
             await Task.Run(async () =>
             {
-                _bmp =
-                    await
-                        CanvasBitmap.LoadAsync(ResourceCreator, new Uri(ImageUrl),
-                            ResourceCreator.Dpi);
+                _bmp = await MediaUtil.LoadCanvasBitmapAsync(ResourceCreator, new Uri(ImageUrl), ResourceCreator.Dpi);
+
+                if (_controller.ImageLibraryElementModel.Type == NusysConstants.ElementType.Image && _bmp != null && _controller?.ImageLibraryElementModel?.Ratio == 0)
+                {
+                    _controller.SetAspectRatio(_bmp.Size.Width / _bmp.Size.Height);
+                }
+
             });
             ReRender();
             _isLoading = false;
@@ -147,22 +156,22 @@ namespace NuSysApp
 
         private void RecomputeSize()
         {
-            if (_bmp == null)
+            if (_bmp == null || _bmp.Device == null)
                 return;
 
             var lib = (_controller.LibraryElementModel as ImageLibraryElementModel);
             var croppedRectRatio = _rectToCropFromContent.Width / _rectToCropFromContent.Height;
             if (_rectToCropFromContent.Width > _rectToCropFromContent.Height && CanvasSize.Width * 1 / croppedRectRatio <= CanvasSize.Height)
             {
-                _croppedImageTarget.Width = CanvasSize.Width;
-                _croppedImageTarget.Height = _croppedImageTarget.Width * 1 / croppedRectRatio;
+                CroppedImageTarget.Width = CanvasSize.Width;
+                CroppedImageTarget.Height = CroppedImageTarget.Width * 1 / croppedRectRatio;
                 _scaleOrgToDisplay = CanvasSize.Width / _bmp.Size.Width;
                 _scaleDisplayToCrop = 1 / lib.NormalizedWidth;
             }
             else
             {
-                _croppedImageTarget.Height = CanvasSize.Height;
-                _croppedImageTarget.Width = _croppedImageTarget.Height * croppedRectRatio;
+                CroppedImageTarget.Height = CanvasSize.Height;
+                CroppedImageTarget.Width = CroppedImageTarget.Height * croppedRectRatio;
                 _scaleOrgToDisplay = CanvasSize.Height / _bmp.Size.Height;
                 _scaleDisplayToCrop = 1 / lib.NormalizedHeight;
             }
@@ -223,8 +232,8 @@ namespace NuSysApp
 
         protected void RegionOnRegionResized(ImageDetailRegionRenderItem region, Vector2 delta)
         {
-            var rx = region.LibraryElementModel.NormalizedWidth + delta.X / _croppedImageTarget.Width / _scaleDisplayToCrop;
-            var ry = region.LibraryElementModel.NormalizedHeight + delta.Y / _croppedImageTarget.Height / _scaleDisplayToCrop;
+            var rx = region.LibraryElementModel.NormalizedWidth + delta.X / CroppedImageTarget.Width / _scaleDisplayToCrop;
+            var ry = region.LibraryElementModel.NormalizedHeight + delta.Y / CroppedImageTarget.Height / _scaleDisplayToCrop;
             rx = Math.Max(0, Math.Min(_normalizedCroppedRect.Width - (region.LibraryElementModel.NormalizedX - _normalizedCroppedRect.X), rx));
             ry = Math.Max(0, Math.Min( _normalizedCroppedRect.Height - (region.LibraryElementModel.NormalizedY - _normalizedCroppedRect.Y), ry));
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(region.LibraryElementModel.LibraryElementId) as ImageLibraryElementController;
@@ -236,21 +245,21 @@ namespace NuSysApp
 
         protected void RegionOnRegionMoved(ImageDetailRegionRenderItem region, Vector2 delta)
         {
-            var rx = region.LibraryElementModel.NormalizedX + delta.X/_croppedImageTarget.Width / _scaleDisplayToCrop;
-            var ry = region.LibraryElementModel.NormalizedY + delta.Y/_croppedImageTarget.Height / _scaleDisplayToCrop;
-            rx = Math.Max(_normalizedCroppedRect.X, Math.Min(_normalizedCroppedRect.X + _normalizedCroppedRect.Width - region.LibraryElementModel.NormalizedWidth , rx));
-            ry = Math.Max(_normalizedCroppedRect.Y, Math.Min(_normalizedCroppedRect.Y + _normalizedCroppedRect.Height - region.LibraryElementModel.NormalizedHeight , ry));
+            var rx = region.LibraryElementModel.NormalizedX + delta.X / CroppedImageTarget.Width / _scaleDisplayToCrop;
+            var ry = region.LibraryElementModel.NormalizedY + delta.Y / CroppedImageTarget.Height / _scaleDisplayToCrop;
+            rx = Math.Max(_normalizedCroppedRect.X, Math.Min(_normalizedCroppedRect.X + _normalizedCroppedRect.Width - region.LibraryElementModel.NormalizedWidth, rx));
+            ry = Math.Max(_normalizedCroppedRect.Y, Math.Min(_normalizedCroppedRect.Y + _normalizedCroppedRect.Height - region.LibraryElementModel.NormalizedHeight, ry));
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(region.LibraryElementModel.LibraryElementId) as ImageLibraryElementController;
             controller.SetXLocation(rx);
             controller.SetYLocation(ry);
-            
+
             NeedsRedraw?.Invoke();
         }
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            var offsetX = (float)(CanvasSize.Width - _croppedImageTarget.Width) / 2f;
-            var offsetY = (float)(CanvasSize.Height - _croppedImageTarget.Height) / 2f;
+            var offsetX = (float)(CanvasSize.Width - CroppedImageTarget.Width) / 2f;
+            var offsetY = (float)(CanvasSize.Height - CroppedImageTarget.Height) / 2f;
             Transform.LocalPosition = new Vector2(offsetX, offsetY);
             base.Update(parentLocalToScreenTransform);
         }
@@ -262,26 +271,37 @@ namespace NuSysApp
 
             if (_needsMaskRefresh)
             {
-                _mask = CanvasGeometry.CreateRectangle(ResourceCreator, _croppedImageTarget);
+                _mask = CanvasGeometry.CreateRectangle(ResourceCreator, CroppedImageTarget);
                 _needsMaskRefresh = false;
             }
 
             if (_showCroppy)
             {
 
-                _croppy = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(_activeRegion.Transform.LocalPosition.X, _activeRegion.Transform.LocalPosition.Y, _activeRegion.GetLocalBounds().Width, _activeRegion.GetLocalBounds().Height)).CombineWith(CanvasGeometry.CreateRectangle(ResourceCreator, _croppedImageTarget), Matrix3x2.Identity, CanvasGeometryCombine.Xor);
+                _croppy = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(_activeRegion.Transform.LocalPosition.X, _activeRegion.Transform.LocalPosition.Y, _activeRegion.GetLocalBounds().Width, _activeRegion.GetLocalBounds().Height)).CombineWith(CanvasGeometry.CreateRectangle(ResourceCreator, CroppedImageTarget), Matrix3x2.Identity, CanvasGeometryCombine.Xor);
             }
 
 
             var orgTransform = ds.Transform;
 
             ds.Transform = Transform.LocalToScreenMatrix;
+
+            var makeSmall = Transform.LocalToScreenMatrix.M22 < .06;
             using (ds.CreateLayer(1, _mask))
-            { 
+            {
                 if (_bmp != null)
-                    ds.DrawImage(_bmp, _croppedImageTarget, _rectToCropFromContent, 1, CanvasImageInterpolation.MultiSampleLinear);
-                else 
-                    ds.FillRectangle(_croppedImageTarget, Colors.Gray);
+                {
+                    if (_bmp.Device != null)
+                    {
+                        ds.DrawImage(_bmp, CroppedImageTarget, _rectToCropFromContent, 1,
+                            makeSmall
+                                ? CanvasImageInterpolation.NearestNeighbor
+                                : CanvasImageInterpolation.MultiSampleLinear);
+
+                    }
+                }
+                else
+                    ds.FillRectangle(CroppedImageTarget, Colors.Gray);
 
                 if (_activeRegion != null && _croppy != null) { 
                     ds.FillGeometry(_croppy, Color.FromArgb(0x88,0,0,0));

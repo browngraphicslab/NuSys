@@ -68,7 +68,7 @@ namespace NuSysApp
         /// Makes sure that the request has the id of the link that is about to be updated
         /// </summary>
         /// <returns></returns>
-        public override async Task CheckOutgoingRequest()
+        public override void CheckOutgoingRequest()
         {
             Debug.Assert(_message.ContainsKey(NusysConstants.UPDATE_PRESENTATION_LINK_REQUEST_LINK_ID_KEY));
         }

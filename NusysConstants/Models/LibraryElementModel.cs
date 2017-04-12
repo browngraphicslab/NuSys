@@ -40,6 +40,11 @@ namespace NusysIntermediate
         /// </summary>
         public string Creator { set; get; }
 
+        /// <summary>
+        /// the object that explains where a library element came from.  
+        /// </summary>
+        public LibraryElementOrigin Origin { get; set; }
+
         public string Timestamp
         {
             get;
@@ -117,6 +122,14 @@ namespace NusysIntermediate
             if (message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_MODEL_PARENT_ID_KEY))
             {
                 ParentId = message.GetString(NusysConstants.LIBRARY_ELEMENT_MODEL_PARENT_ID_KEY);
+            }
+            if (message.ContainsKey(NusysConstants.LIBRARY_ELEMENT_MODEL_ORIGIN_OBJECT_KEY))
+            {
+                Origin = message.Get<LibraryElementOrigin>(NusysConstants.LIBRARY_ELEMENT_MODEL_ORIGIN_OBJECT_KEY);
+            }
+            else
+            {
+                Origin = new LibraryElementOrigin();
             }
         }
 

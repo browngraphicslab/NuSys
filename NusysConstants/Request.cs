@@ -115,7 +115,7 @@ namespace NusysIntermediate
         /// It makes it hard to understand where things are happening
         /// </summary>
         /// <returns></returns>
-        public virtual async Task CheckOutgoingRequest()
+        public virtual void CheckOutgoingRequest()
         {
         }
 
@@ -134,7 +134,7 @@ namespace NusysIntermediate
         /// also returns null if the message wasn't formatted corectly after return
         /// </summary>
         /// <returns></returns>
-        public bool? WasSuccessful()
+        public virtual bool? WasSuccessful()
         {
             if (_returnMessage == null)
             {

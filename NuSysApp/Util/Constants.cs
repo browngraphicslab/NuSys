@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using Windows.UI;
 using NusysIntermediate;
 
@@ -28,12 +29,13 @@ namespace NuSysApp
         public const string NuSysFALFolders = "NuSysFALFolders.txt";
         public const string FirstTimeWord = "FirstTimeWord.txt";
         public const string FirstTimePowerpoint = "FirstTimePowerpoint.txt";
+        public const string HTML = "HTML";
 
         #endregion Folders and files
 
         #region Node Dimensions
 
-        public const double DefaultNodeSize = 200;
+        public const double DefaultNodeSize = 500;
         public const double DefaultAnnotationSize = 100;
         public const double ExtraPaddingSpace = 50;
         public const double MinNodeSize = 40;
@@ -63,24 +65,35 @@ namespace NuSysApp
 
         #endregion Ink Node
 
+        #region NewColors
+
+        public static Color DARK_BLUE = Color.FromArgb(255, 23, 73, 151);
+        public static Color MED_BLUE = Color.FromArgb(255, 117, 133, 158);
+        public static Color LIGHT_BLUE = Color.FromArgb(255, 195, 209, 231);
+        public static Color ALMOST_BLACK = Color.FromArgb(255, 15, 47, 98);
+        public static Color RED = Color.FromArgb(255, 151, 60, 23);
+
+        public static Color RED_TRANSLUCENT = Color.FromArgb(127, 151, 60, 23);
+        public static Color LIGHT_BLUE_TRANSLUCENT = Color.FromArgb(127, 195, 209, 231);
+
+        /// <summary>
+        /// colors for color picking
+        /// </summary>
+        public static Color COLOR_RED = Color.FromArgb(255, 212, 88, 88);
+        public static Color COLOR_ORANGE = Color.FromArgb(255, 225, 136, 29);
+        public static Color COLOR_YELLOW = Color.FromArgb(255,252,247,116);
+        public static Color COLOR_GREEN = Color.FromArgb(255, 88, 212, 106);
+        public static Color COLOR_BLUE = Color.FromArgb(255, 29, 130, 225);
+        public static Color COLOR_PURPLE = Color.FromArgb(255, 194, 116, 252);
+
+
+        #endregion
+
         #region Color
 
-        /*
-        public static Color color1 = Color.FromArgb(255, 230, 237, 236);   // lightest blue
-        public static Color color2 = Color.FromArgb(255, 156, 197, 194);   // medium blue
-        public static Color color3 = Color.FromArgb(255, 131, 166, 163);   // darkest blue
-        public static Color color4 = Color.FromArgb(255, 197, 158, 156);   // red
-        public static Color color5 = Color.FromArgb(255, 143, 152, 161);   // dark gray blue
-        public static Color color6 = Colors.White;                         // white
-        public static Color foreground6 = Colors.Black;                    // foreground white
-        public static Color color7 = Colors.LightGray;                     // light gray
-        public static Color color8 = Colors.DarkGray;                      // dark gray
-        public static Color salmonColor = Colors.DarkSalmon;                    // dark salmon
-        */
-
-        public static Color color1 = Color.FromArgb(255, 199, 222, 222); // lightest blue
-        public static Color color2 = Color.FromArgb(255, 107, 147, 151); // medium blue
-        public static Color color3 = Color.FromArgb(255, 17, 61, 64); // darkest blue
+        public static Color color1 = LIGHT_BLUE; //Color.FromArgb(255, 199, 222, 222); // lightest blue
+        public static Color color2 = MED_BLUE; //Color.FromArgb(255, 107, 147, 151); // medium blue
+        public static Color color3 = DARK_BLUE; //Color.FromArgb(255, 17, 61, 64); // darkest blue
         public static Color color4 = Color.FromArgb(255, 152, 26, 77); // red 
         public static Color color4light = Color.FromArgb(255, 219, 151, 179);//light red
         public static Color color5 = Color.FromArgb(255, 230, 230, 230); // dv bg blue
@@ -120,6 +133,9 @@ namespace NuSysApp
             linkColor8, linkColor9, linkColor10, linkColor11, linkColor12, linkColor13, linkColor14, linkColor15, linkColor16,
             linkColor17, linkColor19, linkColor20, linkColor21, linkColor22, linkColor23, linkColor24
         };
+
+        public static Color LinkColor = Color.FromArgb(127, 123, 117, 255);
+        public static Color TrailColor = Color.FromArgb(127, 249, 63, 47);
 
         #endregion Color
 

@@ -13,11 +13,37 @@ namespace NuSysApp
 {
     public class BaseRenderItem : IDisposable
     {
+        /// <summary>
+        /// Delegate and events to manage the focus of this element
+        /// </summary>
+        /// <param name="item"></param>
+        public delegate void BaseRenderItemFocusEvent(BaseRenderItem item);
+        /// <summary>
+        /// Event fired when this render item gains focus
+        /// </summary>
+        public event BaseRenderItemFocusEvent OnFocusGained;
+        /// <summary>
+        /// Event fired when this render item loses focus
+        /// </summary>
+        public event BaseRenderItemFocusEvent OnFocusLost;
+        /// <summary>
+        /// Event fired when the child's focus is gained, the base render item is NOT THE (father) CHILD
+        /// </summary>
+        public event BaseRenderItemFocusEvent OnChildFocusGained;
+        /// <summary>
+        /// Event fired when the child's focus is lost, the base render item is NOT THE (father) CHILD
+        /// </summary>
+        public event BaseRenderItemFocusEvent OnChildFocusLost;
+
+
         private bool _isHitTestVisible = true;
         public RenderItemTransform Transform { get; private set; } = new RenderItemTransform();
 
         public ICanvasResourceCreatorWithDpi ResourceCreator;
-        public bool IsDirty { get; set; } = true;
+        public virtual bool IsDirty { get; set; } = true;
+
+        // Boolean which determines whether this render item can gain focus
+        public bool IsFocusable { get; set; } = true;
 
         public BaseRenderItem Parent { get; set; }
 
@@ -26,6 +52,12 @@ namespace NuSysApp
         public bool IsDisposed { get; protected set; }
 
         public bool IsVisible { get; set; } = true;
+
+        /// <summary>
+        /// True if one of the children has focus
+        /// </summary>
+        public bool ChildHasFocus { get; set; }
+
 
         public bool IsHitTestVisible
         {
@@ -42,6 +74,12 @@ namespace NuSysApp
 
         public bool IsChildrenHitTestVisible { get; set; } = true;
 
+        /// <summary>
+        /// True if the object currently has focus set by the focus manager
+        /// try to avoid setting this yourself
+        /// </summary>
+        public bool HasFocus { get; set; }
+
         public BaseRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator)
         {
             Parent = parent;
@@ -50,7 +88,7 @@ namespace NuSysApp
 
         public virtual async Task Load() {
 
-            foreach (var child in _children)
+            foreach (var child in _children.ToArray())
             {
                 await child.Load();
             }
@@ -64,7 +102,11 @@ namespace NuSysApp
 
         public virtual void RemoveChild(BaseRenderItem child)
         {
-            _children.Remove(child);
+            if (child != null)
+            {
+                child?.Dispose();
+                _children.Remove(child);
+            }
         }
 
         public virtual List<BaseRenderItem> GetChildren()
@@ -75,11 +117,11 @@ namespace NuSysApp
         public virtual void ClearChildren()
         {
             var children = GetChildren();
-            _children.Clear();
             foreach (var child in children)
             {
                 child.Dispose();
             }
+            _children.Clear();
         }
 
         public virtual void SortChildren(Comparison<BaseRenderItem> comparison)
@@ -96,7 +138,7 @@ namespace NuSysApp
 
             foreach (var child in _children.ToArray())
             {
-                child.Update(Transform.LocalToScreenMatrix);
+                child?.Update(Transform.LocalToScreenMatrix);
             }
         }
 
@@ -128,7 +170,7 @@ namespace NuSysApp
                 return;
             }
 
-            foreach (var child in _children)
+            foreach (var child in _children.ToArray())
             {
                 child?.Dispose();
             }
@@ -139,6 +181,9 @@ namespace NuSysApp
 
         public virtual BaseRenderItem HitTest(Vector2 screenPoint)
         {
+
+
+
             if (!IsVisible)
                 return null;
 
@@ -160,6 +205,8 @@ namespace NuSysApp
                 return null;
             }
 
+            var a = GetScreenBounds();
+
             return GetScreenBounds().Contains(screenPoint.ToPoint()) ? this : null;
         }
 
@@ -171,6 +218,42 @@ namespace NuSysApp
         public virtual Rect GetScreenBounds()
         {
             return Win2dUtil.TransformRect(GetLocalBounds(), Transform.LocalToScreenMatrix);
+        }
+
+        /// <summary>
+        /// Called when this item gains focus
+        /// </summary>
+        public virtual void GotFocus()
+        {
+            HasFocus = true;
+            OnFocusGained?.Invoke(this);
+        }
+
+        /// <summary>
+        /// Called when this item loses focus
+        /// </summary>
+        public virtual void LostFocus()
+        {
+            HasFocus = false;
+            OnFocusLost?.Invoke(this);
+        }
+
+        /// <summary>
+        /// Called whenever a child of this element gains focus
+        /// </summary>
+        public virtual void ChildGotFocus()
+        {
+            ChildHasFocus = true;
+            OnChildFocusGained?.Invoke(this);
+        }
+
+        /// <summary>
+        /// Called whenever a child of this element loses focus
+        /// </summary>
+        public virtual void ChildLostFocus()
+        {
+            ChildHasFocus = false;
+            OnChildFocusLost?.Invoke(this);
         }
     }
 }

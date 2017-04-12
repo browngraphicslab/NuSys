@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
@@ -15,7 +17,9 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
+using Microsoft.Graphics.Canvas;
 using NusysIntermediate;
+using WinRTXamlToolkit.Tools;
 
 namespace NuSysApp
 {
@@ -81,24 +85,116 @@ namespace NuSysApp
             return fileBytes;
         }
 
-        public static async Task<MuPDFWinRT.Document> DataToPDF(string base64StringData)
+
+        private static async Task<CanvasBitmap> PrivateLoad(ICanvasResourceCreator resourceCreator, Uri uri, float? dpi = 0)
         {
-            var dataBytes = Convert.FromBase64String(base64StringData ?? "");
-            var c = dataBytes.Length;
-            var ms = new MemoryStream(dataBytes);
-            MuPDFWinRT.Document document;
-            using (IInputStream inputStreamAt = ms.AsInputStream())
+            CanvasBitmap bitmap = null;
+            try
             {
-                using (var dataReader = new DataReader(inputStreamAt))
+                if (dpi != null)
                 {
-                    uint u = await dataReader.LoadAsync((uint)dataBytes.Length);
-                    IBuffer readBuffer = dataReader.ReadBuffer(u);
-                    document = MuPDFWinRT.Document.Create(readBuffer, MuPDFWinRT.DocumentType.PDF, 120);
+                    bitmap = await CanvasBitmap.LoadAsync(resourceCreator, uri, dpi.Value);
+                }
+                else
+                {
+                    bitmap = await CanvasBitmap.LoadAsync(resourceCreator, uri);
                 }
             }
-            return document;
+            catch (Exception e)
+            {
+                if (dpi != null)
+                {
+                    bitmap =
+                        await
+                            CanvasBitmap.LoadAsync(resourceCreator, new Uri("ms-appx:///Assets/new icons/image.png"),
+                                dpi.Value);
+                }
+                else
+                {
+                    bitmap =
+                        await CanvasBitmap.LoadAsync(resourceCreator, new Uri("ms-appx:///Assets/new icons/image.png"));
+                }
+            }
+            return bitmap;
         }
 
+        /// <summary>
+        /// public method to get rid of the image dictionary that stores all image bitmaps
+        /// </summary>
+        public static void ClearImageDictionary()
+        {
+            
+        }
+
+        public static void RemoveItem(string url)
+        {
+            if (string.IsNullOrEmpty(url))
+            {
+                return;
+            }
+            WeakReference refer;
+            _dict.Refs.TryRemove(url, out refer);
+        }
+
+        /// <summary>
+        /// http://stackoverflow.com/questions/1686416/c-sharp-get-number-of-references-to-object
+        /// </summary>
+        class BitmapCache
+        {
+            public ConcurrentDictionary<string, WeakReference> Refs = new ConcurrentDictionary<string, WeakReference>();
+            public object this[string key]
+            {
+                get
+                {
+                    WeakReference wr;
+                    if (Refs.TryGetValue(key, out wr))
+                    {
+                        if (wr.IsAlive) return wr.Target;
+                        WeakReference ignored;
+                        Refs.TryRemove(key, out ignored);
+                    }
+                    return null;
+                }
+                set
+                {
+                    Refs[key] = new WeakReference(value);
+                }
+            }
+        }
+        private static BitmapCache _dict = new BitmapCache();
+
+        private static ConcurrentHashSet<string> _loadingPaths = new ConcurrentHashSet<string>();
+
+        private static object _lock = new object();
+
+        /// <summary>
+        /// Method to call isntead of await CanvasBitmap.LoadAsync.
+        /// This will try catch the load and make sure it has a proper url.
+        /// </summary>
+        /// <param name="resourceCreator"></param>
+        /// <param name="uri"></param>
+        /// <returns></returns>
+        public static async Task<CanvasBitmap> LoadCanvasBitmapAsync(ICanvasResourceCreator resourceCreator, Uri uri, float? dpi = 0, bool disposable = true)
+        {
+            var path = uri.AbsoluteUri;
+            if (_dict[path] != null || _loadingPaths.Contains(path))
+            {
+                while (_loadingPaths.Contains(path))
+                {
+                    await Task.Delay(10);
+                }
+                var existing = _dict[path];
+                return (CanvasBitmap)existing;
+            }
+            if (!_loadingPaths.Add(path))
+            {
+                return await LoadCanvasBitmapAsync(resourceCreator, uri, dpi, disposable);
+            }
+            CanvasBitmap bmp = await PrivateLoad(resourceCreator, uri, dpi);
+            _dict[path] = bmp;
+            _loadingPaths.Remove(path);
+            return bmp;
+        }
 
         /// <summary>
         /// Returns a dictionary mapping thumbnail strings to all thumbnailsize 

@@ -1,0 +1,1 @@
+{"TextScale":1.0,"LinksVisible":0,"ResizeElementTitles":false,"BreadCrumbsDocked":true,"MinimapVisible":true}

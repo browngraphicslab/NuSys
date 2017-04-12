@@ -13,7 +13,7 @@ namespace NusysIntermediate
         public int PageStart { get; set; }
         public int PageEnd { get; set; }
 
-        public PdfLibraryElementModel(string libraryId) : base(libraryId, NusysConstants.ElementType.PDF)
+        public PdfLibraryElementModel(string libraryId, NusysConstants.ElementType type = NusysConstants.ElementType.PDF) : base(libraryId, type)
         {
         }
 

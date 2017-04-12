@@ -26,7 +26,7 @@ namespace NuSysApp
 
         public override async Task Load()
         {
-            _bmp = await CanvasBitmap.LoadAsync(ResourceCreator, new Uri("ms-appx:///Assets/icon_node_x.png"));
+            _bmp = await MediaUtil.LoadCanvasBitmapAsync(ResourceCreator, new Uri("ms-appx:///Assets/icon_node_x.png"));
             await base.Load();
         }
 

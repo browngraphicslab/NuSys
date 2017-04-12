@@ -36,6 +36,8 @@ namespace NuSysApp
                 _elementController.RequestDelete();
 
             }
+
+
         }
 
         /// <summary>

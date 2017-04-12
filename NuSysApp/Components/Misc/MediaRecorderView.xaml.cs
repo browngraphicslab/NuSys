@@ -161,7 +161,7 @@ namespace NuSysApp
                 }
                 catch (Exception exception)
                 {
-                    Debug.Fail("can't have empty try-catch");
+                    Debug.Assert(false, "can't have empty try-catch");
                     // Do Exception Handling
                 }
             }
@@ -217,7 +217,7 @@ namespace NuSysApp
                     //TODO: make thumbnail for video
                     //Create temporary storagefile.
                     var tempFileName = "recordedvideo" + fileExtension;
-                    var storageFile = await NuSysStorages.SaveFolder.CreateFileAsync(tempFileName, CreationCollisionOption.ReplaceExisting);
+                    var storageFile = await ApplicationData.Current.LocalCacheFolder.CreateFileAsync(tempFileName, CreationCollisionOption.ReplaceExisting);
                     //Write data byte array to storagefile.
                     await Windows.Storage.FileIO.WriteBytesAsync(storageFile, data);
                     //Create thumbnails and set as args
@@ -388,7 +388,7 @@ namespace NuSysApp
             }
 
             // save the writeable bitmap to a file
-            var tempFile = await writeableBitmap.SaveAsync(NuSysStorages.SaveFolder);
+            var tempFile = await writeableBitmap.SaveAsync(ApplicationData.Current.LocalCacheFolder);
 
             // get the thumbnails from the image file
             var thumbnails = await MediaUtil.GetThumbnailDictionary(tempFile);

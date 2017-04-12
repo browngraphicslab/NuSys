@@ -46,7 +46,7 @@ namespace NuSysApp
             args.ContentId = objectId;
             args.ContentType = _contentType;
             args.UpdatedContent = message.GetString(NusysConstants.CONTENT_DATA_MODEL_DATA_STRING_KEY);
-            if (args.UpdatedContent != null)
+            if (message.ContainsKey(NusysConstants.CONTENT_DATA_MODEL_DATA_STRING_KEY))
             {
                 var request = new UpdateContentRequest(args, shouldSave);
                 await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);

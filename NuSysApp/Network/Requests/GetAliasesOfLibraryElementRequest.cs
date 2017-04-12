@@ -29,7 +29,7 @@ namespace NuSysApp
         /// this check outgoing request method just checks to see if the library element id is present in the outoging message.
         /// </summary>
         /// <returns></returns>
-        public override async Task CheckOutgoingRequest()
+        public override void CheckOutgoingRequest()
         {
             Debug.Assert(_message.ContainsKey(NusysConstants.GET_ALIASES_OF_LIBRARY_ELEMENT_REQUEST_LIBRARY_ELEMENT_ID_KEY));
         }

@@ -9,7 +9,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="elementModel"></param>
         /// <returns></returns>
-        public static ElementController CreateFromModel(ElementModel elementModel) //TODO is this done?????? WTF? - Trent
+        public static ElementController CreateFromModel(ElementModel elementModel)
         {
             ElementController controller;
 
@@ -35,9 +35,6 @@ namespace NuSysApp
                     break;
                 case NusysConstants.ElementType.Collection:
                     controller = new ElementCollectionController(elementModel);
-                    break;
-                case NusysConstants.ElementType.Area:
-                    controller = new ElementController(elementModel);
                     break;
                 default:
                     controller = new ElementController(elementModel);

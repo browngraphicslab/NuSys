@@ -6,8 +6,10 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.UI;
+using Windows.UI.Core;
 using Windows.UI.Input;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml.Input;
@@ -20,8 +22,8 @@ namespace NuSysApp
 {
     public class InkRenderItem : BaseRenderItem
     {
-        
-        private ElementViewModel _vm;
+        public static bool StopCanvasInk;
+        private ElementController _parentCollectionController;
         private bool _isEraser;
         private List<InkPoint> _currentInkPoints = new List<InkPoint>();
         private InkStroke _currentInkStroke;
@@ -45,25 +47,29 @@ namespace NuSysApp
         public InkRenderItem(CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator):base(parent, resourceCreator)
         {
             _canvas = (CanvasAnimatedControl) resourceCreator;
+            _parentCollectionController = parent.ViewModel.Controller;
             parent.ViewModel.Controller.LibraryElementController.ContentDataController.InkAdded += ContentDataControllerOnInkAdded;
             parent.ViewModel.Controller.LibraryElementController.ContentDataController.InkRemoved += ContentDataControllerOnInkRemoved;
         }
 
-        private void ContentDataControllerOnInkRemoved(string strokeId)
+        private void ContentDataControllerOnInkRemoved(object sender, string strokeId)
         {
             RemoveInkModel(strokeId);
         }
 
-        private void ContentDataControllerOnInkAdded(InkModel inkModel)
+        private void ContentDataControllerOnInkAdded(object sender, InkModel inkModel)
         {
             AddInkModel(inkModel);
         }
 
         public async override Task Load()
-        {           
-            _inkManager = new InkManager();
-            _dryStrokesTarget = new CanvasRenderTarget(ResourceCreator, _canvas.Size);
-            base.CreateResources();
+        {
+            await _canvas.RunOnGameLoopThreadAsync(delegate
+            {
+                _inkManager = new InkManager();
+                _dryStrokesTarget = new CanvasRenderTarget(ResourceCreator, _canvas.Size);
+                base.CreateResources();
+            });
         }
 
         public override void Dispose()
@@ -75,7 +81,7 @@ namespace NuSysApp
             parent.ViewModel.Controller.LibraryElementController.ContentDataController.InkAdded -= ContentDataControllerOnInkAdded;
             parent.ViewModel.Controller.LibraryElementController.ContentDataController.InkRemoved -= ContentDataControllerOnInkRemoved;
 
-            _vm = null;
+            _parentCollectionController = null;
             _builder = null;
             _currentInkStroke = null;
             _currentInkPoints?.Clear();
@@ -92,133 +98,119 @@ namespace NuSysApp
 
         public void UpdateDryInkTransform()
         {
-            _canvas.RunOnGameLoopThreadAsync(() =>
-            {
-                _transform = Transform.ScreenToLocalMatrix;
-                _needsDryStrokesUpdate = true;
-            });
+            _transform = Transform.ScreenToLocalMatrix;
+            _needsDryStrokesUpdate = true;
         }
 
         public void StartInkByEvent(CanvasPointer e)
         {
-            _isEraser = e.Properties.IsEraser || e.Properties.IsRightButtonPressed;
-
-            _canvas.RunOnGameLoopThreadAsync(() =>
+            if (StopCanvasInk)
             {
-                _isDrawing = true;
-                _transform = Transform.ScreenToLocalMatrix;
+                return;
+            }
+            _isEraser = e.IsEraser || e.IsRightButtonPressed;
 
-                _currentInkPoints = new List<InkPoint>();
-                var np = Vector2.Transform(e.CurrentPoint, _transform);
-                _currentInkPoints.Add(new InkPoint(new Point(np.X, np.Y), e.Pressure));
-                _needsWetStrokeUpdate = true;
-            });
+            _isDrawing = true;
+            _transform = Transform.ScreenToLocalMatrix;
+
+            _currentInkPoints = new List<InkPoint>();
+            var np = Vector2.Transform(e.CurrentPoint, _transform);
+            _currentInkPoints.Add(new InkPoint(new Point(np.X, np.Y), e.Pressure));
+            _needsWetStrokeUpdate = true;
         }
 
         public void UpdateInkByEvent(CanvasPointer e)
         {
-            _canvas.RunOnGameLoopThreadAsync(() =>
+            if (StopCanvasInk)
             {
-                var np = Vector2.Transform(e.CurrentPoint, _transform);
-                _currentInkPoints.Add(new InkPoint(new Point(np.X, np.Y), e.Pressure));
-                _needsWetStrokeUpdate = true;
-            });
+                return;
+            }
+
+            var np = Vector2.Transform(e.CurrentPoint, _transform);
+            _currentInkPoints.Add(new InkPoint(new Point(np.X, np.Y), e.Pressure));
+            _needsWetStrokeUpdate = true;
+        }
+
+        public InkStroke CurrentInkStrokeWithEndpoint(CanvasPointer e)
+        {
+            var np = Vector2.Transform(e.CurrentPoint, _transform);
+            _currentInkPoints.Add(new InkPoint(new Point(np.X, np.Y), e.Pressure));
+            var builder = new InkStrokeBuilder();
+            builder.SetDefaultDrawingAttributes(GetDrawingAttributes(InkColor, InkSize));
+            return builder.CreateStrokeFromInkPoints(_currentInkPoints.ToArray(), Matrix3x2.Identity);
+        }
+
+        public InkStroke CurrentInkStroke()
+        {
+            var builder = new InkStrokeBuilder();
+            builder.SetDefaultDrawingAttributes(GetDrawingAttributes(InkColor, InkSize));
+            return builder.CreateStrokeFromInkPoints(_currentInkPoints.ToArray(), Matrix3x2.Identity);
         }
 
         public void StopInkByEvent(CanvasPointer e)
         {
-            _canvas.RunOnGameLoopThreadAsync(() =>
+            if (StopCanvasInk)
             {
-                var np = Vector2.Transform(e.CurrentPoint, _transform);
-                _currentInkPoints.Add(new InkPoint(new Point(np.X, np.Y), e.Pressure));
+                return;
+            }
+            LatestStroke = CurrentInkStrokeWithEndpoint(e);
 
-                var builder = new InkStrokeBuilder();
-                builder.SetDefaultDrawingAttributes(GetDrawingAttributes(InkColor, InkSize));
-                LatestStroke = builder.CreateStrokeFromInkPoints(_currentInkPoints.ToArray(), Matrix3x2.Identity);
-
-                if (_isEraser)
+            if (_isEraser)
+            {
+                var allStrokes = _inkManager.GetStrokes().ToArray();
+                var thisStroke = _currentInkPoints.Select(p => p.Position);
+                var thisLineString = thisStroke.GetLineString();
+                _inkManager.SelectWithPolyLine(thisStroke);
+                foreach (var otherStroke in allStrokes)
                 {
-                    var allStrokes = _inkManager.GetStrokes().ToArray();
-                    var thisStroke = _currentInkPoints.Select(p => p.Position);
-                    var thisLineString = thisStroke.GetLineString();
-
-                    foreach (var otherStroke in allStrokes)
+                    var pts = otherStroke.GetInkPoints().Select(p => p.Position);
+                    if (pts.Count() < 2)
+                        continue;
+                    if (thisLineString.Intersects(pts.GetLineString()))
                     {
-                        var pts = otherStroke.GetInkPoints().Select(p => p.Position);
-                        if (pts.Count() < 2)
-                            continue;
-                        if (thisLineString.Intersects(pts.GetLineString()))
-                        {
-                            otherStroke.Selected = true;
-                        }
+                        otherStroke.Selected = true;
                     }
-
-                    var selected = GetSelectedStrokes();
-
-
-                    foreach (var s in selected)
-                    {
-                        var strokeId = StrokesMap.GetKeyByValue(s);
-                        SendInkStrokeRemovedRequest(strokeId);
-                    }
-                    _inkManager.DeleteSelected();
-                    _inkManager.SelectWithPolyLine(thisStroke);
-                    selected = GetSelectedStrokes();
-                    _inkManager.DeleteSelected();
-
-                }
-                else
-                {
-                    _inkManager.AddStroke(LatestStroke);
-                    LatestStrokeAdded = DateTime.Now;
-
-                    SendInkStrokeAddedRequest();
                 }
 
-                _currentInkPoints = new List<InkPoint>();
-                _strokesToDraw = _inkManager.GetStrokes().ToList();
+                var selected = GetSelectedStrokes();
 
-                _needsDryStrokesUpdate = true;
-                _needsWetStrokeUpdate = true;
-            });
+                foreach (var s in selected)
+                {
+                    var strokeId = StrokesMap.GetKeyByValue(s);
+                    StrokesMap.Remove(strokeId);
+                    _parentCollectionController.LibraryElementController.ContentDataController.RemoveInk(strokeId);
+                }
+                _inkManager.DeleteSelected();
+
+            }
+            else
+            {     
+                LatestStrokeAdded = DateTime.Now;
+
+                var contentDataModelId = _parentCollectionController.LibraryElementController.LibraryElementModel.ContentDataModelId;
+                var model = LatestStroke.ToInkModel(contentDataModelId, InkColor, InkSize);
+
+                StrokesMap[model.InkStrokeId] = LatestStroke;
+                _parentCollectionController.LibraryElementController.ContentDataController.AddInk(model);
+            }
+
+            _currentInkPoints = new List<InkPoint>();
+
+            _strokesToDraw = _inkManager.GetStrokes().ToList();
+
+            _needsDryStrokesUpdate = true;
+            _needsWetStrokeUpdate = true;
         }
 
-        private async Task SendInkStrokeRemovedRequest(string strokeId)
+        public void RemoveCurrentStroke()
         {
-            StrokesMap.Remove(strokeId);
-            var parentCollection = (CollectionRenderItem)Parent;
-
-            var contentId = parentCollection.ViewModel.Controller.LibraryElementController.LibraryElementModel.ContentDataModelId;
-            var request = new DeleteInkStrokeRequest(strokeId, contentId);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-            parentCollection.ViewModel.Controller.LibraryElementController.ContentDataController.RemoveInk(strokeId);
-        }
-
-        private async Task SendInkStrokeAddedRequest()
-        {
-            var strokeId = SessionController.Instance.GenerateId();
-            StrokesMap[strokeId] = LatestStroke;
-            var parentCollection = (CollectionRenderItem)Parent;
-            var args = new CreateInkStrokeRequestArgs();
-            args.ContentId = parentCollection.ViewModel.Controller.LibraryElementController.LibraryElementModel.ContentDataModelId;
-            args.InkPoints = LatestStroke.GetInkPoints().Select(p => new PointModel(p.Position.X, p.Position.Y, p.Pressure)).ToList();
-            args.InkStrokeId = strokeId;
-            args.Color = new ColorModel
-            {
-                A = InkColor.A,
-                B = InkColor.B,
-                G = InkColor.G,
-                R = InkColor.R,
-            };
-            args.Thickness = InkSize;
-
-            var request = new CreateInkStrokeRequest(args);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            _currentInkPoints = new List<InkPoint>();
+            _needsWetStrokeUpdate = true;
         }
 
         public void AddInkModel(InkModel inkModel)
         {
-            _canvas.RunOnGameLoopThreadAsync(() =>
+            _canvas.RunOnGameLoopThreadAsync(async () =>
             {
                 var builder = new InkStrokeBuilder();
                 var inkStroke =
@@ -227,6 +219,20 @@ namespace NuSysApp
                         Matrix3x2.Identity);
                 inkStroke.DrawingAttributes = GetDrawingAttributes(Color.FromArgb((byte)inkModel.Color.A, (byte)inkModel.Color.R, (byte)inkModel.Color.G, (byte)inkModel.Color.B), (float)inkModel.Thickness);
                 _inkManager.AddStroke(inkStroke);
+                /*
+                try
+                {
+                    var recog = await _inkManager.RecognizeAsync(InkRecognitionTarget.Recent);
+                    foreach (InkRecognitionResult ink in recog)
+                    {
+                        var s = ink.GetTextCandidates();
+                        Debug.WriteLine(s.First());
+                    }
+                }
+                catch (Exception e)
+                {
+                    
+                }*/
                 _strokesToDraw = _inkManager.GetStrokes().ToList();
                 _needsDryStrokesUpdate = true;
                 StrokesMap[inkModel.InkStrokeId] = inkStroke;
@@ -240,9 +246,11 @@ namespace NuSysApp
                 if (StrokesMap.ContainsKey(strokeId)) // TODO not have to check, this should only be getting called from the controller if it exists
                 {
                     var inkStroke = StrokesMap[strokeId];
+                    StrokesMap.Remove(strokeId);
                     inkStroke.Selected = true;
                     _inkManager.DeleteSelected();
                     _strokesToDraw = _inkManager.GetStrokes().ToList();
+                    _needsDryStrokesUpdate = true;
                 }
             });
         }
@@ -251,11 +259,12 @@ namespace NuSysApp
         {
             _canvas.RunOnGameLoopThreadAsync(() =>
             {
-                if (LatestStroke != null)
+                if (LatestStroke != null && StrokesMap.ContainsValue(LatestStroke))
                 {
-                    LatestStroke.Selected = true;
                     var strokeId = StrokesMap.GetKeyByValue(LatestStroke);
-                    SendInkStrokeRemovedRequest(strokeId);
+                    StrokesMap[strokeId].Selected = true;
+                    StrokesMap.Remove(strokeId);
+                    _parentCollectionController.LibraryElementController.ContentDataController.RemoveInk(strokeId);
                     _inkManager.DeleteSelected();
                     LatestStroke = null;
                 }
@@ -272,7 +281,8 @@ namespace NuSysApp
             var orgTransform = ds.Transform;
             if (_needsDryStrokesUpdate)
             {
-                if (_dryStrokesTarget != null) { 
+                if (_dryStrokesTarget != null)
+                { 
                     using (var dss = _dryStrokesTarget.CreateDrawingSession())
                     {
                         dss.Clear(Colors.Transparent);
@@ -298,14 +308,14 @@ namespace NuSysApp
                     _builder.SetDefaultDrawingAttributes(GetDrawingAttributes(InkColor, InkSize));
 
                 }
-                lock (_lock)
-                {
+
+                
                     _builder.SetDefaultDrawingAttributes(GetDrawingAttributes(InkColor, InkSize));
                     var s = _builder.CreateStrokeFromInkPoints(_currentInkPoints.ToArray(), Matrix3x2.Identity);
                     if (_isEraser)
                         s.DrawingAttributes = GetDrawingAttributes(Colors.DarkRed, InkSize);
                     ds.DrawInk(new InkStroke[] {s});
-                }
+                
             }
         }
 

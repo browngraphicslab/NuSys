@@ -12,7 +12,7 @@ namespace NusysServer
         public static readonly string VALID_CREDENTIALS_BOOLEAN_STRING = "valid";
 
 
-        public static readonly string user = "trent"; //TODO: CHANGE TO PRIVATE LATER
+        public static string user = "trent"; //TODO: CHANGE TO PRIVATE LATER
 
         public static string WWW_ROOT {
             get
@@ -22,7 +22,7 @@ namespace NusysServer
                     case "leandro":
                         return Directory.Exists("C:/Users/leandro/Downloads/NuSys/NuSys/NusysServer/") ? "C:/Users/leandro/Downloads/NuSys/NuSys/NusysServer/" : "D:/home/site/wwwroot/";
                     case "trent":
-                        return Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/") ? "C:/Users/graphics_lab/Documents/Trent_Nusys/nusys5/nusys/NusysServer/" : "D:/home/site/wwwroot/";
+                        return Directory.Exists("C:/Users/Trent/") ? @"C:\Users\Trent\Documents\nusys_repo\main\nusys\NusysServer\" : "D:/home/site/wwwroot/";
                     case "harsh":
                         return Directory.Exists("C:/Users/Brown GFX/Documents/NuSys_Server/nuSysServer/NusysServer/") ? "C:/Users/Brown GFX/Documents/NuSys_Server/nuSysServer/NusysServer/" : "D:/home/site/wwwroot/";
                     case "miranda":
@@ -63,7 +63,7 @@ namespace NusysServer
                     case "leandro":
                         return Directory.Exists("C:/Users/leandro/Downloads/NuSys/") ? "C:/Users/leandro/Downloads/NuSys/" : "D:/home/site/wwwroot/files/";
                     case "trent":
-                        return Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/") ? "C:/Users/graphics_lab/Documents/NuRepo_Test/" : "D:/home/site/wwwroot/files/";
+                        return Directory.Exists(@"C:\Users\Trent\") ? @"C:\Users\Trent\Desktop\" : "D:/home/site/wwwroot/files/";
                     case "harsh":
                         return Directory.Exists("C:/Users/Brown GFX/Documents/NuSys_Server/nuSysServer/NusysServer/") ? "C:/ Users/Brown GFX/Documents/NuSys_Server/nuSysServer/NusysServer/" : "D:/home/site/wwwroot/files/";
                     case "miranda":
@@ -99,26 +99,24 @@ namespace NusysServer
                 switch (user)
                 {
                     case "leandro":
-                        return Directory.Exists("C:/Users/leandro/Downloads/NuSys/") ? "http://localhost:2776/" : "http://nusysrepo.azurewebsites.net/";
+                        return Directory.Exists("C:/Users/leandro/Downloads/NuSys/") ? "http://localhost:2776/" : "http://" + NusysConstants.ServerName + "/";
                     case "trent":
-                        return Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/") ? "http://localhost:2776/" : "http://nusysrepo.azurewebsites.net/";
+                        return Directory.Exists("C:/Users/graphics_lab/Documents/NuRepo_Test/") ? "http://localhost:2776/" : "http://" + NusysConstants.ServerName + "/";
                     case "harsh":
-                        return Directory.Exists("C:/Users/Brown GFX/Documents/NuSys_Server/nuSysServer/NusysServer/") ? "http://localhost:2776/" : "http://nusysrepo.azurewebsites.net/";
+                        return Directory.Exists("C:/Users/Brown GFX/Documents/NuSys_Server/nuSysServer/NusysServer/") ? "http://localhost:2776/" : "http://" + NusysConstants.ServerName + "/";
                     case "miranda":
-                        return Directory.Exists("C:/Users/miran_000/Documents/NuSys/NusysServer/") ? "http://localhost:2776/" : "http://nusysrepo.azurewebsites.net/";
+                        return Directory.Exists("C:/Users/miran_000/Documents/NuSys/NusysServer/") ? "http://localhost:2776/" : "http://" + NusysConstants.ServerName + "/";
                     case "sahil":
-                        return Directory.Exists("C:/Users/nusys/Documents/Sahil8/NusysServer/") ? "http://localhost:2776/" : "http://nusysrepo.azurewebsites.net/";
-                    case "zach":
-                        return Directory.Exists("C:/Users/Zach/Documents/Visual Studio 2015/Projects/nusys/NusysServer/") ? "http://localhost:2776/" : "D:/home/site/wwwroot/";
+                        return Directory.Exists("C:/Users/nusys/Documents/Sahil8/NusysServer/") ? "http://localhost:2776/" : "http://" + NusysConstants.ServerName + "/";
                     case "book":
-                        return Directory.Exists("C:/Users/nusys/Desktop/Leandro NEW SIS/nusys/NusysServer/") ? "http://localhost:2776/" : "http://nusysrepo.azurewebsites.net/";
+                        return Directory.Exists("C:/Users/nusys/Desktop/Leandro NEW SIS/nusys/NusysServer/") ? "http://localhost:2776/" : "http://" + NusysConstants.ServerName + "/";
                     case "luke1":
-                        return Directory.Exists("C:/Users/luke murray/Documents/Visual Studio 2015/Projects/nusys/NusysServer/") ? "http://localhost:2776/" : "http://nusysrepo.azurewebsites.net/";
+                        return Directory.Exists("C:/Users/luke murray/Documents/Visual Studio 2015/Projects/nusys/NusysServer/") ? "http://localhost:2776/" : "http://" + NusysConstants.ServerName + "/";
                     case "nico":
-                        return Directory.Exists("C:/Users/nico/Documents/Nu_Nusys_repo/nusys/NusysServer/") ? "http://localhost:2776/" : "http://nusysrepo.azurewebsites.net/";
+                        return Directory.Exists("C:/Users/nico/Documents/Nu_Nusys_repo/nusys/NusysServer/") ? "http://localhost:2776/" : "http://" + NusysConstants.ServerName + "/";
 
                     default:
-                        return "http://nusysrepo.azurewebsites.net/";
+                        return "http://"+NusysConstants.ServerName+"/";
                 }
             }
         }
@@ -310,6 +308,16 @@ namespace NusysServer
             return new Message(properties.ToDictionary(kvp => kvp.Key.Contains(".") ? kvp.Key.Substring(kvp.Key.IndexOf(".") + 1) : kvp.Key, kvp => kvp.Value));
         }
 
+
+        /// <summary>
+        /// Method used to get the string file path for a word document using only the word document's content Id;
+        /// </summary>
+        /// <param name="contentId"></param>
+        /// <returns></returns>
+        public static string GetWordDocumentFilePath(string contentId)
+        {
+            return Constants.WWW_ROOT + contentId + NusysConstants.DEFAULT_WORD_DOCUMENT_EXTENSION;
+        }
 
         /// <summary>
         /// method to return the name of the sql table

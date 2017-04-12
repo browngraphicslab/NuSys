@@ -7,29 +7,42 @@ using Windows.UI.Xaml.Media;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
-using Windows.ApplicationModel.Core;
+using Windows.Storage;
 using Windows.UI;
+using Windows.UI.Xaml.Input;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using NetTopologySuite.Geometries;
 using NusysIntermediate;
-using PathGeometry = SharpDX.Direct2D1.PathGeometry;
-using Point = Windows.Foundation.Point;
+using NuSysApp.Components.NuSysRenderer.UI;
+
 
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
 namespace NuSysApp
 {
-    /// <summary>
+    /// <summary> 
     /// This is the view for the entire workspace. It instantiates the WorkspaceViewModel. 
     /// </summary>
     public sealed partial class FreeFormViewer
     {
+        private static float ARRANGE_BORDER = 55.0f;
         private List<PointModel> _latestStroke;
-        private CanvasInteractionManager _canvasInteractionManager;
+        private RenderItemInteractionManager _canvasInteractionManager;
+
+        /// <summary>
+        /// getter for canvasinteractionmanager
+        /// </summary>
+        public RenderItemInteractionManager CanvasInteractionManager
+        {
+            get { return _canvasInteractionManager; }
+        }
+
         private CollectionInteractionManager _collectionInteractionManager;
+
         private FreeFormViewerViewModel _vm;
 
         private Dictionary<ElementViewModel, RenderItemTransform> _transformables =
@@ -47,6 +60,8 @@ namespace NuSysApp
         public BaseMediaPlayer VideoPlayer => xVideoPlayer;
         public AudioPlayer AudioPlayer => xAudioPlayer;
 
+        public Keyboard Keyboard => xKeyboard;
+
         public VideoElementRenderItem ActiveVideoRenderItem;
         public AudioElementRenderItem ActiveAudioRenderItem;
 
@@ -62,9 +77,24 @@ namespace NuSysApp
 
         private bool _inkPressed;
 
-        private BaseRenderItem _renderRoot;
+        private SessionRootRenderItem _renderRoot;
         public NuSysRenderer RenderEngine { get; private set; }
 
+        /// <summary>
+        /// get the private transform of the free form viewer
+        /// </summary>
+        public Matrix3x2 Transform
+        {
+            get { return _transform; }
+        }
+        // Manages the focus of the render items, instantiated in constructor
+        public FocusManager FocusManager { get; private set; }
+
+        private LayoutWindowUIElement _layoutWindow;
+        private EditTagsUIElement _editTagsElement;
+        private bool _customLayoutDrawing = false;
+
+        public event EventHandler<bool> CanvasPanned;
 
         public FreeFormViewer()
         {
@@ -75,9 +105,40 @@ namespace NuSysApp
             xMinimapCanvas.Width = 300;
             xMinimapCanvas.Height = 300;
 
-            _renderRoot = new BaseRenderItem(null, xRenderCanvas);
+            xFullScreenImageViewer.ImageClosed += XFullScreenImageViewerOnImageClosed;
+
+            _renderRoot = new SessionRootRenderItem(null, xRenderCanvas);
             RenderEngine = new NuSysRenderer(xRenderCanvas, _renderRoot);
-     
+            xFullScreenImageViewer.Visibility = Visibility.Collapsed;
+
+
+            xKeyboard.KeyboardKeyPressed += Keyboard_KeyboardKeyPressed;
+            xKeyboard.KeyboardKeyReleased += Keyboard_KeyboardKeyReleased;
+
+        }
+
+        private void Keyboard_KeyboardKeyPressed(object sender, KeyArgs args)
+        {
+            SessionController.Instance.FocusManager.ManualFireKeyPressed(args);
+
+        }
+
+
+        private void Keyboard_KeyboardKeyReleased(object sender, KeyArgs args)
+        {
+            SessionController.Instance.FocusManager.ManualFireKeyReleased(args);
+
+        }
+
+        /// <summary>
+        /// Event fired when the full screen image viewer is closed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="eventArgs"></param>
+        private void XFullScreenImageViewerOnImageClosed(object sender, EventArgs eventArgs)
+        {
+            xFullScreenImageViewer.IsHitTestVisible = false;
+            xWrapper.IsHitTestVisible = true;
         }
 
         public void Clear()
@@ -96,6 +157,7 @@ namespace NuSysApp
             xUndoButton.Activate(action);
         }
 
+
         private void OnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
         {
             Canvas.SetLeft(xMinimapCanvas, sizeChangedEventArgs.NewSize.Width-xMinimapCanvas.Width);
@@ -111,8 +173,22 @@ namespace NuSysApp
             _vm.Height = xRenderCanvas.Height;
             DataContext = _vm;
 
+            // NOTE IF YOU ARE CREATING OBJECTS IN THIS METHOD. BE AWARE THAT THE METHOD IS CALLED 
+            // MULTIPLE TIMES!!! WE DO NOT WANT TO END UP WITH MULTIPLE INSTANCES OF OBJECTS
+            // THAT SHOULD ONLY EXIST ONCE.
+            // THIS CAN EASILY BE ACCOMPLISHED WITH A NULL CHECK AS SHOWN DIRECTLY BELOW THIS LINE!!!
+
+            // Make sure the _canvasInteractionManager is only implemented once
             if (_canvasInteractionManager == null)
-                _canvasInteractionManager = new CanvasInteractionManager(xWrapper);
+            {
+                _canvasInteractionManager = new RenderItemInteractionManager(RenderEngine, xWrapper);
+            }
+
+            // Make sure the FocusManager is only implemented once
+            if (FocusManager == null)
+            {
+                FocusManager = new FocusManager(_canvasInteractionManager, RenderEngine);
+            }
 
             if (_vm != null)
             {
@@ -130,13 +206,110 @@ namespace NuSysApp
             RenderEngine.Root.ClearChildren();
 
             InitialCollection.Transform.SetParent(RenderEngine.Root.Transform);
+
             RenderEngine.Root.AddChild(InitialCollection);
+
             RenderEngine.Start();
 
             RenderEngine.BtnDelete.Tapped -= BtnDeleteOnTapped;
             RenderEngine.BtnDelete.Tapped += BtnDeleteOnTapped;
 
+            RenderEngine.BtnExportTrail.Tapped -= BtnExportTrailOnTapped;
+            RenderEngine.BtnExportTrail.Tapped += BtnExportTrailOnTapped;
+
             _minimap = new MinimapRenderItem(InitialCollection, null, xMinimapCanvas);
+        }
+
+        /// <summary>
+        /// exports trail to HTML when export button is tapped
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private async void BtnExportTrailOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            if (_selectedLink is TrailRenderItem)
+            {
+                //get a new folderpicker, set suggested start location to documents folder
+                var savePicker = new Windows.Storage.Pickers.FolderPicker();
+                savePicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
+                savePicker.FileTypeFilter.Add(".html");
+                //this is the folder that the user picks
+                var storageFolder = await savePicker.PickSingleFolderAsync();
+
+                //get trail as a list of nodes
+                var trailvm = (_selectedLink as TrailRenderItem).ViewModel;
+                if(trailvm == null)
+                {
+                    Debug.Assert(false, "vm should not be null");
+                    return;
+                }
+                List<ElementController> trailList = GetTrailAsList(trailvm.Model);
+
+                for (int i = 0; i < trailList.Count; i++)
+                {
+                    var currElement = trailList[i];
+                    string prev = null;
+                    string next = null;
+                    if (i > 0)
+                    {
+                        prev = trailList[i - 1].Id;
+                    }
+                    if (i < trailList.Count - 1)
+                    {
+                        next = trailList[i + 1].Id;
+                    }
+
+                    await currElement.ExportToHTML(storageFolder, prev, next);
+                }
+                
+
+                StorageFolder htmlFolder = await storageFolder.GetFolderAsync("HTMLExport");
+                Debug.Assert(htmlFolder != null, "htmlFolder should not be null");
+
+                var firstPage = await htmlFolder.GetFileAsync(trailList[0].Id + ".html");
+
+                var exportPopup = new CenteredPopup(RenderEngine.Root, xRenderCanvas,
+                    "You have exported your trail! \n \n");
+                RenderEngine.Root.AddChild(exportPopup);
+
+                //open the exported html in browser
+                await Windows.System.Launcher.LaunchFileAsync(firstPage);
+
+
+            }
+        }
+
+        /// <summary>
+        /// gets trail elements as a list
+        /// </summary>
+        /// <param name="trail"></param>
+        /// <returns></returns>
+        private List<ElementController> GetTrailAsList(PresentationLinkModel trail)
+        {
+            List<ElementController> elements = new List<ElementController>();
+            var currTrail = trail;
+            while (currTrail != null) 
+            {
+                var inNode = SessionController.Instance.ElementModelIdToElementController[currTrail.InElementId];
+                var outNode =
+                    SessionController.Instance.ElementModelIdToElementController[currTrail.OutElementId];
+                if (!elements.Contains(inNode))
+                {
+                    elements.Add(inNode);
+                }
+                if (elements.Contains(outNode))
+                {
+                    break;
+                }
+                elements.Add(outNode);
+
+                var oldTrail = currTrail;
+                var models = PresentationLinkViewModel.Models;
+
+                currTrail = models.FirstOrDefault(vm => vm.InElementId == oldTrail.OutElementId);
+            }
+
+            return elements;
         }
 
         private void ElementsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
@@ -177,6 +350,8 @@ namespace NuSysApp
                 _canvasInteractionManager.ItemTapped -= CanvasInteractionManagerOnItemTapped;
 
                 _collectionInteractionManager.Dispose();
+                //Remove focus from FocusManager
+                FocusManager.ClearFocus();
             }
 
             CurrentCollection = collection;
@@ -189,7 +364,7 @@ namespace NuSysApp
             }
 
 
-            if (!SessionController.Instance.SessionView.IsReadonly) { 
+            if (!SessionController.IsReadonly) { 
                 _collectionInteractionManager.DoubleTapped += OnItemDoubleTapped;
                 _collectionInteractionManager.SelectionPanZoomed += CollectionInteractionManagerOnSelectionPanZoomed;
                 _collectionInteractionManager.ItemMoved += CollectionInteractionManagerOnItemMoved;
@@ -207,6 +382,12 @@ namespace NuSysApp
                 _collectionInteractionManager.TrailCreated += CollectionInteractionManagerOnTrailCreated;
                 _collectionInteractionManager.ElementAddedToCollection += CollectionInteractionManagerOnElementAddedToCollection;
                 multiMenu.CreateCollection += MultiMenuOnCreateCollection;
+                //Toggle FocusManager read only variable
+                FocusManager.InReadOnly = false;
+            } else
+            {
+                //Toggle FocusManager read only variable
+                FocusManager.InReadOnly = true;
             }
 
             _collectionInteractionManager.RenderItemPressed += OnRenderItemPressed;
@@ -223,6 +404,11 @@ namespace NuSysApp
             
         }
 
+        public void InvalidateMinimap()
+        {
+            _minimap.Invalidate();
+        }
+
         private async void BtnDeleteOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             if (_selectedLink is LinkRenderItem)
@@ -233,31 +419,57 @@ namespace NuSysApp
             else if (_selectedLink is TrailRenderItem)
             {
                 var trailItem = (TrailRenderItem)_selectedLink;
-                trailItem.ViewModel.DeletePresentationLink();
+                trailItem?.ViewModel?.DeletePresentationLink();
             }
             RenderEngine.BtnDelete.IsVisible = false;
+            RenderEngine.BtnExportTrail.IsVisible = false;
         }
 
         private void OnRenderItemPressed(BaseRenderItem item, CanvasPointer point)
         {
-            if (!(item == RenderEngine.BtnDelete || item is LinkRenderItem || item is TrailRenderItem))
+            if (!(item == RenderEngine.BtnDelete || item is LinkRenderItem || item is TrailRenderItem || item == RenderEngine.BtnExportTrail))
             {
                 RenderEngine.BtnDelete.IsVisible = false;
+                RenderEngine.BtnExportTrail.IsVisible = false;
+                _selectedLink = null;
             }
         }
 
+        /// <summary>
+        /// made edits to include HTML export
+        /// </summary>
+        /// <param name="element"></param>
+        /// <param name="pointer"></param>
         private void CollectionInteractionManagerOnTrailSelected(TrailRenderItem element, CanvasPointer pointer)
         {
-            RenderEngine.BtnDelete.Transform.LocalPosition = pointer.CurrentPoint + new Vector2(0, -40);
+            //This if statement is necessary because it prevents an annoying side effect in which deleting and subsequently selecting is possible
+            if(_selectedLink == element)
+            {
+                return;
+            }
+            RenderEngine.BtnDelete.Transform.LocalPosition = pointer.CurrentPoint + new Vector2(0, -50);
             RenderEngine.BtnDelete.IsVisible = true;
+
+            //HTML export
+            RenderEngine.BtnExportTrail.Transform.LocalPosition = pointer.CurrentPoint + new Vector2(0, 40);
+            RenderEngine.BtnExportTrail.IsVisible = true;
+
             _selectedLink = element;
         }
 
         private void CollectionInteractionManagerOnLinkSelected(LinkRenderItem element, CanvasPointer pointer)
         {
-            RenderEngine.BtnDelete.Transform.LocalPosition = pointer.CurrentPoint + new Vector2(0,-40);
+            if (Selections.Count() == 1 && Selections.First().ViewModel.Controller.LibraryElementModel.Type != NusysConstants.ElementType.Link)
+            {
+                _collectionInteractionManager.FollowLink(Selections.First().ViewModel.Controller,element.ViewModel.Controller);
+                return;
+            }
+
+            RenderEngine.BtnDelete.Transform.LocalPosition = pointer.CurrentPoint + new Vector2(40,0);
             RenderEngine.BtnDelete.IsVisible = true;
             _selectedLink = element;
+
+            RenderEngine.BtnExportTrail.IsVisible = false;
         }
 
         private void CollectionInteractionManagerOnSelectionPanZoomed(Vector2 center, Vector2 deltaTranslation,
@@ -269,7 +481,10 @@ namespace NuSysApp
             {
                 var elem = selection.ViewModel;
                 if (elem == null)
+                {
+                    Debug.Assert(false, "this shouldn't be happening.");
                     continue;
+                }
                 var imgCenter = new Vector2((float) (elem.X + elem.Width/2), (float) (elem.Y + elem.Height/2));
                 var newCenter = Vector2.Transform(imgCenter, transform);
 
@@ -415,7 +630,7 @@ namespace NuSysApp
             xMultimediaCanvas.IsHitTestVisible = false;
         }
 
-        private void CollectionInteractionManagerOnMultimediaElementActivated(ElementRenderItem element)
+        private void CollectionInteractionManagerOnMultimediaElementActivated(ElementRenderItem element, CanvasPointer pointer)
         {
             if (element is VideoElementRenderItem)
             {
@@ -464,6 +679,9 @@ namespace NuSysApp
                 var s = collection.Camera.LocalToScreenMatrix.M11;
                 var nw = elem.ViewModel.Width + delta.X/s;
                 var nh = elem.ViewModel.Height + delta.Y/s;
+
+                elem.ViewModel.SetSize(nw, nh); //You need to first set size of view model for proper image resizing
+               
                 item.ViewModel.Controller.SetSize(nw, nh);
                 if(_currentAudioElementController?.Model?.Id == item?.ViewModel?.Controller?.Model?.Id && _currentAudioElementController?.Model?.Id != null)
                 {
@@ -478,7 +696,7 @@ namespace NuSysApp
             _minimap.Invalidate();
         }
 
-        private async void MultiMenuOnCreateCollection(bool finite, bool shaped)
+        private async void MultiMenuOnCreateCollection(bool finite, bool shaped, bool useBoundingRect)
         {
             var selections = Selections.ToArray();
             Selections.Clear();
@@ -502,6 +720,20 @@ namespace NuSysApp
                 }
 
                 shapePoints = _latestStroke;
+
+                if (useBoundingRect)
+                {
+                    var rect = Geometry.PointCollecionToBoundingRect(shapePoints);
+                    shapePoints = new List<PointModel>()
+                    {
+                        new PointModel(rect.X,rect.Y),
+                        new PointModel(rect.X,rect.Y),
+                        new PointModel(rect.X + rect.Width,rect.Y),
+                        new PointModel(rect.X + rect.Width,rect.Y + rect.Height),
+                        new PointModel(rect.X,rect.Y + rect.Height),
+                        new PointModel(rect.X,rect.Y),
+                    };
+                }
             }
             else
             {
@@ -512,6 +744,19 @@ namespace NuSysApp
             if (shaped && _latestStroke != null)
             {
                 shapePoints = _latestStroke;
+                if (useBoundingRect)
+                {
+                    var rect = Geometry.PointCollecionToBoundingRect(shapePoints);
+                    shapePoints = new List<PointModel>()
+                    {
+                        new PointModel(rect.X,rect.Y),
+                        new PointModel(rect.X,rect.Y),
+                        new PointModel(rect.X + rect.Width,rect.Y),
+                        new PointModel(rect.X + rect.Width,rect.Y + rect.Height),
+                        new PointModel(rect.X,rect.Y + rect.Height),
+                        new PointModel(rect.X,rect.Y),
+                    };
+                }
             }
             else if ((shaped && _latestStroke == null) || finite)
             {
@@ -527,7 +772,7 @@ namespace NuSysApp
             }
 
 
-            var createNewContentRequestArgs = new CreateNewContentRequestArgs
+            var createNewContentRequestArgs = new CreateNewCollectionContentRequestArgs()
             {
                 LibraryElementArgs = new CreateNewCollectionLibraryElementRequestArgs()
                 {
@@ -537,12 +782,13 @@ namespace NuSysApp
                     Title = "Unnamed Collection",
                     LibraryElementId = SessionController.Instance.GenerateId(),
                     IsFiniteCollection = finite,
-                    ShapePoints = shapePoints,
-                    AspectRatio = targetRectInCollection.Width/ targetRectInCollection.Height,
-                    Color = _latestStroke != null ? ColorExtensions.ToColorModel(CurrentCollection.InkRenderItem.InkColor) : ColorExtensions.ToColorModel(Colors.DarkSeaGreen)
-
                 },
-                ContentId = SessionController.Instance.GenerateId()
+                ContentId = SessionController.Instance.GenerateId(),
+                Shape = new CollectionShapeModel() {
+                    ShapePoints = shapePoints,
+                    AspectRatio = targetRectInCollection.Width / targetRectInCollection.Height,
+                    ShapeColor = _latestStroke != null ? ColorExtensions.ToColorModel(CurrentCollection.InkRenderItem.InkColor == Colors.Black ? Colors.CadetBlue : CurrentCollection.InkRenderItem.InkColor) : ColorExtensions.ToColorModel(Colors.DarkSeaGreen)
+                }
             };
 
             // execute the content request
@@ -564,8 +810,7 @@ namespace NuSysApp
 
             // execute the add element to collection request
             var elementRequest = new NewElementRequest(newElementRequestArgs);
-            await
-                SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(
+            await SessionController.Instance.NuSysNetworkSession.FetchContentDataModelAsync(
                     createNewContentRequestArgs.ContentId);
 
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(elementRequest);
@@ -618,7 +863,8 @@ namespace NuSysApp
             }
             if (item == RenderEngine.ElementSelectionRect.BtnPresent)
             {
-                SessionController.Instance.SessionView.EnterPresentationMode(Selections[0].ViewModel);
+                //SessionController.Instance.SessionView.EnterPresentationMode(Selections[0].ViewModel);
+                SessionController.Instance.NuSessionView.EnterPresentationMode(Selections[0].ViewModel);
                 ClearSelections();
             }
 
@@ -637,6 +883,190 @@ namespace NuSysApp
             {
                 var selection = (PdfElementRenderItem)Selections[0];
                 selection.GotoPage(selection.CurrentPage + 1);
+            }
+            if (item == RenderEngine.ElementSelectionRect.BtnLayoutTool)
+            {
+                // Show the layout panel
+                if (_layoutWindow != null)
+                {
+                    RenderEngine.Root.RemoveChild(_layoutWindow);
+                    _layoutWindow = null;
+                }
+
+                _layoutWindow = new LayoutWindowUIElement(RenderEngine.Root, RenderEngine.CanvasAnimatedControl);
+                _layoutWindow.DoLayout += ArrangeCallback;
+                _layoutWindow.Transform.LocalPosition = RenderEngine.ElementSelectionRect.Transform.LocalPosition;
+                RenderEngine.Root.AddChild(_layoutWindow);
+            }
+            if (item == RenderEngine.ElementSelectionRect.BtnEditTags)
+            {
+                // edit tags
+                if (_editTagsElement != null)
+                {
+                    RenderEngine.ElementSelectionRect.RemoveChild(_editTagsElement);
+                    _editTagsElement = null;
+                }
+
+                _editTagsElement = new EditTagsUIElement(RenderEngine.Root, RenderEngine.CanvasAnimatedControl);
+                _editTagsElement.Transform.LocalPosition = new Vector2(20, 220);
+                //RenderEngine.ElementSelectionRect.ElementSelectionRenderItemSizeChanged +=
+                  //  _editTagsElement.UpdatePositionWithSize;
+                Rect rect = RenderEngine.ElementSelectionRect.GetLocalBounds();
+                RenderEngine.ElementSelectionRect.AddChild(_editTagsElement);
+                _editTagsElement.Load();
+            }
+        }
+
+        /// <summary>
+        /// Does the layout for a custom layout by arranging the selected nodes along a stroke.
+        /// </summary>
+        /// <param name="sortedSelections"></param>
+        private void CustomLayout(List<ElementRenderItem> sortedSelections)
+        {
+            if (sortedSelections.Count <= 1)
+            {
+                return;
+            }
+
+            var transform = RenderEngine.GetCollectionTransform(InitialCollection);
+            var latestStroke = CurrentCollection.InkRenderItem.CurrentInkStroke();
+            var points = latestStroke.GetInkPoints().Select(p => new Vector2((float)p.Position.X, (float)p.Position.Y)).ToArray();
+            if (2 <= points.Length)
+            {
+                var lineLength = 0.0f;
+                var firstPoint = points[0];
+                var pointDistances = new float[points.Length];
+                pointDistances[0] = 0.0f;
+                for (var p = 1; p < points.Length; p++)
+                {
+                    var point = points[p];
+                    lineLength += Vector2.Distance(firstPoint, point);
+                    firstPoint = point;
+                    pointDistances[p] = lineLength;
+                }
+
+                var nodeDistance = lineLength / (sortedSelections.Count - 1);
+                var nodeIndexInterval = points.Length / sortedSelections.Count;
+                for (var n = 0; n < sortedSelections.Count; n++)
+                {
+                    var a = 0;
+                    var b = 0;
+                    for (var p = 0; p < points.Length; p++)
+                    {
+                        if (n == 0)
+                        {
+                            a = 0;
+                            b = 1;
+                            break;
+                        } else if (n == sortedSelections.Count - 1)
+                        {
+                            a = points.Length - 2;
+                            b = points.Length - 1;
+                            break;
+                        } else if (pointDistances[p] > n * nodeDistance)
+                        {
+                            a = p - 1;
+                            b = p;
+
+                            break;
+                        }
+                    }
+
+                    var f = 1.0f;
+                    if ((pointDistances[b] - pointDistances[a]) != 0.0f)
+                    {
+                        f = (n * nodeDistance - pointDistances[a]) / (pointDistances[b] - pointDistances[a]);
+                    }
+
+                    var interpolatedPoint = Vector2.Lerp(points[a], points[b], f);
+                    var point = Vector2.Transform(interpolatedPoint, transform);
+                    sortedSelections[n].ViewModel.Controller.SetPosition(interpolatedPoint.X, interpolatedPoint.Y);
+                }
+                CurrentCollection.InkRenderItem.RemoveCurrentStroke();
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Gets the current selections sorted by the LayoutSorting of the layout panel.
+        /// </summary>
+        /// <param name="sorting"></param>
+        /// <returns></returns>
+        private List<ElementRenderItem> SortedSelections(LayoutSorting sorting)
+        {
+            var sortedSelections = new List<ElementRenderItem>(Selections);
+
+            switch (sorting)
+            {
+                case LayoutSorting.Title:
+                    sortedSelections.Sort((x, y) => String.Compare(x.ViewModel.Model.Title, y.ViewModel.Model.Title, StringComparison.CurrentCultureIgnoreCase));
+                    break;
+                case LayoutSorting.Date:
+                    sortedSelections.OrderBy(x => SessionController.Instance.ContentController.GetLibraryElementModel(x.ViewModel.Model.LibraryId).LastEditedTimestamp).ThenBy(x => x.ViewModel.Model.Title);
+                    break;
+            }
+
+            return sortedSelections;
+        } 
+
+        /// <summary>
+        /// Does the arrange for a given LayoutStyle and LayoutSorting.
+        /// </summary>
+        /// <param name="style"></param>
+        /// <param name="sorting"></param>
+        private void ArrangeCallback(LayoutStyle style, LayoutSorting sorting)
+        {
+            var sortedSelections = SortedSelections(sorting);
+
+            if (sortedSelections.Count <= 1)
+            {
+                return;
+            }
+
+            if (style == LayoutStyle.Custom)
+            {
+                CustomLayout(sortedSelections);
+                return;
+            }
+
+            var transform = RenderEngine.GetCollectionTransform(InitialCollection);
+            Vector2 start = new Vector2(float.MaxValue, float.MaxValue);
+
+            // Do the layout
+            start = sortedSelections.Aggregate(start, (current, elementRenderItem) => new Vector2((float) Math.Min(elementRenderItem.ViewModel.X, current.X), (float) Math.Min(elementRenderItem.ViewModel.Y, current.Y)));
+
+            var nextPosition = start;
+            var rows = (int) Math.Round(Math.Sqrt(sortedSelections.Count));
+            var i = 0;
+            var maxHeight = 0.0f;
+            foreach (var elementRenderItem in sortedSelections)
+            {
+                elementRenderItem.ViewModel.Controller.SetPosition(nextPosition.X, nextPosition.Y);
+                switch (style)
+                {
+                    case LayoutStyle.Horizontal:
+                        nextPosition.X = (float)(nextPosition.X + ARRANGE_BORDER + elementRenderItem.ViewModel.Width);
+                        break;
+                    case LayoutStyle.Vertical:
+                        nextPosition.Y = (float)(nextPosition.Y + ARRANGE_BORDER + elementRenderItem.ViewModel.Height);
+                        break;
+                    case LayoutStyle.Grid:
+                        maxHeight = (float)Math.Max(maxHeight, elementRenderItem.ViewModel.Height);
+                        if (i % rows == rows - 1)
+                        {
+                            nextPosition.Y = (float)(nextPosition.Y + ARRANGE_BORDER + maxHeight);
+                            nextPosition.X = start.X;
+                            maxHeight = 0.0f;
+                        }
+                        else
+                        {
+                            nextPosition.X = (float)(nextPosition.X + ARRANGE_BORDER + elementRenderItem.ViewModel.Width);
+                        }
+                        i++;
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 
@@ -660,7 +1090,10 @@ namespace NuSysApp
                     AddToSelections(renderItem);
                 }
             }
-
+            if (Selections.Any())
+            {
+                CurrentCollection.InkRenderItem.RemoveLatestStroke();
+            }
             await Task.Delay(500);
             _inkPressed = false;
         }
@@ -683,14 +1116,12 @@ namespace NuSysApp
                 xVideoPlayer.Visibility = Visibility.Collapsed;
             }
 
-           // collection.ViewModel.Controller.SetSize(500,500);
-          //  collection.ViewModel.Controller.SetPosition(50000,50000);
-
             var targetPoint = RenderEngine.ScreenPointerToCollectionPoint(pointer.CurrentPoint, collection);
+            StaticServerCalls.AddElementToCollection(pointer.CurrentPoint, element.ViewModel.ElementType,
+                element.ViewModel.Controller.LibraryElementController, collection);
             var target = new Vector2(targetPoint.X - (float) element.ViewModel.Width/2f, targetPoint.Y - (float) element.ViewModel.Height/2f);
             var elementId = element.ViewModel.Id;
             var parentCollectionId = element.ViewModel.Controller.GetParentCollectionId();
-            await element.ViewModel.Controller.RequestMoveToCollection(collection.ViewModel.Model.LibraryId, target.X, target.Y);
 
             var oldLocationScreen = new Point2d(pointer.StartPoint.X, pointer.StartPoint.Y);
             var oldLocationCollectionV = RenderEngine.ScreenPointerToCollectionPoint(pointer.StartPoint, CurrentCollection);
@@ -705,28 +1136,34 @@ namespace NuSysApp
 
         private void CollectionInteractionManagerOnInkStopped(CanvasPointer pointer)
         {
-            CurrentCollection.InkRenderItem.StopInkByEvent(pointer);
-            if (pointer.DistanceTraveled < 20 && (DateTime.Now - pointer.StartTime).TotalMilliseconds> 500)
+            if (pointer.DistanceTraveled < 20 && (DateTime.Now - pointer.StartTime).TotalMilliseconds > 500)
             {
-                var screenBounds = CoreApplication.MainView.CoreWindow.Bounds;
+                var screenBounds = SessionController.Instance.NuSessionView.GetLocalBounds();
                 var optionsBounds = RenderEngine.InkOptions.GetLocalBounds();
-                var targetPoint  = pointer.CurrentPoint;
+                var targetPoint = pointer.CurrentPoint;
                 if (targetPoint.X < screenBounds.Width/2)
                 {
                     targetPoint.X += 20;
                 }
                 else
                 {
-                    targetPoint.X -= (20 + (float)optionsBounds.Width);
+                    targetPoint.X -= (20 + (float) optionsBounds.Width);
                 }
-                targetPoint.Y -= (float)optionsBounds.Height/2;
-                targetPoint.X = (float)Math.Min(screenBounds.Width - optionsBounds.Width, Math.Max(0, targetPoint.X));
-                targetPoint.Y = (float)Math.Min(screenBounds.Height - optionsBounds.Height, Math.Max(0, targetPoint.Y));
+                targetPoint.Y -= (float) optionsBounds.Height/2;
+                targetPoint.X = (float) Math.Min(screenBounds.Width - optionsBounds.Width, Math.Max(0, targetPoint.X));
+                targetPoint.Y = (float) Math.Min(screenBounds.Height - optionsBounds.Height, Math.Max(0, targetPoint.Y));
                 RenderEngine.InkOptions.Transform.LocalPosition = targetPoint;
                 RenderEngine.InkOptions.IsVisible = true;
-                CurrentCollection.InkRenderItem.RemoveLatestStroke();
+                CurrentCollection.InkRenderItem.RemoveCurrentStroke();
             }
-
+            else if (_layoutWindow != null)
+            {
+                _layoutWindow?.NotifyArrangeCustom();
+            }
+            else
+            {
+                CurrentCollection.InkRenderItem.StopInkByEvent(pointer);
+            }
         }
 
         private void CollectionInteractionManagerOnInkDrawing(CanvasPointer pointer)
@@ -837,6 +1274,10 @@ namespace NuSysApp
 
             UpdateNonWin2dElements();
             _minimap.Invalidate();
+
+            // Maybe give this a minimum delta?
+            CanvasPanned?.Invoke(this, true);
+            
         }
 
         private void CollectionInteractionManagerOnSelectionsCleared()
@@ -845,6 +1286,18 @@ namespace NuSysApp
                 ClearSelections();
 
             _minimap.Invalidate();
+
+            if (_layoutWindow != null)
+            {
+                RenderEngine.Root.RemoveChild(_layoutWindow);
+                _layoutWindow = null;
+            }
+
+            if (_editTagsElement != null)
+            {
+                RenderEngine.ElementSelectionRect.RemoveChild(_editTagsElement);
+                _editTagsElement = null;
+            }
         }
 
         private async void OnDuplicateCreated(ElementRenderItem element, Vector2 point)
@@ -860,42 +1313,90 @@ namespace NuSysApp
             if (item == CurrentCollection || item == InitialCollection)
                 return;
 
-            if (item is ElementRenderItem)
+
+            //if this item needs to be readonly
+            if ((item as ElementRenderItem)?.ViewModel?.Controller?.LibraryElementModel?.ViewInReadOnly() == true ||
+                (item as LinkRenderItem)?.ViewModel?.Controller?.LibraryElementController?.LibraryElementModel?.ViewInReadOnly() == true)
             {
-                try
+                if (item is ElementRenderItem) //if it is an element render item, not a link
                 {
-                    var loginName =
-                        SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary[
-                            WaitingRoomView.UserID];
-                    var creator =
-                        (item as ElementRenderItem).ViewModel.Controller.LibraryElementController.FullMetadata["Creator"
-                            ].Values[0];
-                    if (loginName != "rms" && creator.ToLower() == "rms")
-                        return;
+                    Debug.Assert((item as ElementRenderItem)?.ViewModel?.Model != null);
+                    SessionController.Instance.NuSessionView.ShowReadOnlyWindows(
+                        (item as ElementRenderItem)?.ViewModel?.Model);
                 }
-                catch (Exception e)
-                {
-                    // do nothing.
-                }
-                var libraryElementModelId = (item as ElementRenderItem).ViewModel.Controller.LibraryElementModel.LibraryElementId;
-                var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
-                SessionController.Instance.SessionView.ShowDetailView(controller);
-            } else if (item is LinkRenderItem)
+            }
+            else //if we are in regular mode
             {
-                var libraryElementModelId = (item as LinkRenderItem).ViewModel.Controller.LibraryElementController.LibraryElementModel.LibraryElementId;
-                var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
-                SessionController.Instance.SessionView.ShowDetailView(controller);
+                if (item is ElementRenderItem)
+                {
+                    var libraryElementModelId =
+                        (item as ElementRenderItem)?.ViewModel?.Controller?.LibraryElementModel?.LibraryElementId;
+                    if (libraryElementModelId != null)
+                    {
+                        var controller =
+                            SessionController.Instance.ContentController.GetLibraryElementController(
+                                libraryElementModelId);
+                        SessionController.Instance.NuSessionView.ShowDetailView(controller);
+                    }
+                }
+                else if (item is LinkRenderItem)
+                {
+                    var libraryElementModelId =
+                        (item as LinkRenderItem).ViewModel.Controller.LibraryElementController.LibraryElementModel
+                            .LibraryElementId;
+                    var controller =
+                        SessionController.Instance.ContentController.GetLibraryElementController(libraryElementModelId);
+                    SessionController.Instance.NuSessionView.ShowDetailView(controller);
+                }
+            }
+        }
+
+
+        private void CollectionInteractionManagerOnItemTapped(ElementRenderItem element, CanvasPointer pointer)
+        {
+            if (pointer.IsRightButtonPressed && element != null)
+            {
+                var popup = new FlyoutPopup(SessionController.Instance.NuSessionView,SessionController.Instance.NuSessionView.ResourceCreator);
+                SessionController.Instance.NuSessionView.AddChild(popup);
+                popup.Transform.LocalPosition = new Vector2(pointer.CurrentPoint.X, pointer.CurrentPoint.Y );
+
+                popup.AddFlyoutItem("Toggle Title Visibility", (item, canvasPointer) =>
+                {
+                    element.ViewModel.Controller.SetTitleVisiblity(!element.ViewModel.Controller.Model.ShowTitle);
+                }, SessionController.Instance.NuSessionView.ResourceCreator);
+                return;
+            }
+
+            if (SessionController.IsReadonly)
+            {
+                Debug.Assert(element?.ViewModel?.Id != null);
+                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CenterCameraOnElement(element.ViewModel.Id);
+            }
+            else
+            {
+                AddToSelections(element);
+            }
+            // add the bread crumb
+
+            if (element?.ViewModel?.Controller?.LibraryElementModel != null)
+            {
+                SessionController.Instance.NuSessionView.TrailBox.AddBreadCrumb(
+                    CurrentCollection.ViewModel.Controller.LibraryElementController, element.ViewModel.Controller);
             }
 
         }
 
-        private void CollectionInteractionManagerOnItemTapped(ElementRenderItem element)
-        {
-            AddToSelections(element);
-        }
-
         public void AddToSelections(ElementRenderItem element)
         {
+            if (element is ToolWindow)
+            {
+                return;
+            }
+
+            if (Selections.Contains(element))
+            {
+                return;
+            }
             element.ViewModel.IsSelected = true;
             Selections.Add(element);
             _minimap.Invalidate();
@@ -940,7 +1441,17 @@ namespace NuSysApp
                 ct.ScaleX = t.M11;
                 ct.ScaleY = t.M22;
             }
-            
+
+            var valid = !float.IsPositiveInfinity(InitialCollection.Camera.S.M11) &&
+                          !float.IsNegativeInfinity(InitialCollection.Camera.S.M11);
+            valid &= !float.IsPositiveInfinity(InitialCollection.Camera.S.M22) &&
+                       !float.IsNegativeInfinity(InitialCollection.Camera.S.M22);
+            Debug.Assert(valid);
+            if (!valid)
+            {
+                return;
+            }
+
             var vm = (FreeFormViewerViewModel)InitialCollection.ViewModel;
             vm.CompositeTransform.TranslateX = InitialCollection.Camera.T.M31;
             vm.CompositeTransform.TranslateY = InitialCollection.Camera.T.M32;
@@ -984,9 +1495,13 @@ namespace NuSysApp
             var ncx = center.X;
             var ncy = center.Y;
 
-            target.LocalPosition = new Vector2(ntx, nty);
-            target.LocalScaleCenter = new Vector2(ncx, ncy);
-            target.LocalScale = new Vector2(nsx, nsy);
+            // put a bound on how much we zoom out
+            if (nsx > 0.01 && nsy > 0.01)
+            {
+                target.LocalPosition = new Vector2(ntx, nty);
+                target.LocalScaleCenter = new Vector2(ncx, ncy);
+                target.LocalScale = new Vector2(nsx, nsy);
+            }
         }
 
 
@@ -1067,5 +1582,120 @@ namespace NuSysApp
             var adornment = items.FirstOrDefault();
             return adornment;
         }
+
+        /// <summary>
+        /// Method used to show the full-screen image of any uri. 
+        /// This will be a pan-zoomable interface for viewing images
+        /// </summary>
+        public void ShowFullScreenImage(List<Uri> imageUris, int index, bool pages)
+        {
+            UITask.Run(delegate
+            {
+                xFullScreenImageViewer.IsHitTestVisible = true;
+                xWrapper.IsHitTestVisible = false;
+                Debug.Assert(imageUris != null);
+                xFullScreenImageViewer.ShowImage(imageUris, index, pages);
+            });
+        }
+
+        public void PlayFullScreenVideo(VideoLibraryElementController videoLibraryElementController, bool addRegionsIsVisible = false)
+        {
+            UITask.Run(delegate
+            {
+                // set the visibility of items
+                xFullScreenVideoElement.Visibility = Visibility.Visible;
+                xFullScreenVideoCloseButton.Visibility = Visibility.Visible;
+                xFullScreenVideoBackground.Visibility = Visibility.Visible;
+                xFullScreenVideoAddRegionButton.Visibility = addRegionsIsVisible
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
+                xAddRegionMenu.Visibility = Visibility.Collapsed;
+                xAddPublicRadioButton.IsChecked = true;
+                xAddPrivateRadioButton.IsChecked = false;
+
+                xFullScreenVideoAddRegionButton.Background = new SolidColorBrush(Constants.DARK_BLUE);
+                xFullScreenVideoAddRegionButton.Foreground = new SolidColorBrush(Colors.White);
+                xFullScreenVideoCloseButton.Background = new SolidColorBrush(Constants.DARK_BLUE);
+                xFullScreenVideoCloseButton.Foreground = new SolidColorBrush(Colors.White);
+                xAddRegionMenu.Background = new SolidColorBrush(Colors.White);
+                xAddRegionMenu.BorderThickness = new Thickness(1, 1, 1, 1);
+                xAddRegionMenu.BorderBrush = new SolidColorBrush(Constants.DARK_BLUE);
+
+                // set the size of the full screen element
+                xFullScreenVideoElement.SetSize(SessionController.Instance.ScreenWidth,
+                    SessionController.Instance.ScreenHeight - xFullScreenVideoAddRegionButton.Height);
+                xFullScreenVideoElement.SetLibraryElement(videoLibraryElementController);
+
+                // set the position of the add region button
+                Canvas.SetTop(xFullScreenVideoAddRegionButton, SessionController.Instance.ScreenHeight - xFullScreenVideoAddRegionButton.Height - 20);
+                Canvas.SetLeft(xFullScreenVideoAddRegionButton, SessionController.Instance.ScreenWidth/2 - xFullScreenVideoAddRegionButton.Width);
+
+                // set the positon of the add region menu
+                Canvas.SetTop(xAddRegionMenu, SessionController.Instance.ScreenHeight/2 - xAddRegionMenu.Height/2);
+                Canvas.SetLeft(xAddRegionMenu, SessionController.Instance.ScreenWidth/2 - xAddRegionMenu.Width/2);
+
+                // set the position of the close button
+                Canvas.SetTop(xFullScreenVideoCloseButton, SessionController.Instance.ScreenHeight - xFullScreenVideoCloseButton.Height - 20);
+                Canvas.SetLeft(xFullScreenVideoCloseButton, SessionController.Instance.ScreenWidth/2);
+            });
+        }
+
+        private void XFullScreenVideoCloseButton_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            xFullScreenVideoElement.Visibility = Visibility.Collapsed;
+            xFullScreenVideoCloseButton.Visibility = Visibility.Collapsed;
+            xFullScreenVideoBackground.Visibility = Visibility.Collapsed;
+            xFullScreenVideoAddRegionButton.Visibility = Visibility.Collapsed;
+            xAddRegionMenu.Visibility = Visibility.Collapsed;;
+            xFullScreenVideoElement.Pause();
+
+        }
+
+        private void XFullScreenVideoAddRegionButton_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+
+            //toggle the visibility of the add region menu
+            xAddRegionMenu.Visibility = xAddRegionMenu.Visibility == Visibility.Collapsed
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+        }
+
+        private async void XFullScreenVideoSubmit_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            Debug.Assert(xAddPublicRadioButton.IsChecked == true || xAddPrivateRadioButton.IsChecked == true);
+
+
+            // get appropriate new region message based on the current controller
+            var controller = xFullScreenVideoElement.CurrentLibraryElementController as VideoLibraryElementController;
+            Debug.Assert(controller != null);
+            var videoModel = controller.VideoLibraryElementModel;
+            Debug.Assert(videoModel != null);
+            var regionRequestArgs = new CreateNewVideoLibraryElementRequestArgs
+            {
+                StartTime = videoModel.NormalizedStartTime + videoModel.NormalizedDuration * .25,
+                Duration = videoModel.NormalizedDuration * .5,
+                AspectRatio = videoModel.Ratio
+            };
+
+            //create the args and set the parameters that all regions will need
+            regionRequestArgs.ContentId = controller.LibraryElementModel.ContentDataModelId;
+            regionRequestArgs.LibraryElementType = controller.LibraryElementModel.Type;
+            regionRequestArgs.Title = "Region " + controller.Title; // TODO factor out this hard-coded string to a constant
+            regionRequestArgs.ParentLibraryElementId = controller.LibraryElementModel.LibraryElementId;
+            regionRequestArgs.Large_Thumbnail_Url = controller.LibraryElementModel.LargeIconUrl;
+            regionRequestArgs.Medium_Thumbnail_Url = controller.LibraryElementModel.MediumIconUrl;
+            regionRequestArgs.Small_Thumbnail_Url = controller.LibraryElementModel.SmallIconUrl;
+            regionRequestArgs.AccessType = xAddPublicRadioButton.IsChecked == true
+                ? NusysConstants.AccessType.Public
+                : NusysConstants.AccessType.Private;
+
+            var request = new CreateNewLibraryElementRequest(regionRequestArgs);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            request.AddReturnedLibraryElementToLibrary();
+
+            xAddRegionMenu.Visibility = Visibility.Collapsed;
+        }
+
+
     }
 }

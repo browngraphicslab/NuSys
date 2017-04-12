@@ -1,16 +1,6 @@
-﻿using SharpDX.Direct2D1;
-using SharpDX.Mathematics.Interop;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.Foundation;
-using Windows.UI.Input.Inking;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
 namespace NuSysApp
@@ -21,8 +11,6 @@ namespace NuSysApp
         public InqCanvasModel Model { get; }
 
         private Size _canvasSize;
-
-        private List<SharpDX.Direct2D1.PathGeometry> _lines = new List<SharpDX.Direct2D1.PathGeometry>();
 
         public InqCanvasViewModel(InqCanvasModel model, Size canvasSize)
         {

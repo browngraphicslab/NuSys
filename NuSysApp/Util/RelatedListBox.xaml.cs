@@ -94,22 +94,22 @@ namespace NuSysApp
 
             // Gets element view models that match the model's library element id. 
             // Had to include !(item.DataContext is LinkViewModel) since LinkViewModels cannot be casted as ElementViewModels re: the new changes. Same thing for tools.
-            var vms = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(item => !(item.DataContext is ToolViewModel) && !(item.DataContext is ToolLinkViewModel) && !(item.DataContext is LinkViewModel)&&((ElementViewModel)item.DataContext)?.Controller?.LibraryElementModel?.LibraryElementId == model?.LibraryElementId);
+            var vms = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(item => !(item.DataContext is ToolViewModel) && !(item.DataContext is LinkViewModel)&&((ElementViewModel)item.DataContext)?.Controller?.LibraryElementModel?.LibraryElementId == model?.LibraryElementId);
             var foo = vms?.ToList();
             var element = foo[0]?.DataContext as ElementViewModel;
             Debug.Assert(element != null);
-            SessionController.Instance.SessionView.ExploreSelectedObject(element);
+            //SessionController.Instance.SessionView.ExploreSelectedObject(element);
 
         }
 
-        /// <summary>
-        /// Remove this box when the exit button is clicked
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        ///// <summary>
+        ///// Remove this box when the exit button is clicked
+        ///// </summary>
+        ///// <param name="sender"></param>
+        ///// <param name="e"></param>
         private void XExitButton_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            SessionController.Instance.SessionView.RemoveRelatedListBox();
+            //SessionController.Instance.SessionView.RemoveRelatedListBox();
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace NuSysApp
             var vms = SessionController.Instance.ActiveFreeFormViewer.AtomViewList.Where(item => ((ElementViewModel)item.DataContext).Controller.LibraryElementModel.LibraryElementId == model.LibraryElementId);
             var foo = vms.ToList();
             var element = foo[0].DataContext as ElementViewModel;
-            SessionController.Instance.SessionView.ExploreSelectedObject(element);
+            //SessionController.Instance.SessionView.ExploreSelectedObject(element);
 
             // Make the list view selection reflect these changes
             xListView.DeselectRange(new ItemIndexRange(xListView.SelectedIndex,1));

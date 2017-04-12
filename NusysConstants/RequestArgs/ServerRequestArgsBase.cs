@@ -55,5 +55,14 @@ namespace NusysIntermediate
             var validArgs = CheckArgsAreComplete();
             Debug.Assert(validArgs);
         }
+
+        /// <summary>
+        /// Returns the exact type of args instance it needs to parse
+        /// </summary>
+        /// <returns></returns>
+        public Type GetInstanceType()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -39,12 +39,20 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="GemBox.Document, Version=25.3.30.1185, Culture=neutral, PublicKeyToken=b1b72c69714d4847, processorArchitecture=MSIL">
-      <HintPath>..\packages\GemBox.Document.25.3.30.1185\lib\net30\GemBox.Document.dll</HintPath>
+    <Reference Include="dotMemory.Unit, Version=103.0.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <HintPath>..\packages\JetBrains.dotMemoryUnit.2.3.20160517.113140\lib\dotMemory.Unit.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.AI.Agent.Intercept, Version=2.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.ApplicationInsights.Agent.Intercept.2.0.1\lib\net45\Microsoft.AI.Agent.Intercept.dll</HintPath>
+    <Reference Include="GemBox.Document, Version=25.3.30.1243, Culture=neutral, PublicKeyToken=b1b72c69714d4847, processorArchitecture=MSIL">
+      <HintPath>..\packages\GemBox.Document.25.3.30.1243\lib\net30\GemBox.Document.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="HtmlAgilityPack, Version=1.4.9.5, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlAgilityPack.1.4.9.5\lib\Net45\HtmlAgilityPack.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AI.Agent.Intercept, Version=2.0.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.Agent.Intercept.2.0.6\lib\net45\Microsoft.AI.Agent.Intercept.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AI.DependencyCollector, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -100,12 +108,12 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.IdentityModel.Logging, Version=1.0.0.127, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Logging.1.0.0\lib\net451\Microsoft.IdentityModel.Logging.dll</HintPath>
+    <Reference Include="Microsoft.IdentityModel.Logging, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Logging.1.1.0\lib\net451\Microsoft.IdentityModel.Logging.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.IdentityModel.Tokens, Version=5.0.0.127, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Tokens.5.0.0\lib\net451\Microsoft.IdentityModel.Tokens.dll</HintPath>
+    <Reference Include="Microsoft.IdentityModel.Tokens, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Tokens.5.1.0\lib\net451\Microsoft.IdentityModel.Tokens.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -132,8 +140,8 @@
       <HintPath>..\packages\Microsoft.Owin.Security.OAuth.3.0.1\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.ProjectOxford.Vision, Version=1.0.354.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.ProjectOxford.Vision.1.0.354\lib\portable-net45+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10\Microsoft.ProjectOxford.Vision.dll</HintPath>
+    <Reference Include="Microsoft.ProjectOxford.Vision, Version=1.0.370.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ProjectOxford.Vision.1.0.370\lib\portable-net45+win+wpa81+wp80+MonoAndroid10+xamarinios10+MonoTouch10\Microsoft.ProjectOxford.Vision.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -152,16 +160,16 @@
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Semver, Version=1.1.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\semver.1.1.2\lib\net451\Semver.dll</HintPath>
+    <Reference Include="Semver, Version=2.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Semver.2.0.4\lib\net452\Semver.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Swashbuckle.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cd1bb07a5ac7c7bc, processorArchitecture=MSIL">
-      <HintPath>..\packages\Swashbuckle.Core.5.4.0\lib\net40\Swashbuckle.Core.dll</HintPath>
+      <HintPath>..\packages\Swashbuckle.Core.5.5.2\lib\net40\Swashbuckle.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=5.0.0.127, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.5.0.0\lib\net451\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.5.1.0\lib\net451\System.IdentityModel.Tokens.Jwt.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Net.Http" />
@@ -186,8 +194,11 @@
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="WebActivatorEx, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
-      <HintPath>..\packages\WebActivatorEx.2.1.0\lib\net40\WebActivatorEx.dll</HintPath>
+      <HintPath>..\packages\WebActivatorEx.2.2.0\lib\net40\WebActivatorEx.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="Windows.Foundation.UniversalApiContract">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\References\Windows.Foundation.UniversalApiContract\1.0.0.0\Windows.Foundation.UniversalApiContract.winmd</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -207,19 +218,39 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
+    <Content Include="mupdfapit2.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="mupdfapit1.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="mupdfapit3.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="mupdfapit4.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="scripts\ai.0.22.9-build00167.js" />
     <Content Include="scripts\ai.0.22.9-build00167.min.js" />
     <None Include="Properties\PublishProfiles\NusysRepo %282%29.pubxml" />
+    <None Include="Properties\PublishProfiles\NusysRepo - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\NusysRepo - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\NuSysTest - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\NuSysTest - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\NuSysTest.pubxml" />
     <None Include="scripts\jquery-3.1.0.intellisense.js" />
-    <Content Include="scripts\jquery-3.1.0.js" />
-    <Content Include="scripts\jquery-3.1.0.min.js" />
-    <Content Include="scripts\jquery-3.1.0.slim.js" />
-    <Content Include="scripts\jquery-3.1.0.slim.min.js" />
+    <None Include="scripts\jquery-3.1.1-vsdoc.js" />
+    <Content Include="scripts\jquery-3.1.1.js" />
+    <Content Include="scripts\jquery-3.1.1.min.js" />
+    <Content Include="scripts\jquery-3.1.1.slim.js" />
+    <Content Include="scripts\jquery-3.1.1.slim.min.js" />
     <Content Include="scripts\jquery.signalR-2.2.1.js" />
     <Content Include="scripts\jquery.signalR-2.2.1.min.js" />
     <Content Include="Web.config" />
     <Content Include="Metadata\deploymentTemplates\apiappconfig.azureresource.json" />
-    <Content Include="packages.config" />
+    <Content Include="packages.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -230,11 +261,23 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Clients\NusysClient.cs" />
     <Compile Include="Clients\NusysLogins.cs" />
+    <Compile Include="Controllers\MuPdfRenderController.cs" />
+    <Compile Include="Controllers\MuPdfTextController.cs" />
     <Compile Include="Controllers\NusysLoginController.cs" />
     <Compile Include="Controllers\NusysConnectController.cs" />
+    <Compile Include="Controllers\UploadWordDocController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="HtmlParser\AudioDataHolder.cs" />
+    <Compile Include="HtmlParser\BingCognitiveServiceSender.cs" />
+    <Compile Include="HtmlParser\DataHolder.cs" />
+    <Compile Include="HtmlParser\HTMLImporter.cs" />
+    <Compile Include="HtmlParser\ImageDataHolder.cs" />
+    <Compile Include="HtmlParser\PdfDataHolder.cs" />
+    <Compile Include="HtmlParser\SiteScoreTaker.cs" />
+    <Compile Include="HtmlParser\TextDataHolder.cs" />
+    <Compile Include="HtmlParser\VideoDataHolder.cs" />
     <Compile Include="Lda\Constants.cs" />
     <Compile Include="Lda\Conversion.cs" />
     <Compile Include="Lda\Dictionary.cs" />
@@ -253,10 +296,16 @@
     <Compile Include="Misc\SqlSelectQueryArgs.cs" />
     <Compile Include="Notifications\AnalysisModelMadeNotification.cs" />
     <Compile Include="Notifications\DropUserNotification.cs" />
+    <Compile Include="Notifications\LockHolderChangedNotification.cs" />
     <Compile Include="Notifications\NewUserNotification.cs" />
     <Compile Include="Notifications\NotificationArgs\AnalysisModelMadeNotificationArgs.cs" />
+    <Compile Include="Notifications\NotificationArgs\LockHolderChangedNotificationArgs.cs" />
     <Compile Include="Notifications\NotificationArgs\NewUserNotificationArgs.cs" />
     <Compile Include="Notifications\NotificationArgs\RemoveUserNotificationArgs.cs" />
+    <Compile Include="Notifications\NotificationArgs\WebSearchCompletedNotificationArgs.cs" />
+    <Compile Include="Notifications\NotificationArgs\WordChangedNotificationArgs.cs" />
+    <Compile Include="Notifications\WebSearchCompletedNotification.cs" />
+    <Compile Include="Notifications\WordChangedNotification.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequestHandlers\AddNewLastUsedCollectionRequestHandler.cs" />
     <Compile Include="RequestHandlers\ChatRequestHandler.cs" />
@@ -269,12 +318,20 @@
     <Compile Include="RequestHandlers\CreateNewPresentationLinkRequestHandler.cs" />
     <Compile Include="RequestHandlers\CreateSnapshotOfCollectionRequestHandler.cs" />
     <Compile Include="RequestHandlers\DeleteInkStrokeRequestHandler.cs" />
+    <Compile Include="RequestHandlers\FullArgsRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetAliasesOfLibraryElementRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetAnalysisModelRequestHandler.cs" />
+    <Compile Include="RequestHandlers\GetCollaboratorCoordinatesRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetLastUsedCollectionsRequestHandler.cs" />
+    <Compile Include="RequestHandlers\GetLockRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetRelatedDocumentsRequestHandler.cs" />
     <Compile Include="RequestHandlers\GetUserIdToDisplayNameDictionaryRequestHandler.cs" />
+    <Compile Include="RequestHandlers\GetWordDocumentRequestHandler.cs" />
     <Compile Include="RequestHandlers\MoveElementToCollectionRequestHandler.cs" />
+    <Compile Include="RequestHandlers\ReturnLockRequestHandler.cs" />
+    <Compile Include="RequestHandlers\SendCollaboratorCoordinatesRequestHandler.cs" />
+    <Compile Include="RequestHandlers\SubscribeToLockRequestHandler.cs" />
+    <Compile Include="RequestHandlers\UnSubscribeToLockRequestHandler.cs" />
     <Compile Include="RequestHandlers\UpdateContentRequestHandler.cs" />
     <Compile Include="RequestHandlers\UpdateMetadataRequestHandler.cs" />
     <Compile Include="RequestHandlers\DeleteMetadataRequestHandler.cs" />
@@ -289,6 +346,8 @@
     <Compile Include="RequestHandlers\SearchRequestHandler.cs" />
     <Compile Include="RequestHandlers\UpdateLibraryElementRequestHandler.cs" />
     <Compile Include="RequestHandlers\UpdatePresentationLinkRequestHandler.cs" />
+    <Compile Include="RequestHandlers\UploadCollectionBackgroundImageRequestHandler.cs" />
+    <Compile Include="RequestHandlers\WebSearchRequestHandler.cs" />
     <Compile Include="StartUp.cs" />
     <Compile Include="Static_Classes\CognitiveApi\CognitiveApiConstants.cs" />
     <Compile Include="Static_Classes\CognitiveApi\CognitiveApiDocument.cs" />
@@ -325,6 +384,8 @@
     <Compile Include="Util\Constants.cs" />
     <Compile Include="Util\ErrorLog.cs" />
     <Compile Include="Util\FileHelper.cs" />
+    <Compile Include="Util\LockListenersController.cs" />
+    <Compile Include="Util\LocksController.cs" />
     <Compile Include="Util\PropertiesAndMetadataParser.cs" />
     <Compile Include="Util\PropertiesParser.cs" />
     <Compile Include="Util\RequestToSqlKeyMappings.cs" />
@@ -338,12 +399,13 @@
     <Compile Include="Util\SQLQuery\SQLUpdatePropertiesArgs.cs" />
     <Compile Include="Util\SQLQuery\SQLUpdateRowQuery.cs" />
     <Compile Include="Util\SQLQuery\SQLQueryConditionals.cs" />
+    <Compile Include="Util\UserExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="apiapp.json" />
     <None Include="Properties\PublishProfiles\NusysRepo.pubxml" />
-    <Content Include="scripts\jquery-3.1.0.slim.min.map" />
-    <Content Include="scripts\jquery-3.1.0.min.map" />
+    <Content Include="scripts\jquery-3.1.1.slim.min.map" />
+    <Content Include="scripts\jquery-3.1.1.min.map" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

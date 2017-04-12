@@ -13,7 +13,7 @@ namespace NuSysApp
     {
         public FinalizeInkRequest(Message message) : base(NusysConstants.RequestType.FinalizeInkRequest, message){}
 
-        public async override Task CheckOutgoingRequest()
+        public override void CheckOutgoingRequest()
         {
             if (_message.GetString("id", null) == null)
             {
@@ -26,7 +26,7 @@ namespace NuSysApp
             var props = _message;
             var id = _message.Get("id");
 
-            var has = SessionController.Instance.IdToControllers.ContainsKey(props.GetString("canvasNodeID"));
+            var has = SessionController.Instance.ElementModelIdToElementController.ContainsKey(props.GetString("canvasNodeID"));
             if (!has)
                 return;
             if (props.ContainsKey("inkType") && props["inkType"] == "partial")

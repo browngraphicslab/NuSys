@@ -43,57 +43,57 @@ namespace NuSysApp
 
         private void SetupChromeIntermediate()
         {
-            var fw = new FolderWatcher(NuSysStorages.ChromeTransferFolder);
-            fw.FilesChanged += async delegate
-            {
-                var transferFiles = await NuSysStorages.ChromeTransferFolder.GetFilesAsync();
-                if (transferFiles.Count == 0)
-                    return;
-                var file = transferFiles[0];
-                var count = 0;
+            //var fw = new FolderWatcher(NuSysStorages.ChromeTransferFolder);
+            //fw.FilesChanged += async delegate
+            //{
+            //    var transferFiles = await NuSysStorages.ChromeTransferFolder.GetFilesAsync();
+            //    if (transferFiles.Count == 0)
+            //        return;
+            //    var file = transferFiles[0];
+            //    var count = 0;
 
-                var text = await FileIO.ReadTextAsync(file);
+            //    var text = await FileIO.ReadTextAsync(file);
 
 
-                var json = JsonConvert.DeserializeObject < List<string>> (text);
-                foreach (var htmltext in json)
-                {
+            //    var json = JsonConvert.DeserializeObject < List<string>> (text);
+            //    foreach (var htmltext in json)
+            //    {
                     
-                    await UITask.Run(async () =>
-                    {
+            //        await UITask.Run(async () =>
+            //        {
 
-                        var metadata = new Dictionary<string, object>();
-                        metadata["node_creation_date"] = DateTime.Now;
+            //            var metadata = new Dictionary<string, object>();
+            //            metadata["node_creation_date"] = DateTime.Now;
 
-                        // text = await ContentConverter.HtmlToRtf(text);
-                        var m = new Message();
-                        var width = SessionController.Instance.SessionView.ActualWidth;
-                        var height = SessionController.Instance.SessionView.ActualHeight;
-                        var centerpoint =
-                            SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(
-                                new Point(width / 2, height / 2));
+            //            // text = await ContentConverter.HtmlToRtf(text);
+            //            var m = new Message();
+            //            var width = SessionController.Instance.SessionView.ActualWidth;
+            //            var height = SessionController.Instance.SessionView.ActualHeight;
+            //            var centerpoint =
+            //                SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(
+            //                    new Point(width / 2, height / 2));
 
-                        var contentId = SessionController.Instance.GenerateId();
+            //            var contentId = SessionController.Instance.GenerateId();
 
-                        m["metadata"] = metadata;
-                        m["contentId"] = contentId;
-                        m["x"] = centerpoint.X - 200;
-                        m["y"] = centerpoint.Y - 200;
-                        m["width"] = 400;
-                        m["height"] = 400;
-                        m["title"] = "Imported from Chrome";
-                        m["type"] = NusysConstants.ElementType.Text.ToString();
-                        m["autoCreate"] = true;
-                        m["creator"] = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
+            //            m["metadata"] = metadata;
+            //            m["contentId"] = contentId;
+            //            m["x"] = centerpoint.X - 200;
+            //            m["y"] = centerpoint.Y - 200;
+            //            m["width"] = 400;
+            //            m["height"] = 400;
+            //            m["title"] = "Imported from Chrome";
+            //            m["type"] = NusysConstants.ElementType.Text.ToString();
+            //            m["autoCreate"] = true;
+            //            m["creator"] = SessionController.Instance.ActiveFreeFormViewer.LibraryElementId;
 
-                        await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(contentId, htmltext == null ? "" : htmltext.ToString(), NusysConstants.ElementType.Text, m.ContainsKey("title") ? m["title"].ToString() : null));
-                        await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(m));
-                        //await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, json), NetworkClient.PacketType.TCP, null, true);
-                    });
+            //            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(contentId, htmltext == null ? "" : htmltext.ToString(), NusysConstants.ElementType.Text, m.ContainsKey("title") ? m["title"].ToString() : null));
+            //            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(m));
+            //            //await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(new NewContentSystemRequest(contentId, json), NetworkClient.PacketType.TCP, null, true);
+            //        });
 
-                }
+            //    }
 
-            };
+            //};
 
          
 
@@ -125,67 +125,67 @@ namespace NuSysApp
 
         private async Task AddinTransfer(List<SelectionItem> selectionItems)
         {
-            foreach (SelectionItem selectionItem in selectionItems)
-            {
-                double width, height;
-                Point centerpoint;
-                await UITask.Run(async () =>
-                {
-                    width = SessionController.Instance.SessionView.ActualWidth;
-                    height = SessionController.Instance.SessionView.ActualHeight;
-                    centerpoint =
-                        SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(
-                            new Point(width / 2, height / 2));
-                });
-                    var hasRtf = !String.IsNullOrEmpty(selectionItem.RtfContent);
+            //foreach (SelectionItem selectionItem in selectionItems)
+            //{
+            //    double width, height;
+            //    Point centerpoint;
+            //    await UITask.Run(async () =>
+            //    {
+            //        width = SessionController.Instance.SessionView.ActualWidth;
+            //        height = SessionController.Instance.SessionView.ActualHeight;
+            //        centerpoint =
+            //            SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(
+            //                new Point(width / 2, height / 2));
+            //    });
+            //        var hasRtf = !String.IsNullOrEmpty(selectionItem.RtfContent);
 
-                    if (hasRtf)
-                    {
-                        var rtfContent = selectionItem.RtfContent.Replace("\\\\", "\\");
-                        var contentId = SessionController.Instance.GenerateId();
+            //        if (hasRtf)
+            //        {
+            //            var rtfContent = selectionItem.RtfContent.Replace("\\\\", "\\");
+            //            var contentId = SessionController.Instance.GenerateId();
 
-                        Message m = CreateMessage(selectionItem, contentId, centerpoint);
-                        m["type"] = NusysConstants.ElementType.Text.ToString();
+            //            Message m = CreateMessage(selectionItem, contentId, centerpoint);
+            //            m["type"] = NusysConstants.ElementType.Text.ToString();
 
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(m));
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync( new CreateNewLibraryElementRequest(contentId, rtfContent, NusysConstants.ElementType.Text));
-                    /*
-                    await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
-                                new NewContentSystemRequest(contentId,
-                                    rtfContent),NetworkClient.PacketType.TCP,null,true);*/
-                    }
+            //        await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(m));
+            //        await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync( new CreateNewLibraryElementRequest(contentId, rtfContent, NusysConstants.ElementType.Text));
+            //        /*
+            //        await SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
+            //                    new NewContentSystemRequest(contentId,
+            //                        rtfContent),NetworkClient.PacketType.TCP,null,true);*/
+            //        }
 
-                    var hasImage = selectionItem.ImageNames.Count > 0;
-                    if (hasImage)
-                    {
-                        foreach (String imageName in selectionItem.ImageNames)
-                        {
-                            var contentId = SessionController.Instance.GenerateId();
+            //        var hasImage = selectionItem.ImageNames.Count > 0;
+            //        if (hasImage)
+            //        {
+            //            foreach (String imageName in selectionItem.ImageNames)
+            //            {
+            //                var contentId = SessionController.Instance.GenerateId();
 
-                            Message m = CreateMessage(selectionItem, contentId, centerpoint);
-                            m["type"] = NusysConstants.ElementType.Image.ToString();
+            //                Message m = CreateMessage(selectionItem, contentId, centerpoint);
+            //                m["type"] = NusysConstants.ElementType.Image.ToString();
 
-                            StorageFile imgFile;
-                            try {
-                                imgFile = await NuSysStorages.Media.GetFileAsync(imageName);
-                                var ba = await MediaUtil.StorageFileToByteArray(imgFile);
-                                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(m));
-                                await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(contentId, Convert.ToBase64String(ba), NusysConstants.ElementType.Image));
-                            /*
-                            await
-                                    SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
-                                        new NewContentSystemRequest(contentId,
-                                            Convert.ToBase64String(ba)), NetworkClient.PacketType.TCP, null, true);*/
+            //                StorageFile imgFile;
+            //                try {
+            //                    imgFile = await NuSysStorages.Media.GetFileAsync(imageName);
+            //                    var ba = await MediaUtil.StorageFileToByteArray(imgFile);
+            //                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new NewElementRequest(m));
+            //                    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(new CreateNewLibraryElementRequest(contentId, Convert.ToBase64String(ba), NusysConstants.ElementType.Image));
+            //                /*
+            //                await
+            //                        SessionController.Instance.NuSysNetworkSession.ExecuteSystemRequest(
+            //                            new NewContentSystemRequest(contentId,
+            //                                Convert.ToBase64String(ba)), NetworkClient.PacketType.TCP, null, true);*/
 
-                            }
-                            catch (Exception ex)
-                            {
+            //                }
+            //                catch (Exception ex)
+            //                {
 
-                            }
-                        }
-                    }
+            //                }
+            //            }
+            //        }
                 
-            }
+            //}
         }
 
         private async void SetupWordTransfer()
@@ -213,33 +213,33 @@ namespace NuSysApp
 
         private async Task WordTransfer()
         {
-            var fileList = await NuSysStorages.WordTransferFolder.GetFilesAsync();
+            //var fileList = await NuSysStorages.WordTransferFolder.GetFilesAsync();
 
-            foreach (var file in fileList)
-            {
-                var text = await FileIO.ReadTextAsync(file);
-                var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-                List<SelectionItem> selectionItems = JsonConvert.DeserializeObject<List<SelectionItem>>(text, settings);
+            //foreach (var file in fileList)
+            //{
+            //    var text = await FileIO.ReadTextAsync(file);
+            //    var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+            //    List<SelectionItem> selectionItems = JsonConvert.DeserializeObject<List<SelectionItem>>(text, settings);
 
-                await AddinTransfer(selectionItems);
-                await file.DeleteAsync();
-            }
+            //    await AddinTransfer(selectionItems);
+            //    await file.DeleteAsync();
+            //}
         }
 
         private async Task PowerpointTransfer()
         {
-            var fileList = await NuSysStorages.PowerPointTransferFolder.GetFilesAsync();
+            //var fileList = await NuSysStorages.PowerPointTransferFolder.GetFilesAsync();
 
-            foreach (var file in fileList)
-            {
-                var text = await FileIO.ReadTextAsync(file);
-                var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
-                List<SelectionItem> selectionItems = JsonConvert.DeserializeObject<List<SelectionItem>>(text, settings);
+            //foreach (var file in fileList)
+            //{
+            //    var text = await FileIO.ReadTextAsync(file);
+            //    var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+            //    List<SelectionItem> selectionItems = JsonConvert.DeserializeObject<List<SelectionItem>>(text, settings);
 
-                await AddinTransfer(selectionItems);
+            //    await AddinTransfer(selectionItems);
 
-                await file.DeleteAsync();
-            }
+            //    await file.DeleteAsync();
+            //}
         }
 
     }

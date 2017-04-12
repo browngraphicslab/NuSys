@@ -33,7 +33,7 @@ namespace NuSysApp
         /// <summary>
         /// Define the quality of the waveform
         /// </summary>
-        private enum WaveFormQuality
+        public enum WaveFormQuality
         {
             /// <summary>
             /// Lowest Quality, somewhat blurry on one region level
@@ -250,50 +250,6 @@ namespace NuSysApp
                             await reader.LoadAsync((uint)stream.Size);
                             reader.ReadBytes(fileBytes);
                         }
-                    }
-                    var MuPdfDoc = await MediaUtil.DataToPDF(Convert.ToBase64String(fileBytes));
-
-                    pdfPageCount = MuPdfDoc.PageCount;
-
-                    // convert each page of the pdf into an image file, and store it in the pdfPages list
-                    for (int pageNumber = 0; pageNumber < MuPdfDoc.PageCount; pageNumber++)
-                    {
-                        // set the pdf text by page for the current page number
-                        pdfTextByPage.Add(MuPdfDoc.GetAllTexts(pageNumber));
-
-                        // get variables for drawing the page
-                        var pageSize = MuPdfDoc.GetPageSize(pageNumber);
-                        var width = pageSize.X;
-                        var height = pageSize.Y;
-
-                        // create an image to use for converting
-                        var image = new WriteableBitmap(width, height);
-
-                        // create a buffer to draw the page on
-                        IBuffer buf = new Windows.Storage.Streams.Buffer(image.PixelBuffer.Capacity);
-                        buf.Length = image.PixelBuffer.Length;
-
-                        // draw the page onto the buffer
-                        MuPdfDoc.DrawPage(pageNumber, buf, 0, 0, width, height, false);
-                        var ss = buf.AsStream();
-
-                        // copy the buffer to the image
-                        await ss.CopyToAsync(image.PixelBuffer.AsStream());
-                        image.Invalidate();
-
-                        // save the image as a file (temporarily)
-                        var x = await image.SaveAsync(NuSysStorages.SaveFolder);
-                        
-                        // use the system to convert the file to a byte array
-                        pdfPages.Add(Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(x)));
-                        if (pageNumber == 0)
-                        {
-                            // if we are on the first apge, get thumbnails of the file from the system
-                            thumbnails = await MediaUtil.GetThumbnailDictionary(x);
-                        }
-
-                        // delete the image file that we saved
-                        await x.DeleteAsync(StorageDeleteOption.PermanentDelete);
                     }
 
                     data = JsonConvert.SerializeObject(pdfPages);
@@ -555,19 +511,19 @@ namespace NuSysApp
         private void XSearchExportButton_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
           
-            // Since we are adding a collection, we should make the dragging rectangle reflect this
-            var view = SessionController.Instance.SessionView;
-            view.LibraryDraggingRectangle.SetIcon(NusysConstants.ElementType.Collection);
-            view.LibraryDraggingRectangle.Show();
-            var rect = view.LibraryDraggingRectangle;
-            Canvas.SetZIndex(rect, 3);
+            //// Since we are adding a collection, we should make the dragging rectangle reflect this
+            //var view = SessionController.Instance.SessionView;
+            //view.LibraryDraggingRectangle.SetIcon(NusysConstants.ElementType.Collection);
+            //view.LibraryDraggingRectangle.Show();
+            //var rect = view.LibraryDraggingRectangle;
+            //Canvas.SetZIndex(rect, 3);
 
-            // Make the rectangle movable and set its position
-            rect.RenderTransform = new CompositeTransform();
-            var t = (CompositeTransform)rect.RenderTransform;
-            t.TranslateX += _searchExportPos.X;
-            t.TranslateY += _searchExportPos.Y;
-            e.Handled = true;
+            //// Make the rectangle movable and set its position
+            //rect.RenderTransform = new CompositeTransform();
+            //var t = (CompositeTransform)rect.RenderTransform;
+            //t.TranslateX += _searchExportPos.X;
+            //t.TranslateY += _searchExportPos.Y;
+            //e.Handled = true;
         }
 
         /// <summary>
@@ -577,21 +533,21 @@ namespace NuSysApp
         /// <param name="e"></param>
         private void XSearchExportButton_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            // Obtain the library dragging rectangle  
-            var view = SessionController.Instance.SessionView;
-            var rect = view.LibraryDraggingRectangle;
+            //// Obtain the library dragging rectangle  
+            //var view = SessionController.Instance.SessionView;
+            //var rect = view.LibraryDraggingRectangle;
 
             // Update its transform
-            var t = (CompositeTransform)rect.RenderTransform;
-            t.TranslateX += e.Delta.Translation.X;
-            t.TranslateY += e.Delta.Translation.Y;
+            //var t = (CompositeTransform)rect.RenderTransform;
+            //t.TranslateX += e.Delta.Translation.X;
+            //t.TranslateY += e.Delta.Translation.Y;
 
-            // Update the position instance variable
-            _searchExportPos.X += e.Delta.Translation.X;
-            _searchExportPos.Y += e.Delta.Translation.Y;
+            //// Update the position instance variable
+            //_searchExportPos.X += e.Delta.Translation.X;
+            //_searchExportPos.Y += e.Delta.Translation.Y;
 
-            // Handled!
-            e.Handled = true;
+            //// Handled!
+            //e.Handled = true;
         }
 
         /// <summary>
@@ -602,8 +558,8 @@ namespace NuSysApp
         private async void XSearchExportButton_OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
             // Hide the library dragging rect
-            var rect = SessionController.Instance.SessionView.LibraryDraggingRectangle;
-            rect.Hide();
+            //var rect = SessionController.Instance.SessionView.LibraryDraggingRectangle;
+            //rect.Hide();
 
             // Add a collection to the dropped location
             var wvm = SessionController.Instance.ActiveFreeFormViewer;
@@ -757,7 +713,7 @@ namespace NuSysApp
             }
 
             // save the writeable bitmap to a file
-            var tempFile = await writeableBitmap.SaveAsync(NuSysStorages.SaveFolder);
+            var tempFile = await writeableBitmap.SaveAsync(ApplicationData.Current.LocalCacheFolder);
 
             // get the thumbnails from the image file
             var thumbnails = await MediaUtil.GetThumbnailDictionary(tempFile);
@@ -801,7 +757,7 @@ namespace NuSysApp
             }
 
             // save the writeable bitmap to a file
-            var tempFile = await writeableBitmap.SaveAsync(NuSysStorages.SaveFolder);
+            var tempFile = await writeableBitmap.SaveAsync(ApplicationData.Current.LocalCacheFolder);
 
             // use the system to convert the file to a string
             var imageAsString = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(tempFile));

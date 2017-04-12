@@ -6,10 +6,10 @@ namespace NuSysApp
     public class MetadataToolModel : ToolModel
     {
 
-        public ToolFilterTypeTitle Filter { get; private set; }
         public Tuple<string, HashSet<string>> Selection { get; protected set; }
 
         public bool IncludeSuggestedTags { get; protected set; }
+        
 
         public MetadataToolModel()
         {
@@ -25,9 +25,6 @@ namespace NuSysApp
         {
             Selection = selection;
         }
-        public void SetFilter(ToolFilterTypeTitle filter)
-        {
-            Filter = filter;
-        }
+
     }
 }

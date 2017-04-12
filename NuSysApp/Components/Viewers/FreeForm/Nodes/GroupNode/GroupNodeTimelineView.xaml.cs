@@ -255,7 +255,7 @@ namespace NuSysApp
             _view.DoubleTapped += ViewOnDoubleTapped;
             _view.ManipulationCompleted += TimelineNode_ManipulationCompleted;
             _view.ManipulationStarting += TimelineNode_ManipulationStarting;
-            _view.VerticalAlignment = VerticalAlignment.Center;
+            _view.VerticalAlignment = Windows.UI.Xaml.VerticalAlignment.Center;
 
             TimelinePanel.Children.Add(_view);
             _panelNodes.Add(_view);
@@ -278,7 +278,7 @@ namespace NuSysApp
                 }
                 else if (type != NusysConstants.ElementType.Link)
                 {
-                    SessionController.Instance.SessionView.ShowDetailView((dc.DataContext as ElementViewModel).Controller.LibraryElementController);
+                    SessionController.Instance.NuSessionView.ShowDetailView((dc.DataContext as ElementViewModel).Controller.LibraryElementController);
                 }
 
                 e.Handled = true;

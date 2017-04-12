@@ -4,15 +4,10 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
-using Windows.UI.Xaml.Controls;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.UI.Xaml;
-using SharpDX.Direct2D1;
-using WinRTXamlToolkit.IO.Serialization;
 
 namespace NuSysApp
 {
@@ -96,7 +91,7 @@ namespace NuSysApp
 
         public void Draw(CanvasDrawingSession ds)
         {
-            if (_isDisposed)
+            if (_isDisposed || !SessionController.Instance.SessionSettings.MinimapVisible)
             {
                 return;
             }
@@ -111,9 +106,10 @@ namespace NuSysApp
                 CreateResources();
             }
 
-            if(_collection?.ViewModel == null)
+            Debug.Assert(_collection?.ViewModel != null,"this shouldn't be null");
+            if (_collection?.ViewModel == null)
             {
-                Debug.Fail("this shouldn't be null");
+
                 return;
             }
 
@@ -196,12 +192,19 @@ namespace NuSysApp
             if (_renderTarget == null || _collection.ViewModel.Elements.Count == 0)
                 return;
 
-            var old = ds.Transform;
-            ds.Transform = Matrix3x2.Identity;
-            var x = _canvasControl.Width - _rect.Width;
-            var y= _canvasControl.Height - _rect.Height;
-            ds.DrawImage(_renderTarget, new Rect(x,y,_rect.Width, _rect.Height));
-            ds.Transform = old;
+            try
+            {
+                var old = ds.Transform;
+                ds.Transform = Matrix3x2.Identity;
+                var x = _canvasControl.Width - _rect.Width;
+                var y = _canvasControl.Height - _rect.Height;
+                ds.DrawImage(_renderTarget, new Rect(x, y, _rect.Width, _rect.Height));
+                ds.Transform = old;
+            }
+            catch(Exception e)
+            {
+                //TODO fix this
+            }
         }
 
 

@@ -50,7 +50,7 @@ namespace NuSysApp
         {
             this.DeactivateAllButtons();
             xExploreButton.Activate();
-            SessionController.Instance.SwitchMode(Options.Exploration);
+            SessionController.Instance.SwitchMode(Options.ReadOnly);
            
             
         }
@@ -75,7 +75,7 @@ namespace NuSysApp
         private void RevertToNormalWorkspace()
         {
             // TODO implement
-            SessionController.Instance.SessionView.ToggleReadonly();
+            //SessionController.Instance.SessionView.ToggleReadonly();
         }
 
         /// <summary>

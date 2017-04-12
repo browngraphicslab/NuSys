@@ -31,7 +31,7 @@ namespace NuSysApp
         /// Ensures the outgoing request has the keys it needs to have.
         /// </summary>
         /// <returns></returns>
-        public override async Task CheckOutgoingRequest()
+        public override void CheckOutgoingRequest()
         {
             Debug.Assert(_message.ContainsKey(NusysConstants.DELETE_METADATA_REQUEST_LIBRARY_ID_KEY));
             Debug.Assert(_message.ContainsKey(NusysConstants.DELETE_METADATA_REQUEST_METADATA_KEY));

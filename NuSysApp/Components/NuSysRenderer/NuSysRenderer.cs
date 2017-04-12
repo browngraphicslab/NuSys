@@ -14,40 +14,25 @@ using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using Microsoft.Graphics.Canvas.UI;
 using Microsoft.Graphics.Canvas.UI.Xaml;
-using MyToolkit.Mathematics;
-using SharpDX.Direct2D1;
 using Matrix3x2 = System.Numerics.Matrix3x2;
-using System.Numerics;
-using Windows.Devices.Input;
-using Windows.Media.Playback;
-using Windows.System;
-using Windows.UI.Core;
-using Windows.UI.Input;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using MyToolkit.UI;
-using Point = Windows.Foundation.Point;
 using Vector2 = System.Numerics.Vector2;
-using NusysIntermediate;
 
 namespace NuSysApp
 {
     public class NuSysRenderer : CanvasRenderEngine
     { 
-        
-        private MinimapRenderItem _minimap;
         public ElementSelectionRenderItem ElementSelectionRect;
         public NodeMarkingMenuRenderItem NodeMarkingMenu;
         public InkOptionsRenderItem InkOptions;
         public NodeMenuButtonRenderItem BtnDelete;
         private bool _isStopped;
-        private RenderItemInteractionManager _interactionManager;
         private bool _isInitialized;
 
-        public NuSysRenderer(CanvasAnimatedControl canvas, BaseRenderItem root) : base(canvas, root)
+        /// button for export
+        public NodeMenuButtonRenderItem BtnExportTrail;
+        public NuSysRenderer(CanvasAnimatedControl canvas, SessionRootRenderItem root) : base(canvas, root)
         {
-            _interactionManager = new RenderItemInteractionManager(this, canvas);
-            
+
         }
 
         public override void Start()
@@ -62,7 +47,7 @@ namespace NuSysApp
                 }
                 catch (Exception e)
                 {
-                    Debug.Fail("Error while loading collection");
+                    throw new Exception("Error while loading collection");
                 }
                 _isStopped = false;
             });
@@ -70,15 +55,18 @@ namespace NuSysApp
 
         public override void Stop()
         {
-            if (CanvasAnimatedControl == null)
-                return;
-            
-            CanvasAnimatedControl.RunOnGameLoopThreadAsync(() =>
+            UITask.Run(delegate
             {
-                _isStopped = true;
-            });
+                if (CanvasAnimatedControl == null)
+                    return;
 
-            base.Stop();
+                CanvasAnimatedControl.RunOnGameLoopThreadAsync(() =>
+                {
+                    _isStopped = true;
+                });
+
+                base.Stop();
+            });
         }
         
 
@@ -126,25 +114,49 @@ namespace NuSysApp
                     if (childCollection != null)
                     {
 
-                        if (currentLevel + 1 < maxLevel)
+                        //if (currentLevel + 1 < maxLevel)
+                        //{
+                        //    var result = _GetRenderItemAt(childCollection, screenPoint, currentLevel + 1, maxLevel);
+                        //    if (result != item)
+                        //        return result;
+                        //}
+                        //else
+                        //{
+                        //    if (childCollection.HitTest(screenPoint) != null)
+                        //    {
+                        //        return childCollection;
+                        //    }
+                        //}
+                        if (childCollection.HitTest(screenPoint) != null)
                         {
-                            var result = _GetRenderItemAt(childCollection, screenPoint, currentLevel + 1, maxLevel);
-                            if (result != item)
-                                return result;
+                            if (currentLevel + 1 < maxLevel)
+                            {
+                                var result = _GetRenderItemAt(childCollection, screenPoint, currentLevel + 1, maxLevel);
+                                if (result != item)
+                                    return result;
+                            }
+                            return childCollection;
                         }
                         else
                         {
-                            if (childCollection.HitTest(screenPoint) != null)
-                            {
-                                return childCollection;
-                            }
+
                         }
                     }
-
-
-                    if (childItem.HitTest(screenPoint) != null)
+                    if (currentLevel + 1 < maxLevel)
                     {
-                        return childItem;
+                        var h = childItem.HitTest(screenPoint);
+                        if (h != null)
+                        {
+                            return h;
+                        }
+                    }
+                    else
+                    {
+                        var h = childItem.HitTest(screenPoint);
+                        if (h != null)
+                        {
+                            return childItem;
+                        }
                     }
                 }
             }
@@ -189,11 +201,18 @@ namespace NuSysApp
 
             NodeMarkingMenu = new NodeMarkingMenuRenderItem(null, CanvasAnimatedControl);
             BtnDelete = new NodeMenuButtonRenderItem("ms-appx:///Assets/node icons/delete.png", Root, CanvasAnimatedControl);
+            BtnDelete.Label = "delete";
             BtnDelete.IsVisible = false;
+
+            BtnExportTrail = new NodeMenuButtonRenderItem("ms-appx:///Assets/new icons/html export.png", Root, CanvasAnimatedControl);
+            BtnExportTrail.Label = "export one-way trail";
+            BtnExportTrail.IsVisible = false;
+
             Root.AddChild(ElementSelectionRect);
             Root.AddChild(NodeMarkingMenu);
             Root.AddChild(InkOptions);
             Root.AddChild(BtnDelete);
+            Root.AddChild(BtnExportTrail);
 
             _isInitialized = true;
         }

@@ -16,6 +16,12 @@ namespace NusysIntermediate
     public class ServerArgsRequest<T> : Request where T : ServerRequestArgsBase 
     {
         /// <summary>
+        /// Default constructor for derserializing messages from the server.
+        /// </summary>
+        /// <param name="message"></param>
+        public ServerArgsRequest(Message message) : base(message) { }
+
+        /// <summary>
         /// the base constructor takes in an args class.  
         /// It will create a request based on the request type of the request args.
         /// This will then set the requests' arguments class key's value to the serialzed version of the request args.
@@ -25,7 +31,7 @@ namespace NusysIntermediate
         public ServerArgsRequest (T requestArgs) : base(requestArgs.RequestType)
         {
             requestArgs.CheckValidity();
-            _message[NusysConstants.SERVER_ARGS_REQUEST_ARGS_CLASS_KEY] = requestArgs.GetSerialized();
+            _message[NusysConstants.SERVER_ARGS_REQUEST_ARGS_CLASS_KEY] = requestArgs;
         }
 
         /// <summary>
@@ -39,30 +45,18 @@ namespace NusysIntermediate
         }
 
         /// <summary>
-        /// virtual method that requires all base classes to have a GetArgs method.
-        /// This should, in every foreseeable implementation (as of 8/29/16), be:
-        /// 
-        ///         public override {requestArgsType} GetArgs()
-        ///         {
-        ///             return base.GetArgsClassFromMessage();
-        ///         }
-        ///  
-        /// </summary>
-        /// <returns></returns>
-        public virtual T GetArgs()
-        {
-            return GetArgsClassFromMessage();
-        }
-
-        /// <summary>
         /// this method method will return a fully populated server args class.
         /// It should probably only be called server side and should really only be called by the abstracy GetArgs() method.
         /// It will parse and deserializ the args class from the request message.
         /// </summary>
         /// <returns></returns>
-        public T GetArgsClassFromMessage()
+        public T GetArgsClassFromMessage(Type t = null)
         {
-            return _message.ContainsKey(NusysConstants.SERVER_ARGS_REQUEST_ARGS_CLASS_KEY) ? _message.Get<T>(NusysConstants.SERVER_ARGS_REQUEST_ARGS_CLASS_KEY) : null;
+            if (t == null)
+            {
+                t = typeof(T);
+            }
+            return (T)(_message.ContainsKey(NusysConstants.SERVER_ARGS_REQUEST_ARGS_CLASS_KEY) ? _message.Get(NusysConstants.SERVER_ARGS_REQUEST_ARGS_CLASS_KEY,t) : null);
         }
     }
 }

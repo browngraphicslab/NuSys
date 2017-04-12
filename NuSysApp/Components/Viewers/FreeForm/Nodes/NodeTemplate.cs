@@ -220,7 +220,7 @@ namespace NuSysApp
         private void Tags_Tapped(object sender, TappedRoutedEventArgs e)
         {
             var selectedTag = (e.OriginalSource as TextBlock)?.Text;
-            if (selectedTag != null && !(SessionController.Instance.SessionView.ModeInstance is ExplorationMode))
+            if (selectedTag != null/* && !(SessionController.Instance.SessionView.ModeInstance is ExplorationMode)*/)
             {
                 var wvm = SessionController.Instance.ActiveFreeFormViewer;
                 var width = SessionController.Instance.SessionView.ActualWidth;
@@ -242,12 +242,12 @@ namespace NuSysApp
                 BaseToolView baseToolView = new BaseToolView(basicToolViewModel, centerpoint.X + metadataToolView.Width * 1.25, centerpoint.Y);
                 basicToolController.AddParent(metadataToolController);
 
-                var linkviewmodel = new ToolLinkViewModel(metadataToolViewModel, basicToolViewModel);
-                var link = new ToolLinkView(linkviewmodel);
-                Canvas.SetZIndex(link, Canvas.GetZIndex(metadataToolView) - 1);
+                //var linkviewmodel = new ToolLinkViewModel(metadataToolViewModel, basicToolViewModel);
+                //var link = new ToolLinkView(linkviewmodel);
+                //Canvas.SetZIndex(link, Canvas.GetZIndex(metadataToolView) - 1);
 
-                wvm.AtomViewList.Add(link);
-                wvm.AtomViewList.Add(baseToolView);
+                //wvm.AtomViewList.Add(link);
+                //wvm.AtomViewList.Add(baseToolView);
 
             }
         }
@@ -449,8 +449,8 @@ namespace NuSysApp
             Debug.Assert(elementId1 != null);
             Debug.Assert(elementId2 != null);
             Debug.Assert(currentCollection != null);
-            Debug.Assert(SessionController.Instance.IdToControllers.ContainsKey(elementId1));
-            Debug.Assert(SessionController.Instance.IdToControllers.ContainsKey(elementId2));
+            Debug.Assert(SessionController.Instance.ElementModelIdToElementController.ContainsKey(elementId1));
+            Debug.Assert(SessionController.Instance.ElementModelIdToElementController.ContainsKey(elementId2));
 
             //SessionController.Instance.NuSysNetworkSession.AddPresentationLink(elementId1, elementId2, currentCollection);
         }
@@ -548,7 +548,7 @@ namespace NuSysApp
             vm.IsEditing = false;
             highlight.Visibility = Visibility.Collapsed;
 
-            sv.EnterPresentationMode(vm);
+            //sv.EnterPresentationMode(vm);
         }
 
         private void OnExplorationClick(object sender, RoutedEventArgs e)
@@ -560,13 +560,12 @@ namespace NuSysApp
             vm.IsEditing = false;
             highlight.Visibility = Visibility.Collapsed;
 
-            SessionController.Instance.SwitchMode(Options.Exploration);         
+            SessionController.Instance.SwitchMode(Options.ReadOnly);         
         }
 
         private void OnResizerManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            if (SessionController.Instance.SessionView.IsPenMode || SessionController.Instance.SessionView.IsReadonly)
-                return;
+
 
             var vm = (ElementViewModel) this.DataContext;
 

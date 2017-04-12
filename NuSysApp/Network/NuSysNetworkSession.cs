@@ -48,6 +48,17 @@ namespace NuSysApp
         public event UserDroppedEventHandler OnNetworkUserDropped;
 
         public LockController LockController;
+
+        public ServerClient.ConnectionStrength Connection
+        {
+            get { return _serverClient?.Connection ?? ServerClient.ConnectionStrength.UnResponsive; }
+        }
+
+        /// <summary>
+        /// event fired whenever the status of the server connection changes
+        /// </summary>
+        public event EventHandler<ServerClient.ConnectionStrength> ServerConnectionStatusChanged;
+
         #endregion Public Members
         #region Private Members
 
@@ -63,7 +74,9 @@ namespace NuSysApp
             await _serverClient.Init();
             _serverClient.OnMessageRecieved += OnMessageRecieved;
             _serverClient.OnNewNotification += HandleNotification;
-            LockController = LockController ?? new LockController(_serverClient);
+            _serverClient.ConnectionStrenthChanged += ServerClientOnConnectionStrenthChanged;
+            LockController = LockController ?? new LockController();
+
 
             //asynchronously run a request that will be loading the user ID to display name dictionary 
             Task.Run(async delegate
@@ -72,6 +85,16 @@ namespace NuSysApp
                 await ExecuteRequestAsync(userIdDictionaryRequest);
                 userIdDictionaryRequest.AddReturnedDictionaryToSession();
             });
+        }
+
+        /// <summary>
+        /// event handler fired whenever the _serverClient changes its connection status
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="connectionStrength"></param>
+        private void ServerClientOnConnectionStrenthChanged(object sender, ServerClient.ConnectionStrength connectionStrength)
+        {
+            ServerConnectionStatusChanged?.Invoke(this,connectionStrength);
         }
 
         /// <summary>
@@ -85,6 +108,16 @@ namespace NuSysApp
         #region Requests
 
         /// <summary>
+        /// method to call to execute a callback request.  
+        /// This requires a fully populateed request
+        /// </summary>
+        /// <param name="request"></param>
+        public void ExecuteCallbackRequest(CallbackRequest<ServerRequestArgsBase,ServerReturnArgsBase> request)
+        {
+            _serverClient.ExecuteCallbackRequest(request);
+        }
+
+        /// <summary>
         /// Will execute a request and not return from this method until the server has processed the request and returned a confirmation message
         /// the message that is returned is the confirmation message
         /// when parsing the confirmation messsage, please use Constants in NusysIntermediate.NusysConstants instead of strings as the keys you're parsing
@@ -95,15 +128,23 @@ namespace NuSysApp
         /// </returns>
         public async Task<Message> ExecuteRequestAsync(Request request)
         {
-            return await Task.Run(async delegate
-            {
-                //if CheckOutgoingRequest created a valid thing
-                await request.CheckOutgoingRequest();
-                Message message = request.GetFinalMessage();
-                var returnMessage = await _serverClient.WaitForRequestRequestAsync(message);
-                request.SetReturnMessage(returnMessage);
-                return returnMessage;
-            });
+            //return await Task.Run(async delegate { return await PrivateExecuteRequestAsync(request); });
+            return await PrivateExecuteRequestAsync(request);
+        }
+
+        /// <summary>
+        /// private version of ExecuteRequestAsync
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        private async Task<Message> PrivateExecuteRequestAsync(Request request)
+        {
+            //if CheckOutgoingRequest created a valid thing
+            request.CheckOutgoingRequest();
+            Message message = request.GetFinalMessage();
+            var returnMessage = await _serverClient.WaitForRequestRequestAsync(message);
+            request.SetReturnMessage(returnMessage);
+            return returnMessage;
         }
 
         /// <summary>
@@ -116,10 +157,21 @@ namespace NuSysApp
         {
             Task.Run(async delegate {
                 //if CheckOutgoingRequest created a valid thing
-                await request.CheckOutgoingRequest();
+                request.CheckOutgoingRequest();
                 Message message = request.GetFinalMessage();
                 await _serverClient.SendMessageToServer(message);
             });
+        }
+
+        /// <summary>
+        /// the dispose method, although this will probably never be called
+        /// </summary>
+        public void Dispose()
+        {
+            _serverClient.OnMessageRecieved -= OnMessageRecieved;
+            _serverClient.OnNewNotification -= HandleNotification;
+            _serverClient.ConnectionStrenthChanged -= ServerClientOnConnectionStrenthChanged;
+            //todo dispose server client
         }
 
         /// <summary>
@@ -144,8 +196,17 @@ namespace NuSysApp
                 case NusysConstants.NotificationType.RemoveUser:
                     handler = new DropUserNotificationHandler();
                     break;
+                case NusysConstants.NotificationType.WordChanged:
+                    handler = new WordChangedNotificationHandler();
+                    break;
                 case NusysConstants.NotificationType.AnalysisModelMade:
                     handler = new AnalysisModelMadeNotificationHandler();
+                    break;
+                case NusysConstants.NotificationType.LockHolderChanged:
+                    handler = new LockHolderChangedNotificationHandler();
+                    break;
+                case NusysConstants.NotificationType.WebSearchCompleted:
+                    handler = new WebSearchCompletedNotificationHandler();
                     break;
                 default:
                     throw new Exception("we don't handle that notification type yet");
@@ -245,7 +306,15 @@ namespace NuSysApp
                 case NusysConstants.RequestType.DeletePresentationLinkRequest:
                     request = new DeletePresentationLinkRequest(message);
                     break;
-
+                case NusysConstants.RequestType.GetCollaboratorCoordinatesRequest:
+                    request = new GetCollaboratorCoordinatesRequest(message);
+                    break;
+                case NusysConstants.RequestType.SendCollaboratorCoordinatesRequest:
+                    request = new SendCollaboratorCoordinatesRequest(message);
+                    break;
+                case NusysConstants.RequestType.CreateSnapshotOfCollectionRequest:
+                    request = new CreateSnapshotOfCollectionRequest(message);
+                    break;
                 default:
                     throw new InvalidRequestTypeException($"The request type, {requestType} could not be found and made into a request instance");
             }
@@ -337,37 +406,7 @@ namespace NuSysApp
             await ExecuteRequestAsync(request);
             return request.GetReturnedResults();
         }
-        /// <summary>
-        /// Downloads a docx for the specified library ID and returns the temporary docx file path,
-        /// null if an error occurred like the document doesn't exist;
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public async Task<string> DownloadDocx(string id)
-        {
-            var bytes = await _serverClient.GetDocxBytes(id);
-            if (bytes == null)
-            {
-                return null;
-            }
-            var path = NuSysStorages.SaveFolder.Path + "\\" + id + ".docx";
-            try
-            {
-                using (var stream = new FileStream(path, FileMode.Create, FileAccess.ReadWrite))
-                {
-                    await stream.WriteAsync(bytes, 0, bytes.Length);
-                }
-            }
-            catch (UnauthorizedAccessException unAuth)
-            {
-                throw new UnauthorizedAccessException("Couldn't write to file most likely because it is already open");
-            }
-            catch (Exception e)
-            {
-                throw new Exception("couldn't write to file because " + e.Message);
-            }
-            return path;
-        }
+
         public async Task<IEnumerable<LibraryElementModel>> GetAllLibraryElements()
         {
             var request = new GetAllLibraryElementsRequest();
@@ -389,7 +428,7 @@ namespace NuSysApp
             {
                 return UserIdToDisplayNameDictionary[userId];
             }
-            Debug.Fail("The userId should always exist");
+            Debug.Assert(false, "The userId should always exist");
             return null;
         }
     }

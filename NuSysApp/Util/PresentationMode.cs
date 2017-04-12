@@ -122,8 +122,13 @@ namespace NuSysApp
         /// </summary>
         public void ExitMode()
         {
-            _originalTransform = MakeShallowCopy(SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera);
-            AnimatePresentation(_originalTransform.ScaleX - _originalTransform.ScaleX * 0.3, _originalTransform.CenterX, _originalTransform.CenterY, _originalTransform.TranslateX, _originalTransform.TranslateY, 400);
+
+            UITask.Run(() =>
+            {
+                _originalTransform = MakeShallowCopy(SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera);
+                AnimatePresentation(_originalTransform.ScaleX - _originalTransform.ScaleX * 0.3, _originalTransform.CenterX, _originalTransform.CenterY, _originalTransform.TranslateX, _originalTransform.TranslateY, 400);
+            });
+
         }
 
         /// <summary>
@@ -138,12 +143,12 @@ namespace NuSysApp
             Debug.Assert(currentElemVm != null);
             Debug.Assert(PresentationLinkViewModel.Models != null);
             // there might be more than one outgoing link but we always just choose one
-            var outgoingLink = PresentationLinkViewModel.Models.FirstOrDefault(vm => vm.InElementId == currentElemVm.Id);
-            if (outgoingLink?.InElementId == outgoingLink?.OutElementId)
+            var outgoingLink = PresentationLinkViewModel.Models.FirstOrDefault(vm => vm.OutElementId == currentElemVm.Id);
+            if (outgoingLink?.OutElementId == outgoingLink?.InElementId)
             {
                 return null;
             }
-            var nextElemVm = GetElementViewModelFromId(outgoingLink?.OutElementId);
+            var nextElemVm = GetElementViewModelFromId(outgoingLink?.InElementId);
             return nextElemVm;
 
         }
@@ -160,12 +165,12 @@ namespace NuSysApp
             Debug.Assert(currentElemVm != null);
             Debug.Assert(PresentationLinkViewModel.Models != null);
             // there might be more than one outgoing link but we always just choose one
-            var incomingLink = PresentationLinkViewModel.Models.FirstOrDefault(vm => vm.OutElementId == currentElemVm.Id);
-            if (incomingLink?.InElementId == incomingLink?.OutElementId)
+            var incomingLink = PresentationLinkViewModel.Models.FirstOrDefault(vm => vm.InElementId == currentElemVm.Id);
+            if (incomingLink?.OutElementId == incomingLink?.InElementId)
             {
                 return null;
             }
-            var prevElemVm = GetElementViewModelFromId(incomingLink?.InElementId);
+            var prevElemVm = GetElementViewModelFromId(incomingLink?.OutElementId);
             return prevElemVm;
         }
 
@@ -247,7 +252,10 @@ namespace NuSysApp
 
 
             // Call a helper method to set up the animation
-            AnimatePresentation(scale, x, y, translateX, translateY);
+            UITask.Run(() =>
+            {
+                AnimatePresentation(scale, x, y, translateX, translateY);
+            });
 
         }
 
@@ -371,6 +379,7 @@ namespace NuSysApp
             newTransform.TranslateX = transform.T.M31;
             newTransform.TranslateY = transform.T.M32;
             return newTransform;
+
         }
 
         /// <summary>
@@ -401,7 +410,7 @@ namespace NuSysApp
             var elementViewModels = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.Elements.Where(elementVM => elementVM.Id == elementViewModelId).ToList();
             Debug.Assert(elementViewModels != null);
             Debug.Assert(elementViewModels.Count == 1); // we shouldn't have multiple
-            return elementViewModels.First();
+            return elementViewModels.First() as ElementViewModel;
         }
     }
 }

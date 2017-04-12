@@ -22,16 +22,23 @@ namespace NuSysApp
         {
             var content = controller.ContentDataController.ContentDataModel as PdfContentDataModel;
             ImageUrl = content.PageUrls[0];
-
+            controller.ContentDataController.ContentDataUpdated += ContentDataControllerOnContentDataUpdated;
             _controller = controller;
             _canvasSize = maxSize;
-
-            _controller.LocationChanged += ControllerOnLocationChanged;
-            _controller.SizeChanged += ControllerOnSizeChanged;
-
-            controller.ContentDataController.ContentDataModel.OnRegionAdded += ContentDataModelOnOnRegionAdded;
-            controller.ContentDataController.ContentDataModel.OnRegionRemoved += ContentDataModelOnOnRegionRemoved;
         }
+
+        /// <summary>
+        /// event hander called whenever the pdf changes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="s"></param>
+        private void ContentDataControllerOnContentDataUpdated(object sender, string s)
+        {
+            Debug.Assert(_controller.ContentDataController.ContentDataModel is PdfContentDataModel);
+            ImageUrl = (_controller.ContentDataController.ContentDataModel as PdfContentDataModel).PageUrls[CurrentPage];
+            Load();
+        }
+
 
         protected override void ComputeRegions()
         {
@@ -67,6 +74,16 @@ namespace NuSysApp
             });
 
             FireRedraw();
+        }
+
+
+        /// <summary>
+        /// removes region event handlers 
+        /// </summary>
+        public override void Dispose()
+        {
+            _controller.ContentDataController.ContentDataUpdated -= ContentDataControllerOnContentDataUpdated;
+            base.Dispose();
         }
     }
 }

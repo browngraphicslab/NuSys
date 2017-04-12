@@ -278,10 +278,9 @@
             </StackPanel>
 
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,20">
-                <TextBlock Visibility="Visible" x:Name="ServerNameText" Width="350" Height="20" 
-                       TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="18">
-                SERVERNAME
-                </TextBlock>
+                    <TextBox Visibility="Visible" x:Name="ServerNameText" Width="350" Height="30" 
+                       TextAlignment="Center" Foreground="{StaticResource color2}" FontSize="18" TextChanging="ServerNameText_TextChanging" >
+                    </TextBox>
                 <HyperlinkButton HorizontalAlignment="Center" Foreground="{StaticResource color2}" Margin="0,5,0,0"  FontSize="18">
                     <TextBlock>
                         <Underline>

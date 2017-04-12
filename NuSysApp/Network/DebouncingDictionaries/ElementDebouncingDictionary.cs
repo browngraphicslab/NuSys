@@ -31,9 +31,15 @@ namespace NuSysApp
         /// <returns></returns>
         protected override async Task SendToServer(Message message, bool shouldSave, string objectId)
         {
+            if (!message.Any())
+            {
+                return;
+            }
             message[NusysConstants.ELEMENT_UPDATE_REQUEST_ELEMENT_ID_KEY] = objectId;
             var request = new ElementUpdateRequest(message, shouldSave);
-            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request).ConfigureAwait(false);
+
         }
     }
 }

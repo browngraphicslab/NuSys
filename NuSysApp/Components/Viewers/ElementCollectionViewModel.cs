@@ -18,7 +18,7 @@ using NuSysApp.Tools;
 
 namespace NuSysApp
 {
-    public class ElementCollectionViewModel: ElementViewModel, ToolStartable
+    public class ElementCollectionViewModel: ElementViewModel//, ToolStartable
     {
         public event EventHandler<HashSet<string>> OutputLibraryIdsChanged;
         public event EventHandler<string> Disposed;
@@ -27,11 +27,13 @@ namespace NuSysApp
         public ObservableCollection<ElementViewModel> Elements { get; set; } = new ObservableCollection<ElementViewModel>();
         public ObservableCollection<LinkViewModel> Links { get; set; } = new ObservableCollection<LinkViewModel>();
 
+        public ObservableCollection<ToolLinkViewModelWin2d> ToolLinks = new ObservableCollection<ToolLinkViewModelWin2d>();
+
         public ObservableCollection<PresentationLinkViewModel> Trails { get; set; } = new ObservableCollection<PresentationLinkViewModel>();
         /// <summary>
         /// The unique ID used in the tool startable dictionary
         /// </summary>
-        private string _toolStartableId;
+        //private string _toolStartableId;
 
         public ObservableCollection<FrameworkElement> AtomViewList { get; set; } 
         protected FreeFormElementViewModelFactory _elementVmFactory = new FreeFormElementViewModelFactory();
@@ -40,10 +42,35 @@ namespace NuSysApp
         public Vector2 CameraCenter { get; set; } = new Vector2(Constants.MaxCanvasSize / 2f, Constants.MaxCanvasSize / 2f);
         public float CameraScale { get; set; } = 1f;
 
-        public bool IsFinite { get; set; }
-        public bool IsShaped { get; set; }
+        public bool IsFinite
+        {
+            get
+            {
+                Debug.Assert(Controller.LibraryElementModel is CollectionLibraryElementModel);
+                return ((CollectionLibraryElementModel)Controller.LibraryElementModel)?.IsFinite ?? false;
+            }
+        }
+
+        public bool IsShaped
+        {
+            get
+            {
+                var collectionShape = ((CollectionContentDataController)(Controller.LibraryElementController.ContentDataController)).CollectionModel.Shape;
+                return collectionShape != null && (collectionShape?.ShapePoints?.Count > 5 || collectionShape.ImageUrl != null);
+            }
+        }
+
         public double AspectRatio { get; set; }
-        public Color ShapeColor { get; set; } = Colors.Black;
+
+        public Color ShapeColor
+        {
+            get
+            {
+                return
+                (Controller?.LibraryElementController?.ContentDataController?.ContentDataModel as
+                    CollectionContentDataModel)?.Shape?.ShapeColor?.ToColor() ?? Colors.CadetBlue;
+            }
+        }
 
         public ElementCollectionViewModel(ElementCollectionController controller): base(controller)
         {
@@ -53,21 +80,20 @@ namespace NuSysApp
             controller.CameraCenterChanged += ControllerOnCameraCenterChanged;
 
             var libElemController = (CollectionLibraryElementController) controller.LibraryElementController;
-            libElemController.LinkAdded += LibraryElementControllerOnLinkAdded;
+            libElemController.LinkAddedToCollection += LibraryElementControllerOnLinkAdded;
             libElemController.OnTrailAdded += LibElemControllerOnOnTrailAdded;
             libElemController.OnTrailRemoved += LibElemControllerOnOnTrailRemoved;
 
-            var model = (CollectionLibraryElementModel) controller.LibraryElementModel;
-            IsFinite = model.IsFinite;
-            IsShaped = model.ShapePoints != null && model.ShapePoints.Count > 5;
-            AspectRatio = model.AspectRatio;
+            var contentController = libElemController.CollectionContentDataController;
+            Debug.Assert(contentController?.CollectionModel != null, "Will crash if you continue");
+            var collectionShape = contentController.CollectionModel.Shape;
 
-            if (model.ShapeColor != null)
-                ShapeColor = model.ShapeColor.ToColor();
+            var model = (CollectionLibraryElementModel) controller.LibraryElementModel;
+            AspectRatio = collectionShape?.AspectRatio ?? 0;
 
             foreach (var childId in model.Children)
             {
-                var childController =  SessionController.Instance.IdToControllers[childId];
+                var childController =  SessionController.Instance.ElementModelIdToElementController[childId];
                 Debug.Assert(childController != null);
                 CreateChild(childController);
             }
@@ -86,8 +112,7 @@ namespace NuSysApp
 
 
             AtomViewList = new ObservableCollection<FrameworkElement>();
-            _toolStartableId = SessionController.Instance.GenerateId();
-            ToolController.ToolControllers.Add(_toolStartableId, this);
+            //_toolStartableId = SessionController.Instance.GenerateId();
         }
 
         private void LibElemControllerOnOnTrailAdded(PresentationLinkViewModel vm)
@@ -115,12 +140,35 @@ namespace NuSysApp
             CameraTranslation = new Vector2(f, f1);
         }
 
+        /// <summary>
+        /// Adds tool to the collection
+        /// </summary>
+        /// <param name="vm"></param>
+        /// <param name="linkvm"></param>
+        public void AddTool(ToolViewModel vm)
+        {
+            Elements.Add(vm);
+            vm.Controller.Deleted += OnChildDeleted;
+        }
+
+        /// <summary>
+        /// Adds a tool link to the collection
+        /// </summary>
+        /// <param name="linkvm"></param>
+        public void AddToolLink(ToolLinkViewModelWin2d linkvm)
+        {
+            if (linkvm != null)
+            {
+                ToolLinks.Add(linkvm);
+            }
+        }
+
         public async Task CreateChildren()
         {
             var model = (CollectionLibraryElementModel) Controller.LibraryElementModel;
             foreach (var id in model.Children )
             {
-                var childController = SessionController.Instance.IdToControllers[id];
+                var childController = SessionController.Instance.ElementModelIdToElementController[id];
                 await CreateChild(childController);
             }
         }
@@ -132,13 +180,13 @@ namespace NuSysApp
             controller.ChildRemoved -= OnChildRemoved;
 
             var libElemController = (CollectionLibraryElementController)controller.LibraryElementController;
-            libElemController.LinkAdded -= LibraryElementControllerOnLinkAdded;
+            libElemController.LinkAddedToCollection -= LibraryElementControllerOnLinkAdded;
             libElemController.OnTrailAdded -= LibElemControllerOnOnTrailAdded;
             libElemController.OnTrailRemoved -= LibElemControllerOnOnTrailRemoved;
 
             base.Dispose();
-            Disposed?.Invoke(this, _toolStartableId);
-            ToolController.ToolControllers.Remove(_toolStartableId);
+            //Disposed?.Invoke(this, _toolStartableId);
+            //ToolController.ToolControllers.Remove(_toolStartableId);
         }
 
         private async void OnChildAdded(object source, ElementController elementController)
@@ -146,6 +194,8 @@ namespace NuSysApp
             await CreateChild(elementController);
             OutputLibraryIdsChanged?.Invoke(this, GetOutputLibraryIds());
         }
+
+       
 
         private async Task CreateChild(ElementController controller)
         {
@@ -196,11 +246,19 @@ namespace NuSysApp
                         Links.Remove(linkViewModel);
                     }
                 }
+                foreach (var linkViewModel in ToolLinks.ToList())
+                {
+                    if (linkViewModel.LinkModel.InAtomId == soughtChild.Id ||
+                        linkViewModel.LinkModel.OutAtomId == soughtChild.Id)
+                    {
+                         ToolLinks.Remove(linkViewModel);
+                    }
+                }
 
                 foreach (var trail in Trails.ToList())
                 {
-                    if (trail.Model.InElementId == soughtChild.Id ||
-                        trail.Model.OutElementId == soughtChild.Id)
+                    if (trail.Model.OutElementId == soughtChild.Id ||
+                        trail.Model.InElementId == soughtChild.Id)
                     {
                         trail.DeletePresentationLink();
                         Trails.Remove(trail);
@@ -240,10 +298,10 @@ namespace NuSysApp
                     CollectionLibraryElementModel;
             foreach (var node in collectionLibraryElementModel.Children)
             {
-                if (SessionController.Instance.IdToControllers.ContainsKey(node))
+                if (SessionController.Instance.ElementModelIdToElementController.ContainsKey(node))
                 {
                     libraryElementIds.Add(
-                        SessionController.Instance.IdToControllers[node]?
+                        SessionController.Instance.ElementModelIdToElementController[node]?
                             .LibraryElementModel?.LibraryElementId);
                 }
             }
@@ -258,14 +316,14 @@ namespace NuSysApp
             OutputLibraryIdsChanged?.Invoke(this, GetOutputLibraryIds());
         }
 
-        /// <summary>
-        /// Returns the tool startable id that is used in the dictionary from id to controller.
-        /// </summary>
-        /// <returns></returns>
-        public string GetID()
-        {
-            return _toolStartableId;
-        }
+        /////// <summary>
+        /////// Returns the tool startable id that is used in the dictionary from id to controller.
+        /////// </summary>
+        /////// <returns></returns>
+        ////public string GetID()
+        ////{
+        ////    //return _toolStartableId;
+        ////}
 
         /// <summary>
         /// Returns an empty hashset because a collection has no parents
@@ -283,6 +341,20 @@ namespace NuSysApp
         public IEnumerable<string> GetUpdatedDataList()
         {
             return GetOutputLibraryIds();
+        }
+
+        public override void SetSize(double width, double height)
+        {
+            if (IsShaped)
+            {
+                Debug.Assert(
+                    (Controller?.LibraryElementController?.ContentDataController as CollectionContentDataController)?
+                        .CollectionModel?.Shape?.AspectRatio != null);
+                width =
+                    (Controller.LibraryElementController.ContentDataController as CollectionContentDataController)
+                        .CollectionModel.Shape.AspectRatio*height;
+            }
+            base.SetSize(width, height);
         }
     }
 }

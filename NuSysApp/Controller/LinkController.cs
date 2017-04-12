@@ -46,7 +46,7 @@ namespace NuSysApp
             }
         }
 
-        public string ContentId
+        public string LibraryElementId
         {
             get
             {

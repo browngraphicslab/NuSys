@@ -17,14 +17,22 @@ namespace NuSysApp
         {
             base.LibraryElementType = NusysConstants.ElementType.Link;
         }
+
         /// <summary>
         /// This is the in library element model id of the link that is being created
         /// </summary>
         public string LibraryElementModelInId { set; get; }
+
         /// <summary>
         /// This is the out library element model id of the link that is being created
         /// </summary>
         public string LibraryElementModelOutId { set; get; }
+
+        /// <summary>
+        /// This is the enum representing the directionality of the link.
+        /// If you don't set it, it will default to None
+        /// </summary>
+        public NusysConstants.LinkDirection? LinkDirection { set; get; }
 
         /// <summary>
         /// This packs all of the variables into the message that is send to the server
@@ -51,10 +59,33 @@ namespace NuSysApp
                 message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LINK_ID_OUT_KEY] = LibraryElementModelOutId;
             }
 
+            message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_LINK_DIRECTIONALITY_KEY] = LinkDirection == null ? NusysConstants.LinkDirection.None : LinkDirection.Value;
+
             // set access level to the lower of the two end points
-            message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_ACCESS_KEY] = GetLowerAccessOfEndPoints().ToString();
+            message[NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_ACCESS_KEY] = GetAccessSetting().ToString();
 
             return message;
+        }
+
+        /// <summary>
+        /// returns readonly if either end isn't public
+        /// </summary>
+        /// <returns></returns>
+        private NusysConstants.AccessType GetAccessSetting()
+        {
+            // get the access level of the LibraryElementModelInId model
+            var inAccess =
+                SessionController.Instance.ContentController.GetLibraryElementModel(LibraryElementModelInId)
+                    .AccessType;
+            // get the access level of the LibraryElementModelOutId model
+            var outAccess =
+                SessionController.Instance.ContentController.GetLibraryElementModel(LibraryElementModelOutId)
+                    .AccessType;
+            if (inAccess == NusysConstants.AccessType.Public && outAccess == NusysConstants.AccessType.Public)
+            {
+                return NusysConstants.AccessType.Public;
+            }
+            return NusysConstants.AccessType.ReadOnly;
         }
 
         /// <summary>
@@ -63,6 +94,7 @@ namespace NuSysApp
         /// <returns></returns>
         private NusysConstants.AccessType GetLowerAccessOfEndPoints()
         {
+
             // get the access level of the LibraryElementModelInId model
             var inAccess =
                 SessionController.Instance.ContentController.GetLibraryElementModel(LibraryElementModelInId)

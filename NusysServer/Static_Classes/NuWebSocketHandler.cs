@@ -19,31 +19,59 @@ namespace NusysServer
     public class NuWebSocketHandler : WebSocketHandler
     {
         /// <summary>
+        /// Event fired whenever a client connects to the server
+        /// </summary>
+        public static event EventHandler<NuWebSocketHandler> ClientConnected;
+
+        /// <summary>
+        /// Event fired whenever a client drops from the server
+        /// </summary>
+        public static event EventHandler<NuWebSocketHandler> ClientDropped;
+
+        /// <summary>
+        /// Called when this nuwebsocketHandler instance closes.
+        /// The passed string is the UserId of this closed handler.
+        /// </summary>
+        public event EventHandler<string> Closed; 
+
+        /// <summary>
         /// the list of all the current connected clients.  Each client is one websockethandler
         /// </summary>
         private static WebSocketCollection AllClients = new WebSocketCollection();
         private static JsonSerializerSettings settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii };
+
+        public string UserId { get; private set; }
 
         /// <summary>
         /// essentially the constructor.  Called whenever a new client, and therefore new nuwebsockethandler, is made
         /// </summary>
         public override void OnOpen()
         {
-            AllClients.Add(this);
-            var ip = this.WebSocketContext.UserHostAddress;
-
-            this.MaxIncomingMessageSize = Int32.MaxValue;//TODO broadcast this openeing somewhere
-
-            BroadcastNewUser(NusysClient.IDtoUsers[this]);
-            foreach (var activeClient in NusysClient.IDtoUsers)
+            try
             {
-                var dict = GetUserAdditionNotification(activeClient.Value);
-                if (activeClient.Key != this)
+                AllClients.Add(this);
+                var ip = this.WebSocketContext.UserHostAddress;
+
+                this.MaxIncomingMessageSize = Int32.MaxValue; //TODO broadcast this openeing somewhere
+                UserId = NusysClient.IDtoUsers[this].UserID;
+                BroadcastNewUser(NusysClient.IDtoUsers[this]);
+                foreach (var activeClient in NusysClient.IDtoUsers)
                 {
-                    this.Notify(dict);
+                    var dict = GetUserAdditionNotification(activeClient.Value);
+                    if (activeClient.Key != this)
+                    {
+                        this.Notify(dict);
+                    }
                 }
+                ClientConnected?.Invoke(this, this);
+            }
+            catch (Exception e)
+            {
+                ErrorLog.AddError(e);
             }
         }
+
+
 
         /// <summary>
         /// method that will get create a notification object that indicates the current user is joining the network.
@@ -70,12 +98,17 @@ namespace NusysServer
         /// </summary>
         public override void OnClose()
         {
+            string id = null;
             if (NusysClient.IDtoUsers.ContainsKey(this))
             {
+                id = NusysClient.IDtoUsers[this].UserID;
                 BroadcastRemovingUser(NusysClient.IDtoUsers[this]);
                 NusysClient outClient;
                 NusysClient.IDtoUsers.TryRemove(this, out outClient);
             }
+            AllClients.Remove(this);
+            ClientDropped?.Invoke(this,this);
+            Closed?.Invoke(this,id);
         }
 
         /// <summary>
@@ -84,52 +117,58 @@ namespace NusysServer
         /// <param name="message"></param>
         public override void OnMessage(string message)
         {
-            Task.Run(delegate
-            {
-                Dictionary<string, object> dict = null;
-                try
-                {
-                    dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(message, settings);
-                }
-                catch (JsonReaderException jre)
-                {
-                    var matches = Regex.Match(message, "(?:({[^}]+}) *)*");
-                    string[] miniStrings = matches.Groups[1].Captures.Cast<Capture>().Select(c => c.Value).ToArray();
+             HandleMessage(message);
+        }
 
-                    if (miniStrings.Length > 1)
+        /// <summary>
+        /// internal method for handling new requests
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        private void HandleMessage(string message)
+        {
+            Dictionary<string, object> dict = null;
+            try
+            {
+                dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(message, settings);
+            }
+            catch (JsonReaderException jre)
+            {
+                var matches = Regex.Match(message, "(?:({[^}]+}) *)*");
+                string[] miniStrings = matches.Groups[1].Captures.Cast<Capture>().Select(c => c.Value).ToArray();
+
+                if (miniStrings.Length > 1)
+                {
+                    foreach (var s in miniStrings)
                     {
-                        foreach (var s in miniStrings)
-                        {
-                            OnMessage(s);
-                        }
-                    }
-                    else
-                    {
-                        try
-                        {
-                            dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(message, settings);
-                        }
-                        catch (Exception shitIsFuckedUp)
-                        {
-                            ErrorLog.AddError(shitIsFuckedUp);
-                            ErrorLog.AddErrorString("regex json error above ^^^^");
-                        }
+                        OnMessage(s);
                     }
                 }
-                if (dict != null)
+                else
                 {
                     try
                     {
-                        var success = RequestRouter.HandleRequest(new Message(dict), this);
+                        dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(message, settings);
                     }
-                    catch (Exception e)
+                    catch (Exception shitIsFuckedUp)
                     {
-                        ErrorLog.AddError(e);
-                        Send(e.Message);
+                        ErrorLog.AddError(shitIsFuckedUp);
+                        ErrorLog.AddErrorString("regex json error above ^^^^");
                     }
                 }
-            });
-            //BroadcastToSubset(message,new List<NuWebSocketHandler>() {this});
+            }
+            if (dict != null)
+            {
+                try
+                {
+                    var success = RequestRouter.HandleRequest(new Message(dict), this);
+                }
+                catch (Exception e)
+                {
+                    ErrorLog.AddError(e);
+                    SendError(e);
+                }
+            }
         }
 
         public static void BroadcastNewUser(NusysClient client)

@@ -26,6 +26,7 @@ namespace NuSysApp
 
         private PdfDetailRenderItem _image;
         private PdfLibraryElementController _pdfLibraryElementController;
+        private InkableUIElement _inkable;
 
         public PdfElementRenderItem(PdfNodeViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator):base(vm, parent, resourceCreator)
         {
@@ -39,7 +40,10 @@ namespace NuSysApp
 
             AddChild(_image);
 
-
+            _inkable = new InkableUIElement(_pdfLibraryElementController, this, resourceCreator);
+            _inkable.Background = Colors.Transparent;
+            AddChild(_inkable);
+            _inkable.Transform.SetParent(_image.Transform);
         }
 
         private void ControllerOnSizeChanged(object source, double width, double height)
@@ -50,11 +54,14 @@ namespace NuSysApp
         public override void Dispose()
         {
             if (IsDisposed)
+            {
                 return;
+            }
 
             _vm.Controller.SizeChanged -= ControllerOnSizeChanged;
-
+            _image.Dispose();
             _image = null;
+            _vm.Dispose();
             _vm = null;
             _pdfLibraryElementController = null;
 
@@ -93,6 +100,20 @@ namespace NuSysApp
             _image.CanvasSize = new Size(_vm.Controller.Model.Width, _vm.Controller.Model.Height);
 
             
+        }
+
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
+        {
+            if (_image.CroppedImageTarget.Width >= 0.0)
+            {
+                _inkable.Width = (float)_image.CroppedImageTarget.Width;
+            }
+            if (_image.CroppedImageTarget.Height >= 0.0)
+            {
+                _inkable.Height = (float)_image.CroppedImageTarget.Height;
+            }
+            _inkable.Transform.LocalPosition = _image.Transform.LocalPosition;
+            base.Update(parentLocalToScreenTransform);
         }
 
         public override void Draw(CanvasDrawingSession ds)

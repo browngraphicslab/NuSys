@@ -20,9 +20,10 @@ namespace NusysIntermediate
         public List<string> PageUrls { get; set; }
 
         /// <summary>
-        /// The number of pages in the document
+        /// The number of pages in the document.
+        /// Returns zero if the page urls are null
         /// </summary>
-        public int PageCount => PageUrls.Count;
+        public int PageCount => PageUrls?.Count ?? 0;
 
         /// <summary>
         /// This constructor will call the same-declaration constructor in the base ContentDataModel class and will set the PageUrls for this contentDataModel.
@@ -31,8 +32,43 @@ namespace NusysIntermediate
         /// <param name="contentData"></param>
         public PdfContentDataModel(string contentDataModelId, string contentData) : base(contentDataModelId, contentData)
         {
-            //set the page Urls
-            PageUrls = JsonConvert.DeserializeObject<List<string>>(contentData ?? "");
+            SetUrls(contentData);
         }
+
+        /// <summary>
+        /// this override updates the page urls for the pdf.
+        /// </summary>
+        /// <param name="data"></param>
+        public override void SetData(string data)
+        {
+            SetUrls(data);
+            base.SetData(data);
+        }
+
+        /// <summary>
+        /// method used to set the urls for this pdf content data model.
+        /// Pass in the data to set the Urls
+        /// </summary>
+        private void SetUrls(string contentData)
+        {
+            try
+            {
+                PageUrls = JsonConvert.DeserializeObject<List<string>>(contentData ?? "");
+            }
+            catch (Exception e)
+            {
+                PageUrls = new List<string>() {contentData};
+            }
+        }
+
+        /// <summary>
+        /// this override simply just sets the pageUrls to null;
+        /// </summary>
+        public override void Dispose()
+        {
+            PageUrls = null;
+            base.Dispose();
+        }
+
     }
 }

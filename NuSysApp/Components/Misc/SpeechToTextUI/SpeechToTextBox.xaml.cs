@@ -20,7 +20,6 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using MyToolkit.UI;
-using NuSysApp.Components.Misc.SpeechToTextUI;
 using NuSysApp.Misc.SpeechToTextUI;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236

@@ -46,14 +46,14 @@ namespace NuSysApp
 
             var controller = SessionController.Instance.ContentController.GetContentDataController(contentId);
 
-            controller?.RemoveInk(inkStrokeId);
+            controller?.RemoveInkFromServer(inkStrokeId);
         }
 
         /// <summary>
         /// Makes sure that the request has the ID of the stroke to delete
         /// </summary>
         /// <returns></returns>
-        public override async Task CheckOutgoingRequest()
+        public override void CheckOutgoingRequest()
         {
             Debug.Assert(_message.ContainsKey(NusysConstants.DELETE_INK_STROKE_REQUEST_STROKE_ID_KEY));
             Debug.Assert(_message.ContainsKey(NusysConstants.DELETE_INK_STROKE_REQUEST_CONTENT_ID_KEY));

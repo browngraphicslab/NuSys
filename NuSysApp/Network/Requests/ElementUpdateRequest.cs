@@ -27,7 +27,7 @@ namespace NuSysApp
         /// It also updates the last-editted timestamp value
         /// </summary>
         /// <returns></returns>
-        public override async Task CheckOutgoingRequest()
+        public override void CheckOutgoingRequest()
         {
             if (!_message.ContainsKey(NusysConstants.ELEMENT_UPDATE_REQUEST_ELEMENT_ID_KEY))
             {
@@ -45,15 +45,19 @@ namespace NuSysApp
         public override async Task ExecuteRequestFunction()
         {
             var id = _message.GetString(NusysConstants.ELEMENT_UPDATE_REQUEST_ELEMENT_ID_KEY);
-            if (SessionController.Instance.IdToControllers.ContainsKey(id))
+            if (SessionController.Instance.ElementModelIdToElementController.ContainsKey(id))
             {
-                var controller = SessionController.Instance.IdToControllers[id];
+                var controller = SessionController.Instance.ElementModelIdToElementController[id];
                 
                 await controller.UnPack(_message);
                 if(_message.ContainsKey("sender_user_id") && SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey((string)_message["sender_user_id"]))
                 {
-                    var user = SessionController.Instance.NuSysNetworkSession.NetworkMembers[(string)_message["sender_user_id"]];
-                    user?.SetUserController(controller.LibraryElementController);
+                    if (_message.GetString("sender_user_id") == null)
+                    {
+                        return;
+                    }
+                    var user = SessionController.Instance.NuSysNetworkSession.NetworkMembers[_message.GetString("sender_user_id")];
+                    user?.SetNodeCurrentlyEditing(id);
                 }
             }
         }

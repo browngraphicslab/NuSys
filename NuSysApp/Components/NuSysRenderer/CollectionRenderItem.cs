@@ -16,10 +16,14 @@ using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Brushes;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using MyToolkit.Mathematics;
+using MyToolkit.Utilities;
 using NusysIntermediate;
 using Wintellect.PowerCollections;
+using WinRTXamlToolkit.Tools;
 
 namespace NuSysApp
 {
@@ -28,13 +32,17 @@ namespace NuSysApp
         private CanvasAnimatedControl _canvas;
         private Size _elementSize;
         private CanvasGeometry _shape;
+        private ICanvasImage _shapeImage = null;
         private CanvasStrokeStyle _strokeStyle = new CanvasStrokeStyle
         {
             TransformBehavior = CanvasStrokeTransformBehavior.Fixed,
         };
 
+        public event EventHandler<LibraryElementController> CameraOnCentered;
+
         protected List<BaseRenderItem> _renderItems0 = new List<BaseRenderItem>();
         protected List<BaseRenderItem> _renderItems1 = new List<BaseRenderItem>();
+
         protected List<BaseRenderItem> _renderItems2 = new List<BaseRenderItem>();
         protected List<BaseRenderItem> _renderItems3 = new List<BaseRenderItem>();
 
@@ -46,7 +54,16 @@ namespace NuSysApp
         public RenderItemTransform Camera { get; set; } = new RenderItemTransform();
         
         public int NumLinks => ViewModel.Links.Count;
-        
+
+        private enum ShapedStatus
+        {
+            None,
+            Image,
+            Points
+        }
+
+        private ShapedStatus _shapeStatus;
+
         public CollectionRenderItem(ElementCollectionViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi canvas, bool interactionEnabled = false) : base(vm, parent, canvas)
         {
             _canvas = (CanvasAnimatedControl)ResourceCreator;
@@ -54,6 +71,7 @@ namespace NuSysApp
             var collectionController = (ElementCollectionController)vm.Controller;
             collectionController.CameraPositionChanged += OnCameraPositionChanged;
             collectionController.CameraCenterChanged += OnCameraCenterChanged;
+            collectionController.CameraScaleChanged += CollectionControllerOnCameraScaleChanged;
 
             if (!interactionEnabled)
                 Transform.LocalPosition = new Vector2((float)vm.X, (float)vm.Y);
@@ -65,8 +83,56 @@ namespace NuSysApp
 
             vm.Elements.CollectionChanged += OnElementsChanged;
             vm.Links.CollectionChanged += OnElementsChanged;
+            vm.ToolLinks.CollectionChanged += OnElementsChanged;
             vm.Trails.CollectionChanged += OnElementsChanged;
             vm.AtomViewList.CollectionChanged += OnElementsChanged;
+            vm.Controller.LibraryElementController.ContentDataController.ContentDataUpdated += ContentDataControllerOnContentDataUpdated;
+            UpdateShapeStatus();
+        }
+
+
+
+        /// <summary>
+        /// event handler called whenevr the element controller changes scale
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="sx"></param>
+        /// <param name="sy"></param>
+        private void ControllerOnScaleChanged(object source, double sx, double sy)
+        {
+            Camera.CameraScale = (float)sx;
+        }
+
+        private void ContentDataControllerOnContentDataUpdated(object sender, string s)
+        {
+            UpdateShapeStatus();
+        }
+
+        private void UpdateShapeStatus()
+        {
+            //TEST END
+
+            if (!ViewModel.IsShaped)
+            {
+                _shapeStatus = ShapedStatus.None;
+                return;
+            }
+            var controller = ViewModel.Controller.LibraryElementController.ContentDataController as CollectionContentDataController;
+            Debug.Assert(controller != null);
+
+            var shape = controller.CollectionModel.Shape;
+            Debug.Assert(shape != null);
+            if (shape.ImageUrl == null)
+            {
+                _shapeStatus = ShapedStatus.Points;
+            }
+            else
+            {
+                _shapeStatus = ShapedStatus.Image;
+                Task.Run(async delegate {
+                    _shapeImage = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri(shape.ImageUrl));
+                });
+            }
         }
 
         public override void Dispose()
@@ -79,12 +145,14 @@ namespace NuSysApp
                 var collectionController = (ElementCollectionController) ViewModel.Controller;
                 collectionController.CameraPositionChanged -= OnCameraPositionChanged;
                 collectionController.CameraCenterChanged -= OnCameraCenterChanged;
+                collectionController.CameraScaleChanged -= CollectionControllerOnCameraScaleChanged;
 
                 ViewModel.Elements.CollectionChanged -= OnElementsChanged;
                 ViewModel.Links.CollectionChanged -= OnElementsChanged;
+                ViewModel.ToolLinks.CollectionChanged -= OnElementsChanged;
                 ViewModel.Trails.CollectionChanged -= OnElementsChanged;
                 ViewModel.AtomViewList.CollectionChanged -= OnElementsChanged;
-
+                ViewModel.Controller.LibraryElementController.ContentDataController.ContentDataUpdated -= ContentDataControllerOnContentDataUpdated;
                 foreach (var item in _renderItems0.ToArray())
                     Remove(item);
 
@@ -97,12 +165,12 @@ namespace NuSysApp
                 foreach (var item in _renderItems3.ToArray())
                     Remove(item);
 
-                _renderItems0.Clear();
-                _renderItems1.Clear();
-                _renderItems2.Clear();
-                _renderItems3.Clear();
+                _renderItems0?.Clear();
+                _renderItems1?.Clear();
+                _renderItems2?.Clear();
+                _renderItems3?.Clear();
 
-                InkRenderItem.Dispose();
+                InkRenderItem?.Dispose();
                 InkRenderItem = null;
 
                 ViewModel = null;
@@ -141,12 +209,14 @@ namespace NuSysApp
                 {
                     AddItem(elementViewModel);
                 }
-
+                foreach (var elementViewModel in ViewModel.ToolLinks.ToArray())
+                {
+                    AddItem(elementViewModel);
+                }
                 foreach (var linkViewModel in ViewModel.Links.ToArray())
                 {
                     AddItem(linkViewModel);
                 }
-
 
                 foreach (var tailViewModel in ViewModel.Trails.ToArray())
                 {
@@ -162,17 +232,26 @@ namespace NuSysApp
             _children.Add(child);
         }
 
+        /// <summary>
+        /// Removes all instances of the passed in link from the current collection
+        /// </summary>
+        /// <param name="libraryElementId"></param>
         public void RemoveLink(string libraryElementId)
         {
+            // get all the links we want to remove
             var soughtLinks = ViewModel.Links.Where(l => l.Controller.LibraryElementController.LibraryElementModel.LibraryElementId == libraryElementId);
+
+            // if no instances of the link exist just return
             if (!soughtLinks.Any())
             {
                 return;
             }
 
-            ViewModel.Links.Remove(soughtLinks.First());
+            // otherwise remove all the links from the collection
+            soughtLinks.ToArray().ForEach(i => ViewModel.Links.Remove(i));
             _canvas.RunOnGameLoopThreadAsync(() =>
             {
+                // refresh the list of render items
                 _allRenderItems = _renderItems3.Concat(_renderItems2).Concat(_renderItems1).Concat(_renderItems0).ToList();
             });
         }
@@ -193,6 +272,8 @@ namespace NuSysApp
 
             _elementSize = new Size(ViewModel.Width, ViewModel.Height);
 
+            var b = this == SessionController.Instance.SessionView.FreeFormViewer.InitialCollection;
+
             Transform.Update(parentLocalToScreenTransform);
             base.Update(parentLocalToScreenTransform);
             Camera.Update(Transform.LocalToScreenMatrix);
@@ -208,6 +289,28 @@ namespace NuSysApp
 
             foreach (var item in _renderItems3.ToArray())
                 item?.Update(Camera.LocalToScreenMatrix);
+        }
+
+        private void DrawBackgroundShapeImage(CanvasDrawingSession ds, IEnumerable<Vector2> pts)
+        {
+            if (_shapeStatus == ShapedStatus.Image)
+            {
+                if (_shapeImage != null)
+                {
+                    Debug.Assert(pts != null && pts.Any());
+                    var bounds = _shape.ComputeBounds();
+                    var ratio = bounds.Width/bounds.Height;
+
+                    var multiplier =_shapeImage.GetBounds(ResourceCreator).Width/(pts.Max(l => l.X) - pts.Min(l => l.X)) ;
+
+                    bounds.X = pts.Min(l => l.X);
+                    bounds.Y = pts.Min(l => l.Y);
+                    bounds.Width = (pts.Max(l => l.X) - bounds.X)*multiplier;
+                    bounds.Height = (bounds.Width/ratio);
+
+                    ds.DrawImage((CanvasBitmap)_shapeImage, bounds);
+                }
+            }
         }
 
         public override void Draw(CanvasDrawingSession ds)
@@ -233,25 +336,86 @@ namespace NuSysApp
                 ds.DrawRectangle(elementRect, Colors.Black, 1f, _strokeStyle);
             }
 
-            if (ViewModel.IsShaped || ViewModel.IsFinite)
-            {
-                var model = (CollectionLibraryElementModel)ViewModel.Controller.LibraryElementModel;
-                var pts = model.ShapePoints.Select(p => new Vector2((float)p.X, (float)p.Y)).ToArray();
-                _shape = CanvasGeometry.CreatePolygon(ResourceCreator, pts);
+            var controller = ViewModel.Controller.LibraryElementController.ContentDataController as CollectionContentDataController;
+            Debug.Assert(controller != null);
+            var pts = controller?.CollectionModel?.Shape?.ShapePoints?.Select(p => new Vector2((float)p.X, (float)p.Y))?.ToArray() ?? new Vector2[0];
 
+            if (controller?.CollectionModel?.Shape?.ShapePoints == null &&
+                controller?.CollectionModel?.Shape?.ImageUrl != null && controller?.CollectionModel?.Shape?.AspectRatio != null
+                && controller?.CollectionModel?.Shape?.AspectRatio != 0 && _shapeImage != null)
+            {
+                var bounds = _shapeImage.GetBounds(ResourceCreator);
+                pts = new Vector2[]
+                {
+                    new Vector2(50000,50000),
+                    new Vector2((float)(50000+bounds.Width), 50000),
+                    new Vector2((float)(50000+bounds.Width),50000+(float)bounds.Height),
+                    new Vector2(50000,50000+(float)bounds.Height),
+                };
             }
 
+            if (ViewModel.IsShaped || ViewModel.IsFinite)
+            {
+                if (_shapeStatus == ShapedStatus.Image)
+                {
+                    if (_shapeImage != null)
+                    {
+                        _shape = CanvasGeometry.CreateRectangle(ResourceCreator, _shapeImage.GetBounds(ResourceCreator));
+                    }
+                }
+                else if (_shapeStatus == ShapedStatus.Points)
+                {
+                    _shape = CanvasGeometry.CreatePolygon(ResourceCreator, pts);
+                }
+                else
+                {
+                    _shape = CanvasGeometry.CreatePolygon(ResourceCreator, pts);
+                }
+
+            }
+            if ((pts == null || pts.Count() == 0 )&& ViewModel.IsFinite && !ViewModel.IsShaped)
+            {
+                var bounds = new Rect(50000,50000,5000,5000);
+                pts = new Vector2[]
+                {
+                    new Vector2(50000,50000),
+                    new Vector2((float)(50000+bounds.Width), 50000),
+                    new Vector2((float)(50000+bounds.Width),50000+(float)bounds.Height),
+                    new Vector2(50000,50000+(float)bounds.Height),
+                };
+                _shape = CanvasGeometry.CreateRectangle(ResourceCreator, bounds);
+            }
+            if (_shape == null)
+            {
+                _shape = CanvasGeometry.CreatePolygon(ResourceCreator, pts);
+            }
 
             if (this != initialCollection && ViewModel.IsFinite && ViewModel.IsShaped)
             {
                 var scaleFactor = (float)_elementSize.Width / (float)_shape.ComputeBounds().Width;
                 Camera.LocalScale = new Vector2(scaleFactor);
-                ds.Transform = Camera.LocalToScreenMatrix;
-                Mask = _shape;
+                if (_shapeStatus == ShapedStatus.Image)
+                {
+                    if (_shapeImage != null)
+                    {
+                        var rect = _shapeImage.GetBounds(ResourceCreator);
+                        rect.Height *= scaleFactor;
+                        rect.Width *= scaleFactor;
+                        Mask = CanvasGeometry.CreateRectangle(ResourceCreator, rect);
+                    }
+                    else
+                    {
+                        Mask = _shape;
+                    }
+                }
+                else
+                {
+                    ds.Transform = Camera.LocalToScreenMatrix;
+                    Mask = _shape;
+                }
             }
             else if (this != initialCollection && ViewModel.IsFinite && !ViewModel.IsShaped)
             {
-                var bounds = _shape.ComputeBounds();
                 var scaleFactor = (float)_elementSize.Height / (float)_shape.ComputeBounds().Height;
                 Camera.LocalScale = new Vector2(scaleFactor);
                 ds.Transform = Transform.LocalToScreenMatrix;
@@ -262,30 +426,61 @@ namespace NuSysApp
                 ds.Transform = Transform.LocalToScreenMatrix;
                 Mask = CanvasGeometry.CreateRectangle(ResourceCreator, elementRect);
             }
+            if (this == initialCollection)
+            {
+                this.DrawBackgroundShapeImage(ds, pts);
+            }
 
-
-
-            using (ds.CreateLayer(1f, Mask))
+            using (ds.CreateLayer(1, Mask))
             {
                 ds.Transform = Transform.LocalToScreenMatrix;
                 ds.FillRectangle(GetLocalBounds(), Colors.White);
 
                 ds.Transform = Camera.LocalToScreenMatrix;
-                if (ViewModel.IsShaped)
+                if (ViewModel.IsShaped && _shapeStatus != ShapedStatus.Image)
                 {
                     ds.FillGeometry(_shape, ViewModel.ShapeColor);
-     
+                }
+                DrawBackgroundShapeImage(ds, pts);
+                var screenRect = GetScreenRect();
+
+                // draw the ink render item
+                foreach (var item in _renderItems0.ToArray())
+                {
+                    item.Draw(ds);
                 }
 
-                foreach (var item in _renderItems0.ToArray())
-                    item.Draw(ds);
+                //draw trails first
+                var trails = _renderItems1?.OfType<TrailRenderItem>()?.ToArray();
+                trails?.ForEach(t => t.Draw(ds));
 
-                foreach (var item in _renderItems1?.ToArray() ?? new BaseRenderItem[0])
+                // not sure what is on the layer if anything yet
+                foreach (var item in _renderItems1?.Except(trails)?.ToArray() ?? new BaseRenderItem[0])
+                {
                     item.Draw(ds);
+                }
 
+                // this layer contains tools and element render items
                 foreach (var item in _renderItems2?.ToArray() ?? new BaseRenderItem[0])
-                    item.Draw(ds);
+                {
+                    // if the item is a tool window, draw the tool window
+                    if (item is ToolWindow)
+                    {
+                        (item as ToolWindow).Draw(ds);
+                    }
 
+                    // check to see if the item is an element render item
+                    var element = item as ElementRenderItem;
+                    if (element == null)
+                        return;
+
+                    // if the item is a tool, or the rectangle the screen takes up intersects with the rectangle that
+                    // bounds the element on the screen, then draw it
+                    if (element is PseudoElementRenderItem || screenRect.Intersects(element.GetScreenRect()))
+                        item.Draw(ds);
+                 }
+
+                // not sure what is on the layer if anything yet
                 foreach (var item in _renderItems3?.ToArray() ?? new BaseRenderItem[0])
                     item.Draw(ds);
 
@@ -365,7 +560,7 @@ namespace NuSysApp
 
         public override List<BaseRenderItem> GetChildren()
         {
-            _allRenderItems = _renderItems0.Concat(_renderItems1).Concat(_renderItems2).Concat(_renderItems3).ToList();
+            _allRenderItems = _renderItems0.ToArray().Concat(_renderItems1.ToArray()).Concat(_renderItems2.ToArray()).Concat(_renderItems3.ToArray()).ToList();
             return _allRenderItems;
         }
 
@@ -387,6 +582,16 @@ namespace NuSysApp
         private void OnCameraPositionChanged(float f, float f1)
         {
             Camera.LocalPosition = new Vector2(f,f1);
+        }
+
+        /// <summary>
+        /// event fired when the camera scale changes
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="f"></param>
+        private void CollectionControllerOnCameraScaleChanged(object source, float f)
+        {
+            Camera.CameraScale = f;
         }
 
         private async void OnElementsChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -429,12 +634,32 @@ namespace NuSysApp
         private async Task AddItem(object vm)
         {
             BaseRenderItem item = null;
-            if (vm is ToolFilterView || vm is BaseToolView)
+            /*
+            if (vm is ToolFilterView || vm is BaseToolView || vm is MetadataToolView)
             {
                 await UITask.Run(async delegate
                 {
                     _renderItems2?.Add(new PseudoElementRenderItem((ITool)vm, this, ResourceCreator));
                 });
+            }*/
+            if (vm is BasicToolViewModel)
+            {
+                var toolvm = (BasicToolViewModel)vm;
+                var tool = new BasicToolWindow(this, ResourceCreator, (BasicToolViewModel) vm);
+
+                tool.Load();
+                _renderItems3?.Add(tool);
+            }
+            else if (vm is MetadataToolViewModel)
+            {
+                var tool = new MetadataToolWindow(this, ResourceCreator, (MetadataToolViewModel)vm);
+                tool.Load();
+                _renderItems3?.Add(tool);
+            }
+            else if (vm is ToolLinkViewModelWin2d)
+            {
+                var link = new ToolLinkRenderitem((ToolLinkViewModelWin2d)vm, this, ResourceCreator);
+                _renderItems1?.Add(link);
             }
             else if (vm is TextNodeViewModel)
             {
@@ -448,12 +673,19 @@ namespace NuSysApp
                 await item.Load();
                 _renderItems2?.Add(item);
             }
+            else if (vm is WordNodeViewModel)
+            {
+                item = new WordElementRenderItem((WordNodeViewModel)vm, this, ResourceCreator);
+                await item.Load();
+                _renderItems2?.Add(item);
+            }
             else if (vm is PdfNodeViewModel)
             {
                 item = new PdfElementRenderItem((PdfNodeViewModel)vm, this, ResourceCreator);
                 await item.Load();
                 _renderItems2?.Add(item);
             }
+
             else if (vm is AudioNodeViewModel)
             {
                 item = new AudioElementRenderItem((AudioNodeViewModel)vm, this, ResourceCreator);
@@ -495,15 +727,32 @@ namespace NuSysApp
         private void RemoveItem(object item)
         {
 
-            if (item is ElementViewModel) { 
-                var renderItem = _renderItems2.OfType<ElementRenderItem>().Where(el => el.ViewModel == item);
+            if (item is ElementViewModel)
+            {
+                IEnumerable<BaseRenderItem> renderItem;
+                if (item is ToolViewModel)
+                {
+                    renderItem = _renderItems3.OfType<ToolWindow>().Where(el => el.Vm == item);
+                }
+                else
+                {
+                    renderItem = _renderItems2.OfType<ElementRenderItem>().Where(el => el.ViewModel == item);
+                }
                 if (renderItem.Any())
                 {
                     var element = renderItem.First();
                     Remove(element);
                 }
             }
-
+            if (item is ToolLinkViewModelWin2d)
+            {
+                var renderItem = _renderItems1.OfType<ToolLinkRenderitem>().Where(el => el.ViewModel == item);
+                if (renderItem.Any())
+                {
+                    var element = renderItem.First();
+                    Remove(element);
+                }
+            }
             if (item is LinkViewModel)
             {
                 var linkItem = _renderItems1.OfType<LinkRenderItem>().Where(el => el.ViewModel == item);
@@ -531,6 +780,70 @@ namespace NuSysApp
                     Remove(toolItem.First());
                 }
             }
+        }
+
+        /// <summary>
+        /// Zooms the camera to the passed in elementModelId
+        /// </summary>
+        /// <param name="elementModelId"></param>
+        public void CenterCameraOnElement(string elementModelId)
+        {
+            UITask.Run(delegate
+            {
+                var elementToBeFullScreened =
+                    SessionController.Instance.ActiveFreeFormViewer.Elements.FirstOrDefault(
+                        elem => elem.Id == elementModelId);
+                Debug.Assert(elementToBeFullScreened != null);
+
+                // Define some variables that will be used in future translation/scaling
+                var nodeWidth = elementToBeFullScreened.Width;
+                var nodeHeight = elementToBeFullScreened.Height; // 40 for title adjustment
+
+                var x = elementToBeFullScreened.X + nodeWidth/2;
+                var y = elementToBeFullScreened.Y + nodeHeight/2;
+                var widthAdjustment = ViewModel.Width/2;
+                var heightAdjustment = ViewModel.Height/2;
+
+                // Reset the scaling and translate the free form viewer so that the passed in element is at the center
+                var scaleX = 1;
+                var scaleY = 1;
+                var translateX = widthAdjustment - x;
+                var translateY = heightAdjustment - y;
+                double scale;
+
+
+                // Scale based on the width and height proportions of the current node
+                if (nodeWidth > nodeHeight)
+                {
+                    scale = ViewModel.Width/nodeWidth;
+                    if (nodeWidth - nodeHeight <= 20)
+                        scale = scale*.50;
+                    else
+                        scale = scale*.55;
+                }
+
+
+                else
+                {
+                    scale = ViewModel.Height/nodeHeight;
+                    scale = scale*.7;
+                }
+
+                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalPosition =
+                    new Vector2((float) translateX, (float) translateY);
+                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScaleCenter =
+                    new Vector2((float) x, (float) y);
+                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.Camera.LocalScale =
+                    new Vector2((float) scale, (float) scale);
+                //SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.CameraTranslation = new Vector2((float)translateX, (float)translateY);
+                //SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.CameraCenter = new Vector2((float)x, (float)y);
+                //SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.ViewModel.CameraScale = (float)scale;
+                SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.InkRenderItem?
+                    .UpdateDryInkTransform();
+                SessionController.Instance.SessionView.FreeFormViewer._minimap?.Invalidate();
+                CameraOnCentered?.Invoke(this, SessionController.Instance.ContentController.GetLibraryElementController(elementToBeFullScreened.LibraryElementId));
+
+            });
         }
     }
 }

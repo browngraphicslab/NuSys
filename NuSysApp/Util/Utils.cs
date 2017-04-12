@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Windows.Storage;
 
@@ -85,6 +86,24 @@ namespace NuSysApp
         public static Random Random
         {
             get { return random; }
+        }
+
+        public static byte[] Encrypt(byte[] bytes)
+        {
+            var sha = SHA256.Create();
+            return sha.ComputeHash(bytes);
+        }
+        static byte[] GetBytes(string str)
+        {
+            byte[] bytes = new byte[str.Length * sizeof(char)];
+            System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
+            return bytes;
+        }
+
+        public static string Checksum(string text)
+        {
+            var sha = SHA256.Create();
+            return Convert.ToBase64String(sha.ComputeHash(GetBytes(text)));
         }
 
         public static float RandomBetween(float min, float max)

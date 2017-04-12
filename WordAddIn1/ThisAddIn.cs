@@ -37,7 +37,7 @@ namespace WordAddIn1
             File.Delete(tmp);
 
 
-            var request = (HttpWebRequest)WebRequest.Create("http://nusysrepo.azurewebsites.net/api/uploadworddoc/2234");
+            var request = (HttpWebRequest)WebRequest.Create("http://nusystest.azurewebsites.net/api/uploadworddoc/2234");
 
             var data = Encoding.Default.GetBytes(Convert.ToBase64String(bytes));
 

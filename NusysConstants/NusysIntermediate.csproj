@@ -34,17 +34,40 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="project.json" />
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CallbackArgs.cs" />
+    <Compile Include="CallbackRequest.cs" />
+    <Compile Include="FullArgsRequest.cs" />
     <Compile Include="ModelFactories\InkModelFactory.cs" />
+    <Compile Include="Models\CollectionContentDataModel.cs" />
+    <Compile Include="Models\CollectionShapeModel.cs" />
     <Compile Include="Models\ColorModel.cs" />
     <Compile Include="Models\ImageLibraryElementModel.cs" />
     <Compile Include="Models\LastUsedCollectionModel.cs" />
+    <Compile Include="Models\LibraryElementOrigin.cs" />
     <Compile Include="Models\VideoLibraryElementModel.cs" />
+    <Compile Include="Models\WordLibraryElementModel.cs" />
     <Compile Include="RequestArgs\AddNewLastUsedCollectionServerRequestArgs.cs" />
+    <Compile Include="RequestArgs\GetCollaboratorCoordinatesRequestArgs.cs" />
     <Compile Include="RequestArgs\GetLastUsedCollectionsServerRequestArgs.cs" />
+    <Compile Include="RequestArgs\GetLockRequestArgs.cs" />
+    <Compile Include="RequestArgs\GetWordDocumentRequestArgs.cs" />
+    <Compile Include="RequestArgs\ReturnArgs\GetLockRequestReturnArgs.cs" />
+    <Compile Include="RequestArgs\ReturnArgs\GetWordDocumentReturnArgs.cs" />
+    <Compile Include="RequestArgs\ReturnArgs\ReturnLockRequestReturnArgs.cs" />
+    <Compile Include="RequestArgs\ReturnArgs\ServerReturnArgsBase.cs" />
+    <Compile Include="RequestArgs\ReturnArgs\SubscribeToLockRequestReturnArgs.cs" />
+    <Compile Include="RequestArgs\ReturnArgs\UploadCollectionBackgroundImageReturnArgs.cs" />
+    <Compile Include="RequestArgs\ReturnLockRequestArgs.cs" />
+    <Compile Include="RequestArgs\SendCollaboratorCoordinatesRequestArgs.cs" />
+    <Compile Include="RequestArgs\SubscribeToLockRequestArgs.cs" />
+    <Compile Include="RequestArgs\UnSubscribeToLockRequestArgs.cs" />
+    <Compile Include="RequestArgs\UploadCollectionBackgroundImageServerRequestArgs.cs" />
+    <Compile Include="RequestArgs\WebSearchRequestArgs.cs" />
     <Compile Include="ServerArgsRequest.cs" />
     <Compile Include="BaseClient.cs" />
     <Compile Include="INotificationArgumentable.cs" />
@@ -102,17 +125,13 @@
     <Compile Include="ServerSearch\QueryArgs.cs" />
     <Compile Include="ServerSearch\QueryArgsBuilder.cs" />
     <Compile Include="ServerSearch\SearchResult.cs" />
+    <Compile Include="Util\ConcurrentFixedQueue.cs" />
+    <Compile Include="Util\ConcurrentHashSet.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Windows.Foundation.UniversalApiContract">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\References\Windows.Foundation.UniversalApiContract\1.0.0.0\Windows.Foundation.UniversalApiContract.winmd</HintPath>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\MuPDFWinRT\Win8\MuPDFWinRT.vcxproj">
-      <Project>{56c66c4f-3c21-4929-baf1-2eda2ec56823}</Project>
-      <Name>MuPDFWinRT</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

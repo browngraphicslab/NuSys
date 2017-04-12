@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Storage;
 using Windows.UI.ApplicationSettings;
 using Windows.UI.Xaml.Controls;
 using NusysIntermediate;
+using WinRTXamlToolkit.Controls.DataVisualization;
+using WinRTXamlToolkit.IO.Extensions;
 
 namespace NuSysApp
 {
@@ -20,7 +24,7 @@ namespace NuSysApp
         /// count to represent how many unpacks are currently running.
         /// This is being used to replace the boolean. If this number is greater than 0, then an unpack is currently happening
         /// </summary>
-        private int _blockServerInteractionCount;
+        protected int _blockServerInteractionCount;
 
         private bool _blockServerInteraction
         {
@@ -56,14 +60,12 @@ namespace NuSysApp
         public event SelectionChangedHandler SelectionChanged;
         public event EventHandler<Point2d> AnchorChanged;
         public event LinksUpdatedEventHandler LinksUpdated;
+        // Events for when a user starts/stops editing this node
+        public event EventHandler<string> UserAdded;
+        public event EventHandler<string> UserDropped;
+        public event EventHandler<bool> TitleVisiblityChanged; 
 
-        /// <summary>
-        /// the event that will be fired when the access type of this element changes. 
-        /// The passed access type is the new access setting for theis eelement.
-        /// </summary>
-        public event EventHandler<NusysConstants.AccessType> AccessChanged;
-
-        public Point2d Anchor
+        public virtual Point2d Anchor
         {
             get
             {
@@ -97,6 +99,7 @@ namespace NuSysApp
             IsDisposed = true;
             if (LibraryElementController != null)
             {
+                LibraryElementController?.FireAliasRemoved(Model);
                 LibraryElementController.Deleted -= Delete;
             }
             Disposed?.Invoke(this, EventArgs.Empty);
@@ -108,12 +111,6 @@ namespace NuSysApp
             Model.ScaleY = sy;
 
             ScaleChanged?.Invoke(this, sx, sy);
-
-            if (!_blockServerInteraction)
-            {
-                _debouncingDictionary.Add("scaleX", sx);
-                _debouncingDictionary.Add("scaleY", sy);
-            }
         }
 
         public void Selected(bool selected)
@@ -146,6 +143,23 @@ namespace NuSysApp
                 _debouncingDictionary.Add(NusysConstants.ALIAS_SIZE_WIDTH_KEY, width);
                 _debouncingDictionary.Add(NusysConstants.ALIAS_SIZE_HEIGHT_KEY, height);
             }
+        }
+
+        /// <summary>
+        /// public method to show the titles on nodes
+        /// </summary>
+        /// <param name="titleVisible"></param>
+        public void SetTitleVisiblity(bool titleVisible)
+        {
+            Model.ShowTitle = titleVisible;
+
+            TitleVisiblityChanged?.Invoke(this, titleVisible);
+
+            if (!_blockServerInteraction)
+            {
+                _debouncingDictionary.Add(NusysConstants.ALIAS_TITLE_VISIBILITY_KEY, titleVisible);
+            }
+
         }
 
         private void FireAnchorChanged()
@@ -183,22 +197,6 @@ namespace NuSysApp
             {
                 _debouncingDictionary.Add("alpha", alpha);
             }
-        }
-
-        /// <summary>
-        /// call this method to change the access type of this controller's elementmodel. 
-        /// This method will fire an event so all listeners are notified of the new access type for this element
-        /// </summary>
-        /// <param name="newAccessType"></param>
-        public void SetAccessType(NusysConstants.AccessType newAccessType)
-        {
-            Model.AccessType = newAccessType;
-
-            //fire the event so all listener will know of the new access type
-            AccessChanged?.Invoke(this, newAccessType);
-
-            //update the servre and notify other clients
-            _debouncingDictionary.Add(NusysConstants.ALIAS_ACCESS_KEY, newAccessType.ToString());
         }
 
         public void Delete(object sender)
@@ -285,7 +283,7 @@ namespace NuSysApp
             }
             else
             {
-                Debug.Fail("request failed");
+                Debug.Assert(false, "request failed");
                 //alert the user it failed
             }
         }
@@ -298,7 +296,7 @@ namespace NuSysApp
         {
             get
             {
-                Debug.Assert(Model.LibraryId != null);
+                //Debug.Assert(Model.LibraryId != null);
                 return SessionController.Instance.ContentController.GetLibraryElementController(Model.LibraryId);
             }
         }
@@ -306,7 +304,6 @@ namespace NuSysApp
         {
             get
             {
-                Debug.Assert(LibraryElementController != null);
                 return LibraryElementController?.LibraryElementModel;
             }
         }
@@ -320,7 +317,7 @@ namespace NuSysApp
             }
         }
 
-        public string ContentId
+        public string LibraryElementId
         {
             get
             {
@@ -345,6 +342,10 @@ namespace NuSysApp
                 var height = props.GetDouble(NusysConstants.ALIAS_SIZE_HEIGHT_KEY, this.Model.Height);
                 SetSize(width,height);
             }
+            if (props.ContainsKey(NusysConstants.ALIAS_TITLE_VISIBILITY_KEY))
+            {
+                SetTitleVisiblity(props.GetBool(NusysConstants.ALIAS_TITLE_VISIBILITY_KEY));
+            }
             _blockServerInteractionCount--;
         }
 
@@ -353,9 +354,150 @@ namespace NuSysApp
             LinksUpdated?.Invoke(this);
         }
 
+        /// <summary>
+        /// ILinkable-required method so we can see if we need to draw a link on a specific collection.
+        /// This is the same as typing Model.ParentCollectionId
+        /// </summary>
+        /// <returns></returns>
         public string GetParentCollectionId()
         {
             return Model.ParentCollectionId;
+        }
+
+        // User starts editing this node
+        public void AddUser(string userId)
+        {
+            UserAdded?.Invoke(this, userId);
+        }
+
+        // User stops editing this node
+        public void DropUser(string userId)
+        {
+            UserDropped?.Invoke(this, userId);
+        }
+
+        /// <summary>
+        /// export a library element to an HTML page
+        /// 
+        /// creates an html page from the element's contents (for now, can also take rendered image of node)
+        /// 
+        /// takes in previous and next node as options for trail export
+        /// </summary>
+        public async Task ExportToHTML(StorageFolder storageFolder, string previous = null, string next = null)
+        {
+            //if the folder is not null, then create a new html folder in that folder
+            if (storageFolder != null)
+            {
+                /// create the node's HTML file in the HTML folder
+                /// if there already is an HTML folder, add the sample file to that folder, otherwise make a new folder
+                StorageFolder htmlFolder = null;
+                if (await storageFolder.ContainsFolderAsync("HTMLExport"))
+                {
+                    htmlFolder = await storageFolder.GetFolderAsync("HTMLExport");
+                }
+                else
+                {
+                    htmlFolder = await storageFolder.CreateFolderAsync("HTMLExport");
+                }
+
+                ///make file for the element
+                var nodeFile = await htmlFolder.CreateFileAsync(Id + ".html", CreationCollisionOption.ReplaceExisting);
+
+                ///create the css file if it does not already exist
+                if (!await htmlFolder.ContainsFileAsync("node_template.css"))
+                {
+                    var cssFile =
+                        await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Themes/node_template.css"));
+                    string css = await FileIO.ReadTextAsync(cssFile);
+                    var newCssFile =
+                        await htmlFolder.CreateFileAsync("node_template.css", CreationCollisionOption.ReplaceExisting);
+                    await FileIO.WriteTextAsync(newCssFile, css);
+                }
+
+                ///copy template for element. 
+                var type = LibraryElementModel.Type.ToString();
+                type = type.ToLower();
+                var template =
+                    await
+                        StorageFile.GetFileFromApplicationUriAsync(
+                            new Uri("ms-appx:///Themes/" + type + "_node_template.html"));
+
+                ///replace info for file - essentially string replaceing 
+                string text = await FileIO.ReadTextAsync(template);
+
+                ///title
+                text = text.Replace("[[title]]", LibraryElementController.Title);
+
+                ///if pdf, replace the data in a specific way to get div to scroll w/ images
+                if (LibraryElementModel.Type == NusysConstants.ElementType.PDF)
+                {
+                    string htmlImages = "";
+                    foreach (
+                        var page in
+                        ((PdfContentDataModel) (LibraryElementController.ContentDataController).ContentDataModel)
+                            .PageUrls)
+                    {
+                        htmlImages += "<img src=\"" + page + "\">" + "\n";
+                    }
+                    text = text.Replace("[[data]]", htmlImages);
+                }
+                else
+                {
+                    ///else replace with content data model data
+                    text = text.Replace("[[data]]", LibraryElementController.ContentDataController.ContentDataModel.Data);
+                }
+
+                ///creator
+                text = text.Replace("[[creator]]",
+                    SessionController.Instance.NuSysNetworkSession.GetDisplayNameFromUserId(LibraryElementModel.Creator));
+
+                ///timestamp
+                text = text.Replace("[[timestamp]]", LibraryElementModel.LastEditedTimestamp);
+
+                ///if there are keywords, replace them
+                if (LibraryElementModel.Keywords != null)
+                {
+                    var tags = LibraryElementModel.Keywords.ToList();
+                    string tagtext = string.Join(", ", tags.Select(tag => string.Join(", ", tag.Text)));
+                    text = text.Replace("[[tags]]", tagtext);
+                }
+                else
+                {
+                    text = text.Replace("[[tags]]", "None");
+                }
+
+                ///replace metadata
+                ///first, turn metadata list into a string that puts new line characters at end of each key value pair
+                string metadataString = "";
+                foreach (
+                    var metadata in LibraryElementModel.Metadata ?? new ConcurrentDictionary<string, MetadataEntry>())
+                {
+                    metadataString += metadata.Value.GetMetadataAsString() + "<br>";
+                }
+                text = text.Replace("[[metadata]]", metadataString);
+
+                ///set links for previous and next buttons
+                if (previous != null)
+                {
+                    text = text.Replace("[[previous]]", previous + ".html");
+                }
+                else
+                {
+                    text = text.Replace("[[previous]]", "");
+                }
+
+                if (next != null)
+                {
+                    text = text.Replace("[[next]]", next + ".html");
+                }
+                else
+                {
+                    text = text.Replace("[[next]]", "");
+                }
+
+                ///update file with replaced text
+                await FileIO.WriteTextAsync(nodeFile, text);
+            }
         }
     }
 }

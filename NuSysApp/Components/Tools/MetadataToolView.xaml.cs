@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Devices.Input;
@@ -24,7 +25,7 @@ using Windows.UI.Xaml.Navigation;
 
 namespace NuSysApp
 {
-    public sealed partial class MetadataToolView : AnimatableUserControl
+    public sealed partial class MetadataToolView : AnimatableUserControl, ITool
     {
         private Image _dragItem;
         private enum DragMode { Collection, Key, Value, Scroll };
@@ -42,11 +43,13 @@ namespace NuSysApp
 
         private double _y;
 
+        public event EventHandler<Point2d> ToolAnchorChanged;
+
         public MetadataToolView(MetadataToolViewModel vm, double x, double y)
         {
             this.InitializeComponent();
             _dragItem = vm.InitializeDragFilterImage();
-            vm.Controller.SetLocation(x, y);
+            //vm.Controller.SetLocation(x, y);
             xFilterComboBox.ItemsSource = Enum.GetValues(typeof(ToolModel.ToolFilterTypeTitle)).Cast<ToolModel.ToolFilterTypeTitle>();
             xFilterComboBox.SelectedItem = vm.Filter;
             this.DataContext = vm;
@@ -83,7 +86,7 @@ namespace NuSysApp
             {
                 var vm = DataContext as MetadataToolViewModel;
                 if (vm.Selection != null &&
-                    (vm.Controller as MetadataToolController).Model.Selected &&
+                    (vm.Controller as MetadataToolController).ToolModel.Selected &&
                     vm.Selection.Item1 != null)
                 {
                     if (xMetadataKeysList.SelectedItem != vm.Selection.Item1)
@@ -146,7 +149,7 @@ namespace NuSysApp
         {
             UITask.Run(delegate {
                 var vm = (DataContext as MetadataToolViewModel);
-                if (vm?.Selection?.Item1 != null && vm.Controller.Model.Selected)
+                if (vm?.Selection?.Item1 != null && vm.Controller.ToolModel.Selected)
                 {
                     var filteredList = FilterValuesList(xSearchBox.Text);
                     if (!ScrambledEquals(xMetadataValuesList.Items.Select(item => ((KeyValuePair<string, double>)item).Key), filteredList.Select(item => ((KeyValuePair<string, double>)item).Key)))
@@ -263,12 +266,12 @@ namespace NuSysApp
         private void XParentOperatorText_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             var vm = DataContext as ToolViewModel;
-            if (vm.Controller.Model.ParentOperator == ToolModel.ParentOperatorType.And)
+            if (vm.Controller.ToolModel.ParentOperator == ToolModel.ParentOperatorType.And)
             {
                 vm.Controller.SetParentOperator(ToolModel.ParentOperatorType.Or);
                 xParentOperatorText.Text = "OR";
             }
-            else if (vm.Controller.Model.ParentOperator == ToolModel.ParentOperatorType.Or)
+            else if (vm.Controller.ToolModel.ParentOperator == ToolModel.ParentOperatorType.Or)
             {
                 vm.Controller.SetParentOperator(ToolModel.ParentOperatorType.And);
                 xParentOperatorText.Text = "AND";
@@ -352,7 +355,7 @@ namespace NuSysApp
                 }
                 else if(sender == xStackElement)
                 {
-                    vm.CreateStack(r.X, r.Y);
+                    vm.CreateStack(new Vector2((float) p.X, (float) p.Y));
                 }
             }
             ReleasePointerCaptures();
@@ -380,8 +383,9 @@ namespace NuSysApp
             var y = e.Delta.Translation.Y / SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleY;
             if (vm != null)
             {
-                vm.Controller.SetLocation(vm.X + x, vm.Y + y);
+                //vm.Controller.SetLocation(vm.X + x, vm.Y + y);
             }
+            ToolAnchorChanged?.Invoke(this, new Point2d(vm.X + x, vm.Y + y));
         }
 
         /// <summary>
@@ -400,8 +404,6 @@ namespace NuSysApp
         /// </summary>
         private void Resizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            if (SessionController.Instance.SessionView.IsPenMode)
-                return;
 
             var vm = (ToolViewModel)this.DataContext;
             var zoom = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
@@ -448,6 +450,8 @@ namespace NuSysApp
             {
                 vm.Controller.SetSize(this.Width, height);
             }
+            ToolAnchorChanged?.Invoke(this, new Point2d(_x, _y));
+
         }
 
         /// <summary>
@@ -559,7 +563,7 @@ namespace NuSysApp
                     }
                 }
                 var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(sp, null);
-                vm.FilterIconDropped(hitsStart, wvm, r.X, r.Y);
+                //vm.FilterIconDropped(hitsStart, wvm, r.X, r.Y);
             }
         }
 
@@ -601,7 +605,7 @@ namespace NuSysApp
         private void KeyListItem_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             var vm = (DataContext as MetadataToolViewModel);
-            if (vm.Controller.Model.Selected &&
+            if (vm.Controller.ToolModel.Selected &&
                 vm.Selection.Item1.Equals(
                     GetTextFromListItemGrid(sender as Grid)))
             {
@@ -620,7 +624,7 @@ namespace NuSysApp
         private void ValueListItem_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             var vm = (DataContext as MetadataToolViewModel);
-            if (vm.Controller.Model.Selected && vm.Selection.Item2 != null &&
+            if (vm.Controller.ToolModel.Selected && vm.Selection.Item2 != null &&
                 vm.Selection.Item2.Contains(
                     GetTextFromListItemGrid(sender as Grid)))
             {
@@ -698,7 +702,7 @@ namespace NuSysApp
             if (filter != ToolModel.ToolFilterTypeTitle.AllMetadata)
             {
 
-                (DataContext as MetadataToolViewModel).SwitchToBasicTool(filter);
+                //(DataContext as MetadataToolViewModel).SwitchToBasicTool(filter);
                 this.Dispose();
             }
         }
@@ -739,8 +743,8 @@ namespace NuSysApp
 
             button.Background = new SolidColorBrush(Colors.Orange);
             button.Content = "0 %";
-            button.HorizontalContentAlignment = HorizontalAlignment.Center;
-            button.VerticalContentAlignment = VerticalAlignment.Center;
+            button.HorizontalContentAlignment = Windows.UI.Xaml.HorizontalAlignment.Center;
+            button.VerticalContentAlignment = Windows.UI.Xaml.VerticalAlignment.Center;
 
             Task.Run(async delegate
             {

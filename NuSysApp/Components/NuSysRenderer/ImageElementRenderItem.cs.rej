@@ -1,0 +1,73 @@
+diff a/NuSysApp/Components/NuSysRenderer/ImageElementRenderItem.cs b/NuSysApp/Components/NuSysRenderer/ImageElementRenderItem.cs	(rejected hunks)
+@@ -12,67 +12,18 @@
+ using Microsoft.Graphics.Canvas;
+ using Microsoft.Graphics.Canvas.UI.Xaml;
+ using NusysIntermediate;
++using NuSysApp.Components.NuSysRenderer.UI;
+ 
+ namespace NuSysApp
+ {
+     public class ImageElementRenderItem : ElementRenderItem
+     {
+-        private ImageElementViewModel _vm;
+-        private ImageDetailRenderItem _image;
++        private InkableImageDetailRenderItemUIElement _inkableImage;
+ 
+         public ImageElementRenderItem(ImageElementViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) :base(vm, parent, resourceCreator)
+         {
+-            _vm = vm;
+-            _vm.Controller.SizeChanged += ControllerOnSizeChanged;
+-            var imageController = _vm.Controller.LibraryElementController as ImageLibraryElementController;
+-            _image = new ImageDetailRenderItem(imageController, new Size(_vm.Width, _vm.Height), this, resourceCreator);
+-            _image.IsRegionsVisible = true;
+-            _image.IsRegionsModifiable = false;
+-            _image.IsHitTestVisible = false;
+-
+-            AddChild(_image);
+-        }
+-
+-        public async override Task Load()
+-        {
+-            await _image.Load();
+-            _vm.Controller.SetSize(_vm.Controller.Model.Width, _vm.Controller.Model.Height, false);
+-            _image.CanvasSize = new Size(_vm.Controller.Model.Width, _vm.Controller.Model.Height);
+-        }
+-
+-        private void ControllerOnSizeChanged(object source, double width, double height)
+-        {
+-           _image.CanvasSize = new Size(width,height);
+-        }
+-
+-        public override void Dispose()
+-        {
+-            if (IsDisposed)
+-                return;
+-
+-            _image.Dispose();
+-            _image = null;
+-            _vm.Controller.SizeChanged -= ControllerOnSizeChanged;
+-            _vm = null;
+-            base.Dispose();
+-        }
+-
+-        public override void Draw(CanvasDrawingSession ds)
+-        {
+-            if (IsDisposed)
+-                return;
+-
+-            var orgTransform = ds.Transform;
+-
+-            if (_vm == null )
+-                return;
+-
+-           
+-
+-            ds.Transform = Transform.LocalToScreenMatrix;
+-            base.Draw(ds);
+-            ds.Transform = orgTransform;
+-
++            _inkableImage = new InkableImageDetailRenderItemUIElement(vm.Controller.LibraryElementController.ContentDataController, vm, this, resourceCreator);
++            AddChild(_inkableImage);
+         }
+     }
+ }

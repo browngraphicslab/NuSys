@@ -29,7 +29,7 @@ namespace NuSysApp
         public override async Task Load()
         {
             var url = _vm.Controller.LibraryElementController.LargeIconUri;
-            _bmp = await CanvasBitmap.LoadAsync(ResourceCreator, url, ResourceCreator.Dpi);
+            _bmp = await MediaUtil.LoadCanvasBitmapAsync(ResourceCreator, url, ResourceCreator.Dpi);
         }
 
         public override void Dispose()
@@ -38,8 +38,6 @@ namespace NuSysApp
                 return;
             
             _vm = null;
-            _bmp?.Dispose();
-            _bmp = null;
             base.Dispose();
         }
 

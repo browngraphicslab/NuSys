@@ -11,6 +11,23 @@ namespace NuSysApp
 {
     public class NetworkUser : BaseClient
     {
+        /// <summary>
+        /// static getter for a 'chatbot' network user
+        /// </summary>
+        public static NetworkUser ChatBot
+        {
+            get { return new NetworkUser("chatbot") {DisplayName = "ChatBot"}; }
+        }
+
+        /// <summary>
+        /// static getter for the local network user
+        /// </summary>
+        public static NetworkUser Local
+        {
+            get { return SessionController.Instance.NuSysNetworkSession.NetworkMembers[WaitingRoomView.UserID]; }
+        }
+
+
         #region Public Variables
         public Color Color
         {
@@ -23,6 +40,7 @@ namespace NuSysApp
         private Color _color;
         private bool _colorSet = false;
         private LibraryElementController _controller = null;
+        private string _currEditingControllerId = null;
         #endregion Private Variables
 
 
@@ -54,6 +72,31 @@ namespace NuSysApp
                 }
                 _controller = controller;
             }
+        }
+
+        public void SetNodeCurrentlyEditing(string controllerId)
+        {
+            if (controllerId != _currEditingControllerId)
+            {
+                if (_currEditingControllerId != null)
+                {
+                    SessionController.Instance.UserController.RemoveUser(_currEditingControllerId, this.UserID);
+                }
+                if (controllerId != null)
+                {
+                    SessionController.Instance.UserController.AddUser(controllerId, this.UserID);
+                }
+                _currEditingControllerId = controllerId;
+            }
+        }
+
+        /// <summary>
+        /// Method to return whether this networkuser instance represents this client
+        /// </summary>
+        /// <returns></returns>
+        public bool IsLocalUser()
+        {
+            return UserID != null && UserID == WaitingRoomView.UserID;
         }
     }
 }

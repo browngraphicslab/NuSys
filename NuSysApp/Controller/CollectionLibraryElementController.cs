@@ -18,18 +18,23 @@ namespace NuSysApp
 
         public delegate void InkEventHandler(string id);
         public delegate void TrailEventHandler(PresentationLinkViewModel vm);
-        public event InkEventHandler OnInkAdded;
-        public event InkEventHandler OnInkRemoved;
+
         public event TrailEventHandler OnTrailAdded;
         public event TrailEventHandler OnTrailRemoved;
 
-        public delegate void ChildAddedEventHandler(string id);
+
+        public delegate void ChildAddedEventHandler(string elementModelId);
         public event ChildAddedEventHandler OnChildAdded;
 
-        public delegate void ChildRemovedEventHandler(string id);
+        public delegate void ChildRemovedEventHandler(string elementModelId);
         public event ChildRemovedEventHandler OnChildRemoved;
 
+        public event EventHandler<LinkViewModel> LinkAddedToCollection;
 
+        /// <summary>
+        /// Event fired whenever the bool representing if this colection is finite is changed.
+        /// </summary>
+        public event EventHandler<bool> FiniteBoolChanged; 
 
 
         public CollectionLibraryElementModel CollectionModel
@@ -40,9 +45,26 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// Allowing direct access to the content Data controller as a collection
+        /// </summary>
+        public CollectionContentDataController CollectionContentDataController
+        {
+            get
+            {
+                Debug.Assert(ContentDataController is CollectionContentDataController);
+                return ContentDataController as CollectionContentDataController;
+            }
+        }
+
         public CollectionLibraryElementController(CollectionLibraryElementModel collectionLibraryElementModel) : base(collectionLibraryElementModel)
         {
             InkLines = new HashSet<string>();
+        }
+
+        public void AddLinkToCollection(LinkViewModel linkViewModel)
+        {
+            LinkAddedToCollection?.Invoke(this,linkViewModel);
         }
 
         public void AddTrail(PresentationLinkViewModel trailViewModel)
@@ -55,23 +77,11 @@ namespace NuSysApp
             OnTrailRemoved?.Invoke(trailViewModel);
         }
 
-        public void AddInk(string id)
-        {
-            InkLines.Add(id);
-            OnInkAdded?.Invoke(id);
-        }
-
-        public void RemoveInk(string id)
-        {
-            InkLines.Remove(id);
-            OnInkAdded?.Invoke(id);
-        }
-
         public bool AddChild(string id)
         {
             if (!CollectionModel.Children.Contains(id))
             {
-                var elementController = SessionController.Instance.IdToControllers[id];
+                var elementController = SessionController.Instance.ElementModelIdToElementController[id];
                 elementController.Deleted += ElementControllerOnDeleted;
 
                 CollectionModel.Children.Add(id);
@@ -85,14 +95,14 @@ namespace NuSysApp
         private void ElementControllerOnDeleted(object source)
         {
             var elementController = (ElementController)source;
-            CollectionModel.Children.Remove(elementController.Model.Id);
+            RemoveChild(elementController.Id);
         }
 
         public bool RemoveChild(string id)
         {
             if (CollectionModel.Children.Contains(id))
             {
-                var elementController = SessionController.Instance.IdToControllers[id];
+                var elementController = SessionController.Instance.ElementModelIdToElementController[id];
                 elementController.Deleted -= ElementControllerOnDeleted;
                 CollectionModel.Children.Remove(id);
                 OnChildRemoved?.Invoke(id);
@@ -108,37 +118,34 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// this method is used to set the CollectionLibraryElementModel's ShapePoints property.
-        /// This method will set the model, send a server call with the update, and also will eventually fire an event.
-        /// </summary>
-        /// <param name="newPoints"></param>
-        public void SetCollectionPoints(List<PointModel> newPoints)
-        {
-            //tODO add in the event firing
-            Debug.Assert(newPoints != null);
-            Debug.Assert(CollectionModel != null);//check the state of values being used
-
-            CollectionModel.ShapePoints = newPoints;
-            if (!_blockServerInteraction)
-            {
-                _debouncingDictionary.Add(NusysConstants.COLLECTION_LIBRARY_ELEMENT_MODEL_SHAPED_POINTS_LIST_KEY, newPoints);
-            }
-        }
-
-        /// <summary>
         /// this method is used to update the collection library element model's IsFinite boolean.
         /// This will set the model's property, update the server, and eventually will fire an event for this change
         /// </summary>
         /// <param name="isFiniteValue"></param>
-        public void SetFiniteBoolean(bool isFiniteValue)
+        public void  SetFiniteBoolean(bool isFiniteValue)
         {
-            //tODO add in the event firing
             Debug.Assert(CollectionModel != null);
             CollectionModel.IsFinite = isFiniteValue;
             if (!_blockServerInteraction)
             {
                 _debouncingDictionary.Add(NusysConstants.COLLECTION_LIBRARY_ELEMENT_MODEL_FINITE_BOOLEAN_KEY, isFiniteValue);
             }
+            FiniteBoolChanged?.Invoke(this,isFiniteValue);
+        }
+
+        /// <summary>
+        /// override will update the finate boolean
+        /// </summary>
+        /// <param name="message"></param>
+        public override void UnPack(Message message)
+        {
+            _blockServerInteractionCount++;
+            if (message.ContainsKey(NusysConstants.COLLECTION_LIBRARY_ELEMENT_MODEL_FINITE_BOOLEAN_KEY))
+            {
+                SetFiniteBoolean(message.GetBool(NusysConstants.COLLECTION_LIBRARY_ELEMENT_MODEL_FINITE_BOOLEAN_KEY));
+            }
+            _blockServerInteractionCount--;
+            base.UnPack(message);
         }
     }
 }

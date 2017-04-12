@@ -41,10 +41,17 @@ namespace NuSysApp
         public FreeFormViewer _freeFormViewer;
 
         public static string InitialWorkspaceId { get; private set; }
-        public static string ServerName { get; private set; }
-        public static string UserID { get; private set; }
+        
+        /// <summary>
+        /// The UserID of the current user 
+        /// </summary>
+        public static string UserID { get; private set; } //todo refactor this and move it to the NusysNetworkSession
 
-        public static string UserName { get; private set; }
+        /// <summary>
+        /// The UserName of the current user
+        /// </summary>
+        public static string UserName { get; private set; } //todo refactor this and move it to the nusys network session
+
         //public static string Password { get; private set; }
         public static string ServerSessionID { get; private set; }
 
@@ -57,8 +64,6 @@ namespace NuSysApp
         private bool _isLoggingIn = false;
         //makes sure collection doesn't get added twice
         private bool _collectionAdded = false;
-
-        private static string LoginCredentialsFilePath;
 
         //list of all collections
         private List<LibraryElementModel> _collectionList;
@@ -76,15 +81,16 @@ namespace NuSysApp
         {
             Instance = this;
             this.InitializeComponent();
-            LoginCredentialsFilePath = StorageUtil.CreateFolderIfNotExists(KnownFolders.DocumentsLibrary, Constants.FolderNusysTemp).Result.Path + "\\LoginInfo.json";
 
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.FullScreen;
 
             //ServerName = TEST_LOCAL_BOOLEAN ? "localhost:54764" : "nusysrepo.azurewebsites.net";
-            ServerName = NusysConstants.TEST_LOCAL_BOOLEAN ? "localhost:2776" : "nusysrepo.azurewebsites.net";
             //ServerName = "172.20.10.4:54764";
             //ServerName = "nusysrepo.azurewebsites.net";
-            ServerNameText.Text = ServerName;
+            NusysConstants.ServerName = SessionController.Instance.SessionSettings.ServerName?.Length > 5
+                ? SessionController.Instance.SessionSettings.ServerName
+                : NusysConstants.ServerName;
+            ServerNameText.Text = NusysConstants.ServerName;
             //ServerNameText.TextChanged += delegate
             //{
             //    ServerName = ServerNameText.Text;
@@ -179,12 +185,15 @@ namespace NuSysApp
                     }
                 }
 
+                //remove bad links
+                SessionController.Instance.LinksController.GarbageCollectLinks();
 
                 //set items in collectionlist alphabetically
                 await ApplyFilter(FilterType.Mine);
                 ApplySorting(SortType.TitleAsc);
                 //makes sure collection doesn't get added twice
                 _collectionAdded = true;
+                SessionController.Instance.SessionSettings.ServerName = NusysConstants.ServerName;
             }
             catch (Exception e)
             {
@@ -455,7 +464,7 @@ namespace NuSysApp
                 var username = Convert.ToBase64String(Encrypt(NewUsername.Text));
                 var password = Convert.ToBase64String(Encrypt(NewPassword.Password));
                 var displayName = NewDisplayName.Text;
-                Login(username, password, true, displayName);
+                await Login(username, password, true, displayName);
             }
 
         }
@@ -472,7 +481,7 @@ namespace NuSysApp
             var username = Convert.ToBase64String(Encrypt(usernameInput.Text));
             var password = Convert.ToBase64String(Encrypt(passwordInput.Password));
 
-            Login(username, password, false);
+            await Login(username, password, false);
         }
 
         /// <summary>
@@ -493,8 +502,8 @@ namespace NuSysApp
                 //set properties in preview window
                 SelectedCollectionTitle.Text = _selectedCollection.Title;
                 CreatorText.Text = SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary.ContainsKey(_selectedCollection.Creator) ? SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary[_selectedCollection.Creator] : "...";
-                LastEditedText.Text = _selectedCollection.LastEditedTimestamp;
-                CreateDateText.Text = _selectedCollection.Timestamp;
+                LastEditedText.Text = _selectedCollection.LastEditedTimestamp ?? "";
+                CreateDateText.Text = _selectedCollection.Timestamp ?? "";
 
                 //set tags in window if it has any
                 if (_selectedCollection.Keywords != null)
@@ -588,43 +597,6 @@ namespace NuSysApp
             }
         }
 
-        private async void AutoLogin()
-        {
-            Debug.WriteLine("fix this");
-            Task.Run(async delegate
-            {
-                if (File.Exists(LoginCredentialsFilePath))
-                {
-                    UITask.Run(async delegate
-                    {
-                        Tuple<string, string> creds = this.GetLoginCredentials();
-                        Login(creds.Item1, creds.Item2, false);
-                    });
-                }
-            });
-        }
-
-        private Tuple<string, string> GetLoginCredentials()
-        {
-            return Task.Run(async delegate
-            {
-                JObject o1 = JObject.Parse(File.ReadAllText(LoginCredentialsFilePath));
-                var username = o1.GetValue("Username").ToString();
-                var password = o1.GetValue("Password").ToString();
-
-
-
-                Tuple<string, string> credentials = new Tuple<string, string>(username, password);
-                return credentials;
-            }).Result;
-        }
-
-        private void SaveLoginInfo(string username, string password)
-        {
-            JObject loginCredentials = new JObject(new JProperty("Username", username), new JProperty("Password", password));
-            File.WriteAllText(LoginCredentialsFilePath, loginCredentials.ToString());
-        }
-
 
         public static async Task<Tuple<bool,string>> AttemptLogin(string username, string password, string displayname, bool createNewUser)
         {
@@ -643,7 +615,7 @@ namespace NuSysApp
                 cred["display_name"] = displayname ?? "MIRANDA PUT THE DISLPAY NAME HEEERRE";
                 cred["new_user"] = "";
             }
-            var url = (NusysConstants.TEST_LOCAL_BOOLEAN ? "http://" : "https://") + ServerName + "/api/nusyslogin/";
+            var url = (NusysConstants.TEST_LOCAL_BOOLEAN ? "http://" : "https://") + NusysConstants.ServerName + "/api/nusyslogin/";
             var client = new HttpClient(
              new HttpClientHandler
              {
@@ -703,8 +675,8 @@ namespace NuSysApp
                         await SessionController.Instance.NuSysNetworkSession.Init();
                         SessionController.Instance.LocalUserID = UserID;
 
-                        loggedInText.Text = "Logged In!";
-                        NewUserLoginText.Text = "Logged In!";
+                        loggedInText.Text = "Logging in...";
+                        NewUserLoginText.Text = "Logging in...";
                         _collectionList = new List<LibraryElementModel>();
                         await Init();
                         NewWorkspaceButton.IsEnabled = true;
@@ -773,7 +745,11 @@ namespace NuSysApp
             }
             catch (HttpRequestException h)
             {
+                var text = "Cannot connect to server or server does not exist";
+                loggedInText.Text = text;
+                NewUserLoginText.Text = text;
                 Debug.WriteLine("cannot connect to server");
+                _isLoggingIn = false;
             }
 
         }
@@ -1023,6 +999,25 @@ namespace NuSysApp
        
                     break;
             }   
+        }
+
+        private void ServerNameText_TextChanging(TextBox sender, TextBoxTextChangingEventArgs args)
+        {
+            switch (ServerNameText.Text.ToLower())
+            {
+                case "local":
+                    NusysConstants.ServerName = "localhost:2776";
+                    break;
+                case "test":
+                    NusysConstants.ServerName = "nusystest.azurewebsites.net";
+                    break;
+                case "live":
+                    NusysConstants.ServerName = "nusysrepo.azurewebsites.net";
+                    break;
+                default:
+                    NusysConstants.ServerName = ServerNameText.Text;
+                    break;
+            }
         }
     }
 }

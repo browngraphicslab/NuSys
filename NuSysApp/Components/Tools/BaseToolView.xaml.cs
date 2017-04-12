@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Devices.Input;
 using Windows.Foundation;
@@ -50,7 +51,7 @@ namespace NuSysApp
         {
             this.DataContext = vm;
             this.InitializeComponent();
-            vm.Controller.SetLocation(x, y);
+            //vm.Controller.SetLocation(x, y);
             Vm = vm;
             xFilterComboBox.ItemsSource = Enum.GetValues(typeof(ToolModel.ToolFilterTypeTitle)).Cast<ToolModel.ToolFilterTypeTitle> ();
 
@@ -161,7 +162,7 @@ namespace NuSysApp
             {
                 if (sender == xStackElement)
                 {
-                    vm.CreateStack(r.X, r.Y);
+                    vm.CreateStack(new Vector2((float) p.X, (float) p.Y));
                 }
                 else
                 { 
@@ -191,7 +192,7 @@ namespace NuSysApp
         /// </summary>
         private void OnSelectionChanged(object sender)
         {
-            if (Vm.Selection != null && (Vm.Controller as BasicToolController).Model.Selected)
+            if (Vm.Selection != null && (Vm.Controller as BasicToolController).ToolModel.Selected)
             {
                 _toolView.SetVisualSelection(Vm.Selection);
             }
@@ -206,8 +207,7 @@ namespace NuSysApp
         /// </summary>
         private void Resizer_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            if (SessionController.Instance.SessionView.IsPenMode)
-                return;
+
 
             var vm = (BasicToolViewModel)this.DataContext;
             var zoom = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.ScaleX;
@@ -326,7 +326,7 @@ namespace NuSysApp
 
             if (vm != null)
             {
-                vm.Controller.SetLocation(vm.X + x, vm.Y + y);
+                //vm.Controller.SetLocation(vm.X + x, vm.Y + y);
             }
 
             ToolAnchorChanged?.Invoke(this, new Point2d(vm.X + x, vm.Y + y));
@@ -348,12 +348,12 @@ namespace NuSysApp
         private void XParentOperatorText_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             
-            if (Vm.Controller.Model.ParentOperator == ToolModel.ParentOperatorType.And)
+            if (Vm.Controller.ToolModel.ParentOperator == ToolModel.ParentOperatorType.And)
             {
                 Vm.Controller.SetParentOperator(ToolModel.ParentOperatorType.Or);
                 xParentOperatorText.Text = "OR";
             }
-            else if (Vm.Controller.Model.ParentOperator == ToolModel.ParentOperatorType.Or)
+            else if (Vm.Controller.ToolModel.ParentOperator == ToolModel.ParentOperatorType.Or)
             {
                 Vm.Controller.SetParentOperator(ToolModel.ParentOperatorType.And);
                 xParentOperatorText.Text = "AND";
@@ -368,7 +368,7 @@ namespace NuSysApp
         public void Item_OnTapped(string selection, PointerDeviceType type)
         {
 
-            if (Vm.Selection != null && Vm.Controller.Model.Selected && Vm.Selection.Contains(selection))
+            if (Vm.Selection != null && Vm.Controller.ToolModel.Selected && Vm.Selection.Contains(selection))
             {
                 if (type == PointerDeviceType.Pen || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down)
                 {
@@ -406,7 +406,7 @@ namespace NuSysApp
         /// </summary>
         public void Item_OnDoubleTapped(string selection)
         {
-            if (!Vm.Selection.Contains(selection) && Vm.Selection.Count == 0 || Vm.Controller.Model.Selected == false)
+            if (!Vm.Selection.Contains(selection) && Vm.Selection.Count == 0 || Vm.Controller.ToolModel.Selected == false)
             {
                 Vm.Selection = new HashSet<string> { selection };
             }
@@ -517,7 +517,7 @@ namespace NuSysApp
                 var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(sp.X, sp.Y, 300, 300));
                 var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(sp, null);
 
-                Vm.FilterIconDropped(hitsStart, wvm, r.X, r.Y);
+                //Vm.FilterIconDropped(hitsStart, wvm, r.X, r.Y);
             }
         }
 
@@ -533,7 +533,7 @@ namespace NuSysApp
             if (Vm.Filter == ToolModel.ToolFilterTypeTitle.AllMetadata)
             {
 
-                Vm.SwitchToAllMetadataTool();
+                //Vm.SwitchToAllMetadataTool();
                 this.Dispose();
             }
         }

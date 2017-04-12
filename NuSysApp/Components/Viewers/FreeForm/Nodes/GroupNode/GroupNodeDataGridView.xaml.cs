@@ -70,7 +70,7 @@ namespace NuSysApp
             {
                 src.ManipulationMode = ManipulationModes.All; // for dragging out via touch
                 _drag = new Image();//TODO temporary
-                var itemController = SessionController.Instance.IdToControllers[gridInfo?.Id].LibraryElementController;
+                var itemController = SessionController.Instance.ElementModelIdToElementController[gridInfo?.Id].LibraryElementController;
                 BitmapImage textimage = new BitmapImage(itemController.SmallIconUri);
                 _drag.Source = textimage;
 
@@ -93,9 +93,9 @@ namespace NuSysApp
                 var newPos = SessionController.Instance.ActiveFreeFormViewer.CompositeTransform.Inverse.TransformPoint(point);
                 Debug.Assert(newPos != null);
 
-                // safe check if the id is in IdToControllers before requesting to move it to the current collection
+                // safe check if the id is in ElementModelIdToElementController before requesting to move it to the current collection
                 ElementController controller;
-                SessionController.Instance.IdToControllers.TryGetValue(_id ?? "", out controller);
+                SessionController.Instance.ElementModelIdToElementController.TryGetValue(_id ?? "", out controller);
                 if (controller != null)
                 {
                     await controller.RequestMoveToCollection(SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId, newPos.X, newPos.Y);
@@ -148,7 +148,7 @@ namespace NuSysApp
 
             // the list item template has an element controller id, use that to get the library element Model ContentId
             ElementController elementController;
-            SessionController.Instance.IdToControllers.TryGetValue(groupNodeDataGridInfo.Id, out elementController);
+            SessionController.Instance.ElementModelIdToElementController.TryGetValue(groupNodeDataGridInfo.Id, out elementController);
             var libraryElementModelId = elementController?.LibraryElementModel.LibraryElementId;
 
             // get the controller from the data type
@@ -158,7 +158,7 @@ namespace NuSysApp
             Debug.Assert(controller != null);
 
             // open the detail viewer
-            SessionController.Instance.SessionView.ShowDetailView(controller);
+            SessionController.Instance.NuSessionView.ShowDetailView(controller);
         }
 
     }

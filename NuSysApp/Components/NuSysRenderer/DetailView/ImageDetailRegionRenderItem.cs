@@ -31,6 +31,7 @@ namespace NuSysApp
         private Rect _cropAreaNormalized;
         private Rect _bitmap;
         private double _totalScale;
+        private Rect _imageRegionRect;
         public ImageLibraryElementModel LibraryElementModel { get; set; }
 
         private CanvasStrokeStyle _strokeStyle = new CanvasStrokeStyle
@@ -40,24 +41,32 @@ namespace NuSysApp
 
         private bool _isModifiable;
 
-        public bool IsModifiable { get; set; }
+        public bool IsModifiable
+        {
+            get { return _isModifiable; }
+            set
+            {
+                _isModifiable = value;
+                IsHitTestVisible = _isModifiable;
+            }
+        }
 
         public ImageDetailRegionRenderItem(ImageLibraryElementModel libraryElementModel, Rect cropAreaNormalized, Rect bitmap, double totalScale, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, bool isModifiable = true) : base(parent, resourceCreator)
         {
             _totalScale = totalScale;
-            _isModifiable = isModifiable;
+            IsModifiable = isModifiable;
             _bitmap = bitmap;
             _cropAreaNormalized = cropAreaNormalized;
             LibraryElementModel = libraryElementModel;
 
 
-            var rect = new Rect(LibraryElementModel.NormalizedX,
+            _imageRegionRect = new Rect(LibraryElementModel.NormalizedX,
                                 LibraryElementModel.NormalizedY,
                                 LibraryElementModel.NormalizedWidth,
                                 LibraryElementModel.NormalizedHeight);
 
-            _isModifiable = _isModifiable && IsFullyContained(rect);
-            if (_isModifiable) { 
+            IsModifiable = IsModifiable && IsFullyContained(_imageRegionRect);
+            if (IsModifiable) { 
                 _resizer = new ImageDetailRegionResizerRenderItem(this, ResourceCreator);
                 _resizer.ResizerDragged += ResizerOnResizerDragged;
                 _resizer.ResizerDragStarted += ResizerOnResizerDragStarted;
@@ -109,11 +118,13 @@ namespace NuSysApp
         private void ControllerOnLocationChanged(object sender, Point topLeft)
         {
             UpdateImageBound(_totalScale);
-         }
+            IsModifiable = IsModifiable && IsFullyContained(_imageRegionRect);
+        }
 
         private void ControllerOnSizeChanged(object sender, double width, double height)
         {
             UpdateImageBound(_totalScale);
+            IsModifiable = IsModifiable && IsFullyContained(_imageRegionRect);
         }
 
         public override void Dispose()
@@ -129,7 +140,7 @@ namespace NuSysApp
 
         private void ResizerOnResizerDragged(Vector2 delta)
         {
-            if (!_isModifiable)
+            if (!IsModifiable)
                 return;
             RegionResized?.Invoke(this, delta);
         }
@@ -164,24 +175,30 @@ namespace NuSysApp
 
         public override void OnDragged(CanvasPointer pointer)
         {
-            if (!_isModifiable)
+            if (!IsModifiable)
                 return;         
             RegionMoved?.Invoke(this, pointer.DeltaSinceLastUpdate);
         }
 
         public override void OnPressed(CanvasPointer pointer)
         {
+            if (!IsModifiable)
+                return;
             RegionPressed?.Invoke(this);
         }
 
         public override void OnReleased(CanvasPointer pointer)
         {
+            if (!IsModifiable)
+                return;
             RegionReleased?.Invoke(this);
         }
 
         public override void OnDoubleTapped(CanvasPointer pointer)
         {
-            SessionController.Instance.SessionView.ShowDetailView(_controller);
+            if (!IsModifiable)
+                return;
+            SessionController.Instance.NuSessionView.ShowDetailView(_controller);
         }
 
         public override Rect GetLocalBounds()

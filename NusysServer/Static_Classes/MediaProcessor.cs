@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
@@ -20,6 +22,30 @@ namespace NusysServer
     /// </summary>
     public class MediaProcessor
     {
+        //Dll imports and things for MuPdf
+        [DllImport("mupdfapit4", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr Open(byte[] data, int length);
+        [DllImport("mupdfapit4", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ActivateDocument(IntPtr document);
+        [DllImport("mupdfapit4", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int RenderPage(int width, int height);
+        [DllImport("mupdfapit4", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int GetTextBytes(byte[] sb);
+        [DllImport("mupdfapit4", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr GetBuffer();
+        [DllImport("mupdfapit4", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int GetPageWidth();
+        [DllImport("mupdfapit4", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int GetPageHeight();
+        [DllImport("mupdfapit4", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int GetNumComponents();
+        [DllImport("mupdfapit4", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int GetNumPages();
+        [DllImport("mupdfapit4", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool GotoPage(int page);
+        [DllImport("mupdfapit4", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void Dispose(IntPtr pointer);
+
         /// <summary>
         /// this method will process media from a CreateContentDataModelRequest's request message.  
         /// This will also take in the URL of the content uploaded.
@@ -32,7 +58,6 @@ namespace NusysServer
         public static void ProcessCreateContentDataModelRequestMedia(Message contentDataModelMessage, string contentDataModelId, string contentUrl, NusysConstants.ElementType elementType, NuWebSocketHandler senderHandler)
         {
             var title = contentDataModelMessage.GetString(NusysConstants.NEW_LIBRARY_ELEMENT_REQUEST_TITLE_KEY); //get the current title of tje library element model used for this
-
             //create a new async Task so we don't slow down the request
             Task.Run(async delegate
             {
@@ -43,8 +68,37 @@ namespace NusysServer
                 switch (contentType)
                 {
                     case NusysConstants.ContentType.PDF:
+                        return;
                         //store the pdf text as local variable
-                        var pdfText = contentDataModelMessage.GetList<string>(NusysConstants.CREATE_NEW_PDF_CONTENT_REQUEST_PDF_TEXT_KEY);
+                        var pdfText = new List<string>();
+
+                        var pdfBytes = Convert.FromBase64String(contentDataModelMessage.GetString(NusysConstants.CREATE_NEW_CONTENT_REQUEST_CONTENT_DATA_BYTES));
+
+                        // Open the pdf with MuPdf a store a reference to it (doc)
+                        var doc = Open(pdfBytes, pdfBytes.Length);
+
+                        // Active the pdf document
+                        ActivateDocument(doc);
+
+                        for (int i = 0; i < GetNumPages(); i++)
+                        {
+                            // Goto a page
+                            GotoPage(i);
+
+                            // Allocate a buffer which the text will be written to
+                            byte[] textBuffer = new byte[10000];
+
+                            // Write the text on the pdf page to textBuffer
+                            var numTextBytes = GetTextBytes(textBuffer);
+
+                            // Convert the extracted text bytes to a utf8 string
+                            var textString = Encoding.UTF8.GetString(textBuffer.Take(numTextBytes).ToArray());
+                            pdfText.Add(textString);
+
+                        }
+                        // Free up memory
+                        Dispose(doc);
+
                         if (pdfText != null && pdfText.Any())
                         {
                             try
