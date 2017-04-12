@@ -791,14 +791,10 @@ namespace NuSysApp
         public override void OnManipulated(ManipulationGestureRecognizer sender, ManipulationEventArgs args)
         {
             base.OnManipulated(sender, args);
-            var transform = RenderEngine.GetCollectionTransform(InitialCollection);
-            Camera.LocalScaleCenter = Vector2.Transform(args.CurrentFocus, Win2dUtil.Invert(Camera.T));
-            Camera.LocalScale *= args.ScaleDelta;
-            Camera.LocalPosition = Camera.LocalPosition + args.Translation;
-            PanZoom2(Camera, Matrix3x2.Identity, );
+            PanZoom(Camera, Matrix3x2.Identity, args.CurrentFocus, args.Translation.X, args.Translation.Y, args.ScaleDelta);
         }
 
-        protected void PanZoom2(I2dTransformable target, Matrix3x2 transform, Vector2 centerPoint, float dx, float dy, float ds)
+        protected void PanZoom(I2dTransformable target, Matrix3x2 transform, Vector2 centerPoint, float dx, float dy, float ds)
         {
             var cInv = Win2dUtil.Invert(target.C);
             var inverse = Win2dUtil.Invert(cInv * target.S * target.C * target.T * transform);
