@@ -103,7 +103,7 @@ namespace NuSysApp.Components.NuSysRenderer.UI.ListView
             // add the libary list view as a child
             AddChild(Lib);
             //TopBarColor = Constants.LIGHT_BLUE;
-            //TopBarHeight = 0;
+            //TopBarHeight = 50;
             Background = Colors.White;
             BorderColor = Constants.MED_BLUE;
             BorderWidth = 1;
@@ -518,12 +518,11 @@ namespace NuSysApp.Components.NuSysRenderer.UI.ListView
 
             Lib.AddItems(items);
 
-
             BorderWidth = 5;
             BorderColor = Colors.Black;
-            //TopBarColor = Colors.Azure;
-            Width = 500;
-            Height = 400;
+
+            //Width = 500;
+            //Height = 10000;
             //MinWidth = 500;
             //MinHeight = 400;
 
@@ -554,7 +553,7 @@ namespace NuSysApp.Components.NuSysRenderer.UI.ListView
         {
             // make the library fill the resizeable window leaving room for the search bar and filter button
             Lib.Width = Width - 2 * BorderWidth;
-            Lib.Height = Height - BorderWidth - UIDefaults.SearchBarHeight;
+            Lib.Height = Height - BorderWidth;
             Lib.Transform.LocalPosition = new Vector2(BorderWidth, 0);
             
 
