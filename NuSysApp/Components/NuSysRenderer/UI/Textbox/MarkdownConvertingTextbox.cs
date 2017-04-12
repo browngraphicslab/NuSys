@@ -509,6 +509,7 @@ namespace NuSysApp
             _canvasTextLayout?.Dispose();
             _canvasTextLayout = null;
             _canvasTextLayout = _htmlParser?.GetParsedText(_textHtml, _canvasTextLayoutWidth, double.MaxValue);
+
         }
 
 

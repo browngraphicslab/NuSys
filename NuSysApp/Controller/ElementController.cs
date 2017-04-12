@@ -248,12 +248,21 @@ namespace NuSysApp
             args.Height = Model.Height;
             args.ParentCollectionId = Model.ParentCollectionId;
             args.LibraryElementId = Model.LibraryId;
+            args.Id = SessionController.Instance.GenerateId();
 
             // Set up the request, execute it, and add the new element to the session
             var request = new NewElementRequest(args);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
             request.AddReturnedElementToSession();
 
+
+            if (LibraryElementModel.Type == NusysConstants.ElementType.Variable)
+            {
+                var t = this as VariableElementController;
+                var c = SessionController.Instance.ElementModelIdToElementController[args.Id] as VariableElementController;
+                c.SetMetadataKey(t.MetadataKey);
+                c.SetStoredLibraryId(t.VariableModel.StoredLibraryId);
+            }
         }
 
 

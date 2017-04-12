@@ -179,7 +179,7 @@ namespace NuSysApp
         /// <param name="item"></param>
         public void RemoveItem(T item)
         {
-            Debug.Assert(_itemsToDisplayElements.ContainsKey(item));
+            //Debug.Assert(_itemsToDisplayElements.ContainsKey(item));
             if (_itemsToDisplayElements.ContainsKey(item))
             {
                 RemoveElement(_itemsToDisplayElements[item]);

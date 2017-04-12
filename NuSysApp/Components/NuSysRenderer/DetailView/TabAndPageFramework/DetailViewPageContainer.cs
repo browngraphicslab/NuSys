@@ -566,7 +566,7 @@ namespace NuSysApp
 
             // all types have a home and metadata
             _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Home), "Home", false);
-            _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Metadata), "Metadata", false);
+            _pageTabContainer.AddTab(new DetailViewPageTabType(DetailViewPageType.Metadata), "Attributes", false);
 
             switch (_currentController.LibraryElementModel.Type)
             {
