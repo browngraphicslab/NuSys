@@ -54,6 +54,8 @@ namespace NuSysApp
             {
                 new Uri(_controller.ContentDataController.ContentDataModel.Data)
             };
+
+            //_controller.ImageLibraryElementModel.NormalizedX
             SessionController.Instance.SessionView.FreeFormViewer.ShowFullScreenImage(uriList, 0, false);
         }
     }
