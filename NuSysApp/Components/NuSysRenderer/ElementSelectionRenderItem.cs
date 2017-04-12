@@ -48,8 +48,8 @@ namespace NuSysApp
         private bool _isSingleCollectionSelected;
 
         //public bool HoldsList { get; set; }
-        public ListViewUIElementContainer<LibraryElementModel> Lib { get; set; }
-        private CollectionListViewUIElement _collectionList;
+        public CollectionListViewUIElement Lib { get; set; }
+        private CanvasAnimatedControl _resourceCreator;
 
         public ElementSelectionRenderItem(ElementCollectionViewModel vm, BaseRenderItem parent, CanvasAnimatedControl resourceCreator) : base(parent, resourceCreator)
         {
@@ -74,11 +74,9 @@ namespace NuSysApp
             BtnPdfRight = new PdfPageButtonRenderItem(1, parent, resourceCreator);
             Resizer = new NodeResizerRenderItem(parent, resourceCreator);
 
-            _collectionList = new CollectionListViewUIElement(resourceCreator);
-
             SetUpToolButton();
 
-
+            _resourceCreator = resourceCreator;
 
             Buttons = new List<BaseRenderItem>
             {
@@ -212,16 +210,17 @@ namespace NuSysApp
 
             //CollectionListView and associated button showing or not:
             BtnTest.IsVisible = _isSingleCollectionSelected;
-            
-            //RemoveLibrary();
-            //if (_isSingleCollectionSelected)
-            //{
-            //    var collection = (CollectionRenderItem) _selectedItems[0];
-            //    if (collection.HoldsList)
-            //    {
-            //        AddLibrary();
-            //    }
-            //}
+
+
+            RemoveLibrary();
+            if (_isSingleCollectionSelected)
+            {
+                var collection = (CollectionRenderItem)_selectedItems[0];
+                if (collection.HoldsList)
+                {
+                    AddLibrary();
+                }
+            }
 
 
             BtnDelete.IsVisible = !SessionController.IsReadonly;
@@ -239,7 +238,7 @@ namespace NuSysApp
         /// <param name="lib"></param>
         public void AddLibrary()
         {
-            Lib = _collectionList.ConstructListViewUIElementContainer((CollectionRenderItem)_selectedItems[0]);
+            Lib = new CollectionListViewUIElement((CollectionRenderItem)_selectedItems[0], _resourceCreator);
             AddChild(Lib);
             SetLibDimensions();
         }
@@ -286,6 +285,7 @@ namespace NuSysApp
             if (Lib != null)
             {
                 RemoveChild(Lib);
+                Lib.Dispose();
                 Lib = null;
             }
 
