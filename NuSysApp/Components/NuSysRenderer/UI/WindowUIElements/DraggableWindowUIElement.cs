@@ -403,7 +403,7 @@ namespace NuSysApp
             AddChild(CloseButton);
             CloseButton.Transform.LocalPosition = new Vector2(-CloseButton.Width - 10, TopBarHeight + 10);
             CloseButton.Tapped += CloseButtonOnTapped;
-            CloseButton.Pressed += CloseButtonOnTapped;
+            //CloseButton.Pressed += CloseButtonOnTapped;
         }
 
         /// <summary>
@@ -412,7 +412,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        protected virtual void CloseButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        protected virtual void CloseButtonOnTapped(ButtonUIElement sender)
         {
             IsVisible = false;
         }
@@ -429,7 +429,7 @@ namespace NuSysApp
             if (CloseButton != null)
             {
                 CloseButton.Tapped -= CloseButtonOnTapped;
-                CloseButton.Pressed -= CloseButtonOnTapped;
+                //CloseButton.Pressed -= CloseButtonOnTapped;
             }
             base.Dispose();
         }

@@ -50,7 +50,7 @@ namespace NuSysApp
             _addResults.Tapped += _addResults_Tapped;
         }
 
-        private async void _addResults_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private async void _addResults_Tapped(ButtonUIElement sender)
         {
 
             var searchRequest = new WebSearchRequest(new WebSearchRequestArgs() { SearchString = _searchbar.Text });

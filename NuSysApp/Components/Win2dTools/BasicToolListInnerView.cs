@@ -59,7 +59,7 @@ namespace NuSysApp
 
         private void _listView_RowTapped(string item, string columnName, CanvasPointer pointer, bool isSelected)
         {
-            Item_OnTapped(item, pointer);
+            Item_OnTapped(item);
         }
         
 

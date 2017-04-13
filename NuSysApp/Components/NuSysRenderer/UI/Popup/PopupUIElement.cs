@@ -146,7 +146,7 @@ namespace NuSysApp
             button.Tapped += DismissButton_Tapped;
         }
 
-        private void DismissButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void DismissButton_Tapped(ButtonUIElement sender)
         {
             DismissPopup();
             Dispose();

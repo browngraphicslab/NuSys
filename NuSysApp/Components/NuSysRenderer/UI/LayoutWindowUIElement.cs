@@ -227,7 +227,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void ArrangeButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void ArrangeButtonTapped(ButtonUIElement sender)
         {
             Arrange();
         }
@@ -237,10 +237,10 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void HorizontalButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void HorizontalButtonTapped(ButtonUIElement sender)
         {
             ResetButtonColors();
-            var button = (ButtonUIElement)item;
+            var button = (ButtonUIElement)sender;
             button.Background = Constants.MED_BLUE;
             _layoutStyle = LayoutStyle.Horizontal;
             _arrangeButton.ButtonText = ARRANGE_TEXT;
@@ -254,10 +254,10 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void VerticalButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void VerticalButtonTapped(ButtonUIElement sender)
         {
             ResetButtonColors();
-            var button = (ButtonUIElement)item;
+            var button = (ButtonUIElement)sender;
             button.Background = Constants.MED_BLUE;
             _layoutStyle = LayoutStyle.Vertical;
             _arrangeButton.ButtonText = ARRANGE_TEXT;
@@ -271,10 +271,10 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void GridButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void GridButtonTapped(ButtonUIElement sender)
         {
             ResetButtonColors();
-            var button = (ButtonUIElement)item;
+            var button = (ButtonUIElement)sender;
             button.Background = Constants.MED_BLUE;
             _layoutStyle = LayoutStyle.Grid;
             _arrangeButton.ButtonText = ARRANGE_TEXT;
@@ -288,10 +288,10 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void CustomButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void CustomButtonTapped(ButtonUIElement sender)
         {
             ResetButtonColors();
-            var button = (ButtonUIElement)item;
+            var button = (ButtonUIElement)sender;
             button.Background = Constants.MED_BLUE;
             _layoutStyle = LayoutStyle.Custom;
             _arrangeButton.ButtonText = CUSTOM_LAYOUT_TEXT;
