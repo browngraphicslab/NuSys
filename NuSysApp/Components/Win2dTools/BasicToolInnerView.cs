@@ -56,7 +56,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="selection"></param>
         /// <param name="type"></param>
-        public void Item_OnTapped(string selection, CanvasPointer pointer)
+        public void Item_OnTapped(string selection)
         {
             var type = pointer.DeviceType;
             if (Vm.Selection != null && Vm.Controller.ToolModel.Selected && Vm.Selection.Contains(selection))

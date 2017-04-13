@@ -1,10 +1,12 @@
-﻿namespace NuSysApp
+﻿using Microsoft.Graphics.Canvas;
+
+namespace NuSysApp
 {
     /// <summary>
     /// PieChartElement holds the item that represents the piece (e.g., a string "Republican") and its value (e.g., an int 49)
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class PieChartElement<T>
+    public class PieChartElement<T>: RectangleUIElement
     {
         /// <summary>
         /// Angle where DrawPie starts drawing the arc that represents the piece of the pie.
@@ -38,7 +40,7 @@
         /// </summary>
         public int Value { set; get; }
 
-        public PieChartElement()
+        public PieChartElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
 
         }

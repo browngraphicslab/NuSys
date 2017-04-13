@@ -35,7 +35,7 @@ namespace NuSysApp
             AddChild(_pieChart);
         }
 
-        private void PieChart_ElementDoubleTapped(object source, PieChartElement<string> element, CanvasPointer pointer)
+        private void PieChart_ElementDoubleTapped(object source, PieChartElement<string> element)
         {
             Item_OnDoubleTapped(element.Item);
 
@@ -53,9 +53,9 @@ namespace NuSysApp
 
         }
 
-        private void PieChart_ElementTapped(object source, PieChartElement<string> element, CanvasPointer pointer)
+        private void PieChart_ElementTapped(PieChartUIElement sender, PieChartElement<string> element)
         {
-            Item_OnTapped(element.Item, pointer);
+            Item_OnTapped(element.Item);
 
         }
 
