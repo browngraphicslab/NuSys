@@ -26,7 +26,6 @@
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
             </Canvas>
-            
 
             <xaml:CanvasControl x:Name="xMinimapCanvas" Visibility="Visible" />
             

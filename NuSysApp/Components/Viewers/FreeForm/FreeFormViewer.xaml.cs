@@ -1652,6 +1652,15 @@ namespace NuSysApp
             });
         }
 
+        public void makeTextBox()
+        {
+            new TextBox()
+            {
+                Width = 100,
+                Height = 100,
+            };
+        }
+
         public void PlayFullScreenVideo(VideoLibraryElementController videoLibraryElementController, bool addRegionsIsVisible = false)
         {
             UITask.Run(delegate
