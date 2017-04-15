@@ -1654,11 +1654,16 @@ namespace NuSysApp
 
         public void makeTextBox()
         {
-            new TextBox()
+            UITask.Run(delegate
             {
-                Width = 100,
-                Height = 100,
-            };
+                var textBox = new TextBox()
+                {
+                    Width = 500,
+                    Height = 500,
+                    TextWrapping = TextWrapping.Wrap
+                };
+                xWrapper.Children.Add(textBox);
+            });
         }
 
         public void PlayFullScreenVideo(VideoLibraryElementController videoLibraryElementController, bool addRegionsIsVisible = false)

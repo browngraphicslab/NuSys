@@ -234,6 +234,7 @@ namespace NuSysApp
                     case NusysConstants.ElementType.Collection:
                         break;
                     case NusysConstants.ElementType.Text:
+                        SessionController.Instance.SessionView.FreeFormViewer.makeTextBox();
                         break;
                     case NusysConstants.ElementType.Tools:
 

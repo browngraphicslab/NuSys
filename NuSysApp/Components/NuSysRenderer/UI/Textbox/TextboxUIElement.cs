@@ -209,6 +209,7 @@ namespace NuSysApp
             Text = "";
             _constructed = true;
 
+
             UpdateCanvasTextFormat();
         }
 
