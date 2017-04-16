@@ -118,6 +118,14 @@ namespace NuSysApp
             //_tabControl.TabSpacing = 10;
             AddChild(_tabControl);
 
+            ButtonUIElement testButton = new ButtonUIElement(this, Canvas);
+            testButton.ButtonText = "Test";
+            testButton.Width = 70;
+            testButton.Height = 70;
+            testButton.Background = Colors.Red;
+            testButton.Transform.LocalY = 400;
+            testButton.Tapped += (sender, pointer) => { _tabControl.MoveTab(0, 2); };
+            AddChild(testButton);
             TopBarColor = Constants.MED_BLUE;
             TopBarHeight = 25;
 

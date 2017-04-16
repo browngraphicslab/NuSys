@@ -64,12 +64,12 @@ namespace NuSysApp
             {
                 TabPage = tabPage;
                 TabControl = tabControl;
-                SelectedBackground = Colors.Green;
                 Selected = false;
             }
 
             public override void Draw(CanvasDrawingSession ds)
             {
+                SelectedBackground = TabControl.TabSelectedColor;
                 ButtonText = TabPage.Name;
                 base.Draw(ds);
             }
@@ -115,8 +115,11 @@ namespace NuSysApp
                     _tabDict[_selectedTab].Selected = false;
                 }
                 _selectedTab = value;
-                _selectedTab.IsVisible = true;
-                _tabDict[_selectedTab].Selected = true;
+                if (_selectedTab != null)
+                {
+                    _selectedTab.IsVisible = true;
+                    _tabDict[_selectedTab].Selected = true;
+                }
             }
         }
         
@@ -159,6 +162,14 @@ namespace NuSysApp
         {
             get; set;
         } = Colors.MediumBlue;
+
+        /// <summary>
+        /// The color of each tab button when it is being selected.
+        /// </summary>
+        public Color TabSelectedColor
+        {
+            get; set;
+        } = Colors.Blue;
 
         /// <summary>
         /// How to align the tab buttons
@@ -426,6 +437,14 @@ namespace NuSysApp
             TabPageUIElement t = _tabs[index1];
             _tabs[index1] = _tabs[index2];
             _tabs[index2] = t;
+            TabButtonUIElement b = _tabButtons[index1];
+            _tabButtons[index1] = _tabButtons[index2];
+            _tabButtons[index2] = b;
+            _buttonLayoutManager = new StackLayoutManager();
+            foreach(ButtonUIElement bui in _tabButtons)
+            {
+                _buttonLayoutManager.AddElement(bui);
+            }
         }
 
         /// <summary>
@@ -438,6 +457,14 @@ namespace NuSysApp
             TabPageUIElement t = _tabs[oldIndex];
             _tabs.RemoveAt(oldIndex);
             _tabs.Insert(newIndex, t);
+            TabButtonUIElement b = _tabButtons[oldIndex];
+            _tabButtons.RemoveAt(oldIndex);
+            _tabButtons.Insert(newIndex, b);
+            _buttonLayoutManager = new StackLayoutManager();
+            foreach (ButtonUIElement bui in _tabButtons)
+            {
+                _buttonLayoutManager.AddElement(bui);
+            }
         }
 
         public override void Draw(CanvasDrawingSession ds)
