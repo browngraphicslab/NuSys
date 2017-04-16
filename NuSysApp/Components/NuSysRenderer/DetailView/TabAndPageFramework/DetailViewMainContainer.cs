@@ -71,6 +71,7 @@ namespace NuSysApp
             };
             AddChild(_mainTabContainer);
 
+
             TopBarColor = Constants.MED_BLUE;
             TopBarHeight = 25;
 
@@ -86,7 +87,7 @@ namespace NuSysApp
 
             ShowClosable();
 
-            CloseButton.Transform.LocalPosition = new Vector2(CloseButton.Transform.LocalX, 80);
+            CloseButton.Transform.LocalPosition = new Vector2(CloseButton.Transform.LocalX - UIDefaults.DetailViewSliderWidth, 80);
 
             // setup the mainTabLayoutManager so that the mainTabContainer fills the entire detail viewer window
             _mainTabLayoutManager = new StackLayoutManager
@@ -101,6 +102,9 @@ namespace NuSysApp
             // detail view defaults to invisible. visible on click
             IsVisible = false;
             IsSnappable = true;
+            
+            // Indicate that it is snapped when initially instantiated
+            IsSnapped = true;
 
             // add events
             _mainTabContainer.TabContainerClosed += _mainTabContainer_TabContainerClosed;
@@ -223,6 +227,16 @@ namespace NuSysApp
             await _pageContainer.ShowLibraryElement(libElemId, currPage);
 
             CreateUserBubbles(libElemId);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void ResizeableWindowUIElement_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+
         }
 
         /// <summary>

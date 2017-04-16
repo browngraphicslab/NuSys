@@ -309,6 +309,7 @@
     <Content Include="Assets\fonts\freightsanslight.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\threeBarDetailViewSlider.png" />
     <Content Include="Assets\web search.png" />
     <None Include="NuSysApp_StoreKey.pfx" />
     <None Include="Package.StoreAssociation.xml" />

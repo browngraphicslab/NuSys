@@ -35,10 +35,15 @@ namespace NuSysApp
         public NodeMenuButtonRenderItem BtnEditTags;
         public PdfPageButtonRenderItem BtnPdfLeft;
         public PdfPageButtonRenderItem BtnPdfRight;
-        public NodeResizerRenderItem Resizer;
+        public NodeResizerRenderItem BottomRightResizer;
+        public NodeResizerRenderItem BottomLeftResizer;
+        public NodeResizerRenderItem TopLeftResizer;
+        public NodeResizerRenderItem TopRightResizer;
+
         public ButtonUIElement BtnTools;
         private RectangleUIElement DragToolsRect;
         public List<BaseRenderItem> Buttons = new List<BaseRenderItem>();
+        public List<NodeResizerRenderItem>  Resizers; //Keep array of all resizers so Contains can be used
         private List<BaseRenderItem> _menuButtons = new List<BaseRenderItem>();
         private bool _isSinglePdfSelected;
         private bool _isSingleCollectionSelected;
@@ -60,7 +65,10 @@ namespace NuSysApp
 
             BtnPdfLeft = new PdfPageButtonRenderItem(-1, parent, resourceCreator);
             BtnPdfRight = new PdfPageButtonRenderItem(1, parent, resourceCreator);
-            Resizer = new NodeResizerRenderItem(parent, resourceCreator);
+            BottomRightResizer = new NodeResizerRenderItem(parent, resourceCreator, NodeResizerRenderItem.ResizerPosition.BottomRight);
+            BottomLeftResizer= new NodeResizerRenderItem(parent, resourceCreator, NodeResizerRenderItem.ResizerPosition.BottomLeft);
+            TopLeftResizer= new NodeResizerRenderItem(parent, resourceCreator, NodeResizerRenderItem.ResizerPosition.TopLeft);
+            TopRightResizer = new NodeResizerRenderItem(parent, resourceCreator, NodeResizerRenderItem.ResizerPosition.TopRight);
             SetUpToolButton();
 
 
@@ -75,7 +83,10 @@ namespace NuSysApp
                 BtnPdfLeft,
                 BtnPdfRight,
                 BtnEnterCollection,
-                Resizer,
+                BottomRightResizer,
+                TopLeftResizer,
+                TopRightResizer,
+                BottomLeftResizer,
                 BtnTools
             };
             _menuButtons = new List<BaseRenderItem> { BtnDelete, BtnGroup, BtnPresent, BtnLayoutTool, BtnEditTags, BtnEnterCollection, BtnTools };
@@ -88,7 +99,15 @@ namespace NuSysApp
                 AddChild(btn);
             }
 
-            AddChild(Resizer);
+            Resizers = new List<NodeResizerRenderItem>
+            {
+                BottomRightResizer,
+                TopLeftResizer,
+                TopRightResizer,
+                BottomLeftResizer
+            };
+
+            //AddChild(Resizer);
 
             SessionController.Instance.SessionView.FreeFormViewer.Selections.CollectionChanged += SelectionsOnCollectionChanged;
         }
@@ -199,7 +218,7 @@ namespace NuSysApp
             BtnGroup.IsVisible = !SessionController.IsReadonly;
             // Layout tool only available when editing more than one node
             BtnLayoutTool.IsVisible = !SessionController.IsReadonly && _selectedItems.Count > 1;
-            Resizer.IsVisible = !SessionController.IsReadonly;
+            BottomRightResizer.IsVisible = !SessionController.IsReadonly;
 
             IsDirty = true;
         }
@@ -251,8 +270,10 @@ namespace NuSysApp
             _screenRect.Y = 0;
 
 
-            Resizer.Transform.LocalPosition = new Vector2((float)(_screenRect.X + _screenRect.Width - 30 + 1.5f), (float)(_screenRect.Y + _screenRect.Height - 30 + 1.5f));
-
+            BottomRightResizer.Transform.LocalPosition = new Vector2((float)(_screenRect.Right - 30 + 1.5f), (float)(_screenRect.Bottom - 30 + 1.5f));
+            TopLeftResizer.Transform.LocalPosition = new Vector2((float)(_screenRect.Left - 1.5f), (float)(_screenRect.Top - 1.5f));
+            TopRightResizer.Transform.LocalPosition = new Vector2((float)(_screenRect.Right - 30 + 1.5f), (float)(_screenRect.Top - 1.5f));
+            BottomLeftResizer.Transform.LocalPosition = new Vector2((float)(_screenRect.Left - 1.5f), (float)(_screenRect.Bottom - 30 + 1.5f));
 
             float leftOffset = -40;
             if (_isSinglePdfSelected)
@@ -319,7 +340,10 @@ namespace NuSysApp
             _screenRect.Y = 0;
 
 
-            Resizer.Transform.LocalPosition = new Vector2((float)(_screenRect.X + _screenRect.Width - 30 + 1.5f), (float)(_screenRect.Y + _screenRect.Height - 30 + 1.5f));
+            BottomRightResizer.Transform.LocalPosition = new Vector2((float)(_screenRect.Right - 30 + 1.5f), (float)(_screenRect.Bottom - 30 + 1.5f));
+            TopLeftResizer.Transform.LocalPosition = new Vector2((float)(_screenRect.Left - 1.5f), (float)(_screenRect.Top - 1.5f));
+            TopRightResizer.Transform.LocalPosition = new Vector2((float)(_screenRect.Right - 30 + 1.5f), (float)(_screenRect.Top - 1.5f));
+            BottomLeftResizer.Transform.LocalPosition = new Vector2((float)(_screenRect.Left - 1.5f), (float)(_screenRect.Bottom - 30 + 1.5f));
 
             var old = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;

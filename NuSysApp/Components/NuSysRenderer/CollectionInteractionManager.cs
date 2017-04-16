@@ -23,6 +23,9 @@ namespace NuSysApp
         public delegate void RenderItemHandler(BaseRenderItem item, CanvasPointer point);
         public delegate void MarkingMenuPointerMoveHandler(Vector2 p);
         public delegate void TranslateHandler(CanvasPointer pointer, Vector2 point, Vector2 delta);
+
+        public delegate void ResizeHandler(
+            CanvasPointer pointer, Vector2 point, Vector2 delta, NodeResizerRenderItem.ResizerPosition resizerPosition);
         public delegate void MovedHandler(CanvasPointer pointer, ElementRenderItem element, Vector2 delta);
         public delegate void PanZoomHandler(Vector2 center, Vector2 deltaTranslation, float deltaZoom);
         public delegate void CollectionSwitchedHandler(CollectionRenderItem collection);
@@ -51,7 +54,7 @@ namespace NuSysApp
         public event PanZoomHandler PanZoomed;
         public event TranslateHandler Panned;
         public event CollectionSwitchedHandler CollectionSwitched;
-        public event TranslateHandler ResizerDragged;
+        public event ResizeHandler ResizerDragged;
         public event MarkingMenuPointerReleasedHandler ResizerStarted;
         public event MarkingMenuPointerReleasedHandler ResizerStopped;
 
@@ -79,7 +82,7 @@ namespace NuSysApp
         private CanvasInteractionManager _canvasInteractionManager;
         private uint _finalInkPointer;
         private DateTime _finalInkPointerUpdated;
-        private bool _resizerHit;
+        private NodeResizerRenderItem _resizer;
         private bool _isTwoElementsPressed;
         private CanvasPointer _nodeMarkingMenuPointer;
         private Tuple<ElementRenderItem, ElementRenderItem> _potentiaLink;
@@ -298,10 +301,10 @@ namespace NuSysApp
                 var hit = _freeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, _collection, 1);
                 if (!(hit is BaseInteractiveUIElement))
                 {
-                    if (hit == _freeFormViewer.RenderEngine.ElementSelectionRect.Resizer)
+                    if (_freeFormViewer.RenderEngine.ElementSelectionRect.Resizers.Contains(hit))
                     {
-                        _resizerHit = true;
-                        if (_resizerHit)
+                        _resizer = (NodeResizerRenderItem)hit;
+                        if (_resizer != null)
                         {
                             ResizerStarted?.Invoke();
                         }
@@ -547,11 +550,11 @@ namespace NuSysApp
 
         private void CanvasInteractionManagerOnAllPointersReleased()
         {
-            if (_resizerHit)
+            if (_resizer != null)
             {
                 ResizerStopped?.Invoke();
             }
-            _resizerHit = false;
+            _resizer = null;
 
             _selectedRenderItem = null;
             _secondSelectedRenderItem = null;
@@ -639,9 +642,9 @@ namespace NuSysApp
                     Panned?.Invoke(pointer, point, delta);
                 }
             }
-            else if (_resizerHit)
+            else if (_resizer != null)
             {
-                ResizerDragged?.Invoke(pointer, point, delta);
+                ResizerDragged?.Invoke(pointer, point, delta, _resizer.Position);
             }
         }
 

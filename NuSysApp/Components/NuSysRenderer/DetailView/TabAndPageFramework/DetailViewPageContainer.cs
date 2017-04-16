@@ -11,6 +11,7 @@ using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
 using NusysIntermediate;
+using NuSysApp.Network.Requests;
 
 namespace NuSysApp
 {
@@ -131,6 +132,7 @@ namespace NuSysApp
             if (this._currentController.LibraryElementModel.Type == NusysConstants.ElementType.Collection)
             {
                 _settingsPopup.AddFlyoutItem("Change Collection Settings", CollectionSettingsOnTapped, Canvas);
+                _settingsPopup.AddFlyoutItem("Create Snapshot", OnCreateSnapshotTapped, Canvas);
             }
             else
             {
@@ -139,6 +141,15 @@ namespace NuSysApp
             _settingsPopup.AddFlyoutItem("Delete", OnDeleteFlyoutTapped, Canvas);
             _settingsPopup.Dismissed += SettingsPopupOnDismissed;
             AddChild(_settingsPopup);
+        }
+
+        private async void OnCreateSnapshotTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            CreateSnapshotOfCollectionRequest request = new CreateSnapshotOfCollectionRequest(SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementController.LibraryElementModel.LibraryElementId);
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            request.AddSnapshotCollectionLocally();
+            var popup = new CenteredPopup(SessionController.Instance.NuSessionView, Canvas, "Your snapshot has been added, called " + SessionController.Instance.CurrentCollectionLibraryElementModel.Title + " Snapshot.");
+            SessionController.Instance.NuSessionView.AddChild(popup);
         }
 
         /// <summary>

@@ -205,5 +205,10 @@ namespace NuSysApp
 
 
         #endregion
+
+        #region detail view
+        public static float DetailViewSliderWidth = 20;
+        #endregion detail view
+
     }
 }
