@@ -226,7 +226,7 @@ namespace NuSysApp.Components.NuSysRenderer.UI.ListView
             // if we are currently dragging
             if (_isDragVisible)
             {
-                // simply move each of the element sto the new drag location
+                // simply move each of the elements to the new drag location
                 var position = Vector2.Transform(pointer.StartPoint, Transform.ScreenToLocalMatrix) + pointer.Delta;
 
                 //If we are on the listview, "put the elements back"
@@ -376,32 +376,7 @@ namespace NuSysApp.Components.NuSysRenderer.UI.ListView
             BorderWidth = 5;
             BorderColor = Colors.Black;
 
-            //Width = 500;
-            //Height = 10000;
-            //MinWidth = 500;
-            //MinHeight = 400;
 
-
-        }
-
-        /// <summary>
-        /// Removes an element from the libary list when it is deleted
-        /// </summary>
-        /// <param name="element"></param>
-        private void UpdateLibraryListToRemoveElement(LibraryElementModel element)
-        {
-            Debug.Assert(element != null);
-            Lib?.RemoveItems(new List<LibraryElementModel> { element });
-        }
-
-        /// <summary>
-        /// Adds an element to the library list when it is added to the library
-        /// </summary>
-        /// <param name="libraryElement"></param>
-        private void UpdateLibraryListWithNewElement(LibraryElementModel libraryElement)
-        {
-            Lib.AddItems(new List<LibraryElementModel> { libraryElement });
-            Lib.ScrollTo(libraryElement);
         }
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
@@ -563,44 +538,44 @@ namespace NuSysApp.Components.NuSysRenderer.UI.ListView
         /// </summary>
         /// <param name="frameWorkElement"></param>
         /// <returns>A string representation of the passed in framework element as an image</returns>
-        private static async Task<string> GetImageAsStringFromFrameworkElement(FrameworkElement frameWorkElement)
-        {
-            // add the ui element to the canvas out of sight
-            Windows.UI.Xaml.Controls.Canvas.SetTop(frameWorkElement, -frameWorkElement.Height * 2);
-            SessionController.Instance.SessionView.MainCanvas.Children.Add(frameWorkElement);
+        //private static async Task<string> GetImageAsStringFromFrameworkElement(FrameworkElement frameWorkElement)
+        //{
+        //    // add the ui element to the canvas out of sight
+        //    Windows.UI.Xaml.Controls.Canvas.SetTop(frameWorkElement, -frameWorkElement.Height * 2);
+        //    SessionController.Instance.SessionView.MainCanvas.Children.Add(frameWorkElement);
 
-            // render it
-            RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap();
-            await renderTargetBitmap.RenderAsync(frameWorkElement, (int)frameWorkElement.Width, (int)frameWorkElement.Height);
+        //    // render it
+        //    RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap();
+        //    await renderTargetBitmap.RenderAsync(frameWorkElement, (int)frameWorkElement.Width, (int)frameWorkElement.Height);
 
-            // remove the visual grid from the canvas
-            SessionController.Instance.SessionView.MainCanvas.Children.Remove(frameWorkElement);
+        //    // remove the visual grid from the canvas
+        //    SessionController.Instance.SessionView.MainCanvas.Children.Remove(frameWorkElement);
 
-            // create a buffer from the rendered bitmap
-            var pixelBuffer = await renderTargetBitmap.GetPixelsAsync();
-            byte[] pixels = pixelBuffer.ToArray();
+        //    // create a buffer from the rendered bitmap
+        //    var pixelBuffer = await renderTargetBitmap.GetPixelsAsync();
+        //    byte[] pixels = pixelBuffer.ToArray();
 
-            // create a WriteableBitmap with desired width and height
-            var writeableBitmap = new WriteableBitmap(renderTargetBitmap.PixelWidth, renderTargetBitmap.PixelHeight);
+        //    // create a WriteableBitmap with desired width and height
+        //    var writeableBitmap = new WriteableBitmap(renderTargetBitmap.PixelWidth, renderTargetBitmap.PixelHeight);
 
-            // write the pixels to the bitmap
-            using (Stream bitmapStream = writeableBitmap.PixelBuffer.AsStream())
-            {
-                await bitmapStream.WriteAsync(pixels, 0, pixels.Length);
-            }
+        //    // write the pixels to the bitmap
+        //    using (Stream bitmapStream = writeableBitmap.PixelBuffer.AsStream())
+        //    {
+        //        await bitmapStream.WriteAsync(pixels, 0, pixels.Length);
+        //    }
 
-            // save the writeable bitmap to a file
-            var tempFile = await writeableBitmap.SaveAsync(ApplicationData.Current.LocalCacheFolder);
+        //    // save the writeable bitmap to a file
+        //    var tempFile = await writeableBitmap.SaveAsync(ApplicationData.Current.LocalCacheFolder);
 
-            // use the system to convert the file to a string
-            var imageAsString = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(tempFile));
+        //    // use the system to convert the file to a string
+        //    var imageAsString = Convert.ToBase64String(await MediaUtil.StorageFileToByteArray(tempFile));
 
-            // delete the writeable bitmap file that we saved
-            await tempFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
+        //    // delete the writeable bitmap file that we saved
+        //    await tempFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
 
-            // return the string representation of the image
-            return imageAsString;
-        }
+        //    // return the string representation of the image
+        //    return imageAsString;
+        //}
     }
 }
 

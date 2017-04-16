@@ -130,7 +130,7 @@ namespace NuSysApp
                 Width = 20,
                 Background = Colors.Transparent,
             };
-            DragToolsRect.IsVisible = true;
+            DragToolsRect.IsVisible = false;
             AddChild(DragToolsRect);
 
 
