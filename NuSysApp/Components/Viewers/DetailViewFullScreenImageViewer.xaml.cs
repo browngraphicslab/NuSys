@@ -15,6 +15,8 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
+using Windows.UI.Xaml.Shapes;
+using WinRTXamlToolkit.IO.Serialization;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -64,6 +66,31 @@ namespace NuSysApp
         private void XImageOnOpened(object sender, RoutedEventArgs routedEventArgs)
         {
             ResetImage();
+
+            // CHANGED: clip 
+            Point localPoint = new Point(0, 0);             // normalized point within xImage; x,y from 0-1
+            var point = xImage.TransformToVisual(Window.Current.Content);
+            Point upperLeft = point.TransformPoint(new Point(localPoint.X * xImage.ActualWidth, localPoint.Y * xImage.ActualHeight));
+            Size localSize = new Size(0.5, 0.5);            // normalized size within xImage 
+            Size size = new Size(localSize.Width * xImage.ActualWidth, localSize.Height * xImage.ActualHeight);            
+            RectangleGeometry clipRect = new RectangleGeometry
+            {
+                //Rect = new Rect(50, 50, 600, 600)
+                Rect = new Rect(upperLeft, size)
+            };
+           // xImage.Clip = clipRect;
+
+            Rectangle rectangle = new Rectangle
+            {
+                Stroke = new SolidColorBrush(Colors.Red),
+                StrokeThickness = 5, 
+                Width = size.Width, Height = size.Height
+            };
+            rectangle.RenderTransform = new TranslateTransform
+            {
+                X = upperLeft.X, Y = upperLeft.Y 
+            };
+            xCanvas.Children.Add(rectangle); 
         }
 
         /// <summary>
