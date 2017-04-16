@@ -29,6 +29,8 @@ namespace NuSysApp
         /// </summary>
         private TabContainerUIElement<DetailViewPageTabType> _pageTabContainer;
 
+        private TabControlUIElement _pageTabControl;
+
         /// <summary>
         /// layout manager used to make sure the _pageTabContainer fills the window
         /// </summary>
@@ -92,6 +94,9 @@ namespace NuSysApp
                 TitleColor = Colors.White
             };
 
+            _pageTabControl = new TabControlUIElement(this, Canvas);
+            AddChild(_pageTabControl);
+
             _settingsButton = new ButtonUIElement(this, resourceCreator)
             {
                 Width = 50,
@@ -100,9 +105,10 @@ namespace NuSysApp
             AddChild(_settingsButton);
 
             _tabContainerLayoutManager = new StackLayoutManager();
-            _tabContainerLayoutManager.AddElement(_pageTabContainer);
+            //_tabContainerLayoutManager.AddElement(_pageTabContainer);
+            _tabContainerLayoutManager.AddElement(_pageTabControl);
             BorderWidth = 0;
-            AddChild(_pageTabContainer);
+            //AddChild(_pageTabContainer);
 
             _settingsButton.Pressed += SettingsButton_Pressed;
 
