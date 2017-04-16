@@ -31,7 +31,7 @@ namespace NuSysApp
         public NodeMenuButtonRenderItem BtnDelete;
         public NodeMenuButtonRenderItem BtnPresent;
 
-        public NodeMenuButtonRenderItem BtnTest;
+        public NodeMenuButtonRenderItem BtnList;
 
         public NodeMenuButtonRenderItem BtnGroup;
         public NodeMenuButtonRenderItem BtnEnterCollection;
@@ -58,8 +58,8 @@ namespace NuSysApp
             BtnPresent = new NodeMenuButtonRenderItem("ms-appx:///Assets/new icons/present white.png", parent, resourceCreator);
             BtnPresent.Label = "present";
 
-            BtnTest = new NodeMenuButtonRenderItem("ms-appx:///Assets/new icons/present white.png", parent, resourceCreator);
-            BtnTest.Label = "TESTING";
+            BtnList = new NodeMenuButtonRenderItem("ms-appx:///Assets/new icons/right arrow.png", parent, resourceCreator);
+            BtnList.Label = "list";
 
             BtnGroup = new NodeMenuButtonRenderItem("ms-appx:///Assets/new icons/collection white.png", parent, resourceCreator);
             BtnGroup.Label = "collection";
@@ -83,7 +83,7 @@ namespace NuSysApp
                 BtnDelete,
                 BtnGroup,
                 BtnPresent,
-                BtnTest,
+                BtnList,
                 BtnLayoutTool,
                 BtnEditTags,
                 BtnPdfLeft,
@@ -92,7 +92,7 @@ namespace NuSysApp
                 Resizer,
                 BtnTools
             };
-            _menuButtons = new List<BaseRenderItem> { BtnDelete, BtnGroup, BtnPresent, BtnTest, BtnLayoutTool, BtnEditTags, BtnEnterCollection, BtnTools };
+            _menuButtons = new List<BaseRenderItem> { BtnDelete, BtnGroup, BtnPresent, BtnList, BtnLayoutTool, BtnEditTags, BtnEnterCollection, BtnTools };
 
             IsHitTestVisible = false;
             IsChildrenHitTestVisible = true;
@@ -209,7 +209,7 @@ namespace NuSysApp
             BtnTools.IsVisible = _isSingleCollectionSelected;
 
             //CollectionListView and associated button showing or not:
-            BtnTest.IsVisible = _isSingleCollectionSelected;
+            BtnList.IsVisible = _isSingleCollectionSelected;
 
 
             RemoveLibrary();
@@ -259,35 +259,30 @@ namespace NuSysApp
 
         public void UpdateLib()
         {
-            if (_isSingleCollectionSelected)
+            if (!_isSingleCollectionSelected) return;
+            var collection = (CollectionRenderItem) _selectedItems[0];
+            if (collection.HoldsList)
             {
-                var collection = (CollectionRenderItem) _selectedItems[0];
-                if (collection.HoldsList)
+                if (Lib != null)
                 {
-                    if (Lib != null)
-                    {
-                        SetLibDimensions();
-                    }
-                    else
-                    {
-                        AddLibrary();
-                    }
+                    SetLibDimensions();
                 }
                 else
                 {
-                    RemoveLibrary();
+                    AddLibrary();
                 }
+            }
+            else
+            {
+                RemoveLibrary();
             }
         }
 
         public void RemoveLibrary()
         {
-            if (Lib != null)
-            {
-                RemoveChild(Lib);
-                Lib = null;
-            }
-
+            if (Lib == null) return;
+            RemoveChild(Lib);
+            Lib = null;
         }
 
 

@@ -920,24 +920,9 @@ namespace NuSysApp
                 _editTagsElement.Load();
             }
 
-            if (item == RenderEngine.ElementSelectionRect.BtnTest)
+            if (item == RenderEngine.ElementSelectionRect.BtnList)
             {
                 var collectionRenderItem = (CollectionRenderItem)Selections[0];
-                //if (!collectionRenderItem.HoldsList)
-                //{
-                //    RenderEngine.ElementSelectionRect.RemoveChild(collectionRenderItem);
-                //    collectionRenderItem.RemoveChild(collectionRenderItem.Lib);
-                //    collectionRenderItem.Lib.LostFocus();
-                //}
-                //else
-                //{
-                    //collectionRenderItem.Lib = _collectionList.ConstructListViewUIElementContainer(collectionRenderItem);
-                    //collectionRenderItem.AddChild(collectionRenderItem.Lib);
-                    //RenderEngine.ElementSelectionRect.AddChild(collectionRenderItem.Lib);
-                    //collectionRenderItem.Lib.GotFocus();
-
-                //    RenderEngine.ElementSelectionRect.AddLibrary(_collectionList.ConstructListViewUIElementContainer(collectionRenderItem));
-                //}
                 collectionRenderItem.HoldsList = !collectionRenderItem.HoldsList;
                 RenderEngine.ElementSelectionRect.UpdateLib();
             }
