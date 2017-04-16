@@ -107,7 +107,7 @@ namespace NuSysApp
 
         private void MinimapUIElement_Holding(InteractiveBaseRenderItem item, Vector2 point)
         {
-
+            _mode = Mode.Dragging;
 
         }
 
