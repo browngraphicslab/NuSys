@@ -7,6 +7,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Devices.Input;
 using Windows.UI;
 using Windows.UI.Xaml.Automation.Peers;
 using Microsoft.Graphics.Canvas;
@@ -162,7 +163,7 @@ namespace NuSysApp
         /// <param name="item"></param>
         /// <param name="columnName"></param>
         /// <param name="pointer"></param>
-        private void _metadata_listview_RowDoubleTapped(MetadataEntry item, string columnName, CanvasPointer pointer)
+        private void _metadata_listview_RowDoubleTapped(MetadataEntry item, string columnName, PointerDeviceType type)
         {
             if (item.Mutability == MetadataMutability.MUTABLE  || item.Key == "Keywords") 
             {

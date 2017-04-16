@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using Windows.Devices.Input;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Newtonsoft.Json.Converters;
@@ -42,7 +43,7 @@ namespace NuSysApp
             AddChild(_listView);
         }
 
-        private void _listView_RowDoubleTapped(string item, string columnName, CanvasPointer pointer)
+        private void _listView_RowDoubleTapped(string item, string columnName, PointerDeviceType type)
         {
             Item_OnDoubleTapped(item);
         }
@@ -57,9 +58,9 @@ namespace NuSysApp
             Item_Dragging(pointer);
         }
 
-        private void _listView_RowTapped(string item, string columnName, CanvasPointer pointer, bool isSelected)
+        private void _listView_RowTapped(string item, string columnName, bool isSelected, PointerDeviceType type)
         {
-            Item_OnTapped(item, pointer);
+            Item_OnTapped(item, type);
         }
         
 

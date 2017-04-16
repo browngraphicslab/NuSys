@@ -5,11 +5,16 @@ using System.Threading.Tasks;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using System;
+using Windows.Devices.Input;
 
 namespace NuSysApp
 {
     public class ListViewRowUIElement<T> : RectangleUIElement
     {
+        public delegate void TapEventHandler(RectangleUIElement sender);
+        public event TapEventHandler Tapped;
+        public event TapEventHandler DoubleTapped;
+
         /// <summary>
         /// The item that this row corresponds to
         /// </summary>
@@ -30,11 +35,11 @@ namespace NuSysApp
         public event PointerReleasedEventHandler RowPointerReleased;
 
 
-        public delegate void TappedEventHandler(ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer, T item);
+        public delegate void TappedEventHandler(ListViewRowUIElement<T> rowUIElement, int colIndex, PointerDeviceType type, T item);
         public event TappedEventHandler RowTapped;
 
 
-        public delegate void DoubleTappedEventHandler(ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer, T item);
+        public delegate void DoubleTappedEventHandler(ListViewRowUIElement<T> rowUIElement, int colIndex, PointerDeviceType type, T item);
         public event DoubleTappedEventHandler RowDoubleTapped;
 
         public delegate void DraggedEventHandler(
@@ -62,6 +67,7 @@ namespace NuSysApp
             _isSelected = false;
             _item = item;
         }
+
         /// <summary>
         /// Switches the cells at index1 and index2 in _cells. This will not graphically reload everything.
         /// </summary>
@@ -91,12 +97,26 @@ namespace NuSysApp
                 return;
             }
             _children.Add(cell);
+            var tapRecognizer = new TapGestureRecognizer();
+            cell.GestureRecognizers.Add(tapRecognizer);
+            tapRecognizer.OnTapped += delegate(TapGestureRecognizer recognizer, TapEventArgs args)
+            {
+                if (args.TapType == TapEventArgs.Tap.SingleTap)
+                {
+                    Debug.Assert(cell != null);
+                    RowTapped?.Invoke(this, _children.IndexOf(cell), args.DeviceType, Item);
+                }
+                else if (args.TapType == TapEventArgs.Tap.DoubleTap)
+                {
+                    Debug.Assert(cell != null);
+                    RowDoubleTapped?.Invoke(this, _children.IndexOf(cell), args.DeviceType, Item);
+                }
+            };
+
             cell.Pressed += Cell_Pressed;
             cell.Released += Cell_Released;
             cell.Dragged += Cell_Dragged;
             cell.DragStarted += Cell_DragStarted;
-            cell.Tapped += Cell_Tapped;
-            cell.DoubleTapped += Cell_DoubleTapped;
             cell.PointerWheelChanged += Cell_PointerWheelChanged;
             cell.Holding += Cell_Holding;
         }
@@ -114,21 +134,6 @@ namespace NuSysApp
             var cell = item as RectangleUIElement;
             Debug.Assert(cell != null);
             RowDragStarted?.Invoke(Item, _children.IndexOf(item), pointer);
-
-        }
-
-        private void Cell_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            var cell = item as RectangleUIElement;
-            Debug.Assert(cell != null);
-            RowTapped?.Invoke(this, _children.IndexOf(item), pointer, Item);
-        }
-
-        private void Cell_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            var cell = item as RectangleUIElement;
-            Debug.Assert(cell != null);
-            RowDoubleTapped?.Invoke(this, _children.IndexOf(item), pointer, Item);
 
         }
 
@@ -238,10 +243,10 @@ namespace NuSysApp
             cell.Released -= Cell_Released;
             cell.Dragged -= Cell_Dragged;
             cell.DragStarted -= Cell_DragStarted;
-            cell.DoubleTapped -= Cell_DoubleTapped;
-            cell.Tapped -= Cell_Tapped;
             cell.PointerWheelChanged -= Cell_PointerWheelChanged;
             cell.Holding -= Cell_Holding;
+
+            cell.GestureRecognizers.Clear();
         }
 
 
