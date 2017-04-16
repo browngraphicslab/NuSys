@@ -67,6 +67,7 @@ namespace NuSysApp
                 IsVisible = false
 
             };
+            //_zoomRectangle.Transform.SetParent(Transform);
             AddChild(_zoomRectangle);
 
             _test = new RectangleUIElement(this, ResourceCreator)
@@ -172,7 +173,7 @@ namespace NuSysApp
 
         private void Move(CanvasPointer pointer)
         {
-
+            //If zoom rectangle isn't visible, make it visible and at the viewport's position
             if (!_zoomRectangle.IsVisible)
             {
                 _zoomRectangle.IsVisible = true;
@@ -181,8 +182,50 @@ namespace NuSysApp
                 _zoomRectangle.Transform.LocalPosition = new Vector2((float)_viewport.X, (float)_viewport.Y);
             }
 
-            _zoomRectangle.Transform.LocalPosition += pointer.DeltaSinceLastUpdate;
+            //Update the zoomRectangle's position. Don't move it off the screen.
 
+            var dx = pointer.DeltaSinceLastUpdate.X;
+            var dy = pointer.DeltaSinceLastUpdate.Y;
+
+            //If moving to the left, make sure we are not dragging it off the screen to the left
+            if (dx < 0)
+            {
+                if (_zoomRectangle.Transform.LocalPosition.X + dx < 0)
+                {
+                    dx = 0;
+                }
+            }
+            //Likewise if moving to the right
+            else
+            {
+                if (_zoomRectangle.Transform.LocalPosition.X + _zoomRectangle.Width + dx > _rect.Width)
+                {
+                    dx = 0;
+                }
+            }
+            //If moving to the down, make sure we are not dragging it off the screen to the left
+            if (dy < 0)
+            {
+                if (_zoomRectangle.Transform.LocalPosition.Y + dy < 0)
+                {
+                    dy = 0;
+                }
+            }
+            //Likewise if moving up
+            else
+            {
+                if (_zoomRectangle.Transform.LocalPosition.Y + _zoomRectangle.Height + dy > _rect.Height)
+                {
+                    dy = 0;
+                }
+            }
+
+
+
+            _zoomRectangle.Transform.LocalPosition += new Vector2(dx, dy);
+
+
+            // This portion of the code sets the zoomRectangle's region to the actual viewport.
 
             //local point is center of rectangles
             var center = _zoomRectangle.Transform.LocalPosition + new Vector2(_zoomRectangle.Width, _zoomRectangle.Height)/2;
@@ -501,14 +544,14 @@ namespace NuSysApp
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
 
+
             // Creates a clipping of the drawing session based on local bounds
-            using (ds.CreateLayer(1f, GetLocalBounds()))
+            using (ds.CreateLayer(1f, _rect))
             {
-                //_zoomRectangle.Draw(ds);
+                base.Draw(ds);
             }
             ds.Transform = orgTransform;
 
-            base.Draw(ds);
 
 
         }
