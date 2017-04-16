@@ -68,29 +68,38 @@ namespace NuSysApp
             ResetImage();
 
             // CHANGED: clip 
-            Point localPoint = new Point(0, 0);             // normalized point within xImage; x,y from 0-1
-            var point = xImage.TransformToVisual(Window.Current.Content);
-            Point upperLeft = point.TransformPoint(new Point(localPoint.X * xImage.ActualWidth, localPoint.Y * xImage.ActualHeight));
+            // TODO get the actual localPoint and localSize 
+            Point localPoint = new Point(0.5, 0);             // normalized point within xImage; x,y from 0-1
             Size localSize = new Size(0.5, 0.5);            // normalized size within xImage 
             Size size = new Size(localSize.Width * xImage.ActualWidth, localSize.Height * xImage.ActualHeight);            
+            
+
             RectangleGeometry clipRect = new RectangleGeometry
             {
-                //Rect = new Rect(50, 50, 600, 600)
-                Rect = new Rect(upperLeft, size)
+                Rect = new Rect(new Point(localPoint.X * xImage.ActualWidth, localPoint.Y * xImage.ActualHeight), size)
             };
-           // xImage.Clip = clipRect;
+            xImage.Clip = clipRect;
 
+            /*
             Rectangle rectangle = new Rectangle
             {
                 Stroke = new SolidColorBrush(Colors.Red),
                 StrokeThickness = 5, 
-                Width = size.Width, Height = size.Height
+                Width = size.Width,
+                Height = size.Height
             };
             rectangle.RenderTransform = new TranslateTransform
             {
-                X = upperLeft.X, Y = upperLeft.Y 
+                X = clipRect.Rect.X, // upperLeft.X,
+                Y = clipRect.Rect.Y // upperLeft.Y 
             };
-            xCanvas.Children.Add(rectangle); 
+            xCanvas.Children.Add(rectangle);
+            */ 
+
+
+            //Image manipulationImage = xImage; 
+            // TODO center it again;; but make sure it's still clipped, ResetImage() doesn't work; maybe manipulate another Image 
+            // TODO global variable for actualSize, to use in place of xImage.ActualWidth and xImage.ActualHeight 
         }
 
         /// <summary>
