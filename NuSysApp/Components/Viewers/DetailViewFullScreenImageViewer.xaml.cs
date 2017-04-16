@@ -33,6 +33,10 @@ namespace NuSysApp
         private List<Uri> _currentListOfImageUris;
         private int _indexOfUri;
 
+        // CHANGED: clip 
+        private Size _xImageSize;   // size of cropped image 
+        private Point _xImagePoint; // point on Image where cropping starts; (0,0) = upper left of image 
+
         public double ActualX { get; private set; }
 
         /// <summary>
@@ -47,6 +51,9 @@ namespace NuSysApp
             xCanvas.Background = new SolidColorBrush(color);
             xCanvas.DoubleTapped += DoubleTapped;
             xImage.ImageOpened += XImageOnOpened;
+
+            // CHANGED: clip 
+            _xImageSize = new Size(xImage.ActualWidth, xImage.ActualHeight);
         }
 
         /// <summary>
@@ -71,15 +78,17 @@ namespace NuSysApp
             // TODO get the actual localPoint and localSize 
             Point localPoint = new Point(0.5, 0);             // normalized point within xImage; x,y from 0-1
             Size localSize = new Size(0.5, 0.5);            // normalized size within xImage 
-            Size size = new Size(localSize.Width * xImage.ActualWidth, localSize.Height * xImage.ActualHeight);            
-            
+            Size size = new Size(localSize.Width * xImage.ActualWidth, localSize.Height * xImage.ActualHeight);
+            Point point = new Point(localPoint.X * xImage.ActualWidth, localPoint.Y * xImage.ActualHeight); 
 
             RectangleGeometry clipRect = new RectangleGeometry
             {
-                Rect = new Rect(new Point(localPoint.X * xImage.ActualWidth, localPoint.Y * xImage.ActualHeight), size)
+                Rect = new Rect(point, size)
             };
             xImage.Clip = clipRect;
 
+            _xImageSize = size;
+            _xImagePoint = point; 
             /*
             Rectangle rectangle = new Rectangle
             {
@@ -94,10 +103,11 @@ namespace NuSysApp
                 Y = clipRect.Rect.Y // upperLeft.Y 
             };
             xCanvas.Children.Add(rectangle);
-            */ 
+            */
 
 
             //Image manipulationImage = xImage; 
+            ResetImage();
             // TODO center it again;; but make sure it's still clipped, ResetImage() doesn't work; maybe manipulate another Image 
             // TODO global variable for actualSize, to use in place of xImage.ActualWidth and xImage.ActualHeight 
         }
@@ -118,6 +128,32 @@ namespace NuSysApp
         /// </summary>
         private void ResetImage()
         {
+       //     /* 
+            // CHANGED: clip 
+            var point = xImage.TransformToVisual(Window.Current.Content);
+            Point screenCoord = point.TransformPoint(new Point(_xImagePoint.X + _xImageSize.Width / 2, _xImagePoint.Y + _xImageSize.Height / 2));
+            //Point originalUpperleft = point.TransformPoint(new Point(xImage.ActualWidth / 2, xImage.ActualHeight / 2));
+
+            RotateTransform rotate = new RotateTransform
+            {
+                CenterX = screenCoord.X,
+                CenterY = screenCoord.Y,
+                Angle = 0
+            };
+
+            TranslateTransform translate = new TranslateTransform
+            {
+                X = (xCanvas.ActualWidth - _xImageSize.Width) * .5 - _xImagePoint.X,
+                Y = (xCanvas.ActualHeight - _xImageSize.Height) * .5 - _xImagePoint.Y
+            };
+
+
+            TransformGroup composite = new TransformGroup();
+            composite.Children.Add(translate);
+            composite.Children.Add(rotate);
+            xImage.RenderTransform = new MatrixTransform { Matrix = composite.Value };
+          //  */
+                /* 
             var point = xImage.TransformToVisual(Window.Current.Content);
             Point screenCoord = point.TransformPoint(new Point(xImage.ActualWidth / 2, xImage.ActualHeight / 2));
 
@@ -138,43 +174,7 @@ namespace NuSysApp
             composite.Children.Add(translate);
             composite.Children.Add(rotate);
             xImage.RenderTransform = new MatrixTransform { Matrix = composite.Value };
-
-          
-            // 
-            /* 
-            (xImage.RenderTransform as TransformGroup).Children[0] = new CompositeTransform();
-            var transform = (xImage.RenderTransform as TransformGroup)?.Children?.First() as CompositeTransform;
-
-            Debug.Assert(transform != null);
-            if (transform == null)
-            {
-                return;
-            }
-            double scale;
-            var screenRatio = xCanvas.ActualWidth/xCanvas.ActualHeight;
-
-            if (xImage.ActualWidth > xImage.ActualHeight * screenRatio)
-            {
-                scale = xCanvas.ActualWidth/xImage.ActualWidth;
-                scale /= 2;
-                transform.ScaleX = scale;
-                transform.ScaleY = scale;
-                transform.TranslateX = xCanvas.ActualWidth * .25;
-                transform.TranslateY = xCanvas.ActualHeight * .25;
-            }
-            else
-            {
-                scale = xCanvas.ActualHeight / xImage.ActualHeight;
-                scale /= 2;
-                transform.ScaleX = scale;
-                transform.ScaleY = scale;
-                transform.TranslateX = (xCanvas.ActualWidth - (xImage.ActualWidth * scale))/2;
-                transform.TranslateY = xCanvas.ActualHeight * .25;
-            }
-            //transform.CenterX = xCanvas.ActualWidth / 2;
-            //transform.CenterY = xCanvas.ActualHeight / 2;
-            transform.Rotation = 0;
-            */
+            */ 
         }
 
         /// <summary>
