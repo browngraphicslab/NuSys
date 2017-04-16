@@ -571,6 +571,7 @@ namespace NuSysApp
                 return;
 
             DoubleTapped?.Invoke(hit);
+
         }
 
         private void CanvasInteractionManagerOnItemTapped(CanvasPointer pointer)

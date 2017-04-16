@@ -151,8 +151,13 @@ namespace NuSysApp
             Background = Colors.Transparent;
             SessionController.Instance.NuSessionView = this; // set the session controller's getter for the NuSessionView
 
-            _floatingMenu = new FloatingMenu(this, canvas);
+            _floatingMenu = new FloatingMenu(this, canvas)
+            {
+                IsVisible = false
+            };
             AddChild(_floatingMenu);
+
+           
 
             SessionController.Instance.EnterNewCollectionCompleted += InstanceOnEnterNewCollectionCompleted;
             

@@ -36,6 +36,11 @@ namespace NuSysApp
         public event PointerPressedHandler ItemTapped;
         public event PointerPressedHandler ItemLongTapped;
         public event PointerPressedHandler ItemDoubleTapped;
+
+        //prototyping
+        public event PointerPressedHandler CanvasDoubleTapped;
+
+
         public event PointerWheelHandler PointerWheelChanged;
         public event HoldingHandler Holding;
         public event TwoPointerPressedHandler TwoPointerPressed;
@@ -253,6 +258,7 @@ namespace NuSysApp
                 else if ((releasedPointer.DistanceTraveled < 20 && releasedPointer.StartTimeDelta(_lastTappedPointer) < 300))
                 {
                     ItemDoubleTapped?.Invoke(releasedPointer);
+                    
                 }
 
                 AllPointersReleased?.Invoke();
