@@ -96,6 +96,21 @@ namespace NuSysApp
             flyoutItem.Tapped += FlyoutItemOnTapped;
         }
 
+        /// <summary>
+        /// Make a custom flyout item. This method attaches the appropriate handler to the button you pass in
+        /// </summary>
+        /// <param name="flyoutItem"></param>
+        /// <param name="onTappedEvent"></param>
+        public void AddDummyFlyoutItem(ButtonUIElement flyoutItem, PointerHandler onTappedEvent)
+        {
+            flyoutItem.Transform.LocalPosition = new Vector2(0, _flyoutItems.Count * _flyoutItemHeight);
+            flyoutItem.Height = _flyoutItemHeight;
+            flyoutItem.Width = Width;
+            _flyOutItemToTappedEvent[flyoutItem] = onTappedEvent;
+            _flyoutItems.Add(flyoutItem);
+            AddChild(flyoutItem);
+            flyoutItem.Tapped += FlyoutItemOnTapped;
+        }
 
         public override void Dispose()
         {

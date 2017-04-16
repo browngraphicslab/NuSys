@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Text;
 using NusysIntermediate;
 
 namespace NuSysApp
@@ -249,6 +250,51 @@ namespace NuSysApp
             {
                 popup.AddFlyoutItem(column.Title, OnColumnOptionTapped, ResourceCreator);
             }
+            //finally, add the custom option
+            var customMetadataPopup = new RectangleButtonUIElement(this, ResourceCreator);
+            customMetadataPopup.Background = Colors.White;
+            customMetadataPopup.BorderColor = Constants.MED_BLUE;
+            customMetadataPopup.ButtonTextColor = Constants.ALMOST_BLACK;
+            customMetadataPopup.BorderWidth = 1;
+            //customMetadataPopup.ButtonText = "fuck";
+            customMetadataPopup.ButtonTextSize = 12;
+            customMetadataPopup.ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
+            customMetadataPopup.SelectedBackground = Constants.LIGHT_BLUE;
+
+            customMetadataPopup.IsHitTestVisible = false;
+            customMetadataPopup.IsChildrenHitTestVisible = true;
+
+            popup.AddDummyFlyoutItem(customMetadataPopup, OnCustomOptionTapped);
+
+            var textBox = new ScrollableTextboxUIElement(this, Canvas, false, true)
+            {
+                Width = customMetadataPopup.Width * 0.66f,
+                Height = customMetadataPopup.Height,
+                TextHorizontalAlignment = CanvasHorizontalAlignment.Left,
+                TextVerticalAlignment = CanvasVerticalAlignment.Bottom,
+                FontSize = 14,
+                BorderWidth = 1,
+                BorderColor = Constants.MED_BLUE,
+                Background = Colors.White,
+                FontFamily = UIDefaults.TextFont
+            };
+            customMetadataPopup.AddChild(textBox);
+
+            var button = new RectangleButtonUIElement(this, ResourceCreator)
+            {
+                Width = customMetadataPopup.Width * 0.34f,
+                Height = customMetadataPopup.Height,
+                ButtonText = "Add",
+                Background = Constants.MED_BLUE
+            };
+            customMetadataPopup.AddChild(button);
+            button.Transform.LocalX += textBox.Width; 
+
+        }
+
+        private void OnCustomOptionTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+
         }
 
         private void OnColumnOptionTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
