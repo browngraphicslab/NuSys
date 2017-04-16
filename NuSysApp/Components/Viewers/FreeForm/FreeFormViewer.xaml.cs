@@ -925,6 +925,7 @@ namespace NuSysApp
                 var collectionRenderItem = (CollectionRenderItem)Selections[0];
                 collectionRenderItem.HoldsList = !collectionRenderItem.HoldsList;
                 RenderEngine.ElementSelectionRect.UpdateLib();
+                Debug.WriteLine("List Button Tapped");
             }
 
             //if (item is CollectionRenderItem)

@@ -211,6 +211,19 @@ namespace NuSysApp.Components.NuSysRenderer.UI.ListView
             }
         }
 
+        public void UpdateContents()
+        {
+            List<LibraryElementModel> items = new List<LibraryElementModel>();
+
+            foreach (var child in _collectionRenderItem.ViewModel.GetOutputLibraryIds())
+            {
+                var item = SessionController.Instance.ContentController.GetLibraryElementModel(child);
+                if (!Lib.GetItems().Contains(item)) items.Add(item);
+            }
+
+            Lib.AddItems(items);
+        }
+
         /// <summary>
         /// Fired when a row is dragged from
         /// </summary>
@@ -530,6 +543,19 @@ namespace NuSysApp.Components.NuSysRenderer.UI.ListView
             await tempFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
 
             return thumbnails;
+        }
+
+        /// <summary>
+        /// Removes highlights, called in RemoveLib in ElementSelectionRenderItem so that highlights
+        /// disappear after library removed from display
+        /// </summary>
+        public void RemoveHighlights()
+        {
+            // remove the highlight from the previously selected controllers
+            foreach (var controller in _previouslySelectedControllers)
+            {
+                controller?.RemoveHighlight();
+            }
         }
 
         /// <summary>

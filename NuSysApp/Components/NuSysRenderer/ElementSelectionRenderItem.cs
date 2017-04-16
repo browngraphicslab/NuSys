@@ -101,6 +101,7 @@ namespace NuSysApp
             {
                 AddChild(btn);
             }
+            
 
             AddChild(Resizer);
 
@@ -239,15 +240,17 @@ namespace NuSysApp
         public void AddLibrary()
         {
             Lib = new CollectionListViewUIElement((CollectionRenderItem)_selectedItems[0], _resourceCreator);
-            AddChild(Lib);
             SetLibDimensions();
+            AddChild(Lib);
         }
 
         private void SetLibDimensions()
         {
             if (_screenRect.Width < 200 || _screenRect.Height < 200)
             {
-                Lib.IsVisible = false;
+                RemoveLibrary();
+                var collection = (CollectionRenderItem)_selectedItems[0];
+                collection.HoldsList = !collection.HoldsList;
             }
             else
             {
@@ -265,6 +268,7 @@ namespace NuSysApp
             {
                 if (Lib != null)
                 {
+                    Lib.UpdateContents();
                     SetLibDimensions();
                 }
                 else
@@ -281,7 +285,10 @@ namespace NuSysApp
         public void RemoveLibrary()
         {
             if (Lib == null) return;
+
+            Lib.RemoveHighlights();
             RemoveChild(Lib);
+            Lib.Dispose();
             Lib = null;
         }
 
@@ -354,7 +361,7 @@ namespace NuSysApp
             {
                 if (!btn.IsVisible)
                     continue;
-                //Make sure the tool button is a ligned because its a different type of button from the rest
+                //Make sure the tool button is aligned because its a different type of button from the rest
                 if (btn == BtnTools)
                 {
                     btn.Transform.LocalPosition = new Vector2((float)_screenRect.X + 20 + (float)_screenRect.Width,
