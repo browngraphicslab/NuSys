@@ -237,10 +237,9 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void HorizontalButtonTapped(ButtonUIElement sender)
+        private void HorizontalButtonTapped(ButtonUIElement button)
         {
             ResetButtonColors();
-            var button = (ButtonUIElement)sender;
             button.Background = Constants.MED_BLUE;
             _layoutStyle = LayoutStyle.Horizontal;
             _arrangeButton.ButtonText = ARRANGE_TEXT;
@@ -254,10 +253,9 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void VerticalButtonTapped(ButtonUIElement sender)
+        private void VerticalButtonTapped(ButtonUIElement button)
         {
             ResetButtonColors();
-            var button = (ButtonUIElement)sender;
             button.Background = Constants.MED_BLUE;
             _layoutStyle = LayoutStyle.Vertical;
             _arrangeButton.ButtonText = ARRANGE_TEXT;
@@ -271,10 +269,9 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void GridButtonTapped(ButtonUIElement sender)
+        private void GridButtonTapped(ButtonUIElement button)
         {
             ResetButtonColors();
-            var button = (ButtonUIElement)sender;
             button.Background = Constants.MED_BLUE;
             _layoutStyle = LayoutStyle.Grid;
             _arrangeButton.ButtonText = ARRANGE_TEXT;
@@ -288,10 +285,9 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void CustomButtonTapped(ButtonUIElement sender)
+        private void CustomButtonTapped(ButtonUIElement button)
         {
             ResetButtonColors();
-            var button = (ButtonUIElement)sender;
             button.Background = Constants.MED_BLUE;
             _layoutStyle = LayoutStyle.Custom;
             _arrangeButton.ButtonText = CUSTOM_LAYOUT_TEXT;

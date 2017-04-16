@@ -403,7 +403,6 @@ namespace NuSysApp
             AddChild(CloseButton);
             CloseButton.Transform.LocalPosition = new Vector2(-CloseButton.Width - 10, TopBarHeight + 10);
             CloseButton.Tapped += CloseButtonOnTapped;
-            //CloseButton.Pressed += CloseButtonOnTapped;
         }
 
         /// <summary>
@@ -429,7 +428,6 @@ namespace NuSysApp
             if (CloseButton != null)
             {
                 CloseButton.Tapped -= CloseButtonOnTapped;
-                //CloseButton.Pressed -= CloseButtonOnTapped;
             }
             base.Dispose();
         }

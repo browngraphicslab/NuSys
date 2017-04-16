@@ -858,12 +858,7 @@ namespace NuSysApp
             if (IsEditable)
             {
                 _caret.IsVisible = true;
-                UITask.Run(delegate
-                {
-
-                    
-                });
-
+                // previously had code to make the touch keyboard showup here, look on github for it :) if you need it again
             }
             else
             {
