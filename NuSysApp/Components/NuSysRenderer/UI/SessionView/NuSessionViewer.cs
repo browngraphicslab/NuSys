@@ -157,7 +157,12 @@ namespace NuSysApp
             };
             AddChild(_floatingMenu);
 
-           
+            var radialMenu = new RadialMenu(this, canvas)
+            {
+                IsVisible = true
+            };
+            AddChild(radialMenu);
+
 
             SessionController.Instance.EnterNewCollectionCompleted += InstanceOnEnterNewCollectionCompleted;
             
