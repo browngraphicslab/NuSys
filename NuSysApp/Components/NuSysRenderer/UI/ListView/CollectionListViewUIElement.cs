@@ -387,32 +387,18 @@ namespace NuSysApp.Components.NuSysRenderer.UI.ListView
         private void UpdateContents()
         {
             var items = new List<LibraryElementModel>();
-            bool itemAdded = false;
             foreach (var child in _collectionRenderItem.ViewModel.GetOutputLibraryIds())
             {
                 var item = SessionController.Instance.ContentController.GetLibraryElementModel(child);
                 if (!Lib.GetItems().Contains(item))
                 {
                     items.Add(item);
-                    itemAdded = true;
                 }
             }
 
-            Lib.AddItems(items);
-            //if(itemAdded) updateEventHandlers();
+            if(items.Count > 0) Lib.AddItems(items);
         }
 
-        private void updateEventHandlers()
-        {
-            Lib.RowDragged -= LibraryListView_RowDragged;
-            Lib.RowDragCompleted -= LibraryListView_RowDragCompleted;
-            Lib.RowTapped -= OnLibraryItemSelected;
-            Lib.RowDoubleTapped -= LibraryListView_RowDoubleTapped;
-            Lib.RowDragged += LibraryListView_RowDragged;
-            Lib.RowDragCompleted += LibraryListView_RowDragCompleted;
-            Lib.RowTapped += OnLibraryItemSelected;
-            Lib.RowDoubleTapped += LibraryListView_RowDoubleTapped;
-        }
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
