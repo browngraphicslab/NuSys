@@ -471,6 +471,12 @@ namespace NuSysApp
         /// <param name="itemsToAdd"></param>
         public void AddItems(List<T> itemsToAdd)
         {
+            if (itemsToAdd == null || itemsToAdd.Count() == 0)
+            {
+                Debug.Fail("Your list of items should contain at least one item");
+                return;
+            }
+
             ListView.AddItems(itemsToAdd);
         }
 
