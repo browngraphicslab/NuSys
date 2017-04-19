@@ -293,6 +293,30 @@ namespace NuSysApp
             CreateListViewRowUIElements();
         }
 
+        public void AddItem(T itemToAdd)
+        {
+            if(itemToAdd == null)
+            {
+                Debug.Write("You are trying to add a null item to the ListView");
+                return;
+            }
+            //Add item to the item source
+            _itemsSource.Add(itemToAdd);
+            //If it has a filter, then add the item to the filteredItems if the filter function returns true
+            if (HasFilter() && _currentFilter.Invoke(itemToAdd))
+            {
+                _filteredItems.Add(itemToAdd);
+            }
+            else
+            {
+                //If it has no filter, simply add to filteredItems
+                _filteredItems.Add(itemToAdd);
+            }
+
+            //Make RowUIElements
+            CreateListViewRowUIElements();
+        }
+
         /// <summary>
         /// Removes things from the _filteredItems list and the _itemsSource list. Removes the Row from the ListViewRowUIElements list.
         /// </summary>

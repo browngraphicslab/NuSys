@@ -475,6 +475,15 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// Add new item/row to the list
+        /// </summary>
+        /// <param name="itemToAdd"></param>
+        public void AddItem(T itemToAdd)
+        {
+            ListView.AddItem(itemToAdd);
+        }
+
+        /// <summary>
         /// Removes all items from list view
         /// </summary>
         public void ClearItems()
