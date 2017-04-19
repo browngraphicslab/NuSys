@@ -788,7 +788,6 @@ namespace NuSysApp
 
         public void OnManipulated(ManipulationGestureRecognizer sender, ManipulationEventArgs args)
         {
-            base.OnManipulated(sender, args);
             PanZoom(Camera, Matrix3x2.Identity, args.CurrentFocus, args.Translation.X, args.Translation.Y, args.ScaleDelta);
         }
 

@@ -185,7 +185,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        protected override async void CloseButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        protected override async void CloseButtonOnTapped(ButtonUIElement button)
         {
             // remove button events
             RemoveButtonEvents();

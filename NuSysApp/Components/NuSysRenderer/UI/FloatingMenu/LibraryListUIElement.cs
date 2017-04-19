@@ -545,11 +545,11 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        protected override void CloseButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        protected override void CloseButtonOnTapped(ButtonUIElement button)
         {
             // hide the library
             ToggleVisibility(false);
-            base.CloseButtonOnTapped(item, pointer);
+            base.CloseButtonOnTapped(button);
         }
 
         /// <summary>
