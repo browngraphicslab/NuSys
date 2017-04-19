@@ -10,6 +10,7 @@ using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.Brushes;
 using Microsoft.Graphics.Canvas.Text;
 using System.Diagnostics;
+using Windows.Devices.Input;
 
 namespace NuSysApp
 {
@@ -90,10 +91,10 @@ namespace NuSysApp
         public event PieChartElementDragCompletedEventHandler ElementDragCompleted;
 
 
-        public delegate void PieChartElementTappedEventHandler(PieChartUIElement sender, PieChartElement<string> element);
+        public delegate void PieChartElementTappedEventHandler(PieChartUIElement sender, PieChartElement<string> element, PointerDeviceType deviceType );
         public event PieChartElementTappedEventHandler ElementTapped;
 
-        public delegate void PieChartElementDoubleTappedEventHandler(PieChartUIElement sender, PieChartElement<string> element);
+        public delegate void PieChartElementDoubleTappedEventHandler(PieChartUIElement sender, PieChartElement<string> element, PointerDeviceType deviceType);
         public event PieChartElementDoubleTappedEventHandler ElementDoubleTapped;
         #endregion events
 
@@ -135,12 +136,12 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void PieChartUIElement_Tapped(PieChartElement<string> element, Vector2 currentPoint)
+        private void PieChartUIElement_Tapped(PieChartElement<string> element, Vector2 currentPoint, PointerDeviceType deviceType)
         {
 
                 var point = Vector2.Transform(currentPoint, Transform.ScreenToLocalMatrix);
 
-                ElementTapped?.Invoke(this, element);
+                ElementTapped?.Invoke(this, element, deviceType);
                 if (_selectedElements.Contains(element))
                 {
                     if (!DisableSelectionByClick)
@@ -164,11 +165,11 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void PieChartUIElement_DoubleTapped(PieChartElement<string> element, Vector2 currentPoint)
+        private void PieChartUIElement_DoubleTapped(PieChartElement<string> element, Vector2 currentPoint, PointerDeviceType deviceType)
         {
             var point = Vector2.Transform(currentPoint, Transform.ScreenToLocalMatrix);
 
-            ElementDoubleTapped?.Invoke(this, element);
+            ElementDoubleTapped?.Invoke(this, element, deviceType);
 
         }
 
@@ -603,11 +604,11 @@ namespace NuSysApp
             {
                 if (args.TapType == TapEventArgs.Tap.SingleTap)
                 {
-                    PieChartUIElement_Tapped(element, args.Position);
+                    PieChartUIElement_Tapped(element, args.Position, args.DeviceType);
                 }
                 else if (args.TapType == TapEventArgs.Tap.DoubleTap)
                 {
-                    PieChartUIElement_DoubleTapped(element, args.Position);
+                    PieChartUIElement_DoubleTapped(element, args.Position, args.DeviceType);
                 }
             });
         }

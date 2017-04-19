@@ -48,7 +48,7 @@ namespace NuSysApp
             base.Update(parentLocalToScreenTransform);
         }
 
-        protected override void ExpandButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        protected override void ExpandButton_Tapped(ButtonUIElement sender)
         {
             SessionController.Instance.SessionView.FreeFormViewer.ShowFullScreenImage(new Uri(_controller.ContentDataController.ContentDataModel.Data));
         }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using Windows.Devices.Input;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Newtonsoft.Json.Converters;
@@ -35,7 +36,7 @@ namespace NuSysApp
             AddChild(_pieChart);
         }
 
-        private void PieChart_ElementDoubleTapped(object source, PieChartElement<string> element)
+        private void PieChart_ElementDoubleTapped(object source, PieChartElement<string> element, PointerDeviceType deviceType)
         {
             Item_OnDoubleTapped(element.Item);
 
@@ -53,9 +54,9 @@ namespace NuSysApp
 
         }
 
-        private void PieChart_ElementTapped(PieChartUIElement sender, PieChartElement<string> element)
+        private void PieChart_ElementTapped(PieChartUIElement sender, PieChartElement<string> element, PointerDeviceType deviceType)
         {
-            Item_OnTapped(element.Item);
+            Item_OnTapped(element.Item, deviceType);
 
         }
 

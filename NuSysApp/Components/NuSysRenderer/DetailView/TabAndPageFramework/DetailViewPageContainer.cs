@@ -157,7 +157,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void CollectionSettingsOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void CollectionSettingsOnTapped(ButtonUIElement sender)
         {
             var popup = new CollectionSettingsPopup(this, Canvas,_currentController as CollectionLibraryElementController);
             AddChild(popup);
@@ -176,7 +176,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void OnChangeAccessFlyoutTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void OnChangeAccessFlyoutTapped(ButtonUIElement sender)
         {
             // create the change Access menu
             _changeAccessPopup = new FlyoutPopup(this, Canvas);
@@ -208,7 +208,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void OnCannotChangeAccessTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void OnCannotChangeAccessTapped(ButtonUIElement sender)
         {
             _changeAccessPopup.DismissPopup();
         }
@@ -218,7 +218,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void OnPublicTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void OnPublicTapped(ButtonUIElement sender)
         {
             if (_currentController.LibraryElementModel.Type == NusysConstants.ElementType.Collection)
             {
@@ -302,7 +302,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void OnReadOnlyTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void OnReadOnlyTapped(ButtonUIElement sender)
         {
             if (_currentController.LibraryElementModel.Type == NusysConstants.ElementType.Collection)
             {
@@ -326,7 +326,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void OnCopyFlyoutTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void OnCopyFlyoutTapped(ButtonUIElement sender)
         {
             var accessPopup = new FlyoutPopup(this,ResourceCreator);
             accessPopup.Transform.LocalPosition = new Vector2(_settingsButton.Transform.LocalPosition.X - accessPopup.Width / 2,
@@ -375,7 +375,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private async void OnDeleteFlyoutTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private async void OnDeleteFlyoutTapped(ButtonUIElement sender)
         {
             // if the thing we are deleting was a linke
             if (_currentController.LibraryElementModel.Type ==NusysConstants.ElementType.Link)
@@ -423,7 +423,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void OnScrollToFlyoutTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void OnScrollToFlyoutTapped(ButtonUIElement sender)
         {
             SessionController.Instance.NuSessionView.Library.IsVisible = true;
             SessionController.Instance.NuSessionView.Library.LibraryListView.ScrollTo(_currentController.LibraryElementModel);

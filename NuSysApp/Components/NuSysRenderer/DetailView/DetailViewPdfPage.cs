@@ -43,7 +43,7 @@ namespace NuSysApp
             base.Update(parentLocalToScreenTransform);
         }
 
-        protected override void ExpandButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        protected override void ExpandButton_Tapped(ButtonUIElement sender)
         {
             var model = (PdfContentDataModel) _controller.ContentDataController.ContentDataModel;
             var pageUrl = model.PageUrls[_content.CurrentPage];
