@@ -124,7 +124,7 @@ namespace NuSysApp
             testButton.Height = 70;
             testButton.Background = Colors.Red;
             testButton.Transform.LocalY = 400;
-            testButton.Tapped += (sender, pointer) => { _tabControl.MoveTab(0, 2); };
+            testButton.Tapped += (sender, pointer) => { _tabControl.RemoveTab(new TabPageUIElement(this, Canvas, "Test")); };
             AddChild(testButton);
             TopBarColor = Constants.MED_BLUE;
             TopBarHeight = 25;

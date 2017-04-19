@@ -205,10 +205,18 @@ namespace NuSysApp
         {
             get
             {
+                if (index < 0 || index >= _tabs.Count)
+                {
+                    throw new IndexOutOfRangeException();
+                }
                 return _tabs[index];
             }
             set
             {
+                if(index < 0 || index >= _tabs.Count)
+                {
+                    throw new IndexOutOfRangeException();
+                }
                 _tabs[index] = value;
             }
         }
@@ -292,7 +300,12 @@ namespace NuSysApp
         /// <param name="tab">Tab to remove</param>
         public void RemoveTab(TabPageUIElement tab)
         {
-            RemoveTabAt(_tabs.IndexOf(tab));
+            int index = _tabs.IndexOf(tab);
+            if(index == -1)
+            {
+                throw new ArgumentException("TabControl does not contain the given tab", "tab");
+            }
+            RemoveTabAt(index);
         }
 
         /// <summary>
@@ -301,7 +314,11 @@ namespace NuSysApp
         /// <param name="index">Index of tab to be removed</param>
         public void RemoveTabAt(int index)
         {
-            if(SelectedIndex == index)
+            if(index < 0 || index >= _tabs.Count)
+            {
+                throw new ArgumentException("Given index is out of bounds", "index");
+            }
+            if (SelectedIndex == index)
             {
                 DeselectTabAt(index);
                 if (SelectedIndex == index)
@@ -327,6 +344,10 @@ namespace NuSysApp
         public void RemoveTabWithName(string name)
         {
             TabPageUIElement t = GetTabWithName(name);
+            if(t == null)
+            {
+                throw new ArgumentException("TabControl does not contain tab with given name", "name");
+            }
             RemoveTab(t);
         }
 
@@ -340,7 +361,7 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Set the given tab to be selected. If tab is not contained in the TabControl, does nothing
+        /// Set the given tab to be selected. If tab is not contained in the TabControl, throws an exception
         /// </summary>
         /// <param name="tab">The tab to set to be the selected tab</param>
         public void SelectTab(TabPageUIElement tab)
@@ -348,6 +369,9 @@ namespace NuSysApp
             if (_tabs.Contains(tab))
             {
                 SelectedTab = tab;
+            } else
+            {
+                throw new ArgumentException("TabControl does not contain given tab", "tab");
             }
         }
 
@@ -357,6 +381,10 @@ namespace NuSysApp
         /// <param name="index">The index of the tab to set to be the selected tab</param>
         public void SelectTabAt(int index)
         {
+            if(index < 0 || index >= _tabs.Count)
+            {
+                throw new ArgumentException("Given index is out of bounds", "index");
+            }
             SelectedIndex = index;
         }
 
@@ -368,7 +396,10 @@ namespace NuSysApp
         public void SelectTabWithName(string name)
         {
             TabPageUIElement tp = GetTabWithName(name);
-            if(tp != null)
+            if(tp == null)
+            {
+                throw new ArgumentException("TabControl does not contain tab with given name", "name");
+            } else
             {
                 SelectedTab = tp;
             }
@@ -380,6 +411,10 @@ namespace NuSysApp
         /// <param name="tab">The tab to deselect</param>
         public void DeselectTab(TabPageUIElement tab)
         {
+            if(!_tabs.Contains(tab))
+            {
+                throw new ArgumentException("TabControl does not contain given tab", "tab");
+            }
             if (SelectedTab == tab)
             {
                 DeselectTabAt(_tabs.IndexOf(tab));
@@ -392,6 +427,10 @@ namespace NuSysApp
         /// <param name="index">The index of the tab to deselect</param>
         public void DeselectTabAt(int index)
         {
+            if (index < 0 || index >= _tabs.Count)
+            {
+                throw new ArgumentException("Given index is out of bounds", "index");
+            }
             if (SelectedIndex == index)
             {
                 SelectedIndex = (index + 1) % _tabs.Count;
@@ -404,7 +443,12 @@ namespace NuSysApp
         /// <param name="name">The name of the tab to deselect</param>
         public void DeselectTabWithName(string name)
         {
-            DeselectTabAt(GetTabIndexWithName(name));
+            int index = GetTabIndexWithName(name);
+            if(index == -1)
+            {
+                throw new ArgumentException("TabControl does not contain tab with given name", "name");
+            }
+            DeselectTabAt(index);
         }
 
         /// <summary>
@@ -414,6 +458,10 @@ namespace NuSysApp
         /// <returns>The local bounds of the tab at index</returns>
         public Rect GetTabLocalBounds(int index)
         {
+            if (index < 0 || index >= _tabs.Count)
+            {
+                throw new ArgumentException("Given index is out of bounds", "index");
+            }
             return _tabs[index].GetLocalBounds();
         }
 
@@ -424,6 +472,10 @@ namespace NuSysApp
         /// <returns>The screen bounds of the tab at index</returns>
         public Rect GetTabScreenBounds(int index)
         {
+            if (index < 0 || index >= _tabs.Count)
+            {
+                throw new ArgumentException("Given index is out of bounds", "index");
+            }
             return _tabs[index].GetScreenBounds();
         }
 
@@ -434,6 +486,14 @@ namespace NuSysApp
         /// <param name="index2">The index of the second tab to swap</param>
         public void SwapTabs(int index1, int index2)
         {
+            if(index1 < 0 || index1 >= _tabs.Count)
+            {
+                throw new ArgumentException("Given index is out of bounds", "index1");
+            }
+            if(index2 < 0 || index2 >= _tabs.Count)
+            {
+                throw new ArgumentException("Given index is out of bounds", "index2");
+            }
             TabPageUIElement t = _tabs[index1];
             _tabs[index1] = _tabs[index2];
             _tabs[index2] = t;
@@ -454,6 +514,14 @@ namespace NuSysApp
         /// <param name="newIndex">The index to insert the moved tab at</param>
         public void MoveTab(int oldIndex, int newIndex)
         {
+            if (oldIndex < 0 || oldIndex >= _tabs.Count)
+            {
+                throw new ArgumentException("Given index is out of bounds", "oldIndex");
+            }
+            if (newIndex < 0 || newIndex >= _tabs.Count)
+            {
+                throw new ArgumentException("Given index is out of bounds", "newIndex");
+            }
             TabPageUIElement t = _tabs[oldIndex];
             _tabs.RemoveAt(oldIndex);
             _tabs.Insert(newIndex, t);
