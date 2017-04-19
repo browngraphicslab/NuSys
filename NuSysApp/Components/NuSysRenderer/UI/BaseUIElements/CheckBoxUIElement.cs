@@ -274,28 +274,18 @@ namespace NuSysApp
 
 
             // add the proper events
-            Tapped += SetCheckboxSelectionOnTapped;
-
-        }
-
-        public override void Dispose()
-        {
-            Tapped -= SetCheckboxSelectionOnTapped;
-
-            base.Dispose();
-        }
-
-        /// <summary>
-        /// Fired when the checkbox is tapped, sets the textbox selection based on the current IsSelected value
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void SetCheckboxSelectionOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            if (!DisableSelectionOnTap)
+            var tapRecognizer = new TapGestureRecognizer();
+            GestureRecognizers.Add(tapRecognizer);
+            tapRecognizer.OnTapped += delegate (TapGestureRecognizer sender, TapEventArgs args)
             {
-                SetCheckBoxSelection(!IsSelected);
-            }
+                if (args.TapType == TapEventArgs.Tap.SingleTap)
+                {
+                    if (!DisableSelectionOnTap)
+                    {
+                        SetCheckBoxSelection(!IsSelected);
+                    }
+                }
+            };
         }
 
         /// <summary>

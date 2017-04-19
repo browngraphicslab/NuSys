@@ -243,7 +243,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void ConfirmMakeCollectionPublicTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void ConfirmMakeCollectionPublicTapped(ButtonUIElement button)
         {
             // change the access type of the current collection to public
             _currentController.SetAccessType(NusysConstants.AccessType.Public);
@@ -273,7 +273,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void ConfirmMakeCollectionReadOnlyTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void ConfirmMakeCollectionReadOnlyTapped(ButtonUIElement button)
         {
             // change the access type of the current collection to read only
             _currentController.SetAccessType(NusysConstants.AccessType.ReadOnly);

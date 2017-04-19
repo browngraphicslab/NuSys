@@ -69,7 +69,7 @@ namespace NuSysApp
         {
             SessionController.Instance.NuSessionView.Chatbox.AddFunctionalChat(NetworkUser.ChatBot, SessionController.Instance.NuSysNetworkSession.UserIdToDisplayNameDictionary[senderArgs.OriginalSenderId] + 
                 " has invited you to join the collection "+ collectionLibraryElementController.CollectionModel.Title+". Click this message to accept. ",
-                (item, pointer) =>
+                (item) =>
                 {
                     JoinCollection(senderArgs, collectionLibraryElementController);
                 });

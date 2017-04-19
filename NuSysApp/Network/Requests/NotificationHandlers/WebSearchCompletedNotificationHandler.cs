@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NusysIntermediate;
+using static NuSysApp.ChatBoxUIElement;
 
 namespace NuSysApp
 {
@@ -52,7 +53,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void ChatClickedCallback(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void ChatClickedCallback(FunctionalDynamicTextboxUIElement item)
         {
             //miranda put your function here and use libraryElements
             SessionController.Instance.NuSessionView.ShowSearchResultPopup(libraryElements.ToList(), _searchTerm);

@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
+using static NuSysApp.ButtonUIElement;
 
 namespace NuSysApp
 {
     public class ConfirmationPopupUIElement : PopupUIElement
     {
-
         /// <summary>
         /// The message the popup should display to the user
         /// </summary>
@@ -31,12 +31,12 @@ namespace NuSysApp
         /// <summary>
         /// Pointer handler fired when the confirm button is tapped
         /// </summary>
-        public PointerHandler OnConfirmTapped { get; }
+        public TapEventHandler OnConfirmTapped { get; }
 
         /// <summary>
         /// Pointer handler fired when the cancle button is tapped
         /// </summary>
-        public PointerHandler OnCancelTapped { get; }
+        public TapEventHandler OnCancelTapped { get; }
 
         /// <summary>
         /// Textbox used to display a message to the user
@@ -63,7 +63,7 @@ namespace NuSysApp
         /// </summary>
         private float buttonHeight = 30;
 
-        public ConfirmationPopupUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, PointerHandler onConfirmTapped, PointerHandler onCancelTapped) : base(parent, resourceCreator)
+        public ConfirmationPopupUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, TapEventHandler onConfirmTapped, TapEventHandler onCancelTapped) : base(parent, resourceCreator)
         {
             // set ui defaults
             Background = Colors.White;
@@ -95,9 +95,9 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void _cancelButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void _cancelButton_Tapped(ButtonUIElement button)
         {
-            OnCancelTapped?.Invoke(this, pointer);
+            OnCancelTapped?.Invoke(button);
             DismissPopup();
         }
 
@@ -106,9 +106,9 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void _confirmButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void _confirmButton_Tapped(ButtonUIElement button)
         {
-            OnConfirmTapped?.Invoke(this, pointer);
+            OnConfirmTapped?.Invoke(button);
             DismissPopup();
         }
 

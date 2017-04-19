@@ -109,14 +109,6 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            foreach (var child in GetChildren())
-            {
-                if (child is BreadCrumbUIElement)
-                {
-                    RemoveCrumbEvents(child as BreadCrumbUIElement);
-                }
-            }
-
             foreach (var crumb in _breadCrumbData.ToArray())
             {
                 crumb.Deleted -= OnBreadCrumbDeleted;
@@ -193,7 +185,6 @@ namespace NuSysApp
             // dispose of all the previous bread crumbs
             foreach (var breadCrumb in _visibleBreadCrumbs)
             {
-                RemoveCrumbEvents(breadCrumb);
                 RemoveChild(breadCrumb); // fires the dispose method automatically
             }
 
@@ -222,44 +213,35 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Remove events from the bread crumb ui
-        /// </summary>
-        /// <param name="breadCrumb"></param>
-        private void RemoveCrumbEvents(BreadCrumbUIElement breadCrumb)
-        {
-            breadCrumb.Tapped -= BreadCrumb_Tapped;
-        }
-
-        /// <summary>
         /// Add events to the bread crumb ui
         /// </summary>
         /// <param name="breadCrumb"></param>
         private void AddCrumbEvents(BreadCrumbUIElement breadCrumb)
         {
-            breadCrumb.Tapped += BreadCrumb_Tapped;
-        }
-
-        private void BreadCrumb_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            var crumb = (item as BreadCrumbUIElement)?.Crumb;
-            Debug.Assert(crumb != null);
-
-            // if the crumb we clicked on is in the current collection
-            if (crumb.CollectionController.LibraryElementModel == SessionController.Instance.CurrentCollectionLibraryElementModel)
+            var tapRecognizer = new TapGestureRecognizer();
+            this.GestureRecognizers.Add(tapRecognizer);
+            tapRecognizer.OnTapped += delegate (TapGestureRecognizer sender, TapEventArgs args)
             {
-                // and if the crumb is not the current collection
-                if (!crumb.IsCollection)
+                var crumb = (breadCrumb)?.Crumb;
+                Debug.Assert(crumb != null);
+
+                // if the crumb we clicked on is in the current collection
+                if (crumb.CollectionController.LibraryElementModel == SessionController.Instance.CurrentCollectionLibraryElementModel)
                 {
-                    // move the camera to the element the crumb represents
-                    SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CenterCameraOnElement(
-                        crumb.ElementController.Id);
+                    // and if the crumb is not the current collection
+                    if (!crumb.IsCollection)
+                    {
+                        // move the camera to the element the crumb represents
+                        SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CenterCameraOnElement(
+                            crumb.ElementController.Id);
+                    }
                 }
-            }
-            else
-            {
-                // otherwise enter the collection and try to zoom in on the element model that the crumb represents
-                SessionController.Instance.EnterCollection(crumb.CollectionController.LibraryElementModel.LibraryElementId, crumb.ElementController?.Id);
-            }
+                else
+                {
+                    // otherwise enter the collection and try to zoom in on the element model that the crumb represents
+                    SessionController.Instance.EnterCollection(crumb.CollectionController.LibraryElementModel.LibraryElementId, crumb.ElementController?.Id);
+                }
+            };
         }
 
         public override void Draw(CanvasDrawingSession ds)

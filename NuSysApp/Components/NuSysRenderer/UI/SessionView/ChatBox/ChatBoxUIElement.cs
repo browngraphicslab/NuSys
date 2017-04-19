@@ -17,6 +17,8 @@ namespace NuSysApp
 {
     public class ChatBoxUIElement : ResizeableWindowUIElement
     {
+        public delegate void FunctionalDynamicTextboxTappedHandler(FunctionalDynamicTextboxUIElement item);
+
         /// <summary>
         /// The scrollable rectangle the user types their messages into
         /// </summary>
@@ -244,7 +246,7 @@ namespace NuSysApp
         /// <param name="user"></param>
         /// <param name="chatMessage"></param>
         /// <param name="callback"></param>
-        public void AddFunctionalChat(NetworkUser user, string chatMessage, PointerHandler callback)
+        public void AddFunctionalChat(NetworkUser user, string chatMessage, FunctionalDynamicTextboxTappedHandler callback)
         {
             Debug.Assert(user != null);
 
@@ -389,24 +391,28 @@ namespace NuSysApp
         /// <summary>
         /// private class extending DynamicTextboxUIElement used to add custom, self-removing click handlers
         /// </summary>
-        private class FunctionalDynamicTextboxUIElement : DynamicTextboxUIElement
+        public class FunctionalDynamicTextboxUIElement : DynamicTextboxUIElement
         {
             /// <summary>
             /// the private version of Callback
             /// </summary>
-            private PointerHandler _callback;
+            private FunctionalDynamicTextboxTappedHandler _callback;
+            private TapGestureRecognizer tapRecognizer;
 
             /// <summary>
             /// Constructor is the same as the base class.
             /// </summary>
             /// <param name="parent"></param>
             /// <param name="resourceCreator"></param>
-            public FunctionalDynamicTextboxUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator){}
+            public FunctionalDynamicTextboxUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator) {
+                tapRecognizer = new TapGestureRecognizer();
+                GestureRecognizers.Add(tapRecognizer);
+            }
 
             /// <summary>
             /// the callback function to call after being clicked
             /// </summary>
-            public PointerHandler Callback {
+            public FunctionalDynamicTextboxTappedHandler Callback {
                 get
                 {
                     return _callback;
@@ -414,8 +420,9 @@ namespace NuSysApp
                 set
                 {
                     _callback = value;
-                    Tapped -= OnTapped;
-                    Tapped += OnTapped;
+                    // if onTapped in Tapped event,
+                    tapRecognizer.OnTapped -= OnTapped;
+                    tapRecognizer.OnTapped += OnTapped;
                 }
             }
 
@@ -424,7 +431,7 @@ namespace NuSysApp
             /// </summary>
             public void ClearCallback()
             {
-                Tapped -= OnTapped;
+                tapRecognizer.OnTapped -= OnTapped;
                 _callback = null;
             }
 
@@ -433,10 +440,10 @@ namespace NuSysApp
             /// </summary>
             /// <param name="item"></param>
             /// <param name="pointer"></param>
-            private void OnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+            private void OnTapped(TapGestureRecognizer sender, TapEventArgs args)
             {
-                Tapped -= OnTapped;
-                _callback?.Invoke(item,pointer);
+                tapRecognizer.OnTapped -= OnTapped;
+                _callback?.Invoke(this);
             }
 
             /// <summary>

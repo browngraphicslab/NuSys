@@ -7,6 +7,7 @@ using Microsoft.Graphics.Canvas;
 using Windows.UI;
 using System.Diagnostics;
 using System.Numerics;
+using Windows.Devices.Input;
 
 namespace NuSysApp
 {
@@ -43,7 +44,7 @@ namespace NuSysApp
         public delegate void BarChartElementDragCompletedEventHandler(object source, BarChartElement element, CanvasPointer pointer);
         public event BarChartElementDragCompletedEventHandler BarDragCompleted;
 
-        public delegate void BarChartElementTappedEventHandler(object source, BarChartElement bar);
+        public delegate void BarChartElementTappedEventHandler(object source, BarChartElement bar, PointerDeviceType type);
 
 
 
@@ -117,17 +118,17 @@ namespace NuSysApp
 
             var tapRecognizer = new TapGestureRecognizer();
             element.GestureRecognizers.Add(tapRecognizer);
-            tapRecognizer.OnTapped += new TapGestureRecognizer.TapEventHandler(delegate (TapGestureRecognizer sender, TapEventArgs args)
+            tapRecognizer.OnTapped += delegate(TapGestureRecognizer sender, TapEventArgs args)
             {
                 if (args.TapType == TapEventArgs.Tap.SingleTap)
                 {
-                    Element_Tapped(element);
+                    Element_Tapped(element, args.DeviceType);
                 }
                 else if (args.TapType == TapEventArgs.Tap.DoubleTap)
                 {
                     Element_DoubleTapped(element);
                 }
-            });
+            };
         }
 
         public void RemoveBarHandlers(BarChartElement element)
@@ -159,9 +160,9 @@ namespace NuSysApp
             BarDoubleTapped?.Invoke(this, bar);
         }
 
-        private void Element_Tapped(BarChartElement bar)
+        private void Element_Tapped(BarChartElement bar, PointerDeviceType type)
         {
-            BarTapped?.Invoke(this, bar);
+            BarTapped?.Invoke(this, bar, type);
 
             //Here we select/deselect the bar.
             if (_selectedElements.Contains(bar))

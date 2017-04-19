@@ -71,19 +71,21 @@ namespace NuSysApp
             AddChild(_metadataLabel);
 
             _controller.TitleChanged += _controller_TitleChanged;
-            DoubleTapped += CollectionGridViewUIElement_DoubleTapped;
-        }
 
-
-        private void CollectionGridViewUIElement_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            SessionController.Instance.NuSessionView.ShowDetailView(_controller);
+            var tapRecognizer = new TapGestureRecognizer();
+            GestureRecognizers.Add(tapRecognizer);
+            tapRecognizer.OnTapped += delegate (TapGestureRecognizer sender, TapEventArgs args)
+            {
+                if (args.TapType == TapEventArgs.Tap.DoubleTap)
+                {
+                    SessionController.Instance.NuSessionView.ShowDetailView(_controller);
+                }
+            };
         }
 
         public override void Dispose()
         {
             _controller.TitleChanged -= _controller_TitleChanged;
-            DoubleTapped -= CollectionGridViewUIElement_DoubleTapped;
 
             base.Dispose();
         }

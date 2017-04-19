@@ -139,12 +139,13 @@ namespace NuSysApp
             _row2.AddElement(_blue);
             _row2.AddElement(_purple);
 
-            _red.Tapped += ColorButtonOnTapped;
-            _orange.Tapped += ColorButtonOnTapped;
-            _yellow.Tapped += ColorButtonOnTapped;
-            _green.Tapped += ColorButtonOnTapped;
-            _blue.Tapped += ColorButtonOnTapped;
-            _purple.Tapped += ColorButtonOnTapped;
+            // Add tap handlers to the buttons
+            var colorButtons = new[] { _red, _orange, _yellow, _green, _blue, _purple };
+
+            foreach (ButtonUIElement element in colorButtons)
+            {
+                element.Tapped += ColorButtonOnTapped;
+            }
         }
 
         /// <summary>
@@ -152,7 +153,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void ColorButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void ColorButtonOnTapped(ButtonUIElement item)
         {
             
             if (_collectionController.CollectionContentDataController.CollectionModel.Shape == null ||
@@ -219,12 +220,13 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            _red.Tapped -= ColorButtonOnTapped;
-            _orange.Tapped -= ColorButtonOnTapped;
-            _yellow.Tapped -= ColorButtonOnTapped;
-            _green.Tapped -= ColorButtonOnTapped;
-            _blue.Tapped -= ColorButtonOnTapped;
-            _purple.Tapped -= ColorButtonOnTapped;
+            var colorButtons = new[] { _red, _orange, _yellow, _green, _blue, _purple };
+
+            foreach (ButtonUIElement element in colorButtons)
+            {
+                element.Tapped -= ColorButtonOnTapped;
+            }
+
             base.Dispose();
         }
     }

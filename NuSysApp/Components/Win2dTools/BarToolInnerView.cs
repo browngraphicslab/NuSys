@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
+using Windows.Devices.Input;
 
 namespace NuSysApp
 {
@@ -28,19 +29,19 @@ namespace NuSysApp
             _barChart.BarTapped += BarChart_BarTapped;
             _barChart.BarDragged += BarChart_BarDragged;
             _barChart.BarDragCompleted += BarChart_BarDragCompleted;
-            _barChart.BarDoubleTapped += BarChart_BarDoubleTapped;
+      
             AddChild(_barChart);
 
         }
 
-        private void BarChart_BarDoubleTapped(object source, BarChartElement bar, CanvasPointer pointer)
+        private void BarChart_BarDoubleTapped(object source, BarChartElement bar)
         {
             Item_OnDoubleTapped(bar.Item);
         }
 
-        private void BarChart_BarTapped(object source, BarChartElement bar, CanvasPointer pointer)
+        private void BarChart_BarTapped(object source, BarChartElement bar, PointerDeviceType type)
         {
-            Item_OnTapped(bar.Item, pointer);
+            Item_OnTapped(bar.Item, type);
         }
 
         private void BarChart_BarDragCompleted(object source, BarChartElement bar, CanvasPointer pointer)
