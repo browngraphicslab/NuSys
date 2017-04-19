@@ -431,6 +431,7 @@
     <Compile Include="Components\NuSysRenderer\UI\Misc\CollectionSettingsPopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Misc\SearchResultsPopup.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Paginated View\NextPageable.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\Paginated View\PaginatedGoogleDriveSearch.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Paginated View\PaginatedListView.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Popup\ConfirmationPopupUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\Popup\FlyoutPopupGroup.cs" />
@@ -683,6 +684,7 @@
       <DependentUpon>GoogleDriveAuthPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Google Drive\GoogleDriveTest.cs" />
+    <Compile Include="Google Drive\Page.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
     <Compile Include="Models\InqLineModel.cs" />
     <Compile Include="Components\Viewers\FreeForm\InkStorage.cs" />

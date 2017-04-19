@@ -51,7 +51,6 @@ namespace NuSysApp
             };
             AddChild(_searchBar);
             _searchBar.TextChanged += SearchBarTextChanged;
-
         }
 
         private void SearchBarTextChanged(InteractiveBaseRenderItem item, string text)

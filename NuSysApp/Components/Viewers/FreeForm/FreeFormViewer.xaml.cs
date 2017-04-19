@@ -889,13 +889,26 @@ namespace NuSysApp
                     _layoutWindow = null;
                 }
 
+
                 _layoutWindow = new LayoutWindowUIElement(RenderEngine.Root, RenderEngine.CanvasAnimatedControl);
                 _layoutWindow.DoLayout += ArrangeCallback;
                 _layoutWindow.Transform.LocalPosition = RenderEngine.ElementSelectionRect.Transform.LocalPosition;
                 RenderEngine.Root.AddChild(_layoutWindow);
+                
             }
             if (item == RenderEngine.ElementSelectionRect.BtnEditTags)
             {
+                var driveSearch = new PaginatedGoogleDriveSearch();
+                var paginatedList = new PaginatedListView<String>(RenderEngine.Root, RenderEngine.CanvasAnimatedControl, driveSearch);
+                paginatedList.Height = 500;
+                paginatedList.Width = 500;
+                paginatedList.Transform.LocalPosition = pointer.CurrentPoint;
+                var column = new ListTextColumn<String>();
+                column.RelativeWidth = 1;
+                column.ColumnFunction = str => str;
+                paginatedList.AddColumn(column);
+
+                RenderEngine.Root.AddChild(paginatedList);
                 // edit tags
                 if (_editTagsElement != null)
                 {
@@ -1238,6 +1251,9 @@ namespace NuSysApp
                 xVideoPlayer.Visibility = Visibility.Collapsed;
                 xVideoPlayer.Pause();
             }
+
+            
+
         }
 
         private void CollectionInteractionManagerOnPanZoomed(Vector2 center, Vector2 deltaTranslation, float deltaZoom)

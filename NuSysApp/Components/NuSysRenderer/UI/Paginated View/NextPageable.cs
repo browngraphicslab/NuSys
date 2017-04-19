@@ -8,7 +8,23 @@ namespace NuSysApp
 {
     interface NextPageable<T>
     {
-        List<T> getNextPage();
-        List<T> getPreviousPage();
+        /// <summary>
+        /// Gets the next page of the search request
+        /// </summary>
+        /// <returns></returns>
+        Task<List<T>> getNextPage();
+
+        /// <summary>
+        /// Gets the previous page of the search request
+        /// </summary>
+        /// <returns></returns>
+        Task<List<T>> getPreviousPage();
+
+        /// <summary>
+        /// Should get the new pages based on the search request
+        /// </summary>
+        /// <param name="searchString">
+        /// The search string</param>
+        void MakeSearchRequest(String searchString);
     }
 }

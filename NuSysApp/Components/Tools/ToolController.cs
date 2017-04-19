@@ -63,9 +63,7 @@ namespace NuSysApp
         public ToolController(ToolModel model):base(model)
         {
             //TODO: REMOVE THIS THIS IS JUST A TEST FOR GOOGLE STUFF
-
-            var pls = new GoogleDriveCommunicator();
-            pls.run();
+            GoogleDriveCommunicator.run();
 
             Debug.Assert(model != null);
             ToolControllers.Add(model.Id, this);

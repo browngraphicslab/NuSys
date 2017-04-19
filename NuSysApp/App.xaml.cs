@@ -119,8 +119,7 @@ namespace NuSysApp
                     frame = new Frame();
 
                 // Opens the URI for "navigation" (handling) on the MainPage.
-                var drive = new GoogleDriveCommunicator();
-                drive.GetAuthenticationFromUri(uri);
+                GoogleDriveCommunicator.GetAuthenticationFromUri(uri);
 
                 //Window.Current.Content = frame;
                 //Window.Current.Activate();
