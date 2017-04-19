@@ -84,7 +84,10 @@ namespace NuSysApp
 
             IsRegionsVisible = showRegions;
 
-            Tapped += AudioMediaContentUIElement_Tapped;
+            var tapRecognizer = new TapGestureRecognizer();
+            this.GestureRecognizers.Add(tapRecognizer);
+            tapRecognizer.OnTapped += TapRecognizer_OnTapped;
+            
             Dragged += AudioMediaContentUIElement_Dragged;
 
             _controller.TimeChanged += OnStartTimeChanged;
@@ -92,6 +95,18 @@ namespace NuSysApp
 
             _controller.ContentDataController.OnRegionAdded += OnRegionRemoved;
             _controller.ContentDataController.OnRegionRemoved += OnRegionAdded;
+        }
+
+        private void TapRecognizer_OnTapped(TapGestureRecognizer sender, TapEventArgs args)
+        {
+            var currPoint = Vector2.Transform(args.Position, Transform.ScreenToLocalMatrix);
+            _currentShadowPosition = currPoint.X / Width;
+
+            UITask.Run(() =>
+            {
+                SetMediaElementToCurrentShadowPosition(_mediaElement);
+
+            });
         }
 
         /// <summary>
@@ -182,7 +197,6 @@ namespace NuSysApp
             {
                 _mediaElement.MediaOpened -= MediaElementOnMediaOpened;
             });
-            Tapped -= AudioMediaContentUIElement_Tapped;
             Dragged -= AudioMediaContentUIElement_Dragged;
             _controller.TimeChanged -= OnStartTimeChanged;
             _controller.DurationChanged -= OnDurationChanged; //todo find out why this is unpredictable
@@ -235,18 +249,6 @@ namespace NuSysApp
             var currPositionInMilliSeconds = duration * _currentShadowPosition + startTime;
             var ts = new TimeSpan(0, 0, 0, 0, (int)currPositionInMilliSeconds);
             mediaElement.Position = ts;
-        }
-
-        private void AudioMediaContentUIElement_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            var currPoint = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
-            _currentShadowPosition = currPoint.X / Width;
-
-            UITask.Run(() =>
-            {
-                SetMediaElementToCurrentShadowPosition(_mediaElement);
-
-            });
         }
 
         private void InitializeShadowRectUI(RectangleUIElement shadowRect)

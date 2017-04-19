@@ -180,6 +180,9 @@ namespace NuSysApp
             DragCompleted?.Invoke(this, pointer);
         }
 
-
-    }
+        public override void Dispose()
+        {
+            GestureRecognizers.Clear();
+            base.Dispose();
+        }
 }

@@ -155,9 +155,23 @@ namespace NuSysApp
 
             // add events for when the region is dragged
             Dragged += RegionOnDragged;
-            DoubleTapped += RegionOnDoubleTapped;
+            
             Pressed += RegionOnPressed;
             Released += RegionOnReleased;
+
+            var tapRecognizer = new TapGestureRecognizer();
+            this.GestureRecognizers.Add(tapRecognizer);
+            tapRecognizer.OnTapped += TapRecognizer_OnTapped;
+        }
+
+        /// <summary>
+        /// Show the region in the detail view  when it is double tapped
+        /// </summary>
+        private void TapRecognizer_OnTapped(TapGestureRecognizer sender, TapEventArgs args)
+        {
+            if (args.TapType == TapEventArgs.Tap.DoubleTap) {
+                SessionController.Instance.NuSessionView.ShowDetailView(_controller);
+            }
         }
 
         /// <summary>
@@ -198,16 +212,6 @@ namespace NuSysApp
         private void RegionOnPressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             OnRegionSelected?.Invoke(this);
-        }
-
-        /// <summary>
-        /// Show the region in the detail view  when it is double tapped
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void RegionOnDoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            SessionController.Instance.NuSessionView.ShowDetailView(_controller);
         }
 
         /// <summary>
