@@ -39,7 +39,7 @@ namespace NuSysApp
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            _dashOffset += 0.25f;
+            _dashOffset += 0.15f;
 
             if (_dashOffset > MAX_OFFSET)
             {
