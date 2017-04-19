@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Devices.Input;
 using Microsoft.Graphics.Canvas;
 using static NuSysApp.ButtonUIElement;
 using Microsoft.Graphics.Canvas.Text;
@@ -194,7 +195,7 @@ namespace NuSysApp
         /// <param name="columnName"></param>
         /// <param name="pointer"></param>
         /// <param name="isSelected"></param>
-        private void OnRowSelected(string item, string columnName, CanvasPointer pointer, bool isSelected)
+        private void OnRowSelected(string item, string columnName,bool isSelected, PointerDeviceType type)
         {
             CurrentSelection = item;
         }

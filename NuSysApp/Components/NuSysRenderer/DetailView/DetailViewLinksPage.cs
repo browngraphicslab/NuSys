@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Devices.Input;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Text;
@@ -113,7 +114,7 @@ namespace NuSysApp
         /// <param name="item"></param>
         /// <param name="columnName"></param>
         /// <param name="pointer"></param>
-        private void _link_listview_RowDoubleTapped(LinkLibraryElementController item, string columnName, CanvasPointer pointer)
+        private void _link_listview_RowDoubleTapped(LinkLibraryElementController item, string columnName, PointerDeviceType type)
         {
             SessionController.Instance.NuSessionView.ShowDetailView(item);
         }

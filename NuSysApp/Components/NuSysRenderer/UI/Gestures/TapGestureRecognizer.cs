@@ -28,7 +28,8 @@ namespace NuSysApp
                     TapType =
                         args.GetCurrentPoint(sender).Properties.IsRightButtonPressed
                             ? TapEventArgs.Tap.RightTap
-                            : TapEventArgs.Tap.SingleTap
+                            : TapEventArgs.Tap.SingleTap,
+                    DeviceType = args.Pointer.PointerDeviceType
                 };
                 _isDoubleTap = false;
                 _timer = new Timer(FireTapped, null, 200, 200);

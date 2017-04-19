@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Devices.Input;
 
 namespace NuSysApp
 {
@@ -25,5 +26,7 @@ namespace NuSysApp
         /// The current state of the gesture
         /// </summary>
         public GestureState CurrentState { get; set; }
+
+        public PointerDeviceType DeviceType { get; set; }
     }
 }

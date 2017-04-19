@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Graphics.Canvas;
 using NusysIntermediate;
 using System.Numerics;
+using Windows.Devices.Input;
 using Windows.UI;
 using Microsoft.Graphics.Canvas.Text;
 
@@ -74,7 +75,7 @@ namespace NuSysApp
             _controller.AliasRemoved += OnAliasRemoved;
         }
 
-        private void ListView_OnRowDoubleTapped(ElementModel item, string columnName, CanvasPointer pointer)
+        private void ListView_OnRowDoubleTapped(ElementModel item, string columnName, PointerDeviceType type)
         {
             // get collection library element controller for the parent of the alias
             var itemParentCollectionController =
