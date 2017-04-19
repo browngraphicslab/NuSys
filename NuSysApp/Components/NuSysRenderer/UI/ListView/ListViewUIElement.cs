@@ -1078,19 +1078,19 @@ namespace NuSysApp
         }
 
 
-        /// <summary>
-        /// Fires RowDoubleTapped event listened by container
-        /// </summary>
-        /// <param name="rowUIElement"></param>
-        /// <param name="colIndex"></param>
-        /// <param name="pointer"></param>
-        /// <param name="item"></param>
-        private void ListViewRowUIElement_RowDoubleTapped(ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer, T item)
-        {
-            Debug.Assert(rowUIElement != null);
-            RowDoubleTapped?.Invoke(rowUIElement.Item,
-                 rowUIElement != null ? _listColumns[colIndex].Title : null, pointer);
-        }
+        ///// <summary>
+        ///// Fires RowDoubleTapped event listened by container
+        ///// </summary>
+        ///// <param name="rowUIElement"></param>
+        ///// <param name="colIndex"></param>
+        ///// <param name="pointer"></param>
+        ///// <param name="item"></param>
+        //private void ListViewRowUIElement_RowDoubleTapped(ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer, T item)
+        //{
+        //    Debug.Assert(rowUIElement != null);
+        //    RowDoubleTapped?.Invoke(rowUIElement.Item,
+        //         rowUIElement != null ? _listColumns[colIndex].Title : null, pointer);
+        //}
 
         /// <summary>
         /// This handles the PointerWheelChanged event of the rows. The delta passed in is either 1 or -1, so we move the scroll bar

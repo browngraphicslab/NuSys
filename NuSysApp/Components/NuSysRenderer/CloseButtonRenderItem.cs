@@ -14,9 +14,30 @@ namespace NuSysApp
         private CanvasBitmap _bmp;
         private Rect _targetRect = new Rect(0, 0, 15, 15);
 
+        public delegate void TapEventHandler(CloseButtonRenderItem sender);
+        public event TapEventHandler Tapped;
+        public event TapEventHandler DoubleTapped;
+        public event TapEventHandler RightTapped;
+
         public CloseButtonRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
+            var tapRecognizer = new TapGestureRecognizer();
+            GestureRecognizers.Add(tapRecognizer);
+            tapRecognizer.OnTapped += TapRecognizer_OnTapped;
+        }
 
+        private void TapRecognizer_OnTapped(TapGestureRecognizer sender, TapEventArgs args)
+        {
+            if (args.TapType == TapEventArgs.Tap.SingleTap)
+            {
+                Tapped?.Invoke(this);
+            } else if (args.TapType == TapEventArgs.Tap.DoubleTap)
+            {
+                DoubleTapped?.Invoke(this);
+            } else if (args.TapType == TapEventArgs.Tap.RightTap)
+            {
+                RightTapped?.Invoke(this);
+            }
         }
 
         public override void Dispose()

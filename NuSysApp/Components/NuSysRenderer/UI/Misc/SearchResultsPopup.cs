@@ -115,7 +115,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void Closebutton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void Closebutton_Tapped(ButtonUIElement senderr)
         {
             DismissPopup();
         }
@@ -125,9 +125,9 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void AddStack_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void AddStack_Tapped(ButtonUIElement sender)
         {
-            StaticServerCalls.CreateStackOnMainCollection(pointer.CurrentPoint, _results);
+            StaticServerCalls.CreateStackOnMainCollection(sender.Transform.LocalPosition, _results);
             DismissPopup();
         }
 
@@ -136,7 +136,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void AddCollection_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void AddCollection_Tapped(ButtonUIElement sender)
         {
             StaticServerCalls.CreateCollectionOnMainCollection(new Vector2((float)Constants.InitialCenter, (float)Constants.InitialCenter), _results,
                 _searchTerm);

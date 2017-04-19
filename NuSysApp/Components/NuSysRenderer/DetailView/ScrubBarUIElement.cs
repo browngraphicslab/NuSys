@@ -145,8 +145,10 @@ namespace NuSysApp
 
             // add manipulation events
             _backgroundRect.Dragged += OnScrubberDragged;
-            _backgroundRect.Tapped += OnScrubberTapped;
 
+            var _backgroundRectGestureRecognizer = new TapGestureRecognizer();
+            _backgroundRect.GestureRecognizers.Add(_backgroundRectGestureRecognizer);
+            _backgroundRectGestureRecognizer.OnTapped += OnScrubberTapped;
         }
 
         private void MediaElementOnMediaOpened(object sender, Windows.UI.Xaml.RoutedEventArgs e)
@@ -160,9 +162,9 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void OnScrubberTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void OnScrubberTapped(TapGestureRecognizer sender, TapEventArgs args)
         {
-            var currPoint = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
+            var currPoint = Vector2.Transform(args.Position, Transform.ScreenToLocalMatrix);
             ScrubberPosition = currPoint.X/Width;
 
             UITask.Run(() =>
@@ -178,8 +180,6 @@ namespace NuSysApp
         public override void Dispose()
         {
             _scrubberBar.Dragged -= OnScrubberDragged;
-            _backgroundRect.Tapped -= OnScrubberTapped;
-            _highlightRect.Tapped -= OnScrubberTapped;
             UITask.Run(() =>
             {
                 _mediaElement.MediaOpened -= MediaElementOnMediaOpened;

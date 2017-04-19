@@ -23,9 +23,35 @@ namespace NuSysApp
         public static Color Color = Colors.Black;
         public bool IsActive { get; set; }
 
+
+        public delegate void TapEventHandler(InkOptionsWidthRenderItem sender);
+        public event TapEventHandler Tapped;
+        public event TapEventHandler DoubleTapped;
+        public event TapEventHandler RightTapped;
+
         public InkOptionsWidthRenderItem(float radius, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             Radius = radius;
+
+            var tapRecognizer = new TapGestureRecognizer();
+            GestureRecognizers.Add(tapRecognizer);
+            tapRecognizer.OnTapped += TapRecognizer_OnTapped;
+        }
+
+        private void TapRecognizer_OnTapped(TapGestureRecognizer sender, TapEventArgs args)
+        {
+            if (args.TapType == TapEventArgs.Tap.SingleTap)
+            {
+                Tapped?.Invoke(this);
+            }
+            else if (args.TapType == TapEventArgs.Tap.DoubleTap)
+            {
+                DoubleTapped?.Invoke(this);
+            }
+            else if (args.TapType == TapEventArgs.Tap.RightTap)
+            {
+                RightTapped?.Invoke(this);
+            }
         }
 
         public override Task Load()

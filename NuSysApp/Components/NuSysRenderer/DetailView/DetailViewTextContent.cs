@@ -113,7 +113,15 @@ namespace NuSysApp
             };
             AddChild(_overlay);
             _overlay.IsVisible = false;
-            _overlay.Tapped += OverlayOnTapped;
+            var overlayTapRecognizer = new TapGestureRecognizer();
+            overlayTapRecognizer.OnTapped += delegate(TapGestureRecognizer sender, TapEventArgs args)
+            {
+                if (args.TapType == TapEventArgs.Tap.SingleTap)
+                {
+                    OverlayOnTapped();
+                }
+            };
+            _overlay.GestureRecognizers.Add(overlayTapRecognizer);
 
             //button to toggle display
             _toggleDisplayButton = new RectangleButtonUIElement(this, resourceCreator, text: "Toggle Display");
@@ -158,7 +166,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void OverlayOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void OverlayOnTapped()
         {
             if (_overlay.IsVisible)
             {
