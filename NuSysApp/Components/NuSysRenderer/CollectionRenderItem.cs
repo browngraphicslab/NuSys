@@ -788,14 +788,50 @@ namespace NuSysApp
 
         public void OnManipulated(ManipulationGestureRecognizer sender, ManipulationEventArgs args)
         {
-            Camera.LocalScale *= args.ScaleDelta;
-            Debug.WriteLine($"scl {Camera.LocalScale}");
-            Camera.LocalPosition = Camera.LocalPosition + args.Translation;
-            Debug.WriteLine($"pos {Camera.LocalPosition}");
-            Debug.WriteLine($"curF {args.CurrentFocus}");
-            Camera.LocalScaleCenter = Vector2.Transform(args.CurrentFocus, Win2dUtil.Invert(Camera.S * Camera.T));
-            Debug.WriteLine($"cen {Camera.LocalScaleCenter}");
-            // small progress, this works better, location is wrong though
+            base.OnManipulated(sender, args);
+            PanZoom(Camera, Matrix3x2.Identity, args.CurrentFocus, args.Translation.X, args.Translation.Y, args.ScaleDelta);
+        }
+
+        protected void PanZoom(I2dTransformable target, Matrix3x2 transform, Vector2 centerPoint, float dx, float dy, float ds)
+        {
+            var cInv = Win2dUtil.Invert(target.C);
+            var inverse = Win2dUtil.Invert(cInv * target.S * target.C * target.T * transform);
+
+            var center = Vector2.Transform(new Vector2(centerPoint.X, centerPoint.Y), inverse);
+            var tmpTranslate = Matrix3x2.CreateTranslation(target.C.M31, target.C.M32);
+            Matrix3x2 tmpTranslateInv;
+            Matrix3x2.Invert(tmpTranslate, out tmpTranslateInv);
+
+            var localPoint = Vector2.Transform(center, tmpTranslateInv);
+
+            //Now scale the point in local space
+            localPoint.X *= target.S.M11;
+            localPoint.Y *= target.S.M22;
+
+            //Transform local space into world space again
+            var worldPoint = Vector2.Transform(localPoint, tmpTranslate);
+
+            //Take the actual scaling...
+            var distance = new Vector2(worldPoint.X - center.X, worldPoint.Y - center.Y);
+
+            //...and balance the jump of the changed scaling origin by changing the translation            
+
+            var ntx = target.T.M31 + distance.X + dx;
+            var nty = target.T.M32 + distance.Y + dy;
+
+            var nsx = target.S.M11 * ds;
+            var nsy = target.S.M22 * ds;
+
+            var ncx = center.X;
+            var ncy = center.Y;
+
+            // put a bound on how much we zoom out
+            if (nsx > 0.01 && nsy > 0.01)
+            {
+                target.LocalPosition = new Vector2(ntx, nty);
+                target.LocalScaleCenter = new Vector2(ncx, ncy);
+                target.LocalScale = new Vector2(nsx, nsy);
+            }
         }
 
         /// <summary>

@@ -25,7 +25,7 @@ namespace NuSysApp
 
         public void ProcessDownEvent(FrameworkElement sender, PointerRoutedEventArgs args)
         {
-            Debug.Assert(_isDragging == false);
+            //Debug.Assert(_isDragging == false);
             _dragEventArgs = new DragEventArgs(args.GetCurrentPoint(sender).Position.ToSystemVector2());
         }
 
