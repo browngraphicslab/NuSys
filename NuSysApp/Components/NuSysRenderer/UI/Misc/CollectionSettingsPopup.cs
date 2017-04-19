@@ -96,7 +96,7 @@ namespace NuSysApp
             UpdateText();
         }
 
-        private void EditShapeButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void EditShapeButton_Tapped(ButtonUIElement sender)
         {         
             EditShapePopup popup = new EditShapePopup(Parent, Canvas, _collectionController);
             Parent.AddChild(popup);
@@ -110,7 +110,7 @@ namespace NuSysApp
             DismissPopup();            
         }
 
-        private void BoundedButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void BoundedButton_Tapped(ButtonUIElement sender)
         {
             if (_collectionController.CollectionModel.IsFinite)
             {

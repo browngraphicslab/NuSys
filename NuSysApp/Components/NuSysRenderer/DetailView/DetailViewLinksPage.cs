@@ -124,7 +124,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private async void OnCreateLinkButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private async void OnCreateLinkButtonTapped(ButtonUIElement sender)
         {
             // if the auto suggest button has a selection chosen, and there isn't an empty title then create a link
             if (_addLinkToElementBox.HasSelection)

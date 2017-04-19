@@ -209,7 +209,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void StopButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void StopButtonOnTapped(ButtonUIElement sender)
         {
             StopRecording();
         }
@@ -249,7 +249,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private async void Record_Pause_buttonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private async void Record_Pause_buttonOnTapped(ButtonUIElement sender)
         {
             if (_recording)
             {
@@ -412,7 +412,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void MediaTypeSwitchOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void MediaTypeSwitchOnTapped(ButtonUIElement sender)
         {
             switch (_currRecordingType)
             {

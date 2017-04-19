@@ -122,7 +122,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void TabButtonUIElement_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void TabButtonUIElement_Tapped(ButtonUIElement sender)
         {
             OnSelected?.Invoke(Tab);
         }
@@ -132,7 +132,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void _closeButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void _closeButton_Tapped(ButtonUIElement sender)
         {
             Dispose();
             OnClosed?.Invoke(Tab);

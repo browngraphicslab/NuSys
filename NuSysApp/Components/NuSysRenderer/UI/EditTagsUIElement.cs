@@ -99,7 +99,7 @@ namespace NuSysApp.Components.NuSysRenderer.UI
             base.Draw(ds);
         }
 
-        public void OnAddButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        public void OnAddButtonTapped(ButtonUIElement sender)
         {
             AddKeyword();
         }

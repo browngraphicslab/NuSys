@@ -56,7 +56,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void _enterCollectionButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void _enterCollectionButton_Tapped(ButtonUIElement sender)
         {
             if (SessionController.Instance.CurrentCollectionLibraryElementModel != _controller.LibraryElementModel)
             {

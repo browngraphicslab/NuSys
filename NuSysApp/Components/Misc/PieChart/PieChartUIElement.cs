@@ -47,6 +47,9 @@ namespace NuSysApp
         /// Pieces of the pie are selectable by clicking if this is set to true
         /// </summary>
         public bool DisableSelectionByClick { set; get; }
+
+
+
         #endregion public properties+
 
         #region events
@@ -55,7 +58,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="source"></param>
         /// <param name="element"></param>
-        public delegate void PieChartElementSelectedEventHandler(object source, PieChartElement<string> element);
+        public delegate void PieChartElementSelectedEventHandler(PieChartUIElement sender, PieChartElement<string> element);
         public event PieChartElementSelectedEventHandler ElementSelected;
 
         /// <summary>
@@ -63,7 +66,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="source"></param>
         /// <param name="element"></param>
-        public delegate void PieChartElementDeselectedEventHandler(object source, PieChartElement<string> element);
+        public delegate void PieChartElementDeselectedEventHandler(PieChartUIElement sender, PieChartElement<string> element);
         public event PieChartElementDeselectedEventHandler ElementDeselected;
 
 
@@ -74,7 +77,7 @@ namespace NuSysApp
         /// <param name="source"></param>
         /// <param name="element"></param>
         /// <param name="pointer"></param>
-        public delegate void PieChartElementDraggedEventHandler(object source, PieChartElement<string> element, CanvasPointer pointer);
+        public delegate void PieChartElementDraggedEventHandler(PieChartUIElement sender, PieChartElement<string> element, CanvasPointer pointer);
         public event PieChartElementDraggedEventHandler ElementDragged;
 
         /// <summary>
@@ -83,14 +86,14 @@ namespace NuSysApp
         /// <param name="source"></param>
         /// <param name="element"></param>
         /// <param name="pointer"></param>
-        public delegate void PieChartElementDragCompletedEventHandler(object source, PieChartElement<string> element, CanvasPointer pointer);
+        public delegate void PieChartElementDragCompletedEventHandler(PieChartUIElement sender, PieChartElement<string> element, CanvasPointer pointer);
         public event PieChartElementDragCompletedEventHandler ElementDragCompleted;
 
 
-        public delegate void PieChartElementTappedEventHandler(object source, PieChartElement<string> element, CanvasPointer pointer);
+        public delegate void PieChartElementTappedEventHandler(PieChartUIElement sender, PieChartElement<string> element);
         public event PieChartElementTappedEventHandler ElementTapped;
 
-        public delegate void PieChartElementDoubleTappedEventHandler(object source, PieChartElement<string> element, CanvasPointer pointer);
+        public delegate void PieChartElementDoubleTappedEventHandler(PieChartUIElement sender, PieChartElement<string> element);
         public event PieChartElementDoubleTappedEventHandler ElementDoubleTapped;
         #endregion events
 
@@ -108,6 +111,8 @@ namespace NuSysApp
         /// The element that was stored in the first call to the DraggedEventHandler, so that when we invoke PointerReleased, we have reference to the relevant element.
         /// </summary>
         private PieChartElement<String> _draggedElement;
+
+
         #endregion private variables
 
         public PieChartUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
@@ -123,7 +128,6 @@ namespace NuSysApp
             _elements = new List<PieChartElement<string>>();
             _selectedElements = new HashSet<PieChartElement<string>>();
             
-            AddHandlers();
 
         }
         /// <summary>
@@ -131,17 +135,12 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void PieChartUIElement_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void PieChartUIElement_Tapped(PieChartElement<string> element, Vector2 currentPoint)
         {
 
-                var point = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
-                var element = GetElementFromAngle(GetAngleFromPoint(point));
-                if (element == null)
-                {
-                    return;
-                }
+                var point = Vector2.Transform(currentPoint, Transform.ScreenToLocalMatrix);
 
-                ElementTapped?.Invoke(this, element, pointer);
+                ElementTapped?.Invoke(this, element);
                 if (_selectedElements.Contains(element))
                 {
                     if (!DisableSelectionByClick)
@@ -165,17 +164,11 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void PieChartUIElement_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void PieChartUIElement_DoubleTapped(PieChartElement<string> element, Vector2 currentPoint)
         {
-            var point = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
-            var element = GetElementFromAngle(GetAngleFromPoint(point));
+            var point = Vector2.Transform(currentPoint, Transform.ScreenToLocalMatrix);
 
-            if (element == null)
-            {
-                return;
-            }
-
-            ElementDoubleTapped?.Invoke(this, element, pointer);
+            ElementDoubleTapped?.Invoke(this, element);
 
         }
 
@@ -193,12 +186,14 @@ namespace NuSysApp
         /// <param name="value"></param>
         public void AddElement(string item, int value)
         {
-            var element = new PieChartElement<string>();
+            var element = new PieChartElement<string>(Parent, ResourceCreator);
             element.Item = item;
             element.Value = value;
             _elements?.Add(element);
 
+            AddHandlers(element);
         }
+
         /// <summary>
         /// Add items to the PieChartUIElement. Creates dictionary that maps string to number of instances of that string
         /// </summary>
@@ -230,9 +225,13 @@ namespace NuSysApp
         /// </summary>
         public void ClearElements()
         {
+            foreach(var element in _elements)
+            {
+                RemoveHandlers(element);
+            }
+
             _elements.Clear();
             _selectedElements.Clear();
-
         }
         /// <summary>
         /// Because we override HitTest to only hit the PieChart inside the circle, this only gets called when you drag from the pie,itself.
@@ -593,25 +592,36 @@ namespace NuSysApp
             base.Update(parentLocalToScreenTransform);
         }
 
-        private void AddHandlers()
+        private void AddHandlers(PieChartElement<string> element)
         {
-            DoubleTapped += PieChartUIElement_DoubleTapped;
             Released += PieChartUIElement_Released;
             Dragged += PieChartUIElement_Dragged;
-            Tapped += PieChartUIElement_Tapped;
+
+            var tapRecognizer = new TapGestureRecognizer();
+            element.GestureRecognizers.Add(tapRecognizer);
+            tapRecognizer.OnTapped += new TapGestureRecognizer.TapEventHandler(delegate (TapGestureRecognizer sender, TapEventArgs args)
+            {
+                if (args.TapType == TapEventArgs.Tap.SingleTap)
+                {
+                    PieChartUIElement_Tapped(element, args.Position);
+                }
+                else if (args.TapType == TapEventArgs.Tap.DoubleTap)
+                {
+                    PieChartUIElement_DoubleTapped(element, args.Position);
+                }
+            });
         }
 
-        private void RemoveHandlers()
+        private void RemoveHandlers(PieChartElement<string> element)
         {
-            DoubleTapped -= PieChartUIElement_DoubleTapped;
             Released -= PieChartUIElement_Released;
             Dragged -= PieChartUIElement_Dragged;
-            Tapped -= PieChartUIElement_Tapped;
+            element.GestureRecognizers.Clear();
 
         }
         public override void Dispose()
         {
-            
+            ClearElements();
             base.Dispose();
         }
 

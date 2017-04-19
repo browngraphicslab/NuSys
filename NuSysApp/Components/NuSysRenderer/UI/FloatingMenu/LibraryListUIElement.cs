@@ -308,7 +308,7 @@ namespace NuSysApp
 
         }
 
-        private void OnFilterButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void OnFilterButtonTapped(ButtonUIElement sender)
         {
             _filterMenu.ClearFilter();
             _filterMenu.IsVisible = !_filterMenu.IsVisible;
@@ -316,7 +316,7 @@ namespace NuSysApp
             _filterMenu.Width = 200;
         }
 
-        private void _bingButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void _bingButton_Tapped(ButtonUIElement sender)
         {
             _bingSearchPopup = new BingSearchPopup(this, Canvas);
             _bingSearchPopup.Width = 300;
@@ -417,7 +417,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="interactiveBaseRenderItem"></param>
         /// <param name="pointer"></param>
-        private void AddFileButtonTapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
+        private void AddFileButtonTapped(ButtonUIElement sender)
         {
             UITask.Run(() =>
             {

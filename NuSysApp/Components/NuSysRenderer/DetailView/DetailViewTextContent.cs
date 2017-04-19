@@ -194,7 +194,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void ToggleDisplayButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void ToggleDisplayButtonOnTapped(ButtonUIElement sender)
         {
             ToggleState();
             IsDirty = true;

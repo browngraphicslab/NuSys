@@ -86,7 +86,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void _leftPageButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void _leftPageButton_Tapped(ButtonUIElement sender)
         {
             GotoPage(PdfContent.CurrentPage - 1);
         }
@@ -96,7 +96,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void _rightPageButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void _rightPageButton_Tapped(ButtonUIElement sender)
         {
             GotoPage(PdfContent.CurrentPage + 1);
         }

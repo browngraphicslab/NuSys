@@ -181,7 +181,7 @@ namespace NuSysApp
         }
 
 
-        private void ListToolViewButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void ListToolViewButton_Tapped(ButtonUIElement sender)
         {
             if (_currentViewMode == ViewMode.List)
             {
@@ -201,7 +201,7 @@ namespace NuSysApp
 
         }
 
-        private void PieToolViewButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void PieToolViewButton_Tapped(ButtonUIElement sender)
         {
             if (_currentViewMode == ViewMode.PieChart)
             {
@@ -219,7 +219,7 @@ namespace NuSysApp
 
         }
 
-        private void BarToolViewButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void BarToolViewButton_Tapped(ButtonUIElement sender)
         {
             if (_currentViewMode == ViewMode.BarChart)
             {

@@ -90,13 +90,13 @@ namespace NuSysApp
             _imageButton.Tapped += ImageButton_Tapped;
         }
 
-        private void DeleteButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void DeleteButton_Tapped(ButtonUIElement sender)
         {
             _collectionController.CollectionContentDataController.ClearShape();
             DismissPopup();
         }
 
-        private void ImageButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void ImageButton_Tapped(ButtonUIElement sender)
         {
             SelectAndSaveImage();
             DismissPopup();
@@ -130,7 +130,7 @@ namespace NuSysApp
         }
 
 
-        private void ColorButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void ColorButton_Tapped(ButtonUIElement sender)
         {
             var popup = new ColorPopup(Parent, Canvas, _collectionController);
             Parent.AddChild(popup);

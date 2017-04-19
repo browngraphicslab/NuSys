@@ -206,7 +206,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void OnDisplayButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void OnDisplayButtonTapped(ButtonUIElement sender)
         {
             _dropDownList.IsVisible = !_dropDownList.IsVisible;
             OpenOrClosed?.Invoke(this, _dropDownList.IsVisible);

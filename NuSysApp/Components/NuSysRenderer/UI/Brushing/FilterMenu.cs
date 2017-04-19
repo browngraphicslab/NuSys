@@ -148,7 +148,7 @@ namespace NuSysApp
 
         }
 
-        private void OnRemoveFilterButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void OnRemoveFilterButtonTapped(ButtonUIElement sender)
         {
             ClearFilter();
         }
@@ -207,7 +207,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void OnCategoryButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void OnCategoryButtonTapped(ButtonUIElement item)
         {
             var button = item as ButtonUIElement;
             Debug.Assert(button != null);
