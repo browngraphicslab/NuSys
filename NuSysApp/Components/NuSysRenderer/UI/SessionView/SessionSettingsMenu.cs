@@ -378,7 +378,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void TouchKeyboardVisibilityButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void TouchKeyboardVisibilityButtonOnTapped(ButtonUIElement element)
         {
             SessionController.Instance.SessionSettings.TouchKeyboardVisible = !SessionController.Instance.SessionSettings.TouchKeyboardVisible;
 
@@ -390,7 +390,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void KeywordVisibilityButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void KeywordVisibilityButtonOnTapped(ButtonUIElement element)
         {
             SessionController.Instance.SessionSettings.TagsVisible = !SessionController.Instance.SessionSettings.TagsVisible;
         }
@@ -401,7 +401,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void ResizeElementTitlesButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void ResizeElementTitlesButtonOnTapped(ButtonUIElement element)
         {
             SessionController.Instance.SessionSettings.ResizeElementTitles = !SessionController.Instance.SessionSettings.ResizeElementTitles;
         }
@@ -411,7 +411,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void DockBreadCrumbsButtonTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void DockBreadCrumbsButtonTapped(ButtonUIElement element)
         {
             SessionController.Instance.SessionSettings.BreadCrumbsDocked = !SessionController.Instance.SessionSettings.BreadCrumbsDocked;
             SessionController.Instance.NuSessionView.UpdateUI();
@@ -427,7 +427,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void ShowMinimapTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void ShowMinimapTapped(ButtonUIElement element)
         {
             SessionController.Instance.SessionSettings.MinimapVisible = !SessionController.Instance.SessionSettings.MinimapVisible;
             SessionController.Instance.SessionView.FreeFormViewer.InvalidateMinimap();
@@ -439,7 +439,7 @@ namespace NuSysApp
         ///  </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void ShowLinksButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void ShowLinksButtonOnTapped(ButtonUIElement element)
         {
             //Weird syntax but just modularly increments enum valure
             SessionController.Instance.SessionSettings.LinksVisible = (LinkVisibilityOption)(((int)SessionController.Instance.SessionSettings.LinksVisible + 1) % Enum.GetNames(typeof(LinkVisibilityOption)).Length);
@@ -451,7 +451,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ReadOnlyModeSettingButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void ReadOnlyModeSettingButtonOnTapped(ButtonUIElement element)
         {
             SessionController.Instance.SessionSettings.ReadOnlyModeWindowsVisible = (ReadOnlyViewingMode)(((int)SessionController.Instance.SessionSettings.ReadOnlyModeWindowsVisible + 1) % Enum.GetNames(typeof(ReadOnlyViewingMode)).Length);
         }

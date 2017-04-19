@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Devices.Input;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using NusysIntermediate;
@@ -22,7 +23,7 @@ namespace NuSysApp
         /// </summary>
         private ListViewUIElement<T> _listview;
 
-        public delegate void RowTappedEventHandler(T item, String columnName, CanvasPointer pointer, bool isSelected);
+        public delegate void RowTappedEventHandler(T item, String columnName, bool isSelected, PointerDeviceType type);
         /// <summary>
         /// If the row was selected by a click this will give you the item of the row that was selected and the column 
         /// title that was clicked. If you select a row programatically it will just give you the item. The string columnName will
@@ -44,7 +45,7 @@ namespace NuSysApp
         /// </summary>
         public event RowDoubleTappedEventHandler RowDoubleTapped;
 
-        public delegate void RowDoubleTappedEventHandler(T item, string columnName, CanvasPointer pointer);
+        public delegate void RowDoubleTappedEventHandler(T item, string columnName, PointerDeviceType type);
 
 
         /// <summary>
@@ -620,9 +621,9 @@ namespace NuSysApp
         /// <param name="item"></param>
         /// <param name="columnName"></param>
         /// <param name="pointer"></param>
-        private void ListView_RowDoubleTapped(T item, string columnName, CanvasPointer pointer)
+        private void ListView_RowDoubleTapped(T item, string columnName, PointerDeviceType type)
         {
-            RowDoubleTapped?.Invoke(item, columnName, pointer);
+            RowDoubleTapped?.Invoke(item, columnName, type);
         }
         /// <summary>a
         /// Deselects all the items currently selected
@@ -661,9 +662,9 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="columnName"></param>
-        private void ListViewRowTapped(T item, string columnName, CanvasPointer pointer, bool isSelected)
+        private void ListViewRowTapped(T item, string columnName, bool isSelected, PointerDeviceType type)
         {
-            RowTapped?.Invoke(item, columnName, pointer, isSelected);
+            RowTapped?.Invoke(item, columnName, isSelected, type);
         }
 
 

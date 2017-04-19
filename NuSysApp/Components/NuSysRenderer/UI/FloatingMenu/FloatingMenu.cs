@@ -101,15 +101,13 @@ namespace NuSysApp
             _initialDragPosition = Transform.LocalPosition;
         }
 
-        private void ShowAddElementMenu(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
+        private void ShowAddElementMenu(ButtonUIElement sender)
         {
             _addElementMenu.IsVisible = !_addElementMenu.IsVisible;
-            var addElementButton = interactiveBaseRenderItem as ButtonUIElement;
-            Debug.Assert(addElementButton != null, "The add element button should be a button ui element, make sure something else isn't causing this to open");
             _addElementMenu.Transform.LocalPosition = new Vector2(_addElementButton.Transform.LocalPosition.X - 15, _addElementButton.Transform.LocalPosition.Y);
         }
 
-        private void OpenLibraryButtonOnTapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
+        private void OpenLibraryButtonOnTapped(ButtonUIElement sender)
         {
             SessionController.Instance.NuSessionView.Library.IsVisible = !SessionController.Instance.NuSessionView.Library.IsVisible;
         }
@@ -172,18 +170,6 @@ namespace NuSysApp
         {
             IsVisible = true;
             _disabled = false;
-        }
-
-        public override void OnDragged(DragGestureRecognizer sender, DragEventArgs args)
-        {
-            base.OnDragged(sender, args);
-            if (args.CurrentState == GestureEventArgs.GestureState.Began)
-            {
-                _initialDragPosition = Transform.LocalPosition;
-            } else if (args.CurrentState == GestureEventArgs.GestureState.Changed)
-            {
-                Transform.LocalPosition = _initialDragPosition + args.Translation;
-            }
         }
     }
 }

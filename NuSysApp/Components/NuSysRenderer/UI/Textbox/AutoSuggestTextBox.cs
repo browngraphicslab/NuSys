@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Devices.Input;
 using Microsoft.Graphics.Canvas;
 
 namespace NuSysApp.Components.NuSysRenderer.UI
@@ -86,7 +87,7 @@ namespace NuSysApp.Components.NuSysRenderer.UI
             suggestion_list.RowTapped += Suggestion_list_RowTapped;
         }
 
-        private void Suggestion_list_RowTapped(T item, string columnName, CanvasPointer pointer, bool isSelected)
+        private void Suggestion_list_RowTapped(T item, string columnName, bool isSelected, PointerDeviceType type)
         {
             if (isSelected)
             {

@@ -415,7 +415,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void ScrollableTextboxUIElement_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void ScrollableTextboxUIElement_DoubleTapped(TextboxUIElement sender, Vector2 position)
         {
             // clear the current selection
             ClearSelection(false);
@@ -425,7 +425,7 @@ namespace NuSysApp
 
             // get the index of the character we clicked on this could be negative 1
             // make this the selection start index
-            _selectionStartIndex = GetCaretCharacterIndexFromPoint(pointer.CurrentPoint);
+            _selectionStartIndex = GetCaretCharacterIndexFromPoint(position);
             _selectionEndIndex = _selectionStartIndex + 1;
 
             // decrement the selection start index until we get a character that is punctuation or whitespace

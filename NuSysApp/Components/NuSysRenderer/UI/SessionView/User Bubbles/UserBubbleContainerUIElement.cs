@@ -95,7 +95,8 @@ namespace NuSysApp
                 var bubble = _userIds_toBubbles[userid];
                 RemoveChild(bubble);
                 bubble.Tapped -= ShowUserNameOnBubbleTapped;
-                bubble.DoubleTapped -= UserBubbleOnDoubleTapped;
+                bubble.RightTapped -= UserBubbleOnRightOrDoubleTapped;
+
                 _userIds_toBubbles.Remove(userid);
                 if (_currentUserNameDisplayed_userid == userid)
                 {
@@ -125,8 +126,8 @@ namespace NuSysApp
                 Width = buttonWidth,
                 Height = buttonHeight
             };
-            userBubble.DoubleTapped += UserBubbleOnDoubleTapped;
             userBubble.Tapped += ShowUserNameOnBubbleTapped;
+            userBubble.RightTapped += UserBubbleOnRightOrDoubleTapped;
             
             AddChild(userBubble);
          
@@ -134,17 +135,6 @@ namespace NuSysApp
             _userIds_toBubbles.Add(user.UserID, userBubble);
 
             _bubblePositionsChanged = true;
-        }
-
-        /// <summary>
-        /// Event handler called whenever a user bubble is double tapped
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void UserBubbleOnDoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            Debug.Assert(item is ButtonUIElement);
-            ShowInviteJoinPopup(item as ButtonUIElement, pointer.CurrentPoint.X, pointer.CurrentPoint.Y);
         }
 
         private void CenterUserNameRect()
@@ -163,68 +153,59 @@ namespace NuSysApp
                                             _userNameRect.Height + 5);
 
         }
- 
+
         /// <summary>
-        /// Event fired whenever a user clicks on a user bubble, displays the name of the user above the bubble
-        /// hides the name of the user if the button is tapped again
-        /// 
         /// if the bubble is right tapped, then a flyout will show that will allow you to either invite the user to join your session 
         /// or allow you to join the user's session.
         /// </summary>
+        /// <param name="sender"></param>
+        private void UserBubbleOnRightOrDoubleTapped(ButtonUIElement sender)
+        {
+            ShowInviteJoinPopup(sender, sender.Transform.LocalX, sender.Transform.LocalX);
+        }
+
+        /// <summary>
+        /// Event fired whenever a user clicks on a user bubble, displays the name of the user above the bubble
+        /// hides the name of the user if the button is tapped again
+        /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void ShowUserNameOnBubbleTapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
+        private void ShowUserNameOnBubbleTapped(ButtonUIElement sender)
         {
-            if (pointer.IsRightButtonPressed)
+            // set the color of the username to the background of the button that was clicked
+            _userNameRect.TextColor = sender.Background;
+            // move the rect so it is centered over the button that was tapped
+            _userNameRect.Transform.LocalPosition = sender.Transform.LocalPosition -
+                                                    new Vector2(_userNameRect.Width / 2 - sender.Width / 2,
+                                                        _userNameRect.Height + 5);
+            // get the user id of the button that was selected
+            var user_id =
+                _userIds_toBubbles.Where(kv => kv.Value == sender).Select(kv => kv.Key).FirstOrDefault();
+
+            Debug.Assert(user_id != null);
+            if (user_id == null)
             {
-                var userBubble = interactiveBaseRenderItem as ButtonUIElement;
-                Debug.Assert(userBubble != null);
-
-                ShowInviteJoinPopup(userBubble, pointer.CurrentPoint.X, pointer.CurrentPoint.Y);
+                return;
             }
-            else
+
+            // hide the rectangle if the button clicked is already being displayed
+            if (_currentUserNameDisplayed_userid == user_id)
             {
-
-                var userbubble = interactiveBaseRenderItem as ButtonUIElement;
-                Debug.Assert(userbubble != null);
-
-         
-                // set the color of the username to the background of the button that was clicked
-                _userNameRect.TextColor = userbubble.Background;
-                // move the rect so it is centered over the button that was tapped
-                _userNameRect.Transform.LocalPosition = userbubble.Transform.LocalPosition -
-                                                        new Vector2(_userNameRect.Width / 2 - userbubble.Width / 2,
-                                                            _userNameRect.Height + 5);
-                // get the user id of the button that was selected
-                var user_id =
-                    _userIds_toBubbles.Where(kv => kv.Value == userbubble).Select(kv => kv.Key).FirstOrDefault();
-
-                Debug.Assert(user_id != null);
-                if (user_id == null)
-                {
-                    return;
-                }
-
-                // hide the rectangle if the button clicked is already being displayed
-                if (_currentUserNameDisplayed_userid == user_id)
-                {
-                    _userNameRect.IsVisible = false;
-                    _currentUserNameDisplayed_userid = null;
-                    return;
-                }
-
-                // if the user id is a valid one then display the first ten characters of the name associated with the user id
-                if (SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey(user_id))
-                {
-                    var user = SessionController.Instance.NuSysNetworkSession.NetworkMembers[user_id];
-                    var name = user.DisplayName ?? user.UserID;
-                    name = name.TrimStart();
-                    _userNameRect.Text = name.Length == 0 ? "_" : name.Substring(0, Math.Min(name.Length, 10)).ToUpper();
-                }
-                _userNameRect.IsVisible = true;
-                _currentUserNameDisplayed_userid = user_id;
-
+                _userNameRect.IsVisible = false;
+                _currentUserNameDisplayed_userid = null;
+                return;
             }
+
+            // if the user id is a valid one then display the first ten characters of the name associated with the user id
+            if (SessionController.Instance.NuSysNetworkSession.NetworkMembers.ContainsKey(user_id))
+            {
+                var user = SessionController.Instance.NuSysNetworkSession.NetworkMembers[user_id];
+                var name = user.DisplayName ?? user.UserID;
+                name = name.TrimStart();
+                _userNameRect.Text = name.Length == 0 ? "_" : name.Substring(0, Math.Min(name.Length, 10)).ToUpper();
+            }
+            _userNameRect.IsVisible = true;
+            _currentUserNameDisplayed_userid = user_id;
         }
 
         /// <summary>

@@ -348,7 +348,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void BackTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void BackTapped(ButtonUIElement sender)
         {
             // toggle the back to waiting room rectangle visibility
             _backToWaitingRoom.IsVisible = !_backToWaitingRoom.IsVisible;
@@ -423,7 +423,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void _titleBox_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void _titleBox_DoubleTapped(TextboxUIElement sender, Vector2 position)
         {
             var currCollectionController = SessionController.Instance.ContentController.GetLibraryElementController(SessionController.Instance.CurrentCollectionLibraryElementModel.LibraryElementId);
             SessionController.Instance.NuSessionView.ShowDetailView(currCollectionController);
@@ -564,7 +564,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void SettingsButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void SettingsButtonOnTapped(ButtonUIElement sender)
         {
             _settingsMenu.IsVisible = !_settingsMenu.IsVisible;
         }
@@ -574,7 +574,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void ChatButtonOnTapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
+        private void ChatButtonOnTapped(ButtonUIElement sender)
         {
             Chatbox.IsVisible = !Chatbox.IsVisible;
             if (Chatbox.IsVisible)
@@ -702,7 +702,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private async void SnapShotButtonTapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
+        private async void SnapShotButtonTapped(ButtonUIElement sender)
         {
             CreateSnapshotOfCollectionRequest request = new CreateSnapshotOfCollectionRequest(SessionController.Instance.ActiveFreeFormViewer.Controller.LibraryElementController.LibraryElementModel.LibraryElementId);
             await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
@@ -715,7 +715,7 @@ namespace NuSysApp
         /// <summary>
         /// Fired whenever the waiting room button is clicked, returns the user to the waiting room
         /// </summary>
-        private async void BackToWaitingRoomOnTapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
+        private async void BackToWaitingRoomOnTapped(ButtonUIElement sender)
         {
             _backToWaitingRoom.IsVisible = false;
             // for now this has to be done on the ui thread because it deals with xaml elements
@@ -794,9 +794,9 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void Presentation_OnClick(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void Presentation_OnClick(ButtonUIElement sender)
         {
-            if (item == _exitPresentation)
+            if (sender == _exitPresentation)
             {
                 ExitMode();
                 //if (IsReadonly)
@@ -806,7 +806,7 @@ namespace NuSysApp
                 return;
             }
 
-            if (item == _nextNode)
+            if (sender == _nextNode)
             {
                 _modeInstance.MoveToNext();
             }
@@ -821,12 +821,12 @@ namespace NuSysApp
                 PenCircle.Background = new SolidColorBrush(Constants.color4);
                 */
 
-            if (item == _previousNode)
+            if (sender == _previousNode)
             {
                 _modeInstance.MoveToPrevious();
             }
 
-            if (item == _currentNode)
+            if (sender == _currentNode)
             {
                 _modeInstance.GoToCurrent();
             }

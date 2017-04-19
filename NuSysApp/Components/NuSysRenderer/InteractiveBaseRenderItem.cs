@@ -23,8 +23,6 @@ namespace NuSysApp
 
         public event PointerHandler Pressed;
         public event PointerHandler Released;
-        public event PointerHandler DoubleTapped;
-        public event PointerHandler Tapped;
         public event PointerHandler Dragged;
         public event PointerHandler DragStarted;
         public event PointerHandler DragCompleted;
@@ -58,30 +56,13 @@ namespace NuSysApp
         public delegate void HoldingHandler(InteractiveBaseRenderItem item, Vector2 point);
         //Event that fires when holding a render item with your fingers
         public HoldingHandler Holding;
-        protected HashSet<GestureRecognizer> GestureRecognizers = new HashSet<GestureRecognizer>();
+        public HashSet<GestureRecognizer> GestureRecognizers = new HashSet<GestureRecognizer>();
 
-        public InteractiveBaseRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
-        {
-            var dragRecognizer = new DragGestureRecognizer();
-            GestureRecognizers.Add(dragRecognizer);
-            dragRecognizer.OnDragged += OnDragged;
-
-            var manipulationGestureRecognizer = new ManipulationGestureRecognizer();
-            GestureRecognizers.Add(manipulationGestureRecognizer);
-            manipulationGestureRecognizer.OnManipulation += OnManipulated;
-
-        }
-
-        public virtual void OnManipulated(ManipulationGestureRecognizer sender, ManipulationEventArgs args)
+        public InteractiveBaseRenderItem(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator)
+            : base(parent, resourceCreator)
         {
 
         }
-
-        public virtual void OnDragged(DragGestureRecognizer sender, DragEventArgs args)
-        {
-
-        }
-
 
         public virtual void OnRightTapped(CanvasPointer pointer)
         {

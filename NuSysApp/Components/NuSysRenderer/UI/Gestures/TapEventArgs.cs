@@ -13,7 +13,8 @@ namespace NuSysApp
         public enum Tap
         {
             SingleTap,
-            DoubleTap
+            DoubleTap,
+            RightTap
         }
 
         public Tap TapType { get; set; }

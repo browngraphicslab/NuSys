@@ -23,7 +23,14 @@ namespace NuSysApp
         {
             if (_tapArgs == null)
             {
-                _tapArgs = new TapEventArgs(args.GetCurrentPoint(sender).Position.ToSystemVector2());
+                _tapArgs = new TapEventArgs(args.GetCurrentPoint(sender).Position.ToSystemVector2())
+                {
+                    TapType =
+                        args.GetCurrentPoint(sender).Properties.IsRightButtonPressed
+                            ? TapEventArgs.Tap.RightTap
+                            : TapEventArgs.Tap.SingleTap,
+                    DeviceType = args.Pointer.PointerDeviceType
+                };
                 _isDoubleTap = false;
                 _timer = new Timer(FireTapped, null, 200, 200);
             }
@@ -39,7 +46,6 @@ namespace NuSysApp
             _timer.Dispose();
             if (_isDoubleTap == false)
             {
-                _tapArgs.TapType = TapEventArgs.Tap.SingleTap;
                 OnTapped?.Invoke(this, _tapArgs);
                 _tapArgs = null;
             }
@@ -54,7 +60,7 @@ namespace NuSysApp
         {
             if (_isDoubleTap)
             {
-                _tapArgs.TapType = TapEventArgs.Tap.DoubleTap;
+                _tapArgs.TapType = _tapArgs.TapType == TapEventArgs.Tap.RightTap ? TapEventArgs.Tap.RightTap : TapEventArgs.Tap.DoubleTap;
                 OnTapped?.Invoke(this, _tapArgs);
                 _tapArgs = null;
             }

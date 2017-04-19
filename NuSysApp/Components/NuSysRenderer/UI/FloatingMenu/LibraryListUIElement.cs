@@ -7,6 +7,7 @@ using System.Numerics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
@@ -201,7 +202,7 @@ namespace NuSysApp
             // add the add file button tapped event
             _addFileButton.Tapped += AddFileButtonTapped;
 
-            // add dragging events
+            // add dragging event s
             LibraryListView.RowDragged += LibraryListView_RowDragged;
             LibraryListView.RowDragCompleted += LibraryListView_RowDragCompleted;
             LibraryListView.RowTapped += OnLibraryItemSelected;
@@ -328,7 +329,7 @@ namespace NuSysApp
         /// <param name="item"></param>
         /// <param name="columnName"></param>
         /// <param name="pointer"></param>
-        private void OnLibraryItemSelected(LibraryElementModel item, string columnName, CanvasPointer pointer, bool isSelected)
+        private void OnLibraryItemSelected(LibraryElementModel item, string columnName, bool isSelected, PointerDeviceType type)
         {
 
             // first we just try to get the content data model for the element that was selected since that it is important for loading images
@@ -387,7 +388,7 @@ namespace NuSysApp
         }
 
 
-        private void LibraryListView_RowDoubleTapped(LibraryElementModel item, string columnName, CanvasPointer pointer)
+        private void LibraryListView_RowDoubleTapped(LibraryElementModel item, string columnName, PointerDeviceType type)
         {
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(item.LibraryElementId);
             Debug.Assert(controller != null);

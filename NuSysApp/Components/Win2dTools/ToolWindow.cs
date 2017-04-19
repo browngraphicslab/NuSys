@@ -460,7 +460,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private async void _deleteButton_Tapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
+        private async void _deleteButton_Tapped(ButtonUIElement element)
         {
             Delete();
         }
@@ -479,7 +479,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void _refreshButton_Tapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
+        private void _refreshButton_Tapped(ButtonUIElement element)
         {
             Task.Run(delegate {
                 Vm.Controller?.RefreshFromTopOfChain();
@@ -491,7 +491,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void _parentOperatorButton_Tapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
+        private void _parentOperatorButton_Tapped(ButtonUIElement element)
         {
             if (Vm.Controller.ToolModel.ParentOperator == ToolModel.ParentOperatorType.And)
             {
