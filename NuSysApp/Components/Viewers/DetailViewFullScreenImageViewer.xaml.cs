@@ -118,7 +118,6 @@ namespace NuSysApp
             // CHANGED: clip 
             var point = xImage.TransformToVisual(Window.Current.Content);
             Point screenCoord = point.TransformPoint(new Point(_xImagePoint.X + _xImageSize.Width / 2, _xImagePoint.Y + _xImageSize.Height / 2));
-            //Point originalUpperleft = point.TransformPoint(new Point(xImage.ActualWidth / 2, xImage.ActualHeight / 2));
 
             RotateTransform rotate = new RotateTransform
             {
@@ -138,6 +137,7 @@ namespace NuSysApp
             composite.Children.Add(translate);
             composite.Children.Add(rotate);
             xImage.RenderTransform = new MatrixTransform { Matrix = composite.Value };
+
           //  */
                 /* 
             var point = xImage.TransformToVisual(Window.Current.Content);
@@ -207,12 +207,6 @@ namespace NuSysApp
             Visibility = Visibility.Visible;
             xImage.Source = new BitmapImage(imageUris[index]);
             xImage.Stretch=Stretch.UniformToFill;
-          //  var tg = new TransformGroup();
-          //  tg.Children.Add(new CompositeTransform());
-          //  tg.Children.Add(new CompositeTransform());
-          //  tg.Children.Add(new CompositeTransform());
-          //  tg.Children.Add(new CompositeTransform());
-          //  xImage.RenderTransform = tg ;
 
             ResetImage();
         }
@@ -240,7 +234,8 @@ namespace NuSysApp
         private void XCanvas_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var point = xImage.TransformToVisual(Window.Current.Content);
-            Point screenCoord = point.TransformPoint(new Point(xImage.ActualWidth / 2, xImage.ActualHeight / 2));
+            // Point screenCoord = point.TransformPoint(new Point(xImage.ActualWidth / 2, xImage.ActualHeight / 2));
+            Point screenCoord = point.TransformPoint(new Point(_xImagePoint.X + _xImageSize.Width / 2, _xImagePoint.Y + _xImageSize.Height / 2));
 
             TranslateTransform translate = new TranslateTransform
             {
@@ -268,110 +263,6 @@ namespace NuSysApp
             composite.Children.Add(rotate);
             composite.Children.Add(scale);
             xImage.RenderTransform = new MatrixTransform { Matrix = composite.Value };
-           
-
-            ////////////////////////// 
-
-            /* 
-            var transform = (xImage.RenderTransform as TransformGroup)?.Children?.First() as CompositeTransform;
-            Debug.Assert(transform != null);
-
-            /*
-            //var transPoint = transform.Inverse.TransformPoint(e.Position);
-
-            transform.CenterX = e.Position.X / transform.ScaleX;
-            transform.CenterY = e.Position.Y / transform.ScaleY;
-
-            transform.TranslateX += e.Delta.Translation.X;// - ((1-transform.ScaleX) * e.Position.X);
-            transform.TranslateY += e.Delta.Translation.Y;// - ((1 - transform.ScaleY) * e.Position.Y);
-
-            transform.ScaleX *= e.Delta.Scale;
-            transform.ScaleY *= e.Delta.Scale;
-            //transform.Rotation += e.Delta.Rotation;
-            */
-
-            /* 
-            var compositeTransform = transform;
-
-            var center = e.Position;
-
-            var tmpTranslate = new CompositeTransform()
-            {
-                TranslateX = compositeTransform.CenterX,
-                TranslateY = compositeTransform.CenterY,
-                Rotation = compositeTransform.Rotation,
-                ScaleX = compositeTransform.ScaleX,
-                ScaleY = compositeTransform.ScaleY
-            };
-
-            var localPoint = tmpTranslate.Inverse.TransformPoint(center);
-
-            //Now scale the point in local space
-            localPoint.X *= compositeTransform.ScaleX;
-            localPoint.Y *= compositeTransform.ScaleY;
-
-            var worldPoint = tmpTranslate.TransformPoint(localPoint);
-
-            //Take the actual scaling...
-            var distance = new Point(
-                worldPoint.X - center.X,
-                worldPoint.Y - center.Y);
-
-            //Transform local space into world space again
-
-            //...and balance the jump of the changed scaling origin by changing the translation            
-
-            compositeTransform.TranslateX += distance.X;
-            compositeTransform.TranslateY += distance.Y;
-
-            //Also set the scaling values themselves, especially set the new scale center...
-            compositeTransform.ScaleX *= e.Delta.Scale;
-            compositeTransform.ScaleY *= e.Delta.Scale;
-
-            compositeTransform.CenterX = center.X;
-            compositeTransform.CenterY = center.Y;
-
-            //And consider a translational shift
-            compositeTransform.TranslateX += e.Delta.Translation.X;
-            compositeTransform.TranslateY += e.Delta.Translation.Y;
-
-
-
-            /* //////////////////  
-            TranslateTransform translate = new TranslateTransform
-            {
-                X = compositeTransform.TranslateX,
-                Y = compositeTransform.TranslateY
-            };
-
-            ScaleTransform scale = new ScaleTransform
-            {
-                CenterX = center.X, // e.Position.X,
-                CenterY = center.Y, // e.Position.Y,
-                ScaleX = compositeTransform.ScaleX,
-                ScaleY = compositeTransform.ScaleY
-            };
-
-            TransformGroup composite = new TransformGroup();
-            composite.Children.Add(xImage.RenderTransform);
-            composite.Children.Add(translate);
-           // composite.Children.Add(rotate);
-            composite.Children.Add(scale);
-            xImage.RenderTransform = new MatrixTransform { Matrix = composite.Value };
-            */
-            ///////////////////////// 
-
-
-            /*                                                                                                  why do we even have this lever 
-            var start = (xImage.RenderTransform as TransformGroup).Children[1] as CompositeTransform;
-            start.CenterX = e.Position.X;
-            start.CenterY = e.Position.Y;
-
-            var rotation = (xImage.RenderTransform as TransformGroup).Children[2] as CompositeTransform;
-            //rotate.Rotation += e.Delta.Rotation;  
-
-            var end = (xImage.RenderTransform as TransformGroup).Children[3] as CompositeTransform;
-            */
 
         }
 
@@ -392,11 +283,10 @@ namespace NuSysApp
         {
             //  /* 
             var delta = e.GetCurrentPoint(xImage).Properties.MouseWheelDelta;
-        //    var center = e.GetCurrentPoint(xImage).Position;
             var point = xImage.TransformToVisual(Window.Current.Content);
-            Point center = new Point(xImage.ActualWidth / 2, xImage.ActualHeight / 2);
-            Point screenCoord = point.TransformPoint(center);
-            
+//            Point screenCoord = point.TransformPoint(new Point(xImage.ActualWidth / 2, xImage.ActualHeight / 2));
+            Point screenCoord = point.TransformPoint(new Point(_xImagePoint.X + _xImageSize.Width / 2, _xImagePoint.Y + _xImageSize.Height / 2));
+
             ScaleTransform scale = new ScaleTransform
             {
                 CenterX = screenCoord.X, CenterY = screenCoord.Y
@@ -418,49 +308,6 @@ namespace NuSysApp
             composite.Children.Add(scale);
             xImage.RenderTransform = new MatrixTransform { Matrix = composite.Value };
 
-           // */ 
-            /* 
-            var transform = (xImage.RenderTransform as TransformGroup)?.Children?.First() as CompositeTransform;
-            var delta = e.GetCurrentPoint(xImage).Properties.MouseWheelDelta;
-            var compositeTransform = transform;
-            var center = e.GetCurrentPoint(xImage).Position;
-            var tmpTranslate = new CompositeTransform()
-            {
-                TranslateX = compositeTransform.CenterX,
-                TranslateY = compositeTransform.CenterY,
-                Rotation = compositeTransform.Rotation,
-                ScaleX = compositeTransform.ScaleX,
-                ScaleY = compositeTransform.ScaleY
-            };
-
-            var localPoint = tmpTranslate.Inverse.TransformPoint(center);
-
-            //Now scale the point in local space
-            localPoint.X *= compositeTransform.ScaleX;
-            localPoint.Y *= compositeTransform.ScaleY;
-
-            var worldPoint = tmpTranslate.TransformPoint(localPoint);
-
-            //Take the actual scaling...
-            var distance = new Point(
-                worldPoint.X - center.X,
-                worldPoint.Y - center.Y);
-            if (delta > 0)
-            {
-                transform.ScaleX *= 1.2;
-                transform.ScaleY *= 1.2;
-            }
-            if (delta < 0)
-            {
-                transform.ScaleX /= 1.2;
-                transform.ScaleY /= 1.2;
-            }
-            transform.TranslateX += distance.X;
-            transform.TranslateY += distance.Y;
-            transform.CenterX = center.X;
-            transform.CenterY = center.Y;
-
-            */ 
         }
 
         private void XLeftButton_OnClick(object sender, RoutedEventArgs e)
