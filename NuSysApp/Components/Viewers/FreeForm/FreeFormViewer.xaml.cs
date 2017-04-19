@@ -1367,7 +1367,7 @@ namespace NuSysApp
                 SessionController.Instance.NuSessionView.AddChild(popup);
                 popup.Transform.LocalPosition = new Vector2(pointer.CurrentPoint.X, pointer.CurrentPoint.Y );
 
-                popup.AddFlyoutItem("Toggle Title Visibility", (item, canvasPointer) =>
+                popup.AddFlyoutItem("Toggle Title Visibility", (sender) =>
                 {
                     element.ViewModel.Controller.SetTitleVisiblity(!element.ViewModel.Controller.Model.ShowTitle);
                 }, SessionController.Instance.NuSessionView.ResourceCreator);

@@ -337,7 +337,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void OnAddPrivateRegionFlyoutTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void OnAddPrivateRegionFlyoutTapped(FlyoutPopup sender)
         {
             AddRegion(NusysConstants.AccessType.Private);
             _addRegionPopup.DismissPopup();
@@ -348,7 +348,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void OnAddPublicRegionFlyoutTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void OnAddPublicRegionFlyoutTapped(FlyoutPopup sender)
         {
             AddRegion(NusysConstants.AccessType.Public);
             _addRegionPopup.DismissPopup();

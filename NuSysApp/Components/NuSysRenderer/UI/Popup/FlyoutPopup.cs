@@ -29,7 +29,7 @@ namespace NuSysApp
         /// </summary>
         private float _flyoutItemHeight;
 
-        public delegate void FlyOutTappedEvent(ButtonUIElement sender);
+        public delegate void FlyOutTappedEvent(FlyoutPopup sender);
 
         /// <summary>
         /// Dictionary of flyout items to their on top events
@@ -117,7 +117,7 @@ namespace NuSysApp
         private void FlyoutItemOnTapped(ButtonUIElement sender)
         {
             // get the correct handler to invoke from the flyout to handler dictionary
-            _flyOutItemToTappedEvent[sender]?.Invoke(sender);
+            _flyOutItemToTappedEvent[sender]?.Invoke(this);
         }
 
 
