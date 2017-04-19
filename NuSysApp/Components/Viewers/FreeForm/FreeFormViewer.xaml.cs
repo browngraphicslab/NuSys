@@ -1649,7 +1649,6 @@ namespace NuSysApp
                 xWrapper.IsHitTestVisible = false;
                 Debug.Assert(imageUris != null);
 
-                // Changed: CLIP 
                 xFullScreenImageViewer.localSize = localSize;
                 xFullScreenImageViewer.localPoint = localPoint; 
 

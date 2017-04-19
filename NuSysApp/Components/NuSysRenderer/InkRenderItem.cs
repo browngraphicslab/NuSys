@@ -18,6 +18,8 @@ using Microsoft.Graphics.Canvas.UI.Xaml;
 using NusysIntermediate;
 using NuSysApp.Network.Requests;
 
+// TODO remove this;; probably gets too slow so that it doesn't respond on time (so the InkPoint does not get added fast enough, creating sharper edges instead of the round 
+
 namespace NuSysApp
 {
     public class InkRenderItem : BaseRenderItem

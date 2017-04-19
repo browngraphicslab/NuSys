@@ -33,7 +33,6 @@ namespace NuSysApp
         private List<Uri> _currentListOfImageUris;
         private int _indexOfUri;
 
-        // CHANGED: clip 
         private Size _xImageSize;   // size of cropped image 
         private Point _xImagePoint; // point on Image where cropping starts; (0,0) = upper left of image 
 
@@ -56,7 +55,6 @@ namespace NuSysApp
             xCanvas.DoubleTapped += DoubleTapped;
             xImage.ImageOpened += XImageOnOpened;
 
-            // CHANGED: clip 
             _xImageSize = new Size(xImage.ActualWidth, xImage.ActualHeight);
         }
 
@@ -77,11 +75,6 @@ namespace NuSysApp
         private void XImageOnOpened(object sender, RoutedEventArgs routedEventArgs)
         {
             ResetImage();
-
-            // CHANGED: clip 
-            // TODO get the actual localPoint and localSize; replace below 
-         //   Point localPoint = new Point(0.5, 0);             // normalized point within xImage; x,y from 0-1
-         //   Size localSize = new Size(0.5, 0.5);            // normalized size within xImage 
 
             Size size = new Size(localSize.Width * xImage.ActualWidth, localSize.Height * xImage.ActualHeight);
             Point point = new Point(localPoint.X * xImage.ActualWidth, localPoint.Y * xImage.ActualHeight); 
@@ -114,8 +107,6 @@ namespace NuSysApp
         /// </summary>
         private void ResetImage()
         {
-       //     /* 
-            // CHANGED: clip 
             var point = xImage.TransformToVisual(Window.Current.Content);
             Point screenCoord = point.TransformPoint(new Point(_xImagePoint.X + _xImageSize.Width / 2, _xImagePoint.Y + _xImageSize.Height / 2));
 
@@ -138,29 +129,6 @@ namespace NuSysApp
             composite.Children.Add(rotate);
             xImage.RenderTransform = new MatrixTransform { Matrix = composite.Value };
 
-          //  */
-                /* 
-            var point = xImage.TransformToVisual(Window.Current.Content);
-            Point screenCoord = point.TransformPoint(new Point(xImage.ActualWidth / 2, xImage.ActualHeight / 2));
-
-            RotateTransform rotate = new RotateTransform
-            {
-                CenterX = screenCoord.X, CenterY = screenCoord.Y,
-                Angle = 0
-            };
-            
-            TranslateTransform translate = new TranslateTransform
-            {
-                X = (xCanvas.ActualWidth - xImage.ActualWidth) * .5,
-                Y = (xCanvas.ActualHeight - xImage.ActualHeight)*.5
-            };
-          
-            
-            TransformGroup composite = new TransformGroup();
-            composite.Children.Add(translate);
-            composite.Children.Add(rotate);
-            xImage.RenderTransform = new MatrixTransform { Matrix = composite.Value };
-            */ 
         }
 
         /// <summary>
@@ -234,7 +202,6 @@ namespace NuSysApp
         private void XCanvas_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             var point = xImage.TransformToVisual(Window.Current.Content);
-            // Point screenCoord = point.TransformPoint(new Point(xImage.ActualWidth / 2, xImage.ActualHeight / 2));
             Point screenCoord = point.TransformPoint(new Point(_xImagePoint.X + _xImageSize.Width / 2, _xImagePoint.Y + _xImageSize.Height / 2));
 
             TranslateTransform translate = new TranslateTransform
@@ -281,10 +248,8 @@ namespace NuSysApp
 
         private void XImage_OnPointerWheelChanged(object sender, PointerRoutedEventArgs e)
         {
-            //  /* 
             var delta = e.GetCurrentPoint(xImage).Properties.MouseWheelDelta;
             var point = xImage.TransformToVisual(Window.Current.Content);
-//            Point screenCoord = point.TransformPoint(new Point(xImage.ActualWidth / 2, xImage.ActualHeight / 2));
             Point screenCoord = point.TransformPoint(new Point(_xImagePoint.X + _xImageSize.Width / 2, _xImagePoint.Y + _xImageSize.Height / 2));
 
             ScaleTransform scale = new ScaleTransform
