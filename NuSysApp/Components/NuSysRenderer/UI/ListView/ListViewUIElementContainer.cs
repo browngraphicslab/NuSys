@@ -501,6 +501,15 @@ namespace NuSysApp
         }
 
         /// <summary>
+        /// Removes an item from the _itemsSource list. Removes the Row from the ListViewRowUIElements list.
+        /// </summary>
+        /// <param name="itemsToAdd"></param>
+        public void RemoveItem(T itemToRemove)
+        {
+            ListView.RemoveItem(itemToRemove);
+        }
+
+        /// <summary>
         /// This adds all the columns to _listColumns. If you are adding multiple columns use this instead of the AddColumn method
         /// so that the list only reloads once.
         /// </summary>

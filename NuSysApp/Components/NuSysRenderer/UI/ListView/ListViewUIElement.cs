@@ -325,13 +325,35 @@ namespace NuSysApp
         {
             if (itemsToRemove == null)
             {
-                Debug.Write("You are trying to remove a null list from items to the ListView");
+                Debug.Write("You are trying to remove a null list from items from the ListView");
                 return;
             }
             _itemsSource.RemoveAll(item => itemsToRemove.Contains(item));
             _filteredItems.RemoveAll(item => itemsToRemove.Contains(item));
             //Do I also need to remove handlers here?
             _selectedElements.RemoveWhere(row => itemsToRemove.Contains(row));
+
+            if (_filteredItems.Count <= Rows.Count)
+            {
+                CreateListViewRowUIElements();
+            }
+        }
+
+        /// <summary>
+        /// Removes an item from the _filteredItems list and the _itemsSource list. Removes the Row from the ListViewRowUIElements list.
+        /// </summary>
+        /// <param name="itemsToAdd"></param>
+        public void RemoveItem(T itemToRemove)
+        {
+            if (itemToRemove == null)
+            {
+                Debug.Write("You are trying to remove a null item from the ListView");
+                return;
+            }
+            _itemsSource.Remove(itemToRemove);
+            _filteredItems.Remove(itemToRemove);
+            //Do I also need to remove handlers here?
+            _selectedElements.Remove(itemToRemove);
 
             if (_filteredItems.Count <= Rows.Count)
             {
