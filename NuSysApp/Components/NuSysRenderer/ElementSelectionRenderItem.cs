@@ -22,6 +22,8 @@ namespace NuSysApp
     {
         public Rect _selectionBoundingRect;
         public Rect _screenRect;
+        
+
         private FreeFormViewerViewModel _vm;
         private List<ElementRenderItem> _selectedItems = new List<ElementRenderItem>();
 
@@ -41,12 +43,17 @@ namespace NuSysApp
         public NodeResizerRenderItem TopRightResizer;
 
         public ButtonUIElement BtnTools;
+
         private RectangleUIElement DragToolsRect;
+        private RectangularMarqueeUIElement _rectangularMarquee;
+
         public List<BaseRenderItem> Buttons = new List<BaseRenderItem>();
         public List<NodeResizerRenderItem>  Resizers; //Keep array of all resizers so Contains can be used
         private List<BaseRenderItem> _menuButtons = new List<BaseRenderItem>();
         private bool _isSinglePdfSelected;
         private bool _isSingleCollectionSelected;
+
+
 
         public ElementSelectionRenderItem(ElementCollectionViewModel vm, BaseRenderItem parent, CanvasAnimatedControl resourceCreator) : base(parent, resourceCreator)
         {
@@ -70,6 +77,15 @@ namespace NuSysApp
             TopLeftResizer= new NodeResizerRenderItem(parent, resourceCreator, NodeResizerRenderItem.ResizerPosition.TopLeft);
             TopRightResizer = new NodeResizerRenderItem(parent, resourceCreator, NodeResizerRenderItem.ResizerPosition.TopRight);
             SetUpToolButton();
+
+
+            //SET UP RECTANGULAR MARQUEE
+            _rectangularMarquee = new RectangularMarqueeUIElement(this, ResourceCreator)
+            {
+                Background = Colors.Transparent,
+                IsHitTestVisible = false
+            };
+            AddChild(_rectangularMarquee);
 
 
 
@@ -106,8 +122,6 @@ namespace NuSysApp
                 TopRightResizer,
                 BottomLeftResizer
             };
-
-            //AddChild(Resizer);
 
             SessionController.Instance.SessionView.FreeFormViewer.Selections.CollectionChanged += SelectionsOnCollectionChanged;
         }
@@ -270,6 +284,11 @@ namespace NuSysApp
             _screenRect.Y = 0;
 
 
+            _rectangularMarquee.Transform.LocalPosition = new Vector2((float)_screenRect.X, (float)_screenRect.Y);
+            _rectangularMarquee.Width = (float)_screenRect.Width;
+            _rectangularMarquee.Height = (float)_screenRect.Height;
+
+
             BottomRightResizer.Transform.LocalPosition = new Vector2((float)(_screenRect.Right - 30 + 1.5f), (float)(_screenRect.Bottom - 30 + 1.5f));
             TopLeftResizer.Transform.LocalPosition = new Vector2((float)(_screenRect.Left - 1.5f), (float)(_screenRect.Top - 1.5f));
             TopRightResizer.Transform.LocalPosition = new Vector2((float)(_screenRect.Right - 30 + 1.5f), (float)(_screenRect.Top - 1.5f));
@@ -347,7 +366,6 @@ namespace NuSysApp
 
             var old = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
-            ds.DrawRectangle(_screenRect, Colors.SlateGray, 3f, new CanvasStrokeStyle { DashCap = CanvasCapStyle.Flat, DashStyle = CanvasDashStyle.Dash, DashOffset = 10f });
 
 
 
