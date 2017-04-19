@@ -56,7 +56,10 @@ namespace NuSysApp
             };
 
             //_controller.ImageLibraryElementModel.NormalizedX
-            SessionController.Instance.SessionView.FreeFormViewer.ShowFullScreenImage(uriList, 0, false);
+            SessionController.Instance.SessionView.FreeFormViewer.ShowFullScreenImage(uriList, 0, false,
+                // Changed: CLIP 
+                new Point(_controller.ImageLibraryElementModel.NormalizedX, _controller.ImageLibraryElementModel.NormalizedY), 
+                new Size(_controller.ImageLibraryElementModel.NormalizedWidth, _controller.ImageLibraryElementModel.NormalizedHeight));
         }
     }
 }

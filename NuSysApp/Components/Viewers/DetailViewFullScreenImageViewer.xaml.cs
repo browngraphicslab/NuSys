@@ -37,6 +37,10 @@ namespace NuSysApp
         private Size _xImageSize;   // size of cropped image 
         private Point _xImagePoint; // point on Image where cropping starts; (0,0) = upper left of image 
 
+        // used for the clipping 
+        public Size localSize { get; set; } 
+        public Point localPoint { get; set; }
+
         public double ActualX { get; private set; }
 
         /// <summary>
@@ -75,9 +79,10 @@ namespace NuSysApp
             ResetImage();
 
             // CHANGED: clip 
-            // TODO get the actual localPoint and localSize 
-            Point localPoint = new Point(0.5, 0);             // normalized point within xImage; x,y from 0-1
-            Size localSize = new Size(0.5, 0.5);            // normalized size within xImage 
+            // TODO get the actual localPoint and localSize; replace below 
+         //   Point localPoint = new Point(0.5, 0);             // normalized point within xImage; x,y from 0-1
+         //   Size localSize = new Size(0.5, 0.5);            // normalized size within xImage 
+
             Size size = new Size(localSize.Width * xImage.ActualWidth, localSize.Height * xImage.ActualHeight);
             Point point = new Point(localPoint.X * xImage.ActualWidth, localPoint.Y * xImage.ActualHeight); 
 
@@ -89,27 +94,8 @@ namespace NuSysApp
 
             _xImageSize = size;
             _xImagePoint = point; 
-            /*
-            Rectangle rectangle = new Rectangle
-            {
-                Stroke = new SolidColorBrush(Colors.Red),
-                StrokeThickness = 5, 
-                Width = size.Width,
-                Height = size.Height
-            };
-            rectangle.RenderTransform = new TranslateTransform
-            {
-                X = clipRect.Rect.X, // upperLeft.X,
-                Y = clipRect.Rect.Y // upperLeft.Y 
-            };
-            xCanvas.Children.Add(rectangle);
-            */
 
-
-            //Image manipulationImage = xImage; 
             ResetImage();
-            // TODO center it again;; but make sure it's still clipped, ResetImage() doesn't work; maybe manipulate another Image 
-            // TODO global variable for actualSize, to use in place of xImage.ActualWidth and xImage.ActualHeight 
         }
 
         /// <summary>

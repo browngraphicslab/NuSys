@@ -1641,13 +1641,18 @@ namespace NuSysApp
         /// Method used to show the full-screen image of any uri. 
         /// This will be a pan-zoomable interface for viewing images
         /// </summary>
-        public void ShowFullScreenImage(List<Uri> imageUris, int index, bool pages)
+        public void ShowFullScreenImage(List<Uri> imageUris, int index, bool pages, Windows.Foundation.Point localPoint, Size localSize)
         {
             UITask.Run(delegate
             {
                 xFullScreenImageViewer.IsHitTestVisible = true;
                 xWrapper.IsHitTestVisible = false;
                 Debug.Assert(imageUris != null);
+
+                // Changed: CLIP 
+                xFullScreenImageViewer.localSize = localSize;
+                xFullScreenImageViewer.localPoint = localPoint; 
+
                 xFullScreenImageViewer.ShowImage(imageUris, index, pages);
             });
         }
