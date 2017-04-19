@@ -25,13 +25,13 @@ namespace NuSysApp
         /// title that was clicked. If you select a row programatically it will just give you the item. The string columnName will
         /// be null.
         /// </summary>
-        public delegate void RowTappedEventHandler(T item, String columnName, CanvasPointer pointer, bool isSelected);
+        public delegate void RowTappedEventHandler(T item, String columnName, bool isSelected, PointerDeviceType type);
         public event RowTappedEventHandler RowTapped;
 
         public delegate void RowDraggedEventHandler(T item, string columnName, CanvasPointer pointer);
         public event RowDraggedEventHandler RowDragged;
 
-        public delegate void RowDoubleTappedEventHandler(T item, string columnName, CanvasPointer pointer);
+        public delegate void RowDoubleTappedEventHandler(T item, string columnName, PointerDeviceType type);
         public event RowDoubleTappedEventHandler RowDoubleTapped;
 
         /// <summary>
@@ -1022,17 +1022,17 @@ namespace NuSysApp
 
         }
 
-        private void ListViewRowUIElementOnRowTapped(ListViewRowUIElement<T> rowUiElement, int colIndex, CanvasPointer pointer, T item)
+        private void ListViewRowUIElementOnRowTapped(ListViewRowUIElement<T> rowUiElement, int colIndex, PointerDeviceType type, T item)
         {
             bool isSelected = false;
             var colTitle = _listColumns[colIndex].Title; //get the title from the columns
-            var np = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
-            if (rowUiElement.HitTest(pointer.CurrentPoint) == null)
-            {
-                return;
-            }
+//            var np = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
+//            if (rowUiElement.HitTest(pointer.CurrentPoint) == null)
+//            {
+//                return;
+//            }
 
-            if (pointer.DeviceType == PointerDeviceType.Pen || SessionController.Instance.ShiftHeld)
+            if (type == PointerDeviceType.Pen || SessionController.Instance.ShiftHeld)
             {
                 MultipleSelections = true;
                 if (_selectedElements.Contains(item))
@@ -1067,15 +1067,14 @@ namespace NuSysApp
                 }
 
             }
-            RowTapped?.Invoke(item, colTitle, pointer, isSelected);
+            RowTapped?.Invoke(item, colTitle, isSelected, type);
 
         }
 
-        private void ListViewRowUIElementOnRowDoubleTapped(ListViewRowUIElement<T> rowUiElement, int colIndex, CanvasPointer pointer, T item)
+        private void ListViewRowUIElementOnRowDoubleTapped(ListViewRowUIElement<T> rowUiElement, int colIndex, PointerDeviceType type, T item)
         {
             var colTitle = _listColumns[colIndex].Title;
-            RowDoubleTapped?.Invoke(item, colTitle, pointer);
-
+            RowDoubleTapped?.Invoke(item, colTitle, type);
         }
 
 

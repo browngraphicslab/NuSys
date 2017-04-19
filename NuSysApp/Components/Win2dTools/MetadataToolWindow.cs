@@ -400,7 +400,7 @@ namespace NuSysApp
         /// <summary>
         ///If the item that was double tapped is the only selected item, attempt to open the detail view.
         /// </summary>
-        private void _metadataValuesList_RowDoubleTapped(KeyValuePair<string, double> item, string columnName, CanvasPointer pointer)
+        private void _metadataValuesList_RowDoubleTapped(KeyValuePair<string, double> item, string columnName, PointerDeviceType type)
         {
             var vm = (Vm as MetadataToolViewModel);
             var textTapped = item.Key;
@@ -422,13 +422,13 @@ namespace NuSysApp
         /// <param name="item"></param>
         /// <param name="columnName"></param>
         /// <param name="pointer"></param>
-        private void _metadataValuesList_RowTapped(KeyValuePair<string, double> item, string columnName, CanvasPointer pointer, bool isSelected)
+        private void _metadataValuesList_RowTapped(KeyValuePair<string, double> item, string columnName, bool isSelected, PointerDeviceType type)
         {
             var vm = (Vm as MetadataToolViewModel);
             if (vm.Controller.ToolModel.Selected && vm.Selection.Item2 != null &&
                 vm.Selection.Item2.Contains(item.Key))
             {
-                if (pointer.DeviceType == PointerDeviceType.Pen) //|| CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down
+                if (type == PointerDeviceType.Pen) //|| CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down
                 {
                     //if tapped item is already selected and in multiselect mode, remove item from selection
                     vm.Selection.Item2.Remove(item.Key);
@@ -445,7 +445,7 @@ namespace NuSysApp
                 Debug.Assert(vm != null);
                 if (_metadataKeysList.GetSelectedItems().Count() == 1)
                 {
-                    if (pointer.DeviceType == PointerDeviceType.Pen) // || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down
+                    if (type == PointerDeviceType.Pen) // || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down
                     {
                         //if tapped item is not selected and in multiselect mode, add item to selection
 
@@ -478,7 +478,7 @@ namespace NuSysApp
         /// <param name="item"></param>
         /// <param name="columnName"></param>
         /// <param name="pointer"></param>
-        private void metadataKeysList_RowTapped(string item, string columnName, CanvasPointer pointer, bool isSelected)
+        private void metadataKeysList_RowTapped(string item, string columnName, bool isSelected, PointerDeviceType type)
         {
             var vm = (Vm as MetadataToolViewModel);
             if (vm.Controller.ToolModel.Selected &&

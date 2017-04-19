@@ -56,9 +56,8 @@ namespace NuSysApp
         /// </summary>
         /// <param name="selection"></param>
         /// <param name="type"></param>
-        public void Item_OnTapped(string selection, CanvasPointer pointer)
+        public void Item_OnTapped(string selection, PointerDeviceType type)
         {
-            var type = pointer.DeviceType;
             if (Vm.Selection != null && Vm.Controller.ToolModel.Selected && Vm.Selection.Contains(selection))
             {
                 if (type == PointerDeviceType.Pen || SessionController.Instance.ShiftHeld) //|| CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down
