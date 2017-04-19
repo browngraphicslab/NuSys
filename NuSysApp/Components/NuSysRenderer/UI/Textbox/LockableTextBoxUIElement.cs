@@ -66,7 +66,10 @@ namespace NuSysApp
             };
             _overlay.Transform.LocalPosition = new Vector2(0, 0);
             AddChild(_overlay);
-            _overlay.Tapped += OverlayOnTapped;
+
+            var overlayTapRecognizer = new TapGestureRecognizer();
+            overlayTapRecognizer.OnTapped += OverlayOnTapped;
+            _overlay.GestureRecognizers.Add(overlayTapRecognizer);
             OnFocusGained += OnOnFocusGained;
             OnFocusLost += OnOnFocusLost;
             if (!string.IsNullOrEmpty(lockId))
@@ -133,7 +136,6 @@ namespace NuSysApp
         public override void Dispose()
         {
             this.UnRegister();
-            _overlay.Tapped -= OverlayOnTapped;
             OnFocusGained -= OnOnFocusGained;
             OnFocusLost -= OnOnFocusLost;
             base.Dispose();
@@ -144,7 +146,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void OverlayOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void OverlayOnTapped(TapGestureRecognizer sender, TapEventArgs args)
         {
             if (_overlay.IsVisible)
             {

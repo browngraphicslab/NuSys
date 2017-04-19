@@ -252,10 +252,9 @@ namespace NuSysApp
             }
         }
 
-        private void OnColumnOptionTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void OnColumnOptionTapped(ButtonUIElement sender)
         {
-            var button = item as ButtonUIElement;
-            var columns = ListView.ColumnOptions.Where(a => a.Title == button.ButtonText);
+            var columns = ListView.ColumnOptions.Where(a => a.Title == sender.ButtonText);
             var column = columns.First();
 
             if (column == null)
@@ -406,11 +405,10 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void AddColumnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void AddColumnTapped(ButtonUIElement sender)
         {
             var options = ListView.ColumnOptions.Where(col => !ListView.ListColumns.Contains(col));
-            var button = item as ButtonUIElement;
-            var newpopup = _popupGroup.AddFlyoutPopup(button);
+            var newpopup = _popupGroup.AddFlyoutPopup(sender);
             AddColumnOptionsToPopup(newpopup, options);
         }
         /// <summary>
@@ -418,7 +416,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void DeleteColumnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void DeleteColumnTapped(ButtonUIElement sender)
         {
             var header = _popupGroup.Source as ListViewHeaderItem<T>;
             if (header == null)
@@ -434,7 +432,7 @@ namespace NuSysApp
         /// Whenever a header is tapped just sort the list by that column
         /// </summary>
         /// <param name="columnIndex"></param>
-        private void Header_HeaderTapped(int columnIndex, CanvasPointer pointer)
+        private void Header_HeaderTapped(int columnIndex)
         {
             SortByCol(columnIndex);
         

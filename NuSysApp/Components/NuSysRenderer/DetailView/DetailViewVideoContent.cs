@@ -27,19 +27,23 @@ namespace NuSysApp
             _controller = controller;
 
             _showRegions = showRegions;
-            DoubleTapped += DetailViewVideoContent_DoubleTapped;
+
+            // respond to double taps
+            var tapGestureRecognizer = new TapGestureRecognizer();
+            tapGestureRecognizer.OnTapped += delegate(TapGestureRecognizer sender, TapEventArgs args)
+            {
+                if (args.TapType == TapEventArgs.Tap.DoubleTap)
+                {
+                    // show full screen video on double tap
+                    DetailViewVideoContent_DoubleTapped();
+                }
+            };
+            GestureRecognizers.Add(tapGestureRecognizer);
         }
 
-        private void DetailViewVideoContent_DoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void DetailViewVideoContent_DoubleTapped()
         {
             SessionController.Instance.SessionView.FreeFormViewer.PlayFullScreenVideo(_controller, true);
-        }
-
-        public override void Dispose()
-        {
-            DoubleTapped -= DetailViewVideoContent_DoubleTapped;
-
-            base.Dispose();
         }
 
         public override async Task Load()

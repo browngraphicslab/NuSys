@@ -19,7 +19,7 @@ namespace NuSysApp
     public class ListViewHeader<T> : RectangleUIElement
     {
         #region events
-        public delegate void HeaderTappedEventHandler(int colIndex, CanvasPointer pointer);
+        public delegate void HeaderTappedEventHandler(int colIndex);
 
         /// <summary>
         /// Fires when header has been tapped
@@ -358,9 +358,9 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void Header_Tapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
+        private void Header_Tapped(ButtonUIElement sender)
         {
-            HeaderTapped?.Invoke(_children.IndexOf(interactiveBaseRenderItem), pointer);   
+            HeaderTapped?.Invoke(_children.IndexOf(sender));   
         }
     }
 }

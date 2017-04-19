@@ -63,35 +63,33 @@ namespace NuSysApp
             base.Load();
         }
 
-        private void BtnCloseOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void BtnCloseOnTapped(CloseButtonRenderItem sender)
         {
             IsVisible = false;
         }
 
-        private void WidthItemOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void WidthItemOnTapped(InkOptionsWidthRenderItem sender)
         {
             foreach (var child in _widthContainer.GetChildren())
             {
                 var width = (InkOptionsWidthRenderItem) child;
                 width.IsActive = false;
             }
-            _activeWidth = (InkOptionsWidthRenderItem)item;
-            _activeWidth.IsActive = true;
+            sender.IsActive = true;
 
-            SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.InkRenderItem.InkSize = _activeWidth.Radius;
+            SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.InkRenderItem.InkSize = sender.Radius;
         }
 
-        private void ColorItemOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void ColorItemOnTapped(InkOptionsColorRenderItem sender)
         {
             foreach (var child in _colorContainer.GetChildren())
             {
                 var color = (InkOptionsColorRenderItem)child;
                 color.IsActive = false;
             }
-            _activeColor = (InkOptionsColorRenderItem)item;
-            InkOptionsWidthRenderItem.Color = _activeColor.Color;
+            InkOptionsWidthRenderItem.Color = sender.Color;
             
-            _activeColor.IsActive = true;
+            sender.IsActive = true;
 
             SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.InkRenderItem.InkColor = _activeColor.Color;
         }

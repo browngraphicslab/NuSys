@@ -10,6 +10,8 @@ namespace NuSysApp
 {
     public class ScrollingCanvas : RectangleUIElement
     {
+        public delegate void ElementTapHandler(InteractiveBaseRenderItem sender, TapEventArgs args);
+
         /// <summary>
         /// Invoked when an element on the scrolling canvas is pressed
         /// </summary>
@@ -23,12 +25,12 @@ namespace NuSysApp
         /// <summary>
         /// Invoked when an element on the scrolling canvas is double tapped
         /// </summary>
-        public event PointerHandler ElementDoubleTapped;
+        public event ElementTapHandler ElementDoubleTapped;
 
         /// <summary>
         /// Invoked when an element on the scrolling canvas is tapped
         /// </summary>
-        public event PointerHandler ElementTapped;
+        public event ElementTapHandler ElementTapped;
 
         /// <summary>
         /// Invoked when an element on the scrolling canvas is dragged
@@ -283,10 +285,22 @@ namespace NuSysApp
 
         private void AddElementEvents(BaseInteractiveUIElement element)
         {
-            element.Tapped += OnElementTapped;
+            var elementTapGestureRecognizer = new TapGestureRecognizer();
+            elementTapGestureRecognizer.OnTapped += delegate(TapGestureRecognizer sender, TapEventArgs args)
+            {
+                if (args.TapType == TapEventArgs.Tap.SingleTap)
+                {
+                    OnElementTapped(element, args);
+
+                } else if (args.TapType == TapEventArgs.Tap.DoubleTap)
+                {
+
+                    OnElementDoubleTapped(element, args);
+                }
+            };
+            element.GestureRecognizers.Add(elementTapGestureRecognizer);
             element.Pressed += OnElementPressed;
             element.Released += OnElementReleased;
-            element.DoubleTapped += OnElementDoubleTapped;
             element.Dragged += OnElementDragged;
             element.DragStarted += OnElementDragStarted;
             element.DragCompleted += OnElementDragCompleted;
@@ -316,9 +330,9 @@ namespace NuSysApp
             ScrollingCanvas_Dragged(item, pointer);
         }
 
-        protected virtual void OnElementDoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        protected virtual void OnElementDoubleTapped(InteractiveBaseRenderItem item, TapEventArgs args)
         {
-            ElementDoubleTapped?.Invoke(this, pointer);
+            ElementDoubleTapped?.Invoke(this, args);
         }
 
         protected virtual void OnElementReleased(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -331,9 +345,9 @@ namespace NuSysApp
             ElementPressed?.Invoke(this, pointer);
         }
 
-        protected virtual void OnElementTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        protected virtual void OnElementTapped(InteractiveBaseRenderItem item, TapEventArgs args)
         {
-            ElementTapped?.Invoke(item, pointer);
+            ElementTapped?.Invoke(item, args);
         }
 
         private void ScrollingCanvas_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -405,10 +419,8 @@ namespace NuSysApp
 
         private void RemoveElementEvents(BaseInteractiveUIElement element)
         {
-            element.Tapped -= OnElementTapped;
             element.Pressed -= OnElementPressed;
             element.Released -= OnElementReleased;
-            element.DoubleTapped -= OnElementDoubleTapped;
             element.Dragged -= OnElementDragged;
             element.DragStarted -= OnElementDragStarted;
             element.DragCompleted -= OnElementDragCompleted;

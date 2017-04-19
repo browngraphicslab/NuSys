@@ -29,10 +29,12 @@ namespace NuSysApp
         /// </summary>
         private float _flyoutItemHeight;
 
+        public delegate void FlyOutTappedEvent(ButtonUIElement sender);
+
         /// <summary>
         /// Dictionary of flyout items to their on top events
         /// </summary>
-        private Dictionary<ButtonUIElement, PointerHandler> _flyOutItemToTappedEvent;
+        private Dictionary<ButtonUIElement, FlyOutTappedEvent> _flyOutItemToTappedEvent;
 
         public List<ButtonUIElement> FlyoutItems
         {
@@ -60,7 +62,7 @@ namespace NuSysApp
         public FlyoutPopup(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator)
             : base(parent, resourceCreator)
         {
-            _flyOutItemToTappedEvent = new Dictionary<ButtonUIElement, PointerHandler>();
+            _flyOutItemToTappedEvent = new Dictionary<ButtonUIElement, FlyOutTappedEvent>();
             _flyoutItems = new List<ButtonUIElement>();
             _flyoutItemHeight = 35;
             Width = 150;
@@ -74,7 +76,7 @@ namespace NuSysApp
         /// Make a new flyout item and attaches appropriate handler to button
         /// </summary>
         /// <param name="text"></param>
-        public void AddFlyoutItem(string text, PointerHandler onTappedEvent,
+        public void AddFlyoutItem(string text, FlyOutTappedEvent onTappedEvent,
             ICanvasResourceCreatorWithDpi resourceCreator)
         {
             var flyoutItem = new ButtonUIElement(this, resourceCreator, new RectangleUIElement(this, resourceCreator));
@@ -112,10 +114,10 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void FlyoutItemOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void FlyoutItemOnTapped(ButtonUIElement sender)
         {
             // get the correct handler to invoke from the flyout to handler dictionary
-            _flyOutItemToTappedEvent[item as ButtonUIElement]?.Invoke(item, pointer);
+            _flyOutItemToTappedEvent[sender]?.Invoke(sender);
         }
 
 
