@@ -149,7 +149,7 @@ namespace NuSysApp
             filterlist();
         }
 
-        private void _deleteKeyButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void _deleteKeyButton_Tapped(ButtonUIElement button)
         {
             _controller.RemoveMetadata(_addKeyBox.Text);
             _addKeyBox.ClearText();
@@ -303,9 +303,7 @@ namespace NuSysApp
         /// <summary>
         /// Adds a key value pair to metadata, called when the button is pressed to add a key value pair ot metadata
         /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void AddKeyValuePairToMetadata(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void AddKeyValuePairToMetadata(ButtonUIElement button)
         {
             // get the key of the metadata to be updated
             var key = _addKeyBox.Text;
@@ -526,9 +524,9 @@ namespace NuSysApp
             _rebuildSuggestedTags = false;
         }
 
-        private void NewTag_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void NewTag_Tapped(TextboxUIElement sender, Vector2 position)
         {
-            var dynamicTextbox = item as DynamicTextboxUIElement;
+            var dynamicTextbox = sender as DynamicTextboxUIElement;
             Debug.Assert(dynamicTextbox != null);
 
             _suggestedTags.Remove(dynamicTextbox.Text);

@@ -209,7 +209,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void ElementOrigin_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void ElementOrigin_Tapped(TextboxUIElement sender, Vector2 position)
         {
             if (_origin != null)
             {
@@ -217,7 +217,7 @@ namespace NuSysApp
             }
         }
 
-        private async void WordButtonOnTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private async void WordButtonOnTapped(ButtonUIElement button)
         {
             Debug.Assert(_controller.LibraryElementModel.Type == NusysConstants.ElementType.Word);
             var request = new GetWordDocumentRequest(new GetWordDocumentRequestArgs() {ContentId =  _controller.LibraryElementModel.ContentDataModelId});
@@ -264,9 +264,7 @@ namespace NuSysApp
         /// <summary>
         /// overwritten in image and pdf classes so you can expand depending on what you're looking at
         /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        protected virtual void ExpandButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        protected virtual void ExpandButton_Tapped(ButtonUIElement button)
         {
             
         }
@@ -323,9 +321,8 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void AddRegionButton_Tapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
+        private void AddRegionButton_Tapped(ButtonUIElement addRegionButton)
         {
-            var addRegionButton = interactiveBaseRenderItem as ButtonUIElement;
             Debug.Assert(addRegionButton!= null);
             _addRegionPopup = new FlyoutPopup(this, Canvas);
             _addRegionPopup.Transform.LocalPosition = new Vector2(addRegionButton.Transform.LocalPosition.X,
