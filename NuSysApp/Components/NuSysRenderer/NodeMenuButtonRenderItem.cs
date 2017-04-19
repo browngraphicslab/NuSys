@@ -73,7 +73,7 @@ namespace NuSysApp
             var orgTransform = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
             ds.FillCircle(new Vector2(0,0), 25, Constants.RED);
-            var scaleFactor = 15/_bmp.Size.Width;
+            // var scaleFactor = 15/_bmp.Size.Width;
             // ds.FillCircle(new Rect { X = Postion.X, Y = 0, Width = _vm.Width, Height = _vm.Height }, Colors.Red);
             if (_bmp != null)
                 //ds.DrawImage(_bmp, new Rect(-10 + (30 - _bmp.Size.Width * scaleFactor) / 2f, -10 + (30 - _bmp.Size.Height * scaleFactor) / 2f, _bmp.Size.Width * scaleFactor, _bmp.Size.Height * scaleFactor)); 

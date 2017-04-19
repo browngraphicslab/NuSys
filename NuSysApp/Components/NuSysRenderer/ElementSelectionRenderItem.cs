@@ -282,6 +282,7 @@ namespace NuSysApp
         {
             if (Lib == null) return;
             RemoveChild(Lib);
+            Lib.Dispose();
             Lib = null;
         }
 

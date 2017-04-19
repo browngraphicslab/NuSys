@@ -384,24 +384,34 @@ namespace NuSysApp.Components.NuSysRenderer.UI.ListView
 
         }
 
-        /// <summary>
-        /// Removes an element from the libary list when it is deleted
-        /// </summary>
-        /// <param name="element"></param>
-        private void UpdateLibraryListToRemoveElement(LibraryElementModel element)
+        private void UpdateContents()
         {
-            Debug.Assert(element != null);
-            Lib?.RemoveItems(new List<LibraryElementModel> { element });
+            var items = new List<LibraryElementModel>();
+            bool itemAdded = false;
+            foreach (var child in _collectionRenderItem.ViewModel.GetOutputLibraryIds())
+            {
+                var item = SessionController.Instance.ContentController.GetLibraryElementModel(child);
+                if (!Lib.GetItems().Contains(item))
+                {
+                    items.Add(item);
+                    itemAdded = true;
+                }
+            }
+
+            Lib.AddItems(items);
+            //if(itemAdded) updateEventHandlers();
         }
 
-        /// <summary>
-        /// Adds an element to the library list when it is added to the library
-        /// </summary>
-        /// <param name="libraryElement"></param>
-        private void UpdateLibraryListWithNewElement(LibraryElementModel libraryElement)
+        private void updateEventHandlers()
         {
-            Lib.AddItems(new List<LibraryElementModel> { libraryElement });
-            Lib.ScrollTo(libraryElement);
+            Lib.RowDragged -= LibraryListView_RowDragged;
+            Lib.RowDragCompleted -= LibraryListView_RowDragCompleted;
+            Lib.RowTapped -= OnLibraryItemSelected;
+            Lib.RowDoubleTapped -= LibraryListView_RowDoubleTapped;
+            Lib.RowDragged += LibraryListView_RowDragged;
+            Lib.RowDragCompleted += LibraryListView_RowDragCompleted;
+            Lib.RowTapped += OnLibraryItemSelected;
+            Lib.RowDoubleTapped += LibraryListView_RowDoubleTapped;
         }
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
@@ -411,6 +421,7 @@ namespace NuSysApp.Components.NuSysRenderer.UI.ListView
             Lib.Height = Height - BorderWidth;
             Lib.Transform.LocalPosition = new Vector2(BorderWidth, 0);
             
+            UpdateContents();
 
             base.Update(parentLocalToScreenTransform);
         }
