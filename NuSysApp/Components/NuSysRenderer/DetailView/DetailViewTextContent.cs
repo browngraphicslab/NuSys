@@ -121,6 +121,7 @@ namespace NuSysApp
                     OverlayOnTapped();
                 }
             };
+            _overlay.GestureRecognizers.Add(overlayTapRecognizer);
 
             //button to toggle display
             _toggleDisplayButton = new RectangleButtonUIElement(this, resourceCreator, text: "Toggle Display");
