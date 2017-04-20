@@ -124,6 +124,31 @@ namespace NuSysApp
             _children.Clear();
         }
 
+        public virtual void SendToBack(BaseRenderItem child)
+        {
+            int index = _children.IndexOf(child);
+            if(index != -1)
+            {
+                //Instead of removing and inserting at the beginning, 
+                //move each element from the beginning until child forward one and put child at index 0
+                for(int i = index; i > 0; --i)
+                {
+                    _children[i] = _children[i - 1];
+                }
+                _children[0] = child;
+            }
+        }
+
+        public virtual void SendToFront(BaseRenderItem child)
+        {
+            int index = _children.IndexOf(child);
+            if(index != -1)
+            {
+                _children.RemoveAt(index);
+                _children.Add(child);
+            }
+        }
+
         public virtual void SortChildren(Comparison<BaseRenderItem> comparison)
         {
             _children.Sort(comparison);
