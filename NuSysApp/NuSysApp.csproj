@@ -423,6 +423,7 @@
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoContent.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoPage.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewWordPage.cs" />
+    <Compile Include="RadialMenuButtons.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BorderType.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ListView\LibraryListImageColumn.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ListView\ListImageColumn.cs" />
@@ -907,6 +908,7 @@
     <Compile Include="Network\ServerRepo\ServerClient.cs" />
     <Compile Include="Network\StaticServerCalls.cs" />
     <Compile Include="RadialMenu.cs" />
+    <Compile Include="RadialMenuButtonContainer.cs" />
     <Compile Include="TransformHelper.cs" />
     <Compile Include="Undo\CreateElementAction.cs" />
     <Compile Include="Undo\CreateLibraryElementAction.cs" />

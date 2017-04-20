@@ -1,4 +1,6 @@
 ﻿using Microsoft.Graphics.Canvas;
+using NuSysApp.NusysRenderer;
+using NusysIntermediate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,8 +32,9 @@ namespace NuSysApp
 
             private float _originalHeight;
             private float _originalWidth;
+        private RadialMenuButtons _radialMenuButtons;
 
-            public RadialMenu(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
+        public RadialMenu(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
             {
                 // set the default height and width of the floating menu view
                 Height = 100;
@@ -54,11 +57,28 @@ namespace NuSysApp
 
                 AddChild(_openLibraryButton);
 
-                _addElementMenu = new AddElementMenuUIElement(this, Canvas)
+                var buttonContainers = new List<RadialMenuButtonContainer>();
+            buttonContainers.Add(new RadialMenuButtonContainer("ms-appx:///Assets/new icons/recording.png",
+                NusysConstants.ElementType.Recording));
+            buttonContainers.Add(new RadialMenuButtonContainer("ms-appx:///Assets/new icons/text.png",
+               NusysConstants.ElementType.Text));
+            buttonContainers.Add(new RadialMenuButtonContainer("ms-appx:///Assets/new icons/collection.png",
+               NusysConstants.ElementType.Collection));
+            buttonContainers.Add(new RadialMenuButtonContainer("ms-appx:///Assets/new icons/tools.png",
+               NusysConstants.ElementType.Tools));
+
+            //_buttons[1].Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/recording.png"));
+            //_addTextNodeButton.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/text.png"));
+            //_addCollectionNodeButton.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/collection.png"));
+            //_addToolNodeButton.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/tools.png"));
+
+
+            _radialMenuButtons = new RadialMenuButtons(this, Canvas, buttonContainers)
                 {
                     IsVisible = false
                 };
-                AddChild(_addElementMenu);
+
+                AddChild(_radialMenuButtons);
 
                 // initialize the layout manager
                 _buttonLayoutManager = new StackLayoutManager
@@ -86,12 +106,14 @@ namespace NuSysApp
                 
         }
 
-        private void RadialMenuOnDragCompleted(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private async void RadialMenuOnDragCompleted(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             if (!_movable)
             {
-                _addElementButton.IsVisible = false;
-                _openLibraryButton.IsVisible = false;
+                _radialMenuButtons.IsVisible = false;
+                await StaticServerCalls.AddElementToWorkSpace(pointer.CurrentPoint, NusysConstants.ElementType.Text).ConfigureAwait(false);
+
+                //System.Diagnostics.Debug.WriteLine(item.type);
             }
         }
 
@@ -102,8 +124,7 @@ namespace NuSysApp
                 _initialDragPosition = Transform.LocalPosition;
             } else
             {
-                _addElementButton.IsVisible = true;
-                _openLibraryButton.IsVisible = true;
+                _radialMenuButtons.IsVisible = true;
             }
         }
 
@@ -127,5 +148,6 @@ namespace NuSysApp
                 _movable = true;
             }
         }
+
     }
     }
