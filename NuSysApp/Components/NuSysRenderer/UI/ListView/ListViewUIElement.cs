@@ -189,10 +189,7 @@ namespace NuSysApp
         /// </summary>
         private HashSet<T> _selectedElements;
 
-        /// <summary>
-        /// A clipping rectangle the size of the list view
-        /// </summary>
-        private CanvasGeometry _clippingRect;
+
 
         /// <summary>
         /// Denormalized vertical offset -- makes sure the position of the list view
@@ -258,7 +255,6 @@ namespace NuSysApp
             MultipleSelections = false;
             BorderWidth = 0;
             Rows = new List<ListViewRowUIElement<T>>();
-            _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
             _selectedElements = new HashSet<T>();
  
         }
@@ -817,7 +813,6 @@ namespace NuSysApp
         /// <param name="parentLocalToScreenTransform"></param>
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
-            _clippingRect = CanvasGeometry.CreateRectangle(ResourceCreator, new Rect(0, 0, Width, Height));
 
             FinishScrolling();
 
@@ -873,7 +868,7 @@ namespace NuSysApp
             ds.Transform = Transform.LocalToScreenMatrix;
 
             // Creates a clipping of the drawing session based on _clippingrect
-            using (ds.CreateLayer(1f, _clippingRect))
+            using (ds.CreateLayer(1f, GetLocalBounds()))
             {
                 //Draws every row
                 foreach (var row in Rows.ToArray())

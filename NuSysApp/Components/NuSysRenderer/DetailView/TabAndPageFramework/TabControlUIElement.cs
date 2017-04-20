@@ -30,26 +30,10 @@ namespace NuSysApp
             public TabControlUIElement TabControl;
 
             /// <summary>
-            /// Helper variable for the Selected property
+            /// Whether or not this tab is selected Selected property
             /// </summary>
-            private bool _selected = false;
             public bool Selected {
-                get
-                {
-                    return _selected;
-                }
-                set
-                {
-                    _selected = value;
-                    if (value)
-                    {
-                        Background = TabPage.Background;
-                    }
-                    else
-                    {
-                        Background = TabControl.TabColor;
-                    }
-                }
+                get; set;
             }
 
             /// <summary>
@@ -70,6 +54,13 @@ namespace NuSysApp
             public override void Draw(CanvasDrawingSession ds)
             {
                 SelectedBackground = TabControl.TabSelectedColor;
+                if(Selected)
+                {
+                    Background = TabPage.Background;
+                } else
+                {
+                    Background = TabControl.TabColor;
+                }
                 ButtonText = TabPage.Name;
                 base.Draw(ds);
             }
@@ -79,6 +70,11 @@ namespace NuSysApp
         /// List of tabs in the TabControl
         /// </summary>
         protected List<TabPageUIElement> _tabs = new List<TabPageUIElement>();
+
+        protected ListViewUIElementContainer<TabPageUIElement> _overflowList;
+
+        protected ButtonUIElement _overflowButton;
+        protected float _overflowListWidth = 200;
 
         /// <summary>
         /// Map from each TabPage to the button it corresponds to
@@ -194,6 +190,35 @@ namespace NuSysApp
         /// <param name="resourceCreator"></param>
         public TabControlUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
+            _overflowList = new ListViewUIElementContainer<TabPageUIElement>(this, Canvas);
+            _overflowList.ShowHeader = false;
+            _overflowList.IsVisible = false;
+            _overflowList.Height = 300;
+            _overflowList.RowTapped += _overflowList_RowTapped;
+            AddChild(_overflowList);
+            ListTextColumn<TabPageUIElement> column = new ListTextColumn<TabPageUIElement>();
+            column.ColumnFunction = delegate (TabPageUIElement page) { return page.Name; };
+            column.RelativeWidth = 1f;
+            _overflowList.AddColumn(column);
+
+            _overflowButton = new NuSysApp.ButtonUIElement(this, Canvas);
+            _overflowButton.ButtonText = "+";
+            _overflowButton.Tapped += _overflowButton_Tapped;
+            _overflowList.Width = _overflowListWidth;
+            AddChild(_overflowButton);
+        }
+
+        private void _overflowList_RowTapped(TabPageUIElement item, string columnName, CanvasPointer pointer, bool isSelected)
+        {
+            SelectedTab = item;
+        }
+
+        private void _overflowButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            if (_overflowList.GetItems().Count > 0)
+            {
+                _overflowList.IsVisible = !_overflowList.IsVisible;
+            }
         }
 
         /// <summary>
@@ -270,13 +295,14 @@ namespace NuSysApp
             _buttonLayoutManager.AddElement(button);
             button.Tapped += TabButton_Tapped;
             _tabDict.Add(newTab, button);
-            newTab.Transform.LocalY = TabHeight;
             newTab.IsVisible = false;
             AddChild(newTab);
             if(select || SelectedTab == null)
             {
                 SelectedTab = newTab;
             }
+            _overflowList.AddItem(newTab);
+            SendToFront(_overflowList);
         }
 
         /// <summary>
@@ -327,6 +353,11 @@ namespace NuSysApp
                 }
             }
             TabPageUIElement t = _tabs[index];
+            _overflowList.RemoveItem(t);
+            if(_overflowList.GetItems().Count == 0)
+            {
+                _overflowList.IsVisible = false;
+            }
             TabButtonUIElement button = _tabDict[t];
             _tabButtons.Remove(button);
             RemoveChild(button);
@@ -540,13 +571,22 @@ namespace NuSysApp
             _buttonLayoutManager.ItemWidth = TabWidth;
             _buttonLayoutManager.ItemHeight = TabHeight;
             _buttonLayoutManager.Height = TabHeight;
-            _buttonLayoutManager.Width = Width;
+            _buttonLayoutManager.Width = Width - TabHeight;
             _buttonLayoutManager.HorizontalAlignment = TabAlignment;
             _buttonLayoutManager.Spacing = TabSpacing;
             _buttonLayoutManager.ArrangeItems();
 
+            _overflowButton.Width = TabHeight;
+            _overflowButton.Height = TabHeight;
+            _overflowButton.Transform.LocalX = Width - TabHeight;
+            _overflowButton.Background = TabColor;
+
+            _overflowList.Transform.LocalX = Width - _overflowListWidth;
+            _overflowList.Transform.LocalY = TabHeight;
+
             if (SelectedTab != null)
             {
+                SelectedTab.Transform.LocalY = TabHeight;
                 SelectedTab.Width = Width;
                 SelectedTab.Height = Height - TabHeight;
             }
@@ -559,6 +599,8 @@ namespace NuSysApp
             {
                 button.Tapped -= TabButton_Tapped;
             }
+            _overflowButton.Tapped -= _overflowButton_Tapped;
+            _overflowList.RowTapped -= _overflowList_RowTapped;
 
             base.Dispose();
         }
