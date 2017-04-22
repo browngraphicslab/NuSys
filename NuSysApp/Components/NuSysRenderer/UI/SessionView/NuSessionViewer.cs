@@ -30,6 +30,13 @@ namespace NuSysApp
         private FloatingMenu _floatingMenu;
 
         /// <summary>
+        /// The radial menu has the library and the add elements to workspace buttons
+        /// </summary>
+        private RadialMenu _radialMenu;
+
+        private RectangleUIElement _tapRect;
+
+        /// <summary>
         /// The chat button shows the chatbox when clicked
         /// </summary>
         private ButtonUIElement _chatButton;
@@ -157,11 +164,20 @@ namespace NuSysApp
             };
             AddChild(_floatingMenu);
 
-            var radialMenu = new RadialMenu(this, canvas)
+            _tapRect = new RectangleUIElement(this, canvas)
             {
-                IsVisible = true
+                Background = Colors.Transparent,
+                Width = 5000,
+                Height = 5000
             };
-            AddChild(radialMenu);
+            AddChild(_tapRect);
+            _tapRect.DoubleTapped += TapRectOnDoubleTapped;
+
+            _radialMenu = new RadialMenu(this, canvas)
+            {
+                IsVisible = false
+            };
+            AddChild(_radialMenu);
 
 
             SessionController.Instance.EnterNewCollectionCompleted += InstanceOnEnterNewCollectionCompleted;
@@ -325,8 +341,22 @@ namespace NuSysApp
             _backToWaitingRoom.Tapped += BackToWaitingRoomOnTapped;
             _settingsButton.Tapped += SettingsButtonOnTapped;
 
+
             SessionController.Instance.OnModeChanged += Instance_OnModeChanged;
         }
+
+        
+
+        private void TapRectOnDoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            var point = pointer.CurrentPoint;
+            _radialMenu.Transform.LocalPosition =
+                        new Vector2(point.X,point.Y);
+            _radialMenu.IsVisible = true;
+
+        }
+
+
 
         /// <summary>
         /// shows the search result pop up for when the search results have completed loading
@@ -707,6 +737,9 @@ namespace NuSysApp
             SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CameraOnCentered -= CameraCenteredOnElement;
             SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned -= TempReadOnlyCanvasPanned;
             _detailViewer.NewLibraryElementShown -= DetailViewerOnNewLibraryElementShown;
+
+            _tapRect.DoubleTapped -= TapRectOnDoubleTapped;
+
             base.Dispose();
         }
 

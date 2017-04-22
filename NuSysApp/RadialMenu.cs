@@ -23,7 +23,7 @@ namespace NuSysApp
 
             private bool _disabled = false;
 
-            private bool _movable = true;
+            private bool _movable = false;
 
             /// <summary>
             ///  the initial drag position of the floating menu view
@@ -42,7 +42,7 @@ namespace NuSysApp
 
 
             // set the default background
-            Background = Colors.Turquoise;
+            Background = Colors.Transparent;
 
             _addElementButton = new EllipseButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "add element")
                 {
@@ -101,7 +101,7 @@ namespace NuSysApp
                 DragStarted += FloatingMenu_DragStarted;
                 Dragged += FloatingMenuOnDragged;
                 
-                Tapped += OpenLibraryButtonOnTapped;
+                //Tapped += OpenLibraryButtonOnTapped;
                 DragCompleted += RadialMenuOnDragCompleted;
                 
         }
@@ -112,7 +112,7 @@ namespace NuSysApp
             {
                 _radialMenuButtons.IsVisible = false;
                 await StaticServerCalls.AddElementToWorkSpace(pointer.CurrentPoint, NusysConstants.ElementType.Text).ConfigureAwait(false);
-
+                IsVisible = false;
                 //System.Diagnostics.Debug.WriteLine(item.type);
             }
         }
@@ -144,7 +144,7 @@ namespace NuSysApp
                 _movable = false;
             } else
             {
-                Background = Colors.Turquoise;
+                Background = Colors.Transparent;
                 _movable = true;
             }
         }
