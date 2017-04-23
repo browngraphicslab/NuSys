@@ -188,11 +188,6 @@ namespace NuSysApp
             // Add the shape that was passed in as a child of the button.
             base.AddChild(Shape);
 
-            // add all the manipulation methods
-            Shape.Pressed += Shape_Pressed;
-            Shape.Released += Shape_Released;
-            Shape.Dragged += Shape_Dragged;
-            Shape.Holding += Shape_Holding;
             Enabled = true;
 
             Padding = 7;
@@ -229,80 +224,45 @@ namespace NuSysApp
             _originalImageBounds = GetImageBounds() ?? GetLocalBounds();
         }
 
-
-        private void Shape_Holding(InteractiveBaseRenderItem item, Vector2 point)
-        {
-
-        }
-
-        /// <summary>
-        /// Fires the drag event on the button when the shape dragged event is fired
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void Shape_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-        }
-
-        /// <summary>
-        /// Fires the release event on the button when the released event on the shape is fired
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void Shape_Released(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            OnReleased(pointer);
-        }
-
-        /// <summgit stasary>
-        /// overrides the normal on released event to set background colors correctly
-        /// </summary>
-        /// <param name="pointer"></param>
-        public override void OnReleased(CanvasPointer pointer)
-        {
-            if (!Enabled)
-            {
-                return;
-            }
+        ///// <summgit stasary>
+        ///// overrides the normal on released event to set background colors correctly
+        ///// </summary>
+        ///// <param name="pointer"></param>
+        //public override void OnReleased(CanvasPointer pointer)
+        //{
+        //    if (!Enabled)
+        //    {
+        //        return;
+        //    }
            
-            // reset the Background and Bordercolor to the original colors
-            Background = _orgBackground;
-            BorderColor = _orgBorder;
+        //    // reset the Background and Bordercolor to the original colors
+        //    Background = _orgBackground;
+        //    BorderColor = _orgBorder;
 
-            base.OnReleased(pointer);
-        }
+        //    base.OnReleased(pointer);
+        //}
 
-        /// <summary>
-        /// Fires the pressed event on the button when the pressed event on the shape is fired
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void Shape_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            OnPressed(pointer);
-        }
+        ///// <summary>
+        ///// Overrides the normal on pressed event to set background colors correctly
+        ///// </summary>
+        ///// <param name="pointer"></param>
+        //public override void OnPressed(CanvasPointer pointer)
+        //{
+        //    if (!Enabled)
+        //    {
+        //        return;
+        //    }
 
-        /// <summary>
-        /// Overrides the normal on pressed event to set background colors correctly
-        /// </summary>
-        /// <param name="pointer"></param>
-        public override void OnPressed(CanvasPointer pointer)
-        {
-            if (!Enabled)
-            {
-                return;
-            }
+        //    // save the Background and Bordercolor to reset them when the button is no longer pressed
+        //    _orgBackground = Background;
+        //    _orgBorder = BorderColor;
 
-            // save the Background and Bordercolor to reset them when the button is no longer pressed
-            _orgBackground = Background;
-            _orgBorder = BorderColor;
+        //    // set the Background and Border to SelectedBackground and SelectedBorder if either of those is not null
+        //    Background = SelectedBackground ?? Background;
+        //    BorderColor = SelectedBorder ?? Background;
 
-            // set the Background and Border to SelectedBackground and SelectedBorder if either of those is not null
-            Background = SelectedBackground ?? Background;
-            BorderColor = SelectedBorder ?? Background;
-
-            base.OnPressed(pointer);
-        }
+        //    base.OnPressed(pointer);
+        //}
 
 
         /// <summary>
@@ -413,17 +373,6 @@ namespace NuSysApp
         protected override void DrawImage(CanvasDrawingSession ds)
         {
             //This has been left empty as the shape draws it's own image. 
-        }
-
-        /// <summary>
-        /// The dispose method. Remove Handlers here
-        /// </summary>
-        public override void Dispose()
-        {
-            Shape.Pressed -= Shape_Pressed;
-            Shape.Released -= Shape_Released;
-            Shape.Dragged -= Shape_Dragged;
-            base.Dispose();
         }
 
         /// <summary>

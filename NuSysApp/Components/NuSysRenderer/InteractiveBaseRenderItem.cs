@@ -21,11 +21,6 @@ namespace NuSysApp
     {
         public delegate void PointerHandler(InteractiveBaseRenderItem item, CanvasPointer pointer);
 
-        public event PointerHandler Pressed;
-        public event PointerHandler Released;
-        public event PointerHandler Dragged;
-        public event PointerHandler DragStarted;
-        public event PointerHandler DragCompleted;
         public event PointerHandler PenPointerPressed;
         public event PointerHandler PenPointerReleased;
         public event PointerHandler PenPointerDragged;
@@ -67,33 +62,6 @@ namespace NuSysApp
         {
 
         }
-
-        public virtual void OnRightTapped(CanvasPointer pointer)
-        {
-
-        }
-
-        public virtual void OnTapped(CanvasPointer pointer)
-        {
-
-        }
-
-
-        public virtual void OnDoubleTapped(CanvasPointer pointer)
-        {
-
-        }
-
-        public virtual void OnPressed(CanvasPointer pointer)
-        {
-
-        }
-
-        public virtual void OnReleased(CanvasPointer pointer)
-        {
-
-        }
-
 
         public virtual void OnPressed(FrameworkElement sender, PointerRoutedEventArgs args)
         {
@@ -165,26 +133,6 @@ namespace NuSysApp
             SessionController.Instance.FocusManager.OnKeyPressed -= OnKeyPressed;
             SessionController.Instance.FocusManager.OnKeyReleased -= OnKeyReleased;
             base.LostFocus();
-        }
-
-        /// <summary>
-        /// you probably do not want to call this directly since it is automatically called at the lowest level when a drag starts.
-        /// calling this directly will result in drag started being fired twice
-        /// </summary>
-        /// <param name="pointer"></param>
-        public virtual void OnDragStarted(CanvasPointer pointer)
-        {
-            DragStarted?.Invoke(this, pointer);
-        }
-
-        /// <summary>
-        /// you probably do not want to call this directly since it is automatically called at the lowest level when a drag starts.
-        /// calling this directly will result in drag completed being fired twice
-        /// </summary>
-        /// <param name="pointer"></param>
-        public virtual void OnDragCompleted(CanvasPointer pointer)
-        {
-            DragCompleted?.Invoke(this, pointer);
         }
 
         public override void Dispose()

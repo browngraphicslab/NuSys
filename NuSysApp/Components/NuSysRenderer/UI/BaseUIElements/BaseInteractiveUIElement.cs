@@ -85,22 +85,6 @@ namespace NuSysApp
         /// <param name="ds"></param>
         protected abstract void DrawImage(CanvasDrawingSession ds);
 
-        public override void OnPressed(CanvasPointer pointer)
-        {
-            GameLoopSynchronizationContext.RunOnGameLoopThreadAsync(Canvas, async () =>
-            {
-                base.OnPressed(pointer);
-            });
-        }
-
-        public override void OnReleased(CanvasPointer pointer)
-        {
-            GameLoopSynchronizationContext.RunOnGameLoopThreadAsync(Canvas, async () =>
-            {
-                base.OnReleased(pointer);
-            });
-        }
-
         public virtual bool IsInteractable()
         {
             return true;
