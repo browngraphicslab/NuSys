@@ -78,7 +78,7 @@ namespace NuSysApp
         /// <param name="source"></param>
         /// <param name="element"></param>
         /// <param name="pointer"></param>
-        public delegate void PieChartElementDraggedEventHandler(PieChartUIElement sender, PieChartElement<string> element, CanvasPointer pointer);
+        public delegate void PieChartElementDraggedEventHandler(PieChartUIElement sender, PieChartElement<string> element, DragEventArgs args);
         public event PieChartElementDraggedEventHandler ElementDragged;
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace NuSysApp
         /// <param name="source"></param>
         /// <param name="element"></param>
         /// <param name="pointer"></param>
-        public delegate void PieChartElementDragCompletedEventHandler(PieChartUIElement sender, PieChartElement<string> element, CanvasPointer pointer);
+        public delegate void PieChartElementDragCompletedEventHandler(PieChartUIElement sender, PieChartElement<string> element, DragEventArgs args);
         public event PieChartElementDragCompletedEventHandler ElementDragCompleted;
 
 
@@ -234,43 +234,7 @@ namespace NuSysApp
             _elements.Clear();
             _selectedElements.Clear();
         }
-        /// <summary>
-        /// Because we override HitTest to only hit the PieChart inside the circle, this only gets called when you drag from the pie,itself.
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void PieChartUIElement_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
 
-            // If this is the first call to Dragged ever or since Released, _draggedElement is null
-            if (_draggedElement == null)
-            {
-                var point = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
-                //Store the element that represents the piece of the pie being dragged.
-                _draggedElement = GetElementFromAngle(GetAngleFromPoint(point));
-            }
-
-            ElementDragged?.Invoke(this, _draggedElement, pointer);
-
-        }
-        /// <summary>
-        /// Because we override HitTest to only hit the PieChart inside the circle, this only gets called when you release your pointer within the circle.
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void PieChartUIElement_Released(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            // If we were dragging when we released, we should invoke the ElementDragCompleted event.
-
-            if (_draggedElement != null)
-            {
-                ElementDragCompleted?.Invoke(this, _draggedElement, pointer);
-            }
-            _draggedElement = null;
-            
-
-
-        }
         /// <summary>
         /// Selects the element and invokes ElementSelected
         /// If MultiSelect is off, we deselect everything else first.
@@ -595,12 +559,32 @@ namespace NuSysApp
 
         private void AddHandlers(PieChartElement<string> element)
         {
-            Released += PieChartUIElement_Released;
-            Dragged += PieChartUIElement_Dragged;
+            var dragRecognizer = new DragGestureRecognizer();
+            element.GestureRecognizers.Add(dragRecognizer);
+            dragRecognizer.OnDragged += delegate(DragGestureRecognizer sender, DragEventArgs args)
+            {
+                if (args.CurrentState == GestureEventArgs.GestureState.Began)
+                {
+                    var point = Vector2.Transform(args.CurrentPoint, Transform.ScreenToLocalMatrix);
+                    //Store the element that represents the piece of the pie being dragged.
+                    _draggedElement = GetElementFromAngle(GetAngleFromPoint(point));
+                    ElementDragged?.Invoke(this, _draggedElement, args);
+                } else if (args.CurrentState == GestureEventArgs.GestureState.Changed)
+                {
+                    ElementDragged?.Invoke(this, _draggedElement, args);
+                } else if (args.CurrentState == GestureEventArgs.GestureState.Ended)
+                {
+                    if (_draggedElement != null)
+                    {
+                        ElementDragCompleted?.Invoke(this, _draggedElement, args);
+                    }
+                    _draggedElement = null;
+                }               
+            };
 
             var tapRecognizer = new TapGestureRecognizer();
             element.GestureRecognizers.Add(tapRecognizer);
-            tapRecognizer.OnTapped += new TapGestureRecognizer.TapEventHandler(delegate (TapGestureRecognizer sender, TapEventArgs args)
+            tapRecognizer.OnTapped += delegate (TapGestureRecognizer sender, TapEventArgs args)
             {
                 if (args.TapType == TapEventArgs.Tap.SingleTap)
                 {
@@ -610,15 +594,12 @@ namespace NuSysApp
                 {
                     PieChartUIElement_DoubleTapped(element, args.Position, args.DeviceType);
                 }
-            });
+            };
         }
 
         private void RemoveHandlers(PieChartElement<string> element)
         {
-            Released -= PieChartUIElement_Released;
-            Dragged -= PieChartUIElement_Dragged;
             element.GestureRecognizers.Clear();
-
         }
         public override void Dispose()
         {

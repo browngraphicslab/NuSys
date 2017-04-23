@@ -104,7 +104,7 @@ namespace NuSysApp
             BorderWidth = 0;
             AddChild(_pageTabContainer);
 
-            _settingsButton.Pressed += SettingsButton_Pressed;
+            _settingsButton.Tapped += SettingsButtonOnTapped;
 
             _pageTabContainer.OnCurrentTabChanged += ShowPageType;
         }
@@ -114,7 +114,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void SettingsButton_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void SettingsButtonOnTapped(ButtonUIElement sender)
         {
             if (_settingsPopup != null)
             {

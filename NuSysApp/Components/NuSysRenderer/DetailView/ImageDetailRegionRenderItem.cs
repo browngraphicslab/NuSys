@@ -60,6 +60,14 @@ namespace NuSysApp
             _cropAreaNormalized = cropAreaNormalized;
             LibraryElementModel = libraryElementModel;
 
+            // using a drag recognizer to handle press and release, this is a hack!
+            var dragRecognizer = new DragGestureRecognizer();
+            GestureRecognizers.Add(dragRecognizer);
+            dragRecognizer.OnDragged += DragRecognizer_OnDragged;
+
+            var tapRecognizer = new TapGestureRecognizer();
+            GestureRecognizers.Add(tapRecognizer);
+            tapRecognizer.OnTapped += TapRecognizer_OnTapped;
 
             _imageRegionRect = new Rect(LibraryElementModel.NormalizedX,
                                 LibraryElementModel.NormalizedY,
@@ -174,25 +182,39 @@ namespace NuSysApp
             ds.Transform = orgTransform;
         }
 
-        public override void OnPressed(CanvasPointer pointer)
+        // using a drag recognizer to provide on pressed and on released support! this is such a hack!
+        private void DragRecognizer_OnDragged(DragGestureRecognizer sender, DragEventArgs args)
         {
-            if (!IsModifiable)
-                return;
-            RegionPressed?.Invoke(this);
+            // on pressed
+            if (args.CurrentState == GestureEventArgs.GestureState.Began)
+            {
+                if (!IsModifiable)
+                    return;
+                RegionPressed?.Invoke(this);
+            }
+            // on released
+            else if (args.CurrentState == GestureEventArgs.GestureState.Ended)
+            {
+                if (!IsModifiable)
+                    return;
+                RegionReleased?.Invoke(this);
+            }
         }
 
-        public override void OnReleased(CanvasPointer pointer)
+        /// <summary>
+        ///  process tap events
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void TapRecognizer_OnTapped(TapGestureRecognizer sender, TapEventArgs args)
         {
-            if (!IsModifiable)
-                return;
-            RegionReleased?.Invoke(this);
-        }
-
-        public override void OnDoubleTapped(CanvasPointer pointer)
-        {
-            if (!IsModifiable)
-                return;
-            SessionController.Instance.NuSessionView.ShowDetailView(_controller);
+            // open the detail view on doubletap
+            if (args.TapType == TapEventArgs.Tap.DoubleTap)
+            {
+                if (!IsModifiable)
+                    return;
+                SessionController.Instance.NuSessionView.ShowDetailView(_controller);
+            }
         }
 
         public override Rect GetLocalBounds()

@@ -130,9 +130,9 @@ namespace NuSysApp
         /// <summary>
         ///Either scroll or drag depending on the location of the point and the origin of the event
         /// </summary>
-        public void Item_Dragging(CanvasPointer pointer)
+        public void Item_Dragging(DragEventArgs args)
         {
-            _dragFilterItem.Transform.LocalPosition = Vector2.Transform(pointer.CurrentPoint, this.Transform.ScreenToLocalMatrix) ;
+            _dragFilterItem.Transform.LocalPosition = Vector2.Transform(args.CurrentPoint, this.Transform.ScreenToLocalMatrix) ;
             if (_dragFilterItem.Transform.LocalX > 0 && _dragFilterItem.Transform.LocalX < Width &&
                 _dragFilterItem.Transform.LocalY < Height && _dragFilterItem.Transform.LocalY > 0)
             {
@@ -147,12 +147,12 @@ namespace NuSysApp
         /// <summary>
         ///If the point is located outside the tool, logically set the selection based on selection type (Multi/Single) and either create new tool or add to existing tool
         /// </summary>
-        public void Item_DragCompleted(string selection, CanvasPointer pointer)
+        public void Item_DragCompleted(string selection, DragEventArgs args)
         {
             if (_dragFilterItem.IsVisible)
             {
                 _dragFilterItem.IsVisible = false;
-                if (Vm.Selection.Contains(selection) || pointer.DeviceType == PointerDeviceType.Pen) // || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down
+                if (Vm.Selection.Contains(selection) || args.DeviceType == PointerDeviceType.Pen) // || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down
                 {
                     Vm.Selection.Add(selection);
                     Vm.Selection = Vm.Selection;
@@ -168,8 +168,8 @@ namespace NuSysApp
                 //var sp = el.TransformToVisual(SessionController.Instance.SessionView).TransformPoint(e.Position);
                 //var r = wvm.CompositeTransform.Inverse.TransformBounds(new Rect(sp.X, sp.Y, 300, 300));
                 //var hitsStart = VisualTreeHelper.FindElementsInHostCoordinates(sp, null);
-                var dragDestination = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, null, 2) as ToolWindow; //maybe replace null w render engine.root
-                var canvasCoordinate = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(new Vector2(pointer.CurrentPoint.X, pointer.CurrentPoint.Y), SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection);
+                var dragDestination = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(args.CurrentPoint, null, 2) as ToolWindow; //maybe replace null w render engine.root
+                var canvasCoordinate = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(new Vector2(args.CurrentPoint.X, args.CurrentPoint.Y), SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection);
 
                 Vm.FilterIconDropped(dragDestination, canvasCoordinate.X, canvasCoordinate.Y);
             }

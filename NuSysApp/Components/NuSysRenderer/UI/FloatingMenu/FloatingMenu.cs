@@ -69,12 +69,21 @@ namespace NuSysApp
 
             SetAccessibilitySize(SessionController.Instance.SessionSettings.TextScale);
 
-            DragStarted += FloatingMenu_DragStarted;
-            _addElementButton.DragStarted += FloatingMenu_DragStarted;
-            _openLibraryButton.DragStarted += FloatingMenu_DragStarted;
-            Dragged += FloatingMenuOnDragged;
-            _addElementButton.Dragged += FloatingMenuOnDragged;
-            _openLibraryButton.Dragged += FloatingMenuOnDragged;
+            // add the drag gesture recognizer for the background rect
+            var dragGestureRecognizer = new DragGestureRecognizer();
+            GestureRecognizers.Add(dragGestureRecognizer);
+            dragGestureRecognizer.OnDragged += FloatingMenuOnDragged;
+
+            // add the drag gesture recognizer for the open library button
+            var openLibraryDragGestureRecognizer = new DragGestureRecognizer();
+            _openLibraryButton.GestureRecognizers.Add(openLibraryDragGestureRecognizer);
+            openLibraryDragGestureRecognizer.OnDragged += FloatingMenuOnDragged;
+
+            // add the drag gesture recognizer for the add element button
+            var addElementDragGestureRecognizer = new DragGestureRecognizer();
+            _addElementButton.GestureRecognizers.Add(addElementDragGestureRecognizer);
+            addElementDragGestureRecognizer.OnDragged += FloatingMenuOnDragged;
+
             _openLibraryButton.Tapped += OpenLibraryButtonOnTapped;
             _addElementButton.Tapped += ShowAddElementMenu;
             SessionController.Instance.SessionSettings.TextScaleChanged += SessionSettings_TextScaleChanged;
@@ -94,11 +103,6 @@ namespace NuSysApp
             Height = _originalHeight * (float)e;
             Width = _originalWidth * (float)e;
             _buttonLayoutManager.SetSize(Width, Height);
-        }
-
-        private void FloatingMenu_DragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            _initialDragPosition = Transform.LocalPosition;
         }
 
         private void ShowAddElementMenu(ButtonUIElement sender)
@@ -126,21 +130,23 @@ namespace NuSysApp
         }
 
 
-        private void FloatingMenuOnDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void FloatingMenuOnDragged(DragGestureRecognizer sender, DragEventArgs args)
         {
-            Transform.LocalPosition = _initialDragPosition + pointer.Delta;
+            if (args.CurrentState == GestureEventArgs.GestureState.Began)
+            {
+                _initialDragPosition = Transform.LocalPosition;
+            } else if (args.CurrentState == GestureEventArgs.GestureState.Changed)
+            {
+                Transform.LocalPosition = _initialDragPosition + args.TotalTranslation;
+            }
+
+            
         }
 
         public override void Dispose()
         {
-            Dragged -= FloatingMenuOnDragged;
-            _addElementButton.Dragged -= FloatingMenuOnDragged;
-            _openLibraryButton.Dragged -= FloatingMenuOnDragged;
             _addElementButton.Tapped -= ShowAddElementMenu;
             _openLibraryButton.Tapped -= OpenLibraryButtonOnTapped;
-            DragStarted -= FloatingMenu_DragStarted;
-            _addElementButton.DragStarted -= FloatingMenu_DragStarted;
-            _openLibraryButton.DragStarted -= FloatingMenu_DragStarted;
             SessionController.Instance.SessionSettings.TextScaleChanged -= SessionSettings_TextScaleChanged;
 
             base.Dispose();
