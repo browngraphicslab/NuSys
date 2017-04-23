@@ -92,6 +92,7 @@ namespace NuSysApp
 
         private LayoutWindowUIElement _layoutWindow;
         private EditTagsUIElement _editTagsElement;
+
         private bool _customLayoutDrawing = false;
 
         public event EventHandler<bool> CanvasPanned;
@@ -189,6 +190,7 @@ namespace NuSysApp
             {
                 FocusManager = new FocusManager(_canvasInteractionManager, RenderEngine);
             }
+
 
             if (_vm != null)
             {
@@ -345,6 +347,7 @@ namespace NuSysApp
                 _collectionInteractionManager.ElementAddedToCollection -= CollectionInteractionManagerOnElementAddedToCollection;
                 _collectionInteractionManager.MultimediaElementActivated -= CollectionInteractionManagerOnMultimediaElementActivated;
                 _canvasInteractionManager.PointerPressed -= CanvasInteractionManagerOnPointerPressed;
+                _canvasInteractionManager.PointerMoved -= CanvasInteractionManager_PointerMoved;
                 _canvasInteractionManager.AllPointersReleased -= CanvasInteractionManagerOnAllPointersReleased;
                 multiMenu.CreateCollection -= MultiMenuOnCreateCollection;
                 _canvasInteractionManager.ItemTapped -= CanvasInteractionManagerOnItemTapped;
@@ -399,12 +402,14 @@ namespace NuSysApp
             _collectionInteractionManager.MultimediaElementActivated += CollectionInteractionManagerOnMultimediaElementActivated;
             _canvasInteractionManager.ItemTapped += CanvasInteractionManagerOnItemTapped;
             _canvasInteractionManager.PointerPressed += CanvasInteractionManagerOnPointerPressed;
+            _canvasInteractionManager.PointerMoved += CanvasInteractionManager_PointerMoved;
             _canvasInteractionManager.AllPointersReleased += CanvasInteractionManagerOnAllPointersReleased;
 
 
             _minimap?.SwitchCollection(collection);
 
         }
+
 
         public void InvalidateMinimap()
         {
@@ -1154,8 +1159,84 @@ namespace NuSysApp
 
         private void CanvasInteractionManagerOnAllPointersReleased()
         {
+            ReleaseRectangularMarqueeSelection();
             //_transform = CurrentCollection.Camera.LocalToScreenMatrix;
             _transformables.Clear();
+        }
+
+
+        /// <summary>
+        /// Called by the PointerPressed event handler.
+        /// Clears all selections then moves marquee to current point.
+        /// </summary>
+        /// <param name="pointer"></param>
+        private void StartRectangularMarqueeSelection(CanvasPointer pointer)
+        {
+            var marquee = RenderEngine.RectangularMarqueeSelection;
+            
+            ClearSelections();
+            //Make marquee invisible and 0 size at the current point.
+            marquee.IsVisible = false;
+            marquee.Width = 0;
+            marquee.Height = 0;
+
+            marquee.Transform.LocalPosition = pointer.CurrentPoint;
+        }
+
+        /// <summary>
+        /// Called by only the PointerMoved event handler.
+        /// Updates width and height of marquee based on current point.
+        /// </summary>
+        /// <param name="pointer"></param>
+        private void UpdateRectangularMarqueeSelection(CanvasPointer pointer)
+        {
+            //TODO: Allow the user to start at one point and update the marquee by going left/up not just right/down
+
+            var marquee = RenderEngine.RectangularMarqueeSelection;
+            //Get max of 0 and new width in case we get a negative width.
+            marquee.Width = Math.Max(0, marquee.Width + pointer.DeltaSinceLastUpdate.X);
+            //Get max of 0 and new height in case we get a negative height.
+            marquee.Height = Math.Max(0, marquee.Height + pointer.DeltaSinceLastUpdate.Y);
+
+            if (marquee.Width > 5f && marquee.Height > 5f && !marquee.IsVisible)
+            {
+                marquee.IsVisible = true;
+
+            }
+        }
+        /// <summary>
+        /// Called by only the AllPointersReleased event handler
+        /// Makes marquee invisible, then adds any containing elements to the selection.
+        /// </summary>
+        private void ReleaseRectangularMarqueeSelection()
+        {
+            var marquee = RenderEngine.RectangularMarqueeSelection;
+
+            if (marquee.IsVisible)
+            {
+                marquee.IsVisible = false;
+                var rect = marquee.GetScreenBounds();
+
+
+                var collection = CurrentCollection;
+
+                //Get the rectangle in collection coordinates
+                var rectInCollection = RenderEngine.ScreenRectToCollectionPoint(rect, collection);
+
+                //Iterate through the current collection for group selection
+                foreach (var renderItem in CurrentCollection.GetChildren().OfType<ElementRenderItem>())
+                {
+                    if (renderItem is PseudoElementRenderItem)
+                        continue;
+                    var vm = renderItem.ViewModel;
+                    var anchor = new Windows.Foundation.Point(vm.Anchor.X, vm.Anchor.Y);
+                    if (rectInCollection.Contains(anchor))
+                    {
+                        AddToSelections(renderItem);
+                    }
+                }
+
+            }
         }
 
         private async void CollectionInteractionManagerOnElementAddedToCollection(ElementRenderItem element,
@@ -1295,7 +1376,26 @@ namespace NuSysApp
                 xVideoPlayer.Visibility = Visibility.Collapsed;
                 xVideoPlayer.Pause();
             }
+
+
+            if (pointer.IsRightButtonPressed)
+            {
+                StartRectangularMarqueeSelection(pointer);
+            }
+
         }
+
+
+        private void CanvasInteractionManager_PointerMoved(CanvasPointer pointer)
+        {
+            
+            if (pointer.IsRightButtonPressed)
+            {
+                UpdateRectangularMarqueeSelection(pointer);
+            }
+        }
+
+
 
         private void CollectionInteractionManagerOnPanZoomed(Vector2 center, Vector2 deltaTranslation, float deltaZoom)
         {

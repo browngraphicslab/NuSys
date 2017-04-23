@@ -25,6 +25,9 @@ namespace NuSysApp
         public NodeMarkingMenuRenderItem NodeMarkingMenu;
         public InkOptionsRenderItem InkOptions;
         public NodeMenuButtonRenderItem BtnDelete;
+
+        public RectangularMarqueeUIElement RectangularMarqueeSelection;
+
         private bool _isStopped;
         private bool _isInitialized;
 
@@ -73,6 +76,16 @@ namespace NuSysApp
         public Vector2 ScreenPointerToCollectionPoint(Vector2 sp, CollectionRenderItem collection)
         {
             return Vector2.Transform(sp, collection.Camera.ScreenToLocalMatrix);
+        }
+
+        public Rect ScreenRectToCollectionPoint(Rect rect, CollectionRenderItem collection)
+        {
+            var topLeftV2 = Vector2.Transform(new Vector2((float)rect.X, (float)rect.Y), collection.Camera.ScreenToLocalMatrix);
+            var bottomRightV2 = Vector2.Transform(new Vector2((float)(rect.X + rect.Width), (float)(rect.Y + rect.Height)), collection.Camera.ScreenToLocalMatrix);
+
+            var topLeftPoint = new Point(topLeftV2.X, topLeftV2.Y);
+            var bottomRightPoint = new Point(bottomRightV2.X, bottomRightV2.Y);
+            return new Rect(topLeftPoint, bottomRightPoint);
         }
 
         public Matrix3x2 GetCollectionTransform(CollectionRenderItem collection)
@@ -208,12 +221,20 @@ namespace NuSysApp
             BtnExportTrail.Label = "export one-way trail";
             BtnExportTrail.IsVisible = false;
 
+            RectangularMarqueeSelection = new RectangularMarqueeUIElement(Root, CanvasAnimatedControl)
+            {
+                IsVisible = false,
+                Background = Colors.Transparent,
+
+
+            };
+
             Root.AddChild(ElementSelectionRect);
             Root.AddChild(NodeMarkingMenu);
             Root.AddChild(InkOptions);
             Root.AddChild(BtnDelete);
             Root.AddChild(BtnExportTrail);
-
+            Root.AddChild(RectangularMarqueeSelection);
             _isInitialized = true;
         }
 

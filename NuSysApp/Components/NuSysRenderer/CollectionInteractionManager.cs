@@ -623,7 +623,11 @@ namespace NuSysApp
             if (_mode != Mode.None)
                 return;
 
-            if (_selectedRenderItem == _collection)
+            if (pointer.IsRightButtonPressed)
+            {
+                
+            }
+            else if (_selectedRenderItem == _collection)
             {
                 Panned?.Invoke(pointer, point, delta);
             }
