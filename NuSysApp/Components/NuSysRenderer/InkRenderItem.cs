@@ -42,6 +42,9 @@ namespace NuSysApp
         private object _lock = new object();
         private CanvasAnimatedControl _canvas;
 
+        // ImproveInk Changes 
+        private List<InkStroke> _wetStrokesToDraw = new List<InkStroke>(); 
+
         public Color InkColor { get; set; } = Colors.Black;
         public float InkSize = 4;
         public BiDictionary<string, InkStroke> StrokesMap = new BiDictionary<string, InkStroke>();
@@ -127,7 +130,6 @@ namespace NuSysApp
             {
                 return;
             }
-
             var np = Vector2.Transform(e.CurrentPoint, _transform);
             _currentInkPoints.Add(new InkPoint(new Point(np.X, np.Y), e.Pressure));
             _needsWetStrokeUpdate = true;
@@ -199,6 +201,16 @@ namespace NuSysApp
             _currentInkPoints = new List<InkPoint>();
 
             _strokesToDraw = _inkManager.GetStrokes().ToList();
+
+            // IMPROVEINK CHANGES                                                        ///////////////////////////////////////////////////////////////////////////////////////////// 
+            // _strokesToDraw.AddRange(_wetStrokesToDraw);
+            /* 
+            foreach (var wetStroke in _wetStrokesToDraw)
+            {
+                _strokesToDraw.Add(wetStroke); 
+            }
+            */
+            _wetStrokesToDraw.Clear();
 
             _needsDryStrokesUpdate = true;
             _needsWetStrokeUpdate = true;
@@ -312,12 +324,30 @@ namespace NuSysApp
                 }
 
                 
-                    _builder.SetDefaultDrawingAttributes(GetDrawingAttributes(InkColor, InkSize));
-                    var s = _builder.CreateStrokeFromInkPoints(_currentInkPoints.ToArray(), Matrix3x2.Identity);
-                    if (_isEraser)
-                        s.DrawingAttributes = GetDrawingAttributes(Colors.DarkRed, InkSize);
-                    ds.DrawInk(new InkStroke[] {s});
-                
+                _builder.SetDefaultDrawingAttributes(GetDrawingAttributes(InkColor, InkSize));
+                var s = _builder.CreateStrokeFromInkPoints(_currentInkPoints.ToArray(), Matrix3x2.Identity);
+
+                if (_isEraser)
+                    s.DrawingAttributes = GetDrawingAttributes(Colors.DarkRed, InkSize);
+
+                // IMPROVEINK CHANGE ////////////////                                  ///////////////////////////////////////////////////////////////////////////////////////////// 
+                //if (_currentInkPoints.Count >= 5000)
+                if (_currentInkPoints.Count >= 200)
+                {
+                    _wetStrokesToDraw.Add(s);
+                    InkPoint lastPoint = _currentInkPoints.Last(); //?
+                    _currentInkPoints.Clear();                                                                      // KBTODO check if there is anything else to reset 
+                    _currentInkPoints.Add(lastPoint);               //? 
+                    ds.DrawInk(_wetStrokesToDraw);
+                    Debug.WriteLine("shit's happening");
+                    return; 
+                }
+                ds.DrawInk(_wetStrokesToDraw);
+                ds.DrawInk(new InkStroke[] { s });
+                //if (_wetStrokesToDraw.Count > 0)
+                //    ds.DrawInk(_wetStrokesToDraw);
+                //  ////////////////////  
+
             }
         }
 
