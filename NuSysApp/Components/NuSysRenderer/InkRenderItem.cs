@@ -349,23 +349,19 @@ namespace NuSysApp
                     s.DrawingAttributes = GetDrawingAttributes(Colors.DarkRed, InkSize);
 
                 // IMPROVEINK CHANGE ////////////////                                  ///////////////////////////////////////////////////////////////////////////////////////////// 
-                //if (_currentInkPoints.Count >= 5000)
-                if (_currentInkPoints.Count >= 200)
+                const int threshold = 200; // 5000 ? 
+                if (_currentInkPoints.Count >= threshold)
                 {
                     _wetStrokesToDraw.Add(s);
-                    //Debug.WriteLine("in " + _wetStrokesToDraw.Count);
                     InkPoint lastPoint = _currentInkPoints.Last(); 
                     _currentInkPoints.Clear();                                                                      // KBTODO check if there is anything else to reset 
                     _currentInkPoints.Add(lastPoint); 
-                    ds.DrawInk(_wetStrokesToDraw);
-                    return; 
+                    //ds.DrawInk(_wetStrokesToDraw);
+                   // return; 
                 }
-                //Debug.WriteLine("before " + _wetStrokesToDraw.Count);
-
                 var toDraw = new List<InkStroke>( _wetStrokesToDraw );
                 toDraw.Add(s);
                 ds.DrawInk(toDraw);
-               // Debug.WriteLine("after " + _wetStrokesToDraw.Count);
 
             }
         }
