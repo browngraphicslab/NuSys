@@ -403,7 +403,6 @@ namespace NuSysApp
             _canvasInteractionManager.ItemTapped += CanvasInteractionManagerOnItemTapped;
             _canvasInteractionManager.PointerPressed += CanvasInteractionManagerOnPointerPressed;
             _canvasInteractionManager.PointerMoved += CanvasInteractionManager_PointerMoved;
-            _canvasInteractionManager.PointerReleased += CanvasInteractionManager_PointerReleased;
             _canvasInteractionManager.AllPointersReleased += CanvasInteractionManagerOnAllPointersReleased;
 
 
@@ -1160,9 +1159,84 @@ namespace NuSysApp
 
         private void CanvasInteractionManagerOnAllPointersReleased()
         {
-
+            ReleaseRectangularMarqueeSelection();
             //_transform = CurrentCollection.Camera.LocalToScreenMatrix;
             _transformables.Clear();
+        }
+
+
+        /// <summary>
+        /// Called by the PointerPressed event handler.
+        /// Clears all selections then moves marquee to current point.
+        /// </summary>
+        /// <param name="pointer"></param>
+        private void StartRectangularMarqueeSelection(CanvasPointer pointer)
+        {
+            var marquee = RenderEngine.RectangularMarqueeSelection;
+            
+            ClearSelections();
+            //Make marquee invisible and 0 size at the current point.
+            marquee.IsVisible = false;
+            marquee.Width = 0;
+            marquee.Height = 0;
+
+            marquee.Transform.LocalPosition = pointer.CurrentPoint;
+        }
+
+        /// <summary>
+        /// Called by only the PointerMoved event handler.
+        /// Updates width and height of marquee based on current point.
+        /// </summary>
+        /// <param name="pointer"></param>
+        private void UpdateRectangularMarqueeSelection(CanvasPointer pointer)
+        {
+            //TODO: Allow the user to start at one point and update the marquee by going left/up not just right/down
+
+            var marquee = RenderEngine.RectangularMarqueeSelection;
+            //Get max of 0 and new width in case we get a negative width.
+            marquee.Width = Math.Max(0, marquee.Width + pointer.DeltaSinceLastUpdate.X);
+            //Get max of 0 and new height in case we get a negative height.
+            marquee.Height = Math.Max(0, marquee.Height + pointer.DeltaSinceLastUpdate.Y);
+
+            if (marquee.Width > 5f && marquee.Height > 5f && !marquee.IsVisible)
+            {
+                marquee.IsVisible = true;
+
+            }
+        }
+        /// <summary>
+        /// Called by only the AllPointersReleased event handler
+        /// Makes marquee invisible, then adds any containing elements to the selection.
+        /// </summary>
+        private void ReleaseRectangularMarqueeSelection()
+        {
+            var marquee = RenderEngine.RectangularMarqueeSelection;
+
+            if (marquee.IsVisible)
+            {
+                marquee.IsVisible = false;
+                var rect = marquee.GetScreenBounds();
+
+
+                var collection = CurrentCollection;
+
+                //Get the rectangle in collection coordinates
+                var rectInCollection = RenderEngine.ScreenRectToCollectionPoint(rect, collection);
+
+                //Iterate through the current collection for group selection
+                foreach (var renderItem in CurrentCollection.GetChildren().OfType<ElementRenderItem>())
+                {
+                    if (renderItem is PseudoElementRenderItem)
+                        continue;
+                    var vm = renderItem.ViewModel;
+                    var anchor = new Windows.Foundation.Point(vm.Anchor.X, vm.Anchor.Y);
+                    if (rectInCollection.Contains(anchor))
+                    {
+                        AddToSelections(renderItem);
+                    }
+                }
+
+            }
         }
 
         private async void CollectionInteractionManagerOnElementAddedToCollection(ElementRenderItem element,
@@ -1306,12 +1380,7 @@ namespace NuSysApp
 
             if (pointer.IsRightButtonPressed)
             {
-                ClearSelections();
-                RenderEngine.RectangularMarqueeSelection.IsVisible = false;
-                RenderEngine.RectangularMarqueeSelection.Width = 0;
-                RenderEngine.RectangularMarqueeSelection.Height = 0;
-
-                RenderEngine.RectangularMarqueeSelection.Transform.LocalPosition = pointer.CurrentPoint;
+                StartRectangularMarqueeSelection(pointer);
             }
 
         }
@@ -1322,52 +1391,11 @@ namespace NuSysApp
             
             if (pointer.IsRightButtonPressed)
             {
-                Debug.WriteLine("Marquee is being moved!");
-
-                RenderEngine.RectangularMarqueeSelection.Width = Math.Max(0,
-                    RenderEngine.RectangularMarqueeSelection.Width + pointer.DeltaSinceLastUpdate.X);
-                RenderEngine.RectangularMarqueeSelection.Height = Math.Max(0,
-                    RenderEngine.RectangularMarqueeSelection.Height + pointer.DeltaSinceLastUpdate.Y);
-
-                if (RenderEngine.RectangularMarqueeSelection.Width > 5f &&
-                    RenderEngine.RectangularMarqueeSelection.Height > 5f && !RenderEngine.RectangularMarqueeSelection.IsVisible)
-                {
-                    RenderEngine.RectangularMarqueeSelection.IsVisible = true;
-
-                }
+                UpdateRectangularMarqueeSelection(pointer);
             }
         }
 
 
-        private void CanvasInteractionManager_PointerReleased(CanvasPointer pointer)
-        {
-            if (RenderEngine.RectangularMarqueeSelection.IsVisible)
-            {
-                RenderEngine.RectangularMarqueeSelection.IsVisible = false;
-                var rect = RenderEngine.RectangularMarqueeSelection.GetScreenBounds();
-
-
-                var collection = CurrentCollection;
-
-                var rectInCollection = RenderEngine.ScreenRectToCollectionPoint(rect, collection);
-
-
-                //var newX = elem.ViewModel.X + delta.X / (_transform.M11 * collection.Camera.S.M11);
-                //var newY = elem.ViewModel.Y + delta.Y / (_transform.M22 * collection.Camera.S.M22);
-                foreach (var renderItem in CurrentCollection.GetChildren().OfType<ElementRenderItem>())
-                {
-                    if (renderItem is PseudoElementRenderItem)
-                        continue;
-                    var vm = renderItem.ViewModel;
-                    var anchor = new Windows.Foundation.Point(vm.Anchor.X, vm.Anchor.Y);
-                    if (rectInCollection.Contains(anchor))
-                    {
-                        AddToSelections(renderItem);
-                    }
-                }
-
-            }
-        }
 
         private void CollectionInteractionManagerOnPanZoomed(Vector2 center, Vector2 deltaTranslation, float deltaZoom)
         {
