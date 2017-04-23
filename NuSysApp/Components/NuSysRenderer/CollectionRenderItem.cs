@@ -22,6 +22,7 @@ using Microsoft.Graphics.Canvas.UI.Xaml;
 using MyToolkit.Mathematics;
 using MyToolkit.Utilities;
 using NusysIntermediate;
+using NuSysApp.Components.NuSysRenderer.UI.ListView;
 using Wintellect.PowerCollections;
 using WinRTXamlToolkit.Tools;
 
@@ -65,7 +66,7 @@ namespace NuSysApp
         private ShapedStatus _shapeStatus;
 
         public bool HoldsList { get; set; }
-        //public ListViewUIElementContainer<LibraryElementModel> Lib { get; set; }
+        //private CollectionListViewUIElement Lib { get; set; }
 
         public CollectionRenderItem(ElementCollectionViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi canvas, bool interactionEnabled = false) : base(vm, parent, canvas)
         {
@@ -519,6 +520,8 @@ namespace NuSysApp
 
 
         }
+
+       
 
         public override void CreateResources()
         {

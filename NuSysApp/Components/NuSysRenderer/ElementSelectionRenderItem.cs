@@ -50,6 +50,7 @@ namespace NuSysApp
         //public bool HoldsList { get; set; }
         public CollectionListViewUIElement Lib { get; set; }
         private CanvasAnimatedControl _resourceCreator;
+        private CollectionRenderItem _prevCollectionRenderItem;
 
         public ElementSelectionRenderItem(ElementCollectionViewModel vm, BaseRenderItem parent, CanvasAnimatedControl resourceCreator) : base(parent, resourceCreator)
         {
@@ -130,7 +131,7 @@ namespace NuSysApp
                 Width = 20,
                 Background = Colors.Transparent,
             };
-            DragToolsRect.IsVisible = true;
+            DragToolsRect.IsVisible = false;
             AddChild(DragToolsRect);
 
 
@@ -213,13 +214,12 @@ namespace NuSysApp
 
 
             RemoveLibrary();
+            if (_prevCollectionRenderItem != null)
+                _prevCollectionRenderItem.HoldsList = false;
+            _prevCollectionRenderItem = null;
             if (_isSingleCollectionSelected)
             {
-                var collection = (CollectionRenderItem)_selectedItems[0];
-                if (collection.HoldsList)
-                {
-                    AddLibrary();
-                }
+                _prevCollectionRenderItem = (CollectionRenderItem)_selectedItems[0];
             }
 
 
@@ -239,50 +239,56 @@ namespace NuSysApp
         public void AddLibrary()
         {
             Lib = new CollectionListViewUIElement((CollectionRenderItem)_selectedItems[0], _resourceCreator);
-            AddChild(Lib);
             SetLibDimensions();
+            if (Lib != null) AddChild(Lib);
         }
 
         private void SetLibDimensions()
         {
             if (_screenRect.Width < 200 || _screenRect.Height < 200)
             {
-                Lib.IsVisible = false;
+                if (Lib != null)
+                {
+                    RemoveLibrary();
+                    _prevCollectionRenderItem.HoldsList = false;
+                }
+                BtnList.IsVisible = false;
             }
             else
             {
-                Lib.IsVisible = true;
-                Lib.Width = (float) _screenRect.Width - 12;
-                Lib.Height = (float) _screenRect.Height - 15;
+                if (Lib != null)
+                {
+                    Lib.IsVisible = true;
+                    Lib.Width = (float) _screenRect.Width - 12;
+                    Lib.Height = (float) _screenRect.Height - 15;
+                }
+                if (!BtnList.IsVisible) BtnList.IsVisible = true;
             }
         }
 
         public void UpdateLib()
         {
-            if (!_isSingleCollectionSelected) return;
-            var collection = (CollectionRenderItem) _selectedItems[0];
-            if (collection.HoldsList)
+            if (!_isSingleCollectionSelected)
             {
-                if (Lib != null)
-                {
-                    SetLibDimensions();
-                }
-                else
-                {
-                    AddLibrary();
-                }
+                RemoveLibrary();
+                return;
             }
-            else
+            if (_prevCollectionRenderItem.HoldsList && Lib == null)
+            {
+                AddLibrary();
+            }
+            else if (!_prevCollectionRenderItem.HoldsList)
             {
                 RemoveLibrary();
             }
+            SetLibDimensions();
         }
 
         public void RemoveLibrary()
         {
             if (Lib == null) return;
-            RemoveChild(Lib);
             Lib.Dispose();
+            RemoveChild(Lib);
             Lib = null;
         }
 
@@ -312,6 +318,8 @@ namespace NuSysApp
                 return;
             }
 
+            UpdateLib();
+
             // get the bounding boxes of all the selected items
             var boundingBoxes = _selectedItems.ToList().Select(elem => elem.GetSelectionBoundingRect()).ToList();
 
@@ -328,9 +336,6 @@ namespace NuSysApp
             _screenRect.Y -= margin;
             _screenRect.Width += margin * 2;
             _screenRect.Height += margin * 2;
-
-            
-            UpdateLib();
 
 
             Transform.LocalPosition = new Vector2((float)_screenRect.X, (float)_screenRect.Y);
