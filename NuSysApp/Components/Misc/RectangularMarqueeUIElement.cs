@@ -27,6 +27,13 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
+            if (IsDisposed || !IsVisible)
+                return;
+
+
+            var orgTransform = ds.Transform;
+            ds.Transform = Transform.LocalToScreenMatrix;
+
             var strokeStyle = new CanvasStrokeStyle
             {
                 DashCap = CanvasCapStyle.Flat,
@@ -34,6 +41,9 @@ namespace NuSysApp
                 DashOffset = _dashOffset,
             };
             ds.DrawRectangle(GetLocalBounds(), Colors.SlateGray, 3f, strokeStyle);
+
+            ds.Transform = orgTransform;
+
             base.Draw(ds);
         }
 

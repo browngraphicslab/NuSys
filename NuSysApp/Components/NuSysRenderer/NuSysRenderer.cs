@@ -78,6 +78,16 @@ namespace NuSysApp
             return Vector2.Transform(sp, collection.Camera.ScreenToLocalMatrix);
         }
 
+        public Rect ScreenRectToCollectionPoint(Rect rect, CollectionRenderItem collection)
+        {
+            var topLeftV2 = Vector2.Transform(new Vector2((float)rect.X, (float)rect.Y), collection.Camera.ScreenToLocalMatrix);
+            var bottomRightV2 = Vector2.Transform(new Vector2((float)(rect.X + rect.Width), (float)(rect.Y + rect.Height)), collection.Camera.ScreenToLocalMatrix);
+
+            var topLeftPoint = new Point(topLeftV2.X, topLeftV2.Y);
+            var bottomRightPoint = new Point(bottomRightV2.X, bottomRightV2.Y);
+            return new Rect(topLeftPoint, bottomRightPoint);
+        }
+
         public Matrix3x2 GetCollectionTransform(CollectionRenderItem collection)
         {
             return collection.Camera.LocalToScreenMatrix;
@@ -214,7 +224,8 @@ namespace NuSysApp
             RectangularMarqueeSelection = new RectangularMarqueeUIElement(Root, CanvasAnimatedControl)
             {
                 IsVisible = false,
-                Background = Color.FromArgb(100,40,50,70),
+                Background = Colors.Transparent,
+
 
             };
 

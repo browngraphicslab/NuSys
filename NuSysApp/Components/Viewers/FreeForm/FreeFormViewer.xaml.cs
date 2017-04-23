@@ -347,6 +347,7 @@ namespace NuSysApp
                 _collectionInteractionManager.ElementAddedToCollection -= CollectionInteractionManagerOnElementAddedToCollection;
                 _collectionInteractionManager.MultimediaElementActivated -= CollectionInteractionManagerOnMultimediaElementActivated;
                 _canvasInteractionManager.PointerPressed -= CanvasInteractionManagerOnPointerPressed;
+                _canvasInteractionManager.PointerMoved -= CanvasInteractionManager_PointerMoved;
                 _canvasInteractionManager.AllPointersReleased -= CanvasInteractionManagerOnAllPointersReleased;
                 multiMenu.CreateCollection -= MultiMenuOnCreateCollection;
                 _canvasInteractionManager.ItemTapped -= CanvasInteractionManagerOnItemTapped;
@@ -402,13 +403,13 @@ namespace NuSysApp
             _canvasInteractionManager.ItemTapped += CanvasInteractionManagerOnItemTapped;
             _canvasInteractionManager.PointerPressed += CanvasInteractionManagerOnPointerPressed;
             _canvasInteractionManager.PointerMoved += CanvasInteractionManager_PointerMoved;
+            _canvasInteractionManager.PointerReleased += CanvasInteractionManager_PointerReleased;
             _canvasInteractionManager.AllPointersReleased += CanvasInteractionManagerOnAllPointersReleased;
 
 
             _minimap?.SwitchCollection(collection);
 
         }
-
 
 
         public void InvalidateMinimap()
@@ -1159,6 +1160,7 @@ namespace NuSysApp
 
         private void CanvasInteractionManagerOnAllPointersReleased()
         {
+
             //_transform = CurrentCollection.Camera.LocalToScreenMatrix;
             _transformables.Clear();
         }
@@ -1301,24 +1303,69 @@ namespace NuSysApp
                 xVideoPlayer.Pause();
             }
 
-            RenderEngine.RectangularMarqueeSelection.IsVisible = false;
-            RenderEngine.RectangularMarqueeSelection.Width = 0;
-            RenderEngine.RectangularMarqueeSelection.Height = 0;
 
-            RenderEngine.RectangularMarqueeSelection.Transform.LocalPosition = pointer.CurrentPoint;
+            if (pointer.IsRightButtonPressed)
+            {
+                ClearSelections();
+                RenderEngine.RectangularMarqueeSelection.IsVisible = false;
+                RenderEngine.RectangularMarqueeSelection.Width = 0;
+                RenderEngine.RectangularMarqueeSelection.Height = 0;
+
+                RenderEngine.RectangularMarqueeSelection.Transform.LocalPosition = pointer.CurrentPoint;
+            }
+
         }
 
 
         private void CanvasInteractionManager_PointerMoved(CanvasPointer pointer)
         {
             
-           
-            RenderEngine.RectangularMarqueeSelection.Width += pointer.DeltaSinceLastUpdate.X;
-            RenderEngine.RectangularMarqueeSelection.Height += pointer.DeltaSinceLastUpdate.Y;
-            if (RenderEngine.RectangularMarqueeSelection.Width > 5f &&
-                RenderEngine.RectangularMarqueeSelection.Height > 5f)
+            if (pointer.IsRightButtonPressed)
             {
-                RenderEngine.RectangularMarqueeSelection.IsVisible = true;
+                Debug.WriteLine("Marquee is being moved!");
+
+                RenderEngine.RectangularMarqueeSelection.Width = Math.Max(0,
+                    RenderEngine.RectangularMarqueeSelection.Width + pointer.DeltaSinceLastUpdate.X);
+                RenderEngine.RectangularMarqueeSelection.Height = Math.Max(0,
+                    RenderEngine.RectangularMarqueeSelection.Height + pointer.DeltaSinceLastUpdate.Y);
+
+                if (RenderEngine.RectangularMarqueeSelection.Width > 5f &&
+                    RenderEngine.RectangularMarqueeSelection.Height > 5f && !RenderEngine.RectangularMarqueeSelection.IsVisible)
+                {
+                    RenderEngine.RectangularMarqueeSelection.IsVisible = true;
+
+                }
+            }
+        }
+
+
+        private void CanvasInteractionManager_PointerReleased(CanvasPointer pointer)
+        {
+            if (RenderEngine.RectangularMarqueeSelection.IsVisible)
+            {
+                RenderEngine.RectangularMarqueeSelection.IsVisible = false;
+                var rect = RenderEngine.RectangularMarqueeSelection.GetScreenBounds();
+
+
+                var collection = CurrentCollection;
+
+                var rectInCollection = RenderEngine.ScreenRectToCollectionPoint(rect, collection);
+
+
+                //var newX = elem.ViewModel.X + delta.X / (_transform.M11 * collection.Camera.S.M11);
+                //var newY = elem.ViewModel.Y + delta.Y / (_transform.M22 * collection.Camera.S.M22);
+                foreach (var renderItem in CurrentCollection.GetChildren().OfType<ElementRenderItem>())
+                {
+                    if (renderItem is PseudoElementRenderItem)
+                        continue;
+                    var vm = renderItem.ViewModel;
+                    var anchor = new Windows.Foundation.Point(vm.Anchor.X, vm.Anchor.Y);
+                    if (rectInCollection.Contains(anchor))
+                    {
+                        AddToSelections(renderItem);
+                    }
+                }
+
             }
         }
 
