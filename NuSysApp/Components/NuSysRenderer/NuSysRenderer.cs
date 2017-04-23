@@ -25,6 +25,9 @@ namespace NuSysApp
         public NodeMarkingMenuRenderItem NodeMarkingMenu;
         public InkOptionsRenderItem InkOptions;
         public NodeMenuButtonRenderItem BtnDelete;
+
+        public RectangularMarqueeUIElement RectangularMarqueeSelection;
+
         private bool _isStopped;
         private bool _isInitialized;
 
@@ -208,12 +211,19 @@ namespace NuSysApp
             BtnExportTrail.Label = "export one-way trail";
             BtnExportTrail.IsVisible = false;
 
+            RectangularMarqueeSelection = new RectangularMarqueeUIElement(Root, CanvasAnimatedControl)
+            {
+                IsVisible = false,
+                Background = Color.FromArgb(100,40,50,70),
+
+            };
+
             Root.AddChild(ElementSelectionRect);
             Root.AddChild(NodeMarkingMenu);
             Root.AddChild(InkOptions);
             Root.AddChild(BtnDelete);
             Root.AddChild(BtnExportTrail);
-
+            Root.AddChild(RectangularMarqueeSelection);
             _isInitialized = true;
         }
 

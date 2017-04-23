@@ -92,6 +92,7 @@ namespace NuSysApp
 
         private LayoutWindowUIElement _layoutWindow;
         private EditTagsUIElement _editTagsElement;
+
         private bool _customLayoutDrawing = false;
 
         public event EventHandler<bool> CanvasPanned;
@@ -189,6 +190,7 @@ namespace NuSysApp
             {
                 FocusManager = new FocusManager(_canvasInteractionManager, RenderEngine);
             }
+
 
             if (_vm != null)
             {
@@ -399,12 +401,15 @@ namespace NuSysApp
             _collectionInteractionManager.MultimediaElementActivated += CollectionInteractionManagerOnMultimediaElementActivated;
             _canvasInteractionManager.ItemTapped += CanvasInteractionManagerOnItemTapped;
             _canvasInteractionManager.PointerPressed += CanvasInteractionManagerOnPointerPressed;
+            _canvasInteractionManager.PointerMoved += CanvasInteractionManager_PointerMoved;
             _canvasInteractionManager.AllPointersReleased += CanvasInteractionManagerOnAllPointersReleased;
 
 
             _minimap?.SwitchCollection(collection);
 
         }
+
+
 
         public void InvalidateMinimap()
         {
@@ -1294,6 +1299,26 @@ namespace NuSysApp
                 xAudioPlayer.Pause();
                 xVideoPlayer.Visibility = Visibility.Collapsed;
                 xVideoPlayer.Pause();
+            }
+
+            RenderEngine.RectangularMarqueeSelection.IsVisible = false;
+            RenderEngine.RectangularMarqueeSelection.Width = 0;
+            RenderEngine.RectangularMarqueeSelection.Height = 0;
+
+            RenderEngine.RectangularMarqueeSelection.Transform.LocalPosition = pointer.CurrentPoint;
+        }
+
+
+        private void CanvasInteractionManager_PointerMoved(CanvasPointer pointer)
+        {
+            
+           
+            RenderEngine.RectangularMarqueeSelection.Width += pointer.DeltaSinceLastUpdate.X;
+            RenderEngine.RectangularMarqueeSelection.Height += pointer.DeltaSinceLastUpdate.Y;
+            if (RenderEngine.RectangularMarqueeSelection.Width > 5f &&
+                RenderEngine.RectangularMarqueeSelection.Height > 5f)
+            {
+                RenderEngine.RectangularMarqueeSelection.IsVisible = true;
             }
         }
 
