@@ -351,7 +351,7 @@ namespace NuSysApp
         {
             var point = pointer.CurrentPoint;
             _radialMenu.Transform.LocalPosition =
-                        new Vector2(point.X,point.Y);
+                        new Vector2(point.X - _radialMenu.Width/2, point.Y - _radialMenu.Height/2);
             _radialMenu.IsVisible = true;
 
         }

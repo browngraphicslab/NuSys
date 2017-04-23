@@ -70,13 +70,13 @@ namespace NuSysApp.NusysRenderer
             _buttonInfo = buttonContainers;
 
 
-            Background = Constants.LIGHT_BLUE;
+            //Background = Constants.LIGHT_BLUE;
 
 
             // add each button the the stack layout manager and then add dragging and drag completed methods
             foreach (var button in _buttons)
             {
-                button.Dragged += MenuButton_OnDragging;
+                button.Dragged += MenuButton_OnDragged;
                 button.DragCompleted += MenuButton_DragCompleted;
                 button.DragStarted += MenuButton_DragStarted;
             }
@@ -100,7 +100,7 @@ namespace NuSysApp.NusysRenderer
             for (var i = 0; i < _buttons.Count; i++)
             {
                 _buttons[i].Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri(_buttonInfo[i].BitMapURI));
-                _dragImages[i] = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri(_buttonInfo[i].BitMapURI));
+                //_dragImages[i] = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri(_buttonInfo[i].BitMapURI));
             }
             //_buttons[1].Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/recording.png"));
             //_addTextNodeButton.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/text.png"));
@@ -125,7 +125,7 @@ namespace NuSysApp.NusysRenderer
         {
             foreach (var button in _menuButtons)
             {
-                button.Dragged -= MenuButton_OnDragging;
+                button.Dragged -= MenuButton_OnDragged;
                 button.DragCompleted -= MenuButton_DragCompleted;
                 button.DragStarted -= MenuButton_DragStarted;
             }
@@ -137,7 +137,7 @@ namespace NuSysApp.NusysRenderer
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void MenuButton_OnDragging(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
+        private void MenuButton_OnDragged(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
 
             // move the drag rect to a new location
@@ -184,7 +184,7 @@ namespace NuSysApp.NusysRenderer
             {
                 if (type == _buttonInfo[i].Type)
                 {
-                    _dragRect.Image = _dragImages[i];
+                    //_dragRect.Image = _dragImages[i];
                     imageSet = true;
                 }
             }
@@ -219,12 +219,13 @@ namespace NuSysApp.NusysRenderer
         {
             // get the radius of the circle
             var radius = _buttons[0].Height * 2f;
-            var center = Transform.LocalPosition;
+            var centerX = Transform.LocalPosition.X + 25;
+            var centerY = Transform.LocalPosition.Y + 25;
 
             for (var i = 0; i < _buttons.Count; i++)
             {
                 var factor = .25 * i;
-                _buttons[i].Transform.LocalPosition = new Vector2((float)(center.X + Math.Cos(Math.PI * factor) * radius), (float)(center.Y + Math.Sin(Math.PI * factor) * radius));
+                _buttons[i].Transform.LocalPosition = new Vector2((float)(centerX  + Math.Cos(Math.PI * factor) * radius), (float)(centerY + Math.Sin(Math.PI * factor) * radius));
             }
             // Math.Cos and Math.Sin take in radians, so just looked up the angles which were pi/2, 5pi/6, 7pi/6 and 3pi/2
             // the x portion of the angle is Math.Cos(angle in radians), the y portion of the angle is Math.Sin(angle in radians)

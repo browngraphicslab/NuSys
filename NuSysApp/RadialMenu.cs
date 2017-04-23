@@ -25,6 +25,7 @@ namespace NuSysApp
 
             private bool _movable = false;
 
+            private int _selectedButtonIndex;
             /// <summary>
             ///  the initial drag position of the floating menu view
             /// </summary>
@@ -32,6 +33,8 @@ namespace NuSysApp
 
             private float _originalHeight;
             private float _originalWidth;
+
+        private EllipseUIElement _highlight;
         private RadialMenuButtons _radialMenuButtons;
 
         public RadialMenu(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
@@ -42,7 +45,16 @@ namespace NuSysApp
 
 
             // set the default background
-            Background = Colors.Transparent;
+            Background = Colors.Turquoise;
+
+            _highlight = new EllipseUIElement(this, Canvas)
+            {
+                Background = Colors.Yellow,
+                Width = 100,
+                Height = 100,
+                IsVisible = false
+            };
+            AddChild(_highlight);
 
             _addElementButton = new EllipseButtonUIElement(this, Canvas, UIDefaults.PrimaryStyle, "add element")
                 {
@@ -58,6 +70,14 @@ namespace NuSysApp
                 AddChild(_openLibraryButton);
 
                 var buttonContainers = new List<RadialMenuButtonContainer>();
+            buttonContainers.Add(new RadialMenuButtonContainer("ms-appx:///Assets/new icons/recording.png",
+                NusysConstants.ElementType.Recording));
+            buttonContainers.Add(new RadialMenuButtonContainer("ms-appx:///Assets/new icons/text.png",
+               NusysConstants.ElementType.Text));
+            buttonContainers.Add(new RadialMenuButtonContainer("ms-appx:///Assets/new icons/collection.png",
+               NusysConstants.ElementType.Collection));
+            buttonContainers.Add(new RadialMenuButtonContainer("ms-appx:///Assets/new icons/tools.png",
+               NusysConstants.ElementType.Tools));
             buttonContainers.Add(new RadialMenuButtonContainer("ms-appx:///Assets/new icons/recording.png",
                 NusysConstants.ElementType.Recording));
             buttonContainers.Add(new RadialMenuButtonContainer("ms-appx:///Assets/new icons/text.png",
@@ -98,8 +118,8 @@ namespace NuSysApp
 
             //SetAccessibilitySize(SessionController.Instance.SessionSettings.TextScale);
 
-                DragStarted += FloatingMenu_DragStarted;
-                Dragged += FloatingMenuOnDragged;
+                DragStarted += RadialMenu_DragStarted;
+                Dragged += RadialMenuOnDragged;
                 
                 //Tapped += OpenLibraryButtonOnTapped;
                 DragCompleted += RadialMenuOnDragCompleted;
@@ -117,23 +137,81 @@ namespace NuSysApp
             }
         }
 
-        private void FloatingMenu_DragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void RadialMenu_DragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            if (_movable)
-            {
+            
                 _initialDragPosition = Transform.LocalPosition;
-            } else
-            {
+            
                 _radialMenuButtons.IsVisible = true;
-            }
+            
         }
 
-        private void FloatingMenuOnDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void RadialMenuOnDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            if (_movable)
+            //if (_movable)
+            //{
+            //Transform.LocalPosition = _initialDragPosition + pointer.Delta;
+            
+            //
+            var x = pointer.CurrentPoint.X - _initialDragPosition.X;
+            var y = pointer.CurrentPoint.Y - _initialDragPosition.Y;
+            _highlight.IsVisible = false;
+            _highlight.Transform.LocalPosition = new Vector2(x, y);
+
+            var distance = DistanceFromPoints(x, y, 50, 50);
+            if (distance > 100 && distance < 150)
             {
-                Transform.LocalPosition = _initialDragPosition + pointer.Delta;
+
+                //if (AngleFromPoints(50, 50, x, y) < 3.14 / 2)
+                //{
+                    _highlight.IsVisible = true;
+
+                    var centerX = 0;
+                    var centerY = 0;
+                    var radius = 120;
+                    var angle = AngleFromPoints(50,50,x,y);
+                    _highlight.Transform.LocalPosition = new Vector2((float)(centerX + Math.Cos(angle) * radius), (float)(centerY + Math.Sin(angle) * radius));
+
+               // }
             }
+            
+            /*var thing = this.HitTest(pointer.CurrentPoint);
+            if (thing != this && thing != null)
+            {
+                thing.IsVisible = false;
+            }*/
+            /*
+            for (var i = 0; i < 8; i++)
+            {
+                var centerX = 0;
+                var centerY = 0;
+                var radius = 120;
+                var rect = new EllipseUIElement(this, Canvas);
+                rect.Width = 100;
+                rect.Height = 100;
+                rect.Background = Colors.LightSkyBlue;
+                AddChild(rect);
+                var factor = .25 * i;
+                rect.Transform.LocalPosition = new Vector2((float)(centerX + Math.Cos(Math.PI * factor) * radius), (float)(centerY + Math.Sin(Math.PI * factor) * radius));
+            }*/
+            //}
+        }
+
+        /// <summary>
+        /// Get distance between 2 points
+        /// </summary>
+        private double DistanceFromPoints(double x1, double y1, double x2, double y2)
+        {
+            var x = x2 - x1;
+            var y = y2 - y1;
+            return Math.Sqrt(x * x + y * y);
+        }
+
+        private double AngleFromPoints(double x1, double y1, double x2, double y2)
+        {
+            var x = x2 - x1;
+            var y = y2 - y1;
+            return Math.Atan2(y,x);
         }
 
         private void OpenLibraryButtonOnTapped(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
