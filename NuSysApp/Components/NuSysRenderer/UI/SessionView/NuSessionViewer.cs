@@ -144,6 +144,8 @@ namespace NuSysApp
         /// the controller of the current collection
         /// </summary>
         private LibraryElementController _currController;
+        private RectangleUIElement _a1;
+        private RectangleUIElement _a2;
 
 
         public NuSessionViewer(BaseRenderItem parent, CanvasAnimatedControl canvas) : base(parent, canvas)
@@ -200,6 +202,29 @@ namespace NuSysApp
             };
             AddChild(_chatButtonNotifications);
 
+
+            /// START OF TESTING CODE
+            /// IF YOU ARE READING THIS, YOU SHOULDN'T BE
+
+            _a1 = new RectangleUIElement(this, Canvas)
+            {
+                Width = 400,
+                Height = 400
+            };
+            _a2 = new RectangleUIElement(this, Canvas)
+            {
+                Width = 400,
+                Height = 400
+            };
+
+            _a1.Transform.LocalPosition = new Vector2(200, 600);
+            _a2.Transform.LocalPosition = new Vector2(_a1.Width + 300, 600);
+
+
+            AddChild(_a1);
+            AddChild(_a2);
+
+            /// END OF TESTING CODE
 
             _snapshotButton = new EllipseButtonUIElement(this, canvas, UIDefaults.AccentStyle, "snapshot");
             AddChild(_snapshotButton);
@@ -316,6 +341,12 @@ namespace NuSysApp
             _settingsButton.Tapped += SettingsButtonOnTapped;
 
             SessionController.Instance.OnModeChanged += Instance_OnModeChanged;
+        }
+
+        private async void LoadImagesRemoveThisMethodLater(RectangleUIElement a1, RectangleUIElement a2)
+        {
+            a1.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/icon_chat.png"));
+            a2.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/icon_chat.png"));
         }
 
         /// <summary>
@@ -658,6 +689,9 @@ namespace NuSysApp
             _previousNode.Image = _previousNode.Image ?? await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/presentation_backward.png"));
             _currentNode.Image = _currentNode.Image ?? await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/return to node.png"));
             _exitPresentation.Image = _exitPresentation.Image ?? await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/x white.png"));
+
+            //TODO: REMOVE THIS
+            LoadImagesRemoveThisMethodLater(_a1, _a2);
 
 
             // created here because it must be created after the create resources method is called on the main canvas animated control
