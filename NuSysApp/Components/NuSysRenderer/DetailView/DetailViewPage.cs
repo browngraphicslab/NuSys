@@ -337,7 +337,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void OnAddPrivateRegionFlyoutTapped(FlyoutPopup sender)
+        private void OnAddPrivateRegionFlyoutTapped(FlyoutPopup sender, ButtonUIElement item)
         {
             AddRegion(NusysConstants.AccessType.Private);
             _addRegionPopup.DismissPopup();
@@ -348,7 +348,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void OnAddPublicRegionFlyoutTapped(FlyoutPopup sender)
+        private void OnAddPublicRegionFlyoutTapped(FlyoutPopup sender, ButtonUIElement item)
         {
             AddRegion(NusysConstants.AccessType.Public);
             _addRegionPopup.DismissPopup();

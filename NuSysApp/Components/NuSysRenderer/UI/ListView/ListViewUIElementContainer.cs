@@ -252,9 +252,9 @@ namespace NuSysApp
             }
         }
 
-        private void OnColumnOptionTapped(FlyoutPopup sender)
+        private void OnColumnOptionTapped(FlyoutPopup sender, ButtonUIElement item)
         {
-            var columns = ListView.ColumnOptions.Where(a => a.Title == sender.ButtonText);
+            var columns = ListView.ColumnOptions.Where(a => a.Title == item.ButtonText);
             var column = columns.First();
 
             if (column == null)
@@ -390,10 +390,7 @@ namespace NuSysApp
             //Only add the Add Column option if there are any column options not already in the list
             if (ListView.ColumnOptions.Where(col => !ListView.ListColumns.Contains(col)).Count() > 0)
             {
-                addDeleteColumns.AddFlyoutItem("add column", (sender) =>
-                {
-
-                }, Canvas);
+                addDeleteColumns.AddFlyoutItem("add column", AddColumnTapped, Canvas);
             }
             //Only add the Delete Column option if there are more than one columns
             if (ListView.ListColumns.Count > 1)
@@ -404,12 +401,25 @@ namespace NuSysApp
             AddChild(_popupGroup);
         }
 
+
+        /// <summary>
+        /// Called when you press the "add column" flyout item
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void AddColumnTapped(FlyoutPopup sender, ButtonUIElement item)
+        {
+            var options = ListView.ColumnOptions.Where(col => !ListView.ListColumns.Contains(col));
+            var newpopup = _popupGroup.AddFlyoutPopup(item);
+            AddColumnOptionsToPopup(newpopup, options);
+        }
+
         /// <summary>
         /// Called when you press the "delete" flyout item
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void DeleteColumnTapped(FlyoutPopup sender)
+        private void DeleteColumnTapped(FlyoutPopup sender, ButtonUIElement item)
         {
             var header = _popupGroup.Source as ListViewHeaderItem<T>;
             if (header == null)

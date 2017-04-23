@@ -198,7 +198,7 @@ namespace NuSysApp
             Padding = 7;
 
             var tapRecognizer = new TapGestureRecognizer();
-            shape.GestureRecognizers.Add(tapRecognizer);
+            Shape.GestureRecognizers.Add(tapRecognizer);
             tapRecognizer.OnTapped += TapRecognizer_OnTapped;
         }
 

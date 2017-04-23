@@ -237,7 +237,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void InviteOnTappedEvent(FlyoutPopup sender)
+        private void InviteOnTappedEvent(FlyoutPopup sender, ButtonUIElement item)
         {
             StaticServerCalls.InviteCollaboratorToCollection(_currentUserNameDisplayed_userid);
             _currentUserNameDisplayed_userid = null;
@@ -249,7 +249,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void JoinOnTappedEvent(FlyoutPopup sender)
+        private void JoinOnTappedEvent(FlyoutPopup sender, ButtonUIElement item)
         {
             StaticServerCalls.JoinCollaborator(_currentUserNameDisplayed_userid);
             _currentUserNameDisplayed_userid = null;
