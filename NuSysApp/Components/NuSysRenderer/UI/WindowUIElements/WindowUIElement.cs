@@ -99,20 +99,22 @@ namespace NuSysApp
 
         private float _buttonSpacing = 1;
 
+        public delegate void TopBarDragHandler(InteractiveBaseRenderItem item, DragEventArgs args);
+
         /// <summary>
         /// Event fired whenever the top bar is dragged
         /// </summary>
-        public event PointerHandler TopBarDragged;
+        public event TopBarDragHandler TopBarDragged;
 
         /// <summary>
         /// Event fired when the top bar drag is started
         /// </summary>
-        public event PointerHandler TopBarDragStarted;
+        public event TopBarDragHandler TopBarDragStarted;
 
         /// <summary>
         /// Event fired when the top bar drag is completed
         /// </summary>
-        public event PointerHandler TopBarDragCompleted;
+        public event TopBarDragHandler TopBarDragCompleted;
 
         public enum TopBarPosition
         {
@@ -136,10 +138,6 @@ namespace NuSysApp
             _topBar.BorderWidth = BorderWidth;
             AddChild(_topBar);
 
-            _topBar.Dragged += InvokeTopBarDragged;
-            _topBar.DragStarted += InvokeTopBarDragStarted;
-            _topBar.DragCompleted += InvokeTopBarDragCompleted;
-
             _topBarRightButtons = new List<ButtonUIElement>();
             _rightButtonLayoutManager = new StackLayoutManager
             {
@@ -147,38 +145,24 @@ namespace NuSysApp
                 VerticalAlignment = VerticalAlignment.Center,
                 Spacing = _buttonSpacing
             };
+
+            var dragRecognizer = new DragGestureRecognizer();
+            _topBar. GestureRecognizers.Add(dragRecognizer);
+            dragRecognizer.OnDragged += DragRecognizer_OnDragged;
         }
 
-
-
-        public override void Dispose()
+        private void DragRecognizer_OnDragged(DragGestureRecognizer sender, DragEventArgs args)
         {
-            _topBar.DragStarted -= InvokeTopBarDragStarted;
-            _topBar.Dragged -= InvokeTopBarDragged;
-            _topBar.DragCompleted -= InvokeTopBarDragCompleted;
-
-
-            base.Dispose();
-        }
-
-        private void InvokeTopBarDragCompleted(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            TopBarDragCompleted?.Invoke(item, pointer);
-        }
-
-        private void InvokeTopBarDragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            TopBarDragStarted?.Invoke(item, pointer);
-        }
-
-        /// <summary>
-        /// Invokes the on top bar dragged event
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void InvokeTopBarDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            TopBarDragged?.Invoke(item, pointer);
+            if (args.CurrentState == GestureEventArgs.GestureState.Began)
+            {
+                TopBarDragStarted?.Invoke(_topBar);
+            } else if (args.CurrentState == GestureEventArgs.GestureState.Changed)
+            {
+                TopBarDragged?.Invoke(_topBar);
+            } else if (args.CurrentState == GestureEventArgs.GestureState.Ended)
+            {
+                TopBarDragCompleted?.Invoke(_topBar);
+            }
         }
 
         /// <summary>

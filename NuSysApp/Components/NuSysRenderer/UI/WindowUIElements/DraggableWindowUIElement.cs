@@ -84,7 +84,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        protected virtual void OnTopBarDragCompleted(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        protected virtual void OnTopBarDragCompleted(InteractiveBaseRenderItem item, DragEventArgs args)
         {
             if (CurrentSnapPosition != null && SnapPreviewRect != null)
             {
@@ -101,7 +101,7 @@ namespace NuSysApp
 
         }
 
-        protected virtual void OnTopBarDragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        protected virtual void OnTopBarDragStarted(InteractiveBaseRenderItem item, DragEventArgs args)
         {
             _initialDragPosition = Transform.LocalPosition;
             if (IsSnapped)
@@ -110,7 +110,7 @@ namespace NuSysApp
                 IsSnapped = false;
 
                 // get the local point pressed on the top bar
-                var localPointOnTopBar = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
+                var localPointOnTopBar = Vector2.Transform(args.CurrentPoint, Transform.ScreenToLocalMatrix);
 
                 // normalized horizontal pointer offset of the user's clock
                 var normalizedHorizontalOffset = localPointOnTopBar.X/Width;
@@ -130,18 +130,18 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        protected virtual void OnTopBarDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        protected virtual void OnTopBarDragged(InteractiveBaseRenderItem item, DragEventArgs args)
         {
             // shift the window
-            ApplyDragDelta(pointer.Delta);
-            CheckSnap(pointer);
+            ApplyDragDelta(args.Translation);
+            CheckSnap(args.CurrentPoint);
         }
 
         /// <summary>
         /// Check to see if the window should snap, and set the _currentSnapPosition, and show the previw accordingly
         /// </summary>
         /// <param name="pointer"></param>
-        private void CheckSnap(CanvasPointer pointer)
+        private void CheckSnap(Vector2 point)
         {
             // if the window isn't snappable just return
             if (!IsSnappable)
@@ -156,19 +156,19 @@ namespace NuSysApp
             bool snapBottom = false;
 
             // set all the booleans based on the current snap position
-            if (pointer.CurrentPoint.Y < Snapbuffer)
+            if (point.Y < Snapbuffer)
             {
                 snapTop = true;
             }
-            if (pointer.CurrentPoint.X < Snapbuffer)
+            if (point.X < Snapbuffer)
             {
                 snapLeft = true;
             }
-            if (pointer.CurrentPoint.Y > SessionController.Instance.ScreenHeight - Snapbuffer)
+            if (point.Y > SessionController.Instance.ScreenHeight - Snapbuffer)
             {
                 snapBottom = true;
             }
-            if (pointer.CurrentPoint.X > SessionController.Instance.ScreenWidth - Snapbuffer)
+            if (point.X > SessionController.Instance.ScreenWidth - Snapbuffer)
             {
                 snapRight = true;
             }
