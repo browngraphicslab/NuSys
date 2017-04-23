@@ -42,15 +42,15 @@ namespace NuSysApp
 
         }
 
-        private void PieChart_ElementDragCompleted(object source, PieChartElement<string> element, CanvasPointer pointer)
+        private void PieChart_ElementDragCompleted(object source, PieChartElement<string> element, DragEventArgs args)
         {
-            Item_DragCompleted(element.Item, pointer);
+            Item_DragCompleted(element.Item, args);
 
         }
 
-        private void PieChart_ElementDragged(object source, PieChartElement<string> element, CanvasPointer pointer)
+        private void PieChart_ElementDragged(object source, PieChartElement<string> element, DragEventArgs args)
         {
-            Item_Dragging(pointer);
+            Item_Dragging(args);
 
         }
 

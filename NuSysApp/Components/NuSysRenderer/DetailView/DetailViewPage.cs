@@ -198,8 +198,6 @@ namespace NuSysApp
 
             // set the tapped method on the addRegionButton
             _addRegionButton.Tapped += AddRegionButton_Tapped;
-            _dragToCollectionButton.DragCompleted += _dragToCollectionButton_DragCompleted;
-            _dragToCollectionButton.DragStarted += _dragToCollectionButton_DragStarted;
             _dragToCollectionButton.Dragged += _dragToCollectionButton_Dragged;
             _originWords.Tapped += ElementOrigin_Tapped;
         }
@@ -358,8 +356,6 @@ namespace NuSysApp
             _contentLayoutManager.Dispose();
 
             _addRegionButton.Tapped -= AddRegionButton_Tapped;
-            _dragToCollectionButton.DragCompleted -= _dragToCollectionButton_DragCompleted;
-            _dragToCollectionButton.DragStarted -= _dragToCollectionButton_DragStarted;
             _dragToCollectionButton.Dragged -= _dragToCollectionButton_Dragged;
 
             if (_showsImageAnalysis)
