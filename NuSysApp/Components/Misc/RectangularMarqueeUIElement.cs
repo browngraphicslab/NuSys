@@ -27,7 +27,7 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
-            if (IsDisposed || !IsVisible)
+            if (!IsVisible)
                 return;
 
 
