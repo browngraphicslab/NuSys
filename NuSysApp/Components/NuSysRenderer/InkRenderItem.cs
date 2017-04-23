@@ -190,27 +190,45 @@ namespace NuSysApp
             else
             {     
                 LatestStrokeAdded = DateTime.Now;
-
                 var contentDataModelId = _parentCollectionController.LibraryElementController.LibraryElementModel.ContentDataModelId;
+
+                /* 
                 var model = LatestStroke.ToInkModel(contentDataModelId, InkColor, InkSize);
 
                 StrokesMap[model.InkStrokeId] = LatestStroke;
                 _parentCollectionController.LibraryElementController.ContentDataController.AddInk(model);
+                */
+
+                // IMPROVEINK CHANGES                                                   /////////////////////////////////////////////////////////////////////////////////////////////
+                _wetStrokesToDraw.Add(LatestStroke);                 
+                foreach (var wetStroke in _wetStrokesToDraw)
+                {
+                    var model = wetStroke.ToInkModel(contentDataModelId, InkColor, InkSize);
+
+                    StrokesMap[model.InkStrokeId] = wetStroke;
+                    _parentCollectionController.LibraryElementController.ContentDataController.AddInk(model);
+                }
+
             }
 
             _currentInkPoints = new List<InkPoint>();
-
             _strokesToDraw = _inkManager.GetStrokes().ToList();
 
-            // IMPROVEINK CHANGES                                                        ///////////////////////////////////////////////////////////////////////////////////////////// 
-            // _strokesToDraw.AddRange(_wetStrokesToDraw);
+
+            // IMPROVEINK CHANGES                                                        /////////////////////////////////////////////////////////////////////////////////////////////
             /* 
+            _inkManager.AddStroke(LatestStroke);  
             foreach (var wetStroke in _wetStrokesToDraw)
             {
-                _strokesToDraw.Add(wetStroke); 
+                _inkManager.AddStroke(wetStroke);
             }
+
+            _strokesToDraw = _inkManager.GetStrokes().ToList();
             */
+            
             _wetStrokesToDraw.Clear();
+            //Debug.WriteLine("clared ??????????? " + _wetStrokesToDraw.Count);
+
 
             _needsDryStrokesUpdate = true;
             _needsWetStrokeUpdate = true;
@@ -335,18 +353,19 @@ namespace NuSysApp
                 if (_currentInkPoints.Count >= 200)
                 {
                     _wetStrokesToDraw.Add(s);
-                    InkPoint lastPoint = _currentInkPoints.Last(); //?
+                    //Debug.WriteLine("in " + _wetStrokesToDraw.Count);
+                    InkPoint lastPoint = _currentInkPoints.Last(); 
                     _currentInkPoints.Clear();                                                                      // KBTODO check if there is anything else to reset 
-                    _currentInkPoints.Add(lastPoint);               //? 
+                    _currentInkPoints.Add(lastPoint); 
                     ds.DrawInk(_wetStrokesToDraw);
-                    Debug.WriteLine("shit's happening");
                     return; 
                 }
-                ds.DrawInk(_wetStrokesToDraw);
-                ds.DrawInk(new InkStroke[] { s });
-                //if (_wetStrokesToDraw.Count > 0)
-                //    ds.DrawInk(_wetStrokesToDraw);
-                //  ////////////////////  
+                //Debug.WriteLine("before " + _wetStrokesToDraw.Count);
+
+                var toDraw = new List<InkStroke>( _wetStrokesToDraw );
+                toDraw.Add(s);
+                ds.DrawInk(toDraw);
+               // Debug.WriteLine("after " + _wetStrokesToDraw.Count);
 
             }
         }
