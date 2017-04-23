@@ -19,6 +19,10 @@ namespace NuSysApp
         public event TapEventHandler DoubleTapped;
         public event TapEventHandler RightTapped;
 
+        public delegate void DragEventHandler(ButtonUIElement sender, DragEventArgs args);
+
+        public event DragEventHandler Dragged;
+
         /// <summary>
         /// The shape of the button. Can be one of Rectangle/Ellipse/RoudedRectangleUIElement.
         /// </summary>
@@ -195,6 +199,15 @@ namespace NuSysApp
             var tapRecognizer = new TapGestureRecognizer();
             Shape.GestureRecognizers.Add(tapRecognizer);
             tapRecognizer.OnTapped += TapRecognizer_OnTapped;
+
+            var dragRecognizer = new DragGestureRecognizer();
+            Shape.GestureRecognizers.Add(dragRecognizer);
+            dragRecognizer.OnDragged += DragRecognizer_OnDragged;
+        }
+
+        private void DragRecognizer_OnDragged(DragGestureRecognizer sender, DragEventArgs args)
+        {
+            Dragged?.Invoke(this, args);
         }
 
         private void TapRecognizer_OnTapped(TapGestureRecognizer sender, TapEventArgs args)

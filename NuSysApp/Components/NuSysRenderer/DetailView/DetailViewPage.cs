@@ -274,46 +274,38 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void _dragToCollectionButton_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private async void _dragToCollectionButton_Dragged(ButtonUIElement sender, DragEventArgs args)
         {
-            _dragRect.Transform.LocalPosition = Vector2.Transform(pointer.StartPoint, Transform.ScreenToLocalMatrix) + pointer.Delta;
-        }
-
-        /// <summary>
-        /// Fired once when the pointer is first dragged after tapping on the drag to collection button
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private async void _dragToCollectionButton_DragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            _dragRect.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, _controller.SmallIconUri);
-            var width = (float)(_dragRect.Image as CanvasBitmap).SizeInPixels.Width / (_dragRect.Image as CanvasBitmap).SizeInPixels.Height * 100;
-            var height = 100;
-
-            if (height > 0 && width > 0)
+            if (args.CurrentState == GestureEventArgs.GestureState.Began)
             {
-                _dragRect.Height = height;
-                _dragRect.Width = width;
-            }
-            else
+                _dragRect.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, _controller.SmallIconUri);
+                var width = (float)(_dragRect.Image as CanvasBitmap).SizeInPixels.Width / (_dragRect.Image as CanvasBitmap).SizeInPixels.Height * 100;
+                var height = 100;
+
+                if (height > 0 && width > 0)
+                {
+                    _dragRect.Height = height;
+                    _dragRect.Width = width;
+                }
+                else
+                {
+                    _dragRect.Width = 100;
+                    _dragRect.Height = 100;
+                }
+
+                _dragRect.IsVisible = true;
+
+            } else if (args.CurrentState == GestureEventArgs.GestureState.Changed)
             {
-                _dragRect.Width = 100;
-                _dragRect.Height = 100;
+                // dragging
+                _dragRect.Transform.LocalPosition = Vector2.Transform(args.StartPoint, Transform.ScreenToLocalMatrix) + args.TotalTranslation;
+
+            } else if (args.CurrentState == GestureEventArgs.GestureState.Ended)
+            {
+                await StaticServerCalls.AddElementToCurrentCollection(args.CurrentPoint, _controller.LibraryElementModel.Type, _controller);
+                _dragRect.Image = null;
+                _dragRect.IsVisible = false;
             }
-
-            _dragRect.IsVisible = true;
-        }
-
-        /// <summary>
-        /// Fired once when the pointer stops dragging after tapping on the drag to collection button
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private async void _dragToCollectionButton_DragCompleted(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            await StaticServerCalls.AddElementToCurrentCollection(pointer.CurrentPoint, _controller.LibraryElementModel.Type, _controller);
-            _dragRect.Image = null;
-            _dragRect.IsVisible = false;
         }
 
         /// <summary>
