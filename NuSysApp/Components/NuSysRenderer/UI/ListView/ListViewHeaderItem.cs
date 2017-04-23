@@ -38,7 +38,7 @@ namespace NuSysApp
         /// </summary>
         public event ResizeHeaderEventHandler HeaderResizing;
 
-        public delegate void ResizeHeaderCompletedEventHandler(ListViewHeaderItem<T> header, CanvasPointer pointer, Edge edgeBeingDragged);
+        public delegate void ResizeHeaderCompletedEventHandler(ListViewHeaderItem<T> header, Edge edgeBeingDragged);
 
         /// <summary>
         /// Once the dragging of the border has completed (pointer has been released) this event will fire.
@@ -107,72 +107,59 @@ namespace NuSysApp
             ButtonTextVerticalAlignment = CanvasVerticalAlignment.Center;
 
             Holding += ListViewHeaderItem_Holding;
+
+            var tapRecognizer = new TapGestureRecognizer();
+            tapRecognizer.OnTapped += TapRecognizer_OnTapped;
+            GestureRecognizers.Add(tapRecognizer);
+
+            var dragRecognizer = new DragGestureRecognizer();
+            dragRecognizer.OnDragged += DragRecognizer_OnDragged;
+            GestureRecognizers.Add(dragRecognizer);
+        }
+
+        private void DragRecognizer_OnDragged(DragGestureRecognizer sender, DragEventArgs args)
+        {
+            if (args.CurrentState == GestureEventArgs.GestureState.Began)
+            {
+                var startX = Vector2.Transform(args.CurrentPoint, Transform.ScreenToLocalMatrix).X;
+
+                if (_borderBeingDragged == false)
+                {
+                    if (startX < BorderWidth)
+                    {
+                        _edgeBeingDragged = Edge.Left;
+                        _borderBeingDragged = true;
+
+                    }
+                    else if (startX > Width - BorderWidth)
+                    {
+                        _edgeBeingDragged = Edge.Right;
+                        _borderBeingDragged = true;
+                    }
+                }
+            } else if ( args.CurrentState == GestureEventArgs.GestureState.Ended)
+            {
+                if (_borderBeingDragged)
+                {
+                    _borderBeingDragged = false;
+                    Debug.Assert(_edgeBeingDragged != null);
+                    HeaderResizeCompleted?.Invoke(this, _edgeBeingDragged);
+                    return;
+                }
+            }
+        }
+
+        private void TapRecognizer_OnTapped(TapGestureRecognizer sender, TapEventArgs args)
+        {
+            if (args.TapType == TapEventArgs.Tap.RightTap)
+            {
+                HeaderOptionsActivated?.Invoke(this);
+            }
         }
 
         private void ListViewHeaderItem_Holding(InteractiveBaseRenderItem item, Vector2 point)
         {
             HeaderOptionsActivated?.Invoke(this);
-        }
-
-        public override void OnRightTapped(CanvasPointer pointer)
-        {
-            HeaderOptionsActivated?.Invoke(this);
-            base.OnRightTapped(pointer);
-        }
-
-        public override void OnDragStarted(CanvasPointer pointer)
-        {
-            var startX = Vector2.Transform(pointer.StartPoint, Transform.ScreenToLocalMatrix).X;
-
-            if (_borderBeingDragged == false)
-            {
-                if (startX < BorderWidth)
-                {
-                    _edgeBeingDragged = Edge.Left;
-                    _borderBeingDragged = true;
-
-                }
-                else if (startX > Width - BorderWidth)
-                {
-                    _edgeBeingDragged = Edge.Right;
-                    _borderBeingDragged = true;
-                }
-            }
-            base.OnDragStarted(pointer);
-        }
-
-        /// <summary>
-        /// This overrides the released handler of the button. If you were dragging the edge of a button, the headerresizeCompleted is invoked instead. 
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        public override void OnReleased(CanvasPointer pointer)
-        {
-            if (_borderBeingDragged)
-            {
-                _borderBeingDragged = false;
-                Debug.Assert(_edgeBeingDragged != null);
-                HeaderResizeCompleted?.Invoke(this, pointer, _edgeBeingDragged);
-                return;
-            }
-
-            base.OnReleased(pointer);
-        }
-
-        /// <summary>
-        /// Overrides the pressed handler of the button. iIt does nothing if the edge of the button is pressed, and calls the base handler otherwise.
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        public override void OnPressed(CanvasPointer pointer)
-        {
-            var currentX = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix).X;
-
-            if (currentX > BorderWidth && currentX < Width - BorderWidth)
-            {
-                base.OnPressed(pointer);
-                return;
-            }
         }
 
         public override void Dispose()

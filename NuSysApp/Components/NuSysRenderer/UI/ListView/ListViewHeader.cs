@@ -216,9 +216,7 @@ namespace NuSysApp
         public void RemoveHeaderHandlers(ListViewHeaderItem<T> header)
         {
             header.Tapped -= Header_Tapped;
-            header.Dragged -= Header_Dragged;
             header.HeaderOptionsActivated -= Header_OptionsActivated;
-            header.DragCompleted -= Header_DragCompleted;
             header.HeaderResizeCompleted -= HeaderItemResizeCompleted;
 
         }
@@ -230,12 +228,7 @@ namespace NuSysApp
         public void AddHeaderHandlers(ListViewHeaderItem<T> header)
         {
             header.Tapped += Header_Tapped;
-            header.Dragged += Header_Dragged;
-
             header.HeaderOptionsActivated += Header_OptionsActivated;
-
-            header.DragCompleted += Header_DragCompleted;
-
             header.HeaderResizeCompleted += HeaderItemResizeCompleted;
         }
 
@@ -252,7 +245,7 @@ namespace NuSysApp
         /// <param name="header"></param>
         /// <param name="pointer"></param>
         /// <param name="edgeBeingDragged"></param>
-        private void HeaderItemResizeCompleted(ListViewHeaderItem<T> header, CanvasPointer pointer, ListViewHeaderItem<T>.Edge edgeBeingDragged)
+        private void HeaderItemResizeCompleted(ListViewHeaderItem<T> header, ListViewHeaderItem<T>.Edge edgeBeingDragged)
         {
             var col1Index = _children.IndexOf(header);
             Debug.Assert(col1Index != -1);
