@@ -240,7 +240,12 @@ namespace NuSysApp
         {
             Lib = new CollectionListViewUIElement((CollectionRenderItem)_selectedItems[0], _resourceCreator);
             SetLibDimensions();
-            if (Lib != null) AddChild(Lib);
+            if (Lib != null)
+            {
+                AddChild(Lib);
+                
+                
+            }
         }
 
         private void SetLibDimensions()
@@ -259,8 +264,10 @@ namespace NuSysApp
                 if (Lib != null)
                 {
                     Lib.IsVisible = true;
-                    Lib.Width = (float) _screenRect.Width - 12;
-                    Lib.Height = (float) _screenRect.Height - 15;
+                    Lib.Width = (float) _selectionBoundingRect.Width;
+                    Lib.Height = (float) _selectionBoundingRect.Height;
+                    Lib.Transform.LocalPosition = new Vector2((float)_screenRect.X + 15, (float)_screenRect.Y + 15);
+
                 }
                 if (!BtnList.IsVisible) BtnList.IsVisible = true;
             }
@@ -341,6 +348,7 @@ namespace NuSysApp
             Transform.LocalPosition = new Vector2((float)_screenRect.X, (float)_screenRect.Y);
             _screenRect.X = 0;
             _screenRect.Y = 0;
+            
 
 
             Resizer.Transform.LocalPosition = new Vector2((float)(_screenRect.X + _screenRect.Width - 30 + 1.5f), (float)(_screenRect.Y + _screenRect.Height - 30 + 1.5f));
