@@ -243,8 +243,6 @@ namespace NuSysApp
             if (Lib != null)
             {
                 AddChild(Lib);
-                
-                
             }
         }
 
@@ -252,49 +250,51 @@ namespace NuSysApp
         {
             if (_screenRect.Width < 200 || _screenRect.Height < 200)
             {
-                if (Lib != null)
-                {
-                    RemoveLibrary();
-                    _prevCollectionRenderItem.HoldsList = false;
-                }
-                BtnList.IsVisible = false;
+                RemoveLibrary();
+                _prevCollectionRenderItem.HoldsList = false;
             }
             else
             {
-                if (Lib != null)
-                {
-                    Lib.IsVisible = true;
-                    Lib.Width = (float) _selectionBoundingRect.Width;
-                    Lib.Height = (float) _selectionBoundingRect.Height;
-                    Lib.Transform.LocalPosition = new Vector2((float)_screenRect.X + 15, (float)_screenRect.Y + 15);
+                Lib.IsVisible = true;
+                Lib.Width = (float) _selectionBoundingRect.Width + 2;
+                Lib.Height = (float) _selectionBoundingRect.Height;
+                Lib.Transform.LocalPosition = new Vector2((float)_screenRect.X + 14, (float)(_screenRect.Y + 15 + _prevCollectionRenderItem._textLayout.DrawBounds.Height * Math.Pow(SessionController.Instance.ActiveFreeFormViewer.CameraScale, .5)));
+                Debug.WriteLine(_prevCollectionRenderItem._textLayout.DrawBounds.Height * SessionController.Instance.ActiveFreeFormViewer.CameraScale);
+                Debug.WriteLine(_prevCollectionRenderItem._textLayout.DrawBounds.Height);
+            }
+        }
 
-                }
-                if (!BtnList.IsVisible) BtnList.IsVisible = true;
+
+        private void UpdateListButton()
+        {
+            if (_screenRect.Width < 200 || _screenRect.Height < 200 || !_isSingleCollectionSelected)
+            {
+                BtnList.IsVisible = false;
+            }
+            else if (_isSingleCollectionSelected && !BtnList.IsVisible)
+            {
+                BtnList.IsVisible = true;
             }
         }
 
         public void UpdateLib()
         {
-            if (!_isSingleCollectionSelected)
+            if (!_isSingleCollectionSelected || !_prevCollectionRenderItem.HoldsList)
             {
                 RemoveLibrary();
                 return;
             }
-            if (_prevCollectionRenderItem.HoldsList && Lib == null)
+            if (Lib == null)
             {
                 AddLibrary();
             }
-            else if (!_prevCollectionRenderItem.HoldsList)
-            {
-                RemoveLibrary();
-            }
             SetLibDimensions();
+            
         }
 
         public void RemoveLibrary()
         {
             if (Lib == null) return;
-            Lib.Dispose();
             RemoveChild(Lib);
             Lib = null;
         }
@@ -326,6 +326,7 @@ namespace NuSysApp
             }
 
             UpdateLib();
+            UpdateListButton();
 
             // get the bounding boxes of all the selected items
             var boundingBoxes = _selectedItems.ToList().Select(elem => elem.GetSelectionBoundingRect()).ToList();
