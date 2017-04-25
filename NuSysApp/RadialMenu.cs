@@ -34,10 +34,12 @@ namespace NuSysApp
             private float _originalHeight;
             private float _originalWidth;
 
+        private EllipseButtonUIElement _selectedHighlight;
+
         private EllipseUIElement _highlight;
         private RadialMenuButtons _radialMenuButtons;
 
-        public RadialMenu(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
+        public RadialMenu(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, List<RadialMenuButtonContainer> buttonContainers) : base(parent, resourceCreator)
             {
                 // set the default height and width of the floating menu view
                 Height = 100;
@@ -45,13 +47,24 @@ namespace NuSysApp
 
 
             // set the default background
-            Background = Colors.Turquoise;
+            Background = Colors.Transparent;
+
+            _selectedHighlight = new EllipseButtonUIElement(this, Canvas)
+            {
+                Width = 90,
+                Height = 90,
+                Background = Colors.SkyBlue
+                //IsVisible = false
+            };
+            _selectedHighlight.IsVisible = false;
+            //_selectedHighlight.Transform.LocalPosition = new Vector2(-10000, -10000); //ector2(thing.Transform.Parent.LocalPosition.X, thing.Transform.Parent.LocalPosition.Y);
+            AddChild(_selectedHighlight);
 
             _highlight = new EllipseUIElement(this, Canvas)
             {
                 Background = Colors.Yellow,
-                Width = 100,
-                Height = 100,
+                Width = 50,
+                Height = 50,
                 IsVisible = false
             };
             AddChild(_highlight);
@@ -69,28 +82,9 @@ namespace NuSysApp
 
                 AddChild(_openLibraryButton);
 
-                var buttonContainers = new List<RadialMenuButtonContainer>();
-            buttonContainers.Add(new RadialMenuButtonContainer("ms-appx:///Assets/new icons/recording.png",
-                NusysConstants.ElementType.Recording));
-            buttonContainers.Add(new RadialMenuButtonContainer("ms-appx:///Assets/new icons/text.png",
-               NusysConstants.ElementType.Text));
-            buttonContainers.Add(new RadialMenuButtonContainer("ms-appx:///Assets/new icons/collection.png",
-               NusysConstants.ElementType.Collection));
-            buttonContainers.Add(new RadialMenuButtonContainer("ms-appx:///Assets/new icons/tools.png",
-               NusysConstants.ElementType.Tools));
-            buttonContainers.Add(new RadialMenuButtonContainer("ms-appx:///Assets/new icons/recording.png",
-                NusysConstants.ElementType.Recording));
-            buttonContainers.Add(new RadialMenuButtonContainer("ms-appx:///Assets/new icons/text.png",
-               NusysConstants.ElementType.Text));
-            buttonContainers.Add(new RadialMenuButtonContainer("ms-appx:///Assets/new icons/collection.png",
-               NusysConstants.ElementType.Collection));
-            buttonContainers.Add(new RadialMenuButtonContainer("ms-appx:///Assets/new icons/tools.png",
-               NusysConstants.ElementType.Tools));
+            
 
-            //_buttons[1].Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/recording.png"));
-            //_addTextNodeButton.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/text.png"));
-            //_addCollectionNodeButton.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/collection.png"));
-            //_addToolNodeButton.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/tools.png"));
+          
 
 
             _radialMenuButtons = new RadialMenuButtons(this, Canvas, buttonContainers)
@@ -126,14 +120,37 @@ namespace NuSysApp
                 
         }
 
+
         private async void RadialMenuOnDragCompleted(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             if (!_movable)
             {
-                _radialMenuButtons.IsVisible = false;
-                await StaticServerCalls.AddElementToWorkSpace(pointer.CurrentPoint, NusysConstants.ElementType.Text).ConfigureAwait(false);
+
+
+                //await StaticServerCalls.AddElementToWorkSpace(pointer.CurrentPoint, NusysConstants.ElementType.Text).ConfigureAwait(false);
+                var thing = this.HitTest(pointer.CurrentPoint);
+                var casted = thing?.Parent as RadialMenuButtons;
+                if (casted != null && thing != this && thing != null)
+                {
+                    //thing.IsVisible = false;
+                    _radialMenuButtons.getActionFromShape(thing as RectangleUIElement).Invoke(this.Transform.LocalPosition);
+                    //_selectedHighlight.IsVisible = true;
+                   // _selectedHighlight.IsVisible = true;
+                   // _selectedHighlight.Transform.LocalPosition = new Vector2(thing.Transform.Parent.LocalPosition.X - 20, thing.Transform.Parent.LocalPosition.Y - 3); //only transforms, visible doesn't work?
+
+                }
+                else
+                {
+                   // _selectedHighlight.IsVisible = false;
+
+                    //_selectedHighlight.Transform.LocalPosition = new Vector2(-10000,-10000); //ector2(thing.Transform.Parent.LocalPosition.X, thing.Transform.Parent.LocalPosition.Y);
+
+                }
+                _selectedHighlight.IsVisible = false;
                 IsVisible = false;
                 //System.Diagnostics.Debug.WriteLine(item.type);
+                _radialMenuButtons.IsVisible = false;
+
             }
         }
 
@@ -146,6 +163,8 @@ namespace NuSysApp
             
         }
 
+    
+
         private void RadialMenuOnDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             //if (_movable)
@@ -153,33 +172,45 @@ namespace NuSysApp
             //Transform.LocalPosition = _initialDragPosition + pointer.Delta;
             
             //
-            var x = pointer.CurrentPoint.X - _initialDragPosition.X;
-            var y = pointer.CurrentPoint.Y - _initialDragPosition.Y;
-            _highlight.IsVisible = false;
-            _highlight.Transform.LocalPosition = new Vector2(x, y);
+            //var x = pointer.CurrentPoint.X - _initialDragPosition.X;
+            //var y = pointer.CurrentPoint.Y - _initialDragPosition.Y;
+            //_highlight.IsVisible = false;
+            //_highlight.Transform.LocalPosition = new Vector2(x, y);
 
-            var distance = DistanceFromPoints(x, y, 50, 50);
-            if (distance > 100 && distance < 150)
+            //var distance = DistanceFromPoints(x, y, 50, 50);
+            //if (distance > 100 && distance < 150)
+            //{
+
+            //    //if (AngleFromPoints(50, 50, x, y) < 3.14 / 2)
+            //    //{
+            //        _highlight.IsVisible = true;
+
+            //        var centerX = 0;
+            //        var centerY = 0;
+            //        var radius = 120;
+            //        var angle = AngleFromPoints(50,50,x,y);
+            //        _highlight.Transform.LocalPosition = new Vector2((float)(centerX + Math.Cos(angle) * radius), (float)(centerY + Math.Sin(angle) * radius));
+
+            //   // }
+            //}
+
+
+            var thing = this.HitTest(pointer.CurrentPoint);
+            var casted = thing?.Parent as RadialMenuButtons;
+            if (casted != null && thing != this && thing != null)
             {
+                //thing.IsVisible = false;
+                //_selectedHighlight.IsVisible = true;
+                _selectedHighlight.IsVisible = true;
+                _selectedHighlight.Transform.LocalPosition = new Vector2(thing.Transform.Parent.LocalPosition.X - 20, thing.Transform.Parent.LocalPosition.Y-3); //only transforms, visible doesn't work?
 
-                //if (AngleFromPoints(50, 50, x, y) < 3.14 / 2)
-                //{
-                    _highlight.IsVisible = true;
+            } else
+            {
+                _selectedHighlight.IsVisible = false;
 
-                    var centerX = 0;
-                    var centerY = 0;
-                    var radius = 120;
-                    var angle = AngleFromPoints(50,50,x,y);
-                    _highlight.Transform.LocalPosition = new Vector2((float)(centerX + Math.Cos(angle) * radius), (float)(centerY + Math.Sin(angle) * radius));
+                //_selectedHighlight.Transform.LocalPosition = new Vector2(-10000,-10000); //ector2(thing.Transform.Parent.LocalPosition.X, thing.Transform.Parent.LocalPosition.Y);
 
-               // }
             }
-            
-            /*var thing = this.HitTest(pointer.CurrentPoint);
-            if (thing != this && thing != null)
-            {
-                thing.IsVisible = false;
-            }*/
             /*
             for (var i = 0; i < 8; i++)
             {

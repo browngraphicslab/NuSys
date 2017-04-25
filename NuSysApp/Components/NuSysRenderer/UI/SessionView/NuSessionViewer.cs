@@ -173,7 +173,27 @@ namespace NuSysApp
             AddChild(_tapRect);
             _tapRect.DoubleTapped += TapRectOnDoubleTapped;
 
-            _radialMenu = new RadialMenu(this, canvas)
+
+            Action<Vector2> textAction = (Vector2 position) => StaticServerCalls.AddElementToWorkSpace(position, NusysConstants.ElementType.Text).ConfigureAwait(false);
+            Action<Vector2> recordingAction = (Vector2 position) => StaticServerCalls.AddElementToWorkSpace(position, NusysConstants.ElementType.Recording).ConfigureAwait(false);
+
+            Action<Vector2> collectionAction = (Vector2 position) => StaticServerCalls.AddElementToWorkSpace(position, NusysConstants.ElementType.Collection).ConfigureAwait(false);
+
+            Action<Vector2> toolsAction = (Vector2 position) => StaticServerCalls.AddElementToWorkSpace(position, NusysConstants.ElementType.Tools).ConfigureAwait(false);
+
+
+            var buttonContainers = new List<RadialMenuButtonContainer>();
+            buttonContainers.Add(new RadialMenuButtonContainer("ms-appx:///Assets/new icons/recording.png",
+                NusysConstants.ElementType.Recording, recordingAction));
+
+            buttonContainers.Add(new RadialMenuButtonContainer("ms-appx:///Assets/new icons/text.png",
+               NusysConstants.ElementType.Text, textAction));
+            buttonContainers.Add(new RadialMenuButtonContainer("ms-appx:///Assets/new icons/collection.png",
+               NusysConstants.ElementType.Collection, collectionAction));
+            buttonContainers.Add(new RadialMenuButtonContainer("ms-appx:///Assets/new icons/tools.png",
+               NusysConstants.ElementType.Tools, toolsAction));
+
+            _radialMenu = new RadialMenu(this, canvas, buttonContainers)
             {
                 IsVisible = false
             };

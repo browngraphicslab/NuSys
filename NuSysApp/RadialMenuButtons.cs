@@ -45,9 +45,11 @@ namespace NuSysApp.NusysRenderer
         /// </summary>
         private List<ButtonUIElement> _menuButtons;
 
+        private Dictionary<RectangleUIElement, Action<Vector2>> _dictionary;
 
         public RadialMenuButtons(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, List<RadialMenuButtonContainer> buttonContainers) : base(parent, resourceCreator)
         {
+            _dictionary = new Dictionary<RectangleUIElement, Action<Vector2>>();
             _buttons = new List<ButtonUIElement>();
             _buttonInfo = new List<RadialMenuButtonContainer>();
             _dragImages = new List<CanvasBitmap>();
@@ -62,7 +64,10 @@ namespace NuSysApp.NusysRenderer
 
             for (var i = 0; i < buttonContainers.Count; i++)
             {
-                var button = new TransparentButtonUIElement(this, resourceCreator, UIDefaults.PrimaryStyle, buttonContainers[i].Type.ToString());
+                var rectangle = new RectangleUIElement(this, resourceCreator);
+                var button = new TransparentButtonUIElement(this, resourceCreator, rectangle, UIDefaults.PrimaryStyle, buttonContainers[i].Type.ToString());
+                //var button = new ButtonUIElement(this, resourceCreator);
+                _dictionary.Add(rectangle, buttonContainers[i].Action);
                 AddChild(button);
                 _buttons.Add(button);
             }
@@ -76,9 +81,9 @@ namespace NuSysApp.NusysRenderer
             // add each button the the stack layout manager and then add dragging and drag completed methods
             foreach (var button in _buttons)
             {
-                button.Dragged += MenuButton_OnDragged;
-                button.DragCompleted += MenuButton_DragCompleted;
-                button.DragStarted += MenuButton_DragStarted;
+                //button.Dragged += MenuButton_OnDragged;
+                //button.DragCompleted += MenuButton_DragCompleted;
+                //button.DragStarted += MenuButton_DragStarted;
             }
         }
 
@@ -120,14 +125,19 @@ namespace NuSysApp.NusysRenderer
             base.Load();
         }
 
+        public Action<Vector2> getActionFromShape(RectangleUIElement shape)
+        {
+            return _dictionary[shape];
+               // _flyOutItemToTappedEvent[item as ButtonUIElement]
+        }
 
         public override void Dispose()
         {
             foreach (var button in _menuButtons)
             {
-                button.Dragged -= MenuButton_OnDragged;
+                //button.Dragged -= MenuButton_OnDragged;
                 button.DragCompleted -= MenuButton_DragCompleted;
-                button.DragStarted -= MenuButton_DragStarted;
+                //button.DragStarted -= MenuButton_DragStarted;
             }
             base.Dispose();
         }
@@ -152,10 +162,16 @@ namespace NuSysApp.NusysRenderer
         private async void MenuButton_DragCompleted(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
         {
             // reset the visibility of the drag rect
-            _dragRect.IsVisible = false;
+            //_dragRect.IsVisible = false;
+            var rect = new RectangleUIElement(this, Canvas)
+            {
+                Width = 1000,
+                Height = 1000
+            };
+            AddChild(rect);
 
             // Add the element at the dropped location          
-            await StaticServerCalls.AddElementToWorkSpace(pointer.CurrentPoint, _elementType).ConfigureAwait(false);
+            //await StaticServerCalls.AddElementToWorkSpace(pointer.CurrentPoint, _elementType).ConfigureAwait(false);
 
         }
 
