@@ -88,6 +88,21 @@ namespace NuSysApp
             vm.AtomViewList.CollectionChanged += OnElementsChanged;
             vm.Controller.LibraryElementController.ContentDataController.ContentDataUpdated += ContentDataControllerOnContentDataUpdated;
             UpdateShapeStatus();
+
+            //Brings up radial menu on double tap
+            DoubleTapped += CollectionRenderItemOnDoubleTapped;
+        }
+
+
+        private void CollectionRenderItemOnDoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            //Places the radial menu at the position of the double tap
+            var point = pointer.CurrentPoint;
+            SessionController.Instance.NuSessionView.RadialMenu.Transform.LocalPosition =
+                        new Vector2(point.X - SessionController.Instance.NuSessionView.RadialMenu.Width / 2, point.Y - SessionController.Instance.NuSessionView.RadialMenu.Height / 2);
+
+            //Makes radial menu visible
+            SessionController.Instance.NuSessionView.RadialMenu.IsVisible = true;
         }
 
 
@@ -178,6 +193,8 @@ namespace NuSysApp
 
                 base.Dispose();
             });
+
+            DoubleTapped -= CollectionRenderItemOnDoubleTapped;
         }
 
         public async override Task Load()
@@ -553,6 +570,7 @@ namespace NuSysApp
             });
         }
 
+        
         public Matrix3x2 GetCameraTransform()
         {
             return Win2dUtil.Invert(Camera.C) * Camera.S * Camera.C * Camera.T;

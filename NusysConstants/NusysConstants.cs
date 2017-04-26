@@ -1874,7 +1874,7 @@ namespace NusysIntermediate
         {
 
             // Basic Types
-            Text, Image, Word, Powerpoint, Collection, PDF, Audio, Video, Tag, Web, Area, Link, Recording,
+            Text, Image, Word, Powerpoint, Collection, PDF, Audio, Video, Tag, Web, Area, Link, Recording, OpenLibrary, //add?
 
             // weird type that possibly shouldn't be here
             Tools

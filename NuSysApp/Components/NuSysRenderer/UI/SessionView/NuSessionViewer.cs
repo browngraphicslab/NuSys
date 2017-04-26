@@ -25,16 +25,9 @@ namespace NuSysApp
     public class NuSessionViewer : RectangleUIElement
     {
         /// <summary>
-        /// The floating menu has the library and the add elements to workspace buttons
-        /// </summary>
-        private FloatingMenu _floatingMenu;
-
-        /// <summary>
         /// The radial menu has the library and the add elements to workspace buttons
         /// </summary>
-        private RadialMenu _radialMenu;
-
-        private RectangleUIElement _tapRect;
+        public RadialMenu RadialMenu;
 
         /// <summary>
         /// The chat button shows the chatbox when clicked
@@ -158,47 +151,35 @@ namespace NuSysApp
             Background = Colors.Transparent;
             SessionController.Instance.NuSessionView = this; // set the session controller's getter for the NuSessionView
 
-            _floatingMenu = new FloatingMenu(this, canvas)
-            {
-                IsVisible = false
-            };
-            AddChild(_floatingMenu);
+            
 
-            _tapRect = new RectangleUIElement(this, canvas)
-            {
-                Background = Colors.Transparent,
-                Width = 5000,
-                Height = 5000
-            };
-            AddChild(_tapRect);
-            _tapRect.DoubleTapped += TapRectOnDoubleTapped;
-
-
+            //Define the actions for the 5 buttons in the radial menu
             Action<Vector2> textAction = (Vector2 position) => StaticServerCalls.AddElementToWorkSpace(position, NusysConstants.ElementType.Text).ConfigureAwait(false);
             Action<Vector2> recordingAction = (Vector2 position) => StaticServerCalls.AddElementToWorkSpace(position, NusysConstants.ElementType.Recording).ConfigureAwait(false);
-
             Action<Vector2> collectionAction = (Vector2 position) => StaticServerCalls.AddElementToWorkSpace(position, NusysConstants.ElementType.Collection).ConfigureAwait(false);
-
             Action<Vector2> toolsAction = (Vector2 position) => StaticServerCalls.AddElementToWorkSpace(position, NusysConstants.ElementType.Tools).ConfigureAwait(false);
+            Action<Vector2> libraryAction = (Vector2 position) => SessionController.Instance.NuSessionView.Library.IsVisible = !SessionController.Instance.NuSessionView.Library.IsVisible;
 
-
+            //Make a list of button containers which contain the information for the buttons
             var buttonContainers = new List<RadialMenuButtonContainer>();
+
             buttonContainers.Add(new RadialMenuButtonContainer("ms-appx:///Assets/new icons/recording.png",
                 NusysConstants.ElementType.Recording, recordingAction));
-
             buttonContainers.Add(new RadialMenuButtonContainer("ms-appx:///Assets/new icons/text.png",
                NusysConstants.ElementType.Text, textAction));
             buttonContainers.Add(new RadialMenuButtonContainer("ms-appx:///Assets/new icons/collection.png",
                NusysConstants.ElementType.Collection, collectionAction));
             buttonContainers.Add(new RadialMenuButtonContainer("ms-appx:///Assets/new icons/tools.png",
                NusysConstants.ElementType.Tools, toolsAction));
+            buttonContainers.Add(new RadialMenuButtonContainer("ms-appx:///Assets/collection main menu.png",
+               NusysConstants.ElementType.OpenLibrary, libraryAction));
 
-            _radialMenu = new RadialMenu(this, canvas, buttonContainers)
+            RadialMenu = new RadialMenu(this, canvas, buttonContainers)
             {
                 IsVisible = false
             };
-            AddChild(_radialMenu);
 
+            AddChild(RadialMenu); //The Radial Menu gets positioned with double taps from the CollectionRenderItem class
 
             SessionController.Instance.EnterNewCollectionCompleted += InstanceOnEnterNewCollectionCompleted;
             
@@ -370,9 +351,9 @@ namespace NuSysApp
         private void TapRectOnDoubleTapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             var point = pointer.CurrentPoint;
-            _radialMenu.Transform.LocalPosition =
-                        new Vector2(point.X - _radialMenu.Width/2, point.Y - _radialMenu.Height/2);
-            _radialMenu.IsVisible = true;
+            RadialMenu.Transform.LocalPosition =
+                        new Vector2(point.X - RadialMenu.Width/2, point.Y - RadialMenu.Height/2);
+            RadialMenu.IsVisible = true;
 
         }
 
@@ -430,7 +411,6 @@ namespace NuSysApp
             switch (mode)
             {
                 case Options.PanZoomOnly:
-                    _floatingMenu.IsVisible = true;
                     if (!SessionController.Instance.SessionSettings.BreadCrumbsDocked)
                     {
                         TrailBox.IsVisible = _backToWaitingRoom.IsVisible;
@@ -443,7 +423,6 @@ namespace NuSysApp
                     break;
                 case Options.Presentation:
                     _detailViewer.IsVisible = false;
-                    _floatingMenu.IsVisible = false;
                     if (!SessionController.Instance.SessionSettings.BreadCrumbsDocked)
                     {
                         TrailBox.IsVisible = _backToWaitingRoom.IsVisible;
@@ -595,8 +574,6 @@ namespace NuSysApp
             _readOnlyMetadataWindow.IsVisible = true;
             _detailViewer.HideDetailView();
             _detailViewer.DisableDetailView();
-            _floatingMenu.HideFloatingMenu();
-            _floatingMenu.IsVisible = false;
             _readOnlyLinksWindow.Transform.LocalPosition = new Vector2(SessionController.Instance.NuSessionView.Width - _readOnlyLinksWindow.Width - 20, 100);
             SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned += CanvasPanned;
             SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CameraOnCentered += CameraCenteredOnElement;
@@ -615,7 +592,6 @@ namespace NuSysApp
             _readOnlyAliasesWindow.IsVisible = false;
             _readOnlyMetadataWindow.IsVisible = false;
             _detailViewer.EnableDetailView();
-            _floatingMenu.ShowFloatingMenu();
 
             SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned -= CanvasPanned;
             SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CameraOnCentered -= CameraCenteredOnElement;
@@ -655,7 +631,6 @@ namespace NuSysApp
             Width = (float) e.NewSize.Width;
             Height = (float) e.NewSize.Height;
 
-            _floatingMenu.Transform.LocalPosition = new Vector2(Width/4 - _floatingMenu.Width/2, Height/4 - _floatingMenu.Height/2);
             //_currCollDetailViewButton.Transform.LocalPosition = new Vector2(Width - _currCollDetailViewButton.Width - 10, 10);
             _chatButton.Transform.LocalPosition = new Vector2(10, Height - _chatButton.Height - 10);
             _chatButtonNotifications.Transform.LocalPosition = new Vector2((float) (_chatButton.Transform.LocalX + _chatButton.Width/2 + _chatButton.Width/2 * Math.Cos(.25 * Math.PI)), (float) (_chatButton.Transform.LocalY + _chatButton.Height/2 - _chatButton.Height/2 * Math.Sin(.25 * Math.PI) - _chatButtonNotifications.Height));
@@ -726,7 +701,6 @@ namespace NuSysApp
                 Library = new LibraryListUIElement(this, Canvas);
                 Library.KeepAspectRatio = false;
                 AddChild(Library);
-                Library.Transform.LocalPosition = new Vector2(_floatingMenu.Transform.LocalX + _floatingMenu.Width, _floatingMenu.Transform.LocalY + _floatingMenu.Height);
             }
             Library.IsVisible = false;
 
@@ -757,8 +731,6 @@ namespace NuSysApp
             SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection.CameraOnCentered -= CameraCenteredOnElement;
             SessionController.Instance.SessionView.FreeFormViewer.CanvasPanned -= TempReadOnlyCanvasPanned;
             _detailViewer.NewLibraryElementShown -= DetailViewerOnNewLibraryElementShown;
-
-            _tapRect.DoubleTapped -= TapRectOnDoubleTapped;
 
             base.Dispose();
         }
