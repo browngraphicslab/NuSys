@@ -49,7 +49,6 @@ namespace NuSysApp
 
         public bool HoldsList { get; set; }
         public CollectionListViewUIElement Lib { get; set; }
-        private CollectionRenderItem _prevCollectionRenderItem;
 
         public ElementSelectionRenderItem(ElementCollectionViewModel vm, BaseRenderItem parent, CanvasAnimatedControl resourceCreator) : base(parent, resourceCreator)
         {
