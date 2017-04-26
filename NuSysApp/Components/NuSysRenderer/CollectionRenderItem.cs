@@ -22,6 +22,7 @@ using Microsoft.Graphics.Canvas.UI.Xaml;
 using MyToolkit.Mathematics;
 using MyToolkit.Utilities;
 using NusysIntermediate;
+using NuSysApp.Components.NuSysRenderer.UI.ListView;
 using Wintellect.PowerCollections;
 using WinRTXamlToolkit.Tools;
 
@@ -63,6 +64,7 @@ namespace NuSysApp
         }
 
         private ShapedStatus _shapeStatus;
+
 
         public CollectionRenderItem(ElementCollectionViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi canvas, bool interactionEnabled = false) : base(vm, parent, canvas)
         {
@@ -514,6 +516,8 @@ namespace NuSysApp
 
 
         }
+
+       
 
         public override void CreateResources()
         {

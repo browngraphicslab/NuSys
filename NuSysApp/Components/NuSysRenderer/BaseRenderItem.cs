@@ -181,9 +181,6 @@ namespace NuSysApp
 
         public virtual BaseRenderItem HitTest(Vector2 screenPoint)
         {
-
-
-
             if (!IsVisible)
                 return null;
 

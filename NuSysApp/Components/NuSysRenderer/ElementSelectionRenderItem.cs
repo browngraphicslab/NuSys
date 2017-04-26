@@ -13,6 +13,7 @@ using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using NusysIntermediate;
+using NuSysApp.Components.NuSysRenderer.UI.ListView;
 using WinRTXamlToolkit.IO.Serialization;
 
 
@@ -29,6 +30,9 @@ namespace NuSysApp
         public event ElementSelectionSizeChanged ElementSelectionRenderItemSizeChanged;
         public NodeMenuButtonRenderItem BtnDelete;
         public NodeMenuButtonRenderItem BtnPresent;
+
+        public NodeMenuButtonRenderItem BtnList;
+
         public NodeMenuButtonRenderItem BtnGroup;
         public NodeMenuButtonRenderItem BtnEnterCollection;
         public NodeMenuButtonRenderItem BtnLayoutTool;
@@ -48,12 +52,19 @@ namespace NuSysApp
         private bool _isSinglePdfSelected;
         private bool _isSingleCollectionSelected;
 
+        public bool HoldsList { get; set; }
+        public CollectionListViewUIElement Lib { get; set; }
+
         public ElementSelectionRenderItem(ElementCollectionViewModel vm, BaseRenderItem parent, CanvasAnimatedControl resourceCreator) : base(parent, resourceCreator)
         {
             BtnDelete = new NodeMenuButtonRenderItem("ms-appx:///Assets/new icons/trash can white.png", parent, resourceCreator);
             BtnDelete.Label = "delete";
             BtnPresent = new NodeMenuButtonRenderItem("ms-appx:///Assets/new icons/present white.png", parent, resourceCreator);
             BtnPresent.Label = "present";
+
+            BtnList = new NodeMenuButtonRenderItem("ms-appx:///Assets/new icons/right arrow.png", parent, resourceCreator);
+            BtnList.Label = "list";
+
             BtnGroup = new NodeMenuButtonRenderItem("ms-appx:///Assets/new icons/collection white.png", parent, resourceCreator);
             BtnGroup.Label = "collection";
             BtnEnterCollection = new NodeMenuButtonRenderItem("ms-appx:///Assets/new icons/enter collection white.png", parent, resourceCreator);
@@ -65,19 +76,22 @@ namespace NuSysApp
 
             BtnPdfLeft = new PdfPageButtonRenderItem(-1, parent, resourceCreator);
             BtnPdfRight = new PdfPageButtonRenderItem(1, parent, resourceCreator);
+            
+            // add resizers on corners
             BottomRightResizer = new NodeResizerRenderItem(parent, resourceCreator, NodeResizerRenderItem.ResizerPosition.BottomRight);
             BottomLeftResizer= new NodeResizerRenderItem(parent, resourceCreator, NodeResizerRenderItem.ResizerPosition.BottomLeft);
             TopLeftResizer= new NodeResizerRenderItem(parent, resourceCreator, NodeResizerRenderItem.ResizerPosition.TopLeft);
             TopRightResizer = new NodeResizerRenderItem(parent, resourceCreator, NodeResizerRenderItem.ResizerPosition.TopRight);
             SetUpToolButton();
 
-
+            SetUpToolButton();
 
             Buttons = new List<BaseRenderItem>
             {
                 BtnDelete,
                 BtnGroup,
                 BtnPresent,
+                BtnList,
                 BtnLayoutTool,
                 BtnEditTags,
                 BtnPdfLeft,
@@ -89,7 +103,7 @@ namespace NuSysApp
                 BottomLeftResizer,
                 BtnTools
             };
-            _menuButtons = new List<BaseRenderItem> { BtnDelete, BtnGroup, BtnPresent, BtnLayoutTool, BtnEditTags, BtnEnterCollection, BtnTools };
+            _menuButtons = new List<BaseRenderItem> { BtnDelete, BtnGroup, BtnPresent, BtnList, BtnLayoutTool, BtnEditTags, BtnEnterCollection, BtnTools };
 
             IsHitTestVisible = false;
             IsChildrenHitTestVisible = true;
@@ -213,6 +227,11 @@ namespace NuSysApp
             BtnEnterCollection.IsVisible = _isSingleCollectionSelected;
             BtnTools.IsVisible = _isSingleCollectionSelected;
 
+            //CollectionListView and associated button showing or not:
+            BtnList.IsVisible = _isSingleCollectionSelected;
+
+            HoldsList = false;
+            RemoveLibrary();
 
             BtnDelete.IsVisible = !SessionController.IsReadonly;
             BtnGroup.IsVisible = !SessionController.IsReadonly;
@@ -221,6 +240,74 @@ namespace NuSysApp
             BottomRightResizer.IsVisible = !SessionController.IsReadonly;
 
             IsDirty = true;
+        }
+
+        /// <summary>
+        /// Created to manage adding a library of collection's elements to the ElementSelectionRect.
+        /// </summary>
+        /// <param name="lib"></param>
+        public void AddLibrary()
+        {
+            Lib = new CollectionListViewUIElement((CollectionRenderItem)_selectedItems[0], ResourceCreator);
+            AddChild(Lib);
+        }
+
+        private void SetLibDimensions()
+        {
+            if (_screenRect.Width < 200 || _screenRect.Height < 200)
+            {
+                RemoveLibrary();
+                HoldsList = false;
+            }
+            else
+            {
+                Lib.IsVisible = true;
+                Lib.Width = (float) _selectionBoundingRect.Width + 2;
+                Lib.Height = (float) _selectionBoundingRect.Height;
+                Lib.Transform.LocalPosition = new Vector2((float)_screenRect.X + 14, (float)(_screenRect.Y + 15));
+            }
+        }
+
+
+        private void UpdateListButton()
+        {
+            if (_screenRect.Width < 200 || _screenRect.Height < 200 || !_isSingleCollectionSelected)
+            {
+                BtnList.IsVisible = false;
+            }
+            else if (_isSingleCollectionSelected && !BtnList.IsVisible)
+            {
+                BtnList.IsVisible = true;
+            }
+        }
+
+        /// <summary>
+        /// Updates the CollectionListViewUIElement. If a collection is not selected or this does not hold a list then the library will be removed.
+        /// Otherwise, if the CollectionListViewUIElement is null it will be displayed.
+        /// Any existing CollectionListViewUIElement's dimensions will be updated.
+        /// </summary>
+        public void UpdateLib()
+        {
+            if (!_isSingleCollectionSelected || !HoldsList)
+            {
+                RemoveLibrary();
+                return;
+            }
+            if (Lib == null)
+            {
+                AddLibrary();
+            }
+            SetLibDimensions();   
+        }
+
+        /// <summary>
+        /// If the CollectionListViewUIElment is not null, it will be removed and then nulled.
+        /// </summary>
+        public void RemoveLibrary()
+        {
+            if (Lib == null) return;
+            RemoveChild(Lib);
+            Lib = null;
         }
 
 
@@ -233,6 +320,7 @@ namespace NuSysApp
         {
             IsDirty = true;
         }
+
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
@@ -247,6 +335,9 @@ namespace NuSysApp
                 IsVisible = false;
                 return;
             }
+
+            UpdateLib();
+            UpdateListButton();
 
             // get the bounding boxes of all the selected items
             var boundingBoxes = _selectedItems.ToList().Select(elem => elem.GetSelectionBoundingRect()).ToList();
@@ -265,9 +356,11 @@ namespace NuSysApp
             _screenRect.Width += margin * 2;
             _screenRect.Height += margin * 2;
 
+
             Transform.LocalPosition = new Vector2((float)_screenRect.X, (float)_screenRect.Y);
             _screenRect.X = 0;
             _screenRect.Y = 0;
+            
 
 
             BottomRightResizer.Transform.LocalPosition = new Vector2((float)(_screenRect.Right - 30 + 1.5f), (float)(_screenRect.Bottom - 30 + 1.5f));
@@ -348,9 +441,7 @@ namespace NuSysApp
             var old = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
             ds.DrawRectangle(_screenRect, Colors.SlateGray, 3f, new CanvasStrokeStyle { DashCap = CanvasCapStyle.Flat, DashStyle = CanvasDashStyle.Dash, DashOffset = 10f });
-
-
-
+            
             base.Draw(ds);
 
             ds.Transform = old;
