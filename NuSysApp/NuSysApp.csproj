@@ -117,6 +117,7 @@
     <Content Include="Assets\exploration mode dark.png" />
     <Content Include="Assets\filter.png" />
     <Content Include="Assets\add from file.png" />
+    <Content Include="Assets\horse.jpg" />
     <Content Include="Assets\layout_icons\grid_layout_icon.png" />
     <Content Include="Assets\layout_icons\horizontal_layout_icon.png" />
     <Content Include="Assets\layout_icons\layout_icon.png" />
@@ -423,6 +424,7 @@
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoContent.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoPage.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewWordPage.cs" />
+    <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\ThumbnailUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BorderType.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ListView\LibraryListImageColumn.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ListView\ListImageColumn.cs" />
