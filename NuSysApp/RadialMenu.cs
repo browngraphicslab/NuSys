@@ -53,7 +53,7 @@ namespace NuSysApp
             {
                 Width = 90,
                 Height = 90,
-                Background = Colors.SkyBlue
+                Background = Colors.AliceBlue
                 //IsVisible = false
             };
             _selectedHighlight.IsVisible = false;
