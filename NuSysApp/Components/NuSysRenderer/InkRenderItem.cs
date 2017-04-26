@@ -159,7 +159,7 @@ namespace NuSysApp
             }
             LatestStroke = CurrentInkStrokeWithEndpoint(e);
 
-            if (_isEraser)
+            if (_isEraser)                                                                      // KBTODO eraser may erase the strokes in "chunks" since i'm dividing up the lines lol ... 
             {
                 var allStrokes = _inkManager.GetStrokes().ToArray();
                 var thisStroke = _currentInkPoints.Select(p => p.Position);
@@ -227,8 +227,6 @@ namespace NuSysApp
             */
             
             _wetStrokesToDraw.Clear();
-            //Debug.WriteLine("clared ??????????? " + _wetStrokesToDraw.Count);
-
 
             _needsDryStrokesUpdate = true;
             _needsWetStrokeUpdate = true;
@@ -349,15 +347,16 @@ namespace NuSysApp
                     s.DrawingAttributes = GetDrawingAttributes(Colors.DarkRed, InkSize);
 
                 // IMPROVEINK CHANGE ////////////////                                  ///////////////////////////////////////////////////////////////////////////////////////////// 
-                const int threshold = 200; // 5000 ? 
+                const int threshold = 8000; // 8000 ? 200                               // KBTODO this number depends on the device, something to think about 
                 if (_currentInkPoints.Count >= threshold)
                 {
                     _wetStrokesToDraw.Add(s);
                     InkPoint lastPoint = _currentInkPoints.Last(); 
                     _currentInkPoints.Clear();                                                                      // KBTODO check if there is anything else to reset 
-                    _currentInkPoints.Add(lastPoint); 
+                    _currentInkPoints.Add(lastPoint);
                     //ds.DrawInk(_wetStrokesToDraw);
-                   // return; 
+                    // return; 
+                    Debug.WriteLine("new");                                                                             // KBTODO erase later 
                 }
                 var toDraw = new List<InkStroke>( _wetStrokesToDraw );
                 toDraw.Add(s);
