@@ -521,8 +521,22 @@ namespace NuSysApp
                     {
                         rect.Image = await LoadCanvasBitmap(controller.SmallIconUri);
                         Debug.Assert(rect.Image is CanvasBitmap);
-                        rect.Width = (float) (rect.Image as CanvasBitmap).SizeInPixels.Width/ (rect.Image as CanvasBitmap).SizeInPixels.Height * 100;
-                        rect.Height = 100;
+                        rect.RegionBounds = NuSysUtils.GetRegionBounds(controller.LibraryElementModel);
+
+                        var imgWidth = (rect.Image as CanvasBitmap).SizeInPixels.Width;
+                        var imgHeight = (rect.Image as CanvasBitmap).SizeInPixels.Height;
+                        if (rect.RegionBounds == null)
+                        {
+                            rect.Width = imgWidth/imgHeight*100;
+                            rect.Height = 100;
+                        }
+                        else
+                        {
+                            
+                            rect.Width = (float) rect.RegionBounds.Value.Width * imgWidth/ ((float)rect.RegionBounds.Value.Height *imgHeight) * 100;
+                            rect.Height = 100;
+                        }
+
 
 
                     });
@@ -533,6 +547,7 @@ namespace NuSysApp
                 }
             }
         }
+
 
         private async Task<ICanvasImage> LoadCanvasBitmap(Uri smallIconURI)
         {

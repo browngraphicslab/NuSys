@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
+using NusysIntermediate;
 
 namespace NuSysApp
 {
@@ -98,6 +99,7 @@ namespace NuSysApp
             }
 
         }
+
 
         public override async void UpdateColumnCellFromItem(T item, RectangleUIElement rectangleUIElement, bool isSelected)
         {

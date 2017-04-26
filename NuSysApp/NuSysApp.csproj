@@ -424,7 +424,6 @@
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoContent.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewVideoPage.cs" />
     <Compile Include="Components\NuSysRenderer\DetailView\DetailViewWordPage.cs" />
-    <Compile Include="Components\NuSysRenderer\UI\BaseUIElements\ThumbnailUIElement.cs" />
     <Compile Include="Components\NuSysRenderer\UI\BorderType.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ListView\LibraryListImageColumn.cs" />
     <Compile Include="Components\NuSysRenderer\UI\ListView\ListImageColumn.cs" />
@@ -939,6 +938,7 @@
     <Compile Include="Util\MathUtil.cs" />
     <Compile Include="Util\MediaUtil.cs" />
     <Compile Include="Util\MetadatableType.cs" />
+    <Compile Include="Util\NuSysUtils.cs" />
     <Compile Include="Util\Point2d.cs" />
     <Compile Include="Util\PresentationMode.cs" />
     <Compile Include="Util\RectanglePoints.cs" />

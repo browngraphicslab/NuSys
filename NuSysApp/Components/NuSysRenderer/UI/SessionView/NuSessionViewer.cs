@@ -144,8 +144,7 @@ namespace NuSysApp
         /// the controller of the current collection
         /// </summary>
         private LibraryElementController _currController;
-        private ThumbnailUIElement _a1;
-        private ThumbnailUIElement _a2;
+
 
 
         public NuSessionViewer(BaseRenderItem parent, CanvasAnimatedControl canvas) : base(parent, canvas)
@@ -203,28 +202,6 @@ namespace NuSysApp
             AddChild(_chatButtonNotifications);
 
 
-            /// START OF TESTING CODE
-            /// IF YOU ARE READING THIS, YOU SHOULDN'T BE
-
-            _a1 = new ThumbnailUIElement(this, Canvas)
-            {
-                Width = 800,
-                Height = 300
-            };
-            _a2 = new ThumbnailUIElement(this, Canvas)
-            {
-                Width = 800,
-                Height = 300
-            };
-            _a2.RegionBounds = new Rect(0,0,0.5,0.5);
-            _a1.Transform.LocalPosition = new Vector2(200, 600);
-            _a2.Transform.LocalPosition = new Vector2(_a1.Width + 300, 600);
-
-
-            AddChild(_a1);
-            AddChild(_a2);
-
-            /// END OF TESTING CODE
 
             _snapshotButton = new EllipseButtonUIElement(this, canvas, UIDefaults.AccentStyle, "snapshot");
             AddChild(_snapshotButton);
@@ -341,40 +318,6 @@ namespace NuSysApp
             _settingsButton.Tapped += SettingsButtonOnTapped;
 
             SessionController.Instance.OnModeChanged += Instance_OnModeChanged;
-        }
-
-        private async void LoadImagesRemoveThisMethodLater(RectangleUIElement a1, RectangleUIElement a2)
-        {
-            a1.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/horse.jpg"));
-            a2.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/horse.jpg"));
-            UpdateImageRatiosRemoveLater(a1);
-            UpdateImageRatiosRemoveLater(a2);
-        }
-
-
-        private void UpdateImageRatiosRemoveLater(RectangleUIElement cell)
-        {
-            var imgBounds = cell?.Image?.GetBounds(cell.ResourceCreator);
-
-
-            var cellHeight = cell.Height;
-            var cellWidth = cell.Width;
-            if (imgBounds == null)
-            {
-                return;
-            }
-            var imgWidth = imgBounds?.Width;
-            var imgHeight = imgBounds?.Height;
-
-            if (imgWidth < 0 || imgHeight < 0)
-            {
-                return;
-            }
-
-            var newWidth = imgWidth / imgHeight * cellHeight / cellWidth;
-            var newHeight = 1;
-
-            cell.ImageBounds = new Rect(0.5 - newWidth.Value / 2, 0, newWidth.Value, newHeight);
         }
 
         /// <summary>
@@ -717,9 +660,6 @@ namespace NuSysApp
             _previousNode.Image = _previousNode.Image ?? await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/presentation_backward.png"));
             _currentNode.Image = _currentNode.Image ?? await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/return to node.png"));
             _exitPresentation.Image = _exitPresentation.Image ?? await MediaUtil.LoadCanvasBitmapAsync(Canvas, new Uri("ms-appx:///Assets/new icons/x white.png"));
-
-            //TODO: REMOVE THIS
-            LoadImagesRemoveThisMethodLater(_a1, _a2);
 
 
             // created here because it must be created after the create resources method is called on the main canvas animated control
