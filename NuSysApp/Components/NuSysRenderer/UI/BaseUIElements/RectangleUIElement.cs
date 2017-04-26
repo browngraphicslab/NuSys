@@ -200,10 +200,10 @@ namespace NuSysApp
             {
                 return null;
             }
-
+            //Get width and height of the image
             var imgWidth = imgBounds.Value.Width;
             var imgHeight = imgBounds.Value.Height;
-
+            //Then return the source rectangle based on the denormalized region
             return new Rect(RegionBounds.Value.X * imgWidth, RegionBounds.Value.Y * imgHeight, RegionBounds.Value.Width * imgWidth, RegionBounds.Value.Height * imgHeight);
 
         }

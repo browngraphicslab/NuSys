@@ -288,21 +288,27 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private async void _dragToCollectionButton_DragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
+            //Set rectangle's image to the proper content
             _dragRect.Image = await MediaUtil.LoadCanvasBitmapAsync(Canvas, _controller.SmallIconUri);
+            //Get width and height of the image loaded
             var imgWidth = (float) (_dragRect.Image as CanvasBitmap).SizeInPixels.Width;
             var imgHeight = (float) (_dragRect.Image as CanvasBitmap).SizeInPixels.Height;
+
+            //Default height and width (i.e., there is no region clipping) will be 100 and corresponding width, respectively.
             var width = imgWidth/imgHeight * 100;
             var height = 100;
 
+            //Set the RectangleUIElement's RegionBounds to the region of the model (if it is an image, pdf, etc)
             _dragRect.RegionBounds = NuSysUtils.GetRegionBounds(_controller.LibraryElementModel);
             if (height > 0 && width > 0)
             {
-
+                //If no region, simply set width and height
                 if (_dragRect.RegionBounds == null)
                 {
                     _dragRect.Height = height;
                     _dragRect.Width = width;
                 }
+                //Otherwise, set width and height relative to region
                 else
                 {
                     var regionBounds = _dragRect.RegionBounds.Value;
@@ -310,12 +316,13 @@ namespace NuSysApp
                     _dragRect.Height = 100f;
                 }
             }
+            //If invalid height and width, just arbitarily set to 100x100
             else
             {
                 _dragRect.Width = 100;
                 _dragRect.Height = 100;
             }
-
+            //Finally, make it show up
             _dragRect.IsVisible = true;
         }
 
