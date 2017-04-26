@@ -103,7 +103,6 @@
     <TypeScriptCompile Include="Scripts\src\util\Vector2.ts" />
     <TypeScriptCompile Include="Scripts\typings\chrome\chrome-app.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\chrome\chrome-cast.d.ts" />
-    <TypeScriptCompile Include="Scripts\typings\chrome\chrome.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\filesystem\filesystem.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\filewriter\filewriter.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
@@ -113,6 +112,10 @@
     <TypeScriptCompile Include="Scripts\src\Main.ts" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="NAudio, Version=1.8.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NAudio.1.8.0\lib\net35\NAudio.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
       <Private>True</Private>

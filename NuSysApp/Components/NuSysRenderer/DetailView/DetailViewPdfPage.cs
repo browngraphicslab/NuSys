@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
 using NusysIntermediate;
+using Windows.Foundation; 
 
 namespace NuSysApp
 {
@@ -47,7 +48,10 @@ namespace NuSysApp
         {
             var model = (PdfContentDataModel) _controller.ContentDataController.ContentDataModel;
             //var pageUrl = model.PageUrls[_content.CurrentPage];
-            SessionController.Instance.SessionView.FreeFormViewer.ShowFullScreenImage(model.PageUrls.Select(s => new Uri(s)).ToList(), _content.CurrentPage, true);
+            SessionController.Instance.SessionView.FreeFormViewer.ShowFullScreenImage(model.PageUrls.Select(s => new Uri(s)).ToList(), _content.CurrentPage, true, 
+                // Changed: CLIP 
+                new Point(_controller.ImageLibraryElementModel.NormalizedX, _controller.ImageLibraryElementModel.NormalizedY),
+                new Size(_controller.ImageLibraryElementModel.NormalizedWidth, _controller.ImageLibraryElementModel.NormalizedHeight));
         }
 
     }
