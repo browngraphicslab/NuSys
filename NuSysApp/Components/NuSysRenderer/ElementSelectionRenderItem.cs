@@ -47,9 +47,8 @@ namespace NuSysApp
         private bool _isSinglePdfSelected;
         private bool _isSingleCollectionSelected;
 
-        //public bool HoldsList { get; set; }
+        public bool HoldsList { get; set; }
         public CollectionListViewUIElement Lib { get; set; }
-        private CanvasAnimatedControl _resourceCreator;
         private CollectionRenderItem _prevCollectionRenderItem;
 
         public ElementSelectionRenderItem(ElementCollectionViewModel vm, BaseRenderItem parent, CanvasAnimatedControl resourceCreator) : base(parent, resourceCreator)
@@ -76,8 +75,6 @@ namespace NuSysApp
             Resizer = new NodeResizerRenderItem(parent, resourceCreator);
 
             SetUpToolButton();
-
-            _resourceCreator = resourceCreator;
 
             Buttons = new List<BaseRenderItem>
             {
@@ -214,13 +211,7 @@ namespace NuSysApp
 
 
             RemoveLibrary();
-            if (_prevCollectionRenderItem != null)
-                _prevCollectionRenderItem.HoldsList = false;
-            _prevCollectionRenderItem = null;
-            if (_isSingleCollectionSelected)
-            {
-                _prevCollectionRenderItem = (CollectionRenderItem)_selectedItems[0];
-            }
+            HoldsList = false;
 
 
             BtnDelete.IsVisible = !SessionController.IsReadonly;
@@ -238,12 +229,8 @@ namespace NuSysApp
         /// <param name="lib"></param>
         public void AddLibrary()
         {
-            Lib = new CollectionListViewUIElement((CollectionRenderItem)_selectedItems[0], _resourceCreator);
-            SetLibDimensions();
-            if (Lib != null)
-            {
-                AddChild(Lib);
-            }
+            Lib = new CollectionListViewUIElement((CollectionRenderItem)_selectedItems[0], ResourceCreator);
+            AddChild(Lib);
         }
 
         private void SetLibDimensions()
@@ -251,16 +238,14 @@ namespace NuSysApp
             if (_screenRect.Width < 200 || _screenRect.Height < 200)
             {
                 RemoveLibrary();
-                _prevCollectionRenderItem.HoldsList = false;
+                HoldsList = false;
             }
             else
             {
                 Lib.IsVisible = true;
                 Lib.Width = (float) _selectionBoundingRect.Width + 2;
                 Lib.Height = (float) _selectionBoundingRect.Height;
-                Lib.Transform.LocalPosition = new Vector2((float)_screenRect.X + 14, (float)(_screenRect.Y + 15 + _prevCollectionRenderItem._textLayout.DrawBounds.Height * Math.Pow(SessionController.Instance.ActiveFreeFormViewer.CameraScale, .5)));
-                Debug.WriteLine(_prevCollectionRenderItem._textLayout.DrawBounds.Height * SessionController.Instance.ActiveFreeFormViewer.CameraScale);
-                Debug.WriteLine(_prevCollectionRenderItem._textLayout.DrawBounds.Height);
+                Lib.Transform.LocalPosition = new Vector2((float)_screenRect.X + 14, (float)(_screenRect.Y + 15));
             }
         }
 
@@ -277,9 +262,14 @@ namespace NuSysApp
             }
         }
 
+        /// <summary>
+        /// Updates the CollectionListViewUIElement. If a collection is not selected or this does not hold a list then the library will be removed.
+        /// Otherwise, if the CollectionListViewUIElement is null it will be displayed.
+        /// Any existing CollectionListViewUIElement's dimensions will be updated.
+        /// </summary>
         public void UpdateLib()
         {
-            if (!_isSingleCollectionSelected || !_prevCollectionRenderItem.HoldsList)
+            if (!_isSingleCollectionSelected || !HoldsList)
             {
                 RemoveLibrary();
                 return;
@@ -288,10 +278,12 @@ namespace NuSysApp
             {
                 AddLibrary();
             }
-            SetLibDimensions();
-            
+            SetLibDimensions();   
         }
 
+        /// <summary>
+        /// If the CollectionListViewUIElment is not null, it will be removed and then nulled.
+        /// </summary>
         public void RemoveLibrary()
         {
             if (Lib == null) return;
@@ -425,9 +417,7 @@ namespace NuSysApp
             var old = ds.Transform;
             ds.Transform = Transform.LocalToScreenMatrix;
             ds.DrawRectangle(_screenRect, Colors.SlateGray, 3f, new CanvasStrokeStyle { DashCap = CanvasCapStyle.Flat, DashStyle = CanvasDashStyle.Dash, DashOffset = 10f });
-
-
-            //Lib?.Draw(ds);
+            
             base.Draw(ds);
 
             ds.Transform = old;

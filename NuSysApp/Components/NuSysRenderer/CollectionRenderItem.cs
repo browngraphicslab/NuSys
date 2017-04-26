@@ -65,8 +65,6 @@ namespace NuSysApp
 
         private ShapedStatus _shapeStatus;
 
-        public bool HoldsList { get; set; }
-        //private CollectionListViewUIElement Lib { get; set; }
 
         public CollectionRenderItem(ElementCollectionViewModel vm, CollectionRenderItem parent, ICanvasResourceCreatorWithDpi canvas, bool interactionEnabled = false) : base(vm, parent, canvas)
         {
@@ -514,8 +512,6 @@ namespace NuSysApp
                 }
             }
 
-            //Lib?.Draw(ds);
-
             base.Draw(ds);
 
 
@@ -574,10 +570,10 @@ namespace NuSysApp
 
         public override BaseRenderItem HitTest(Vector2 screenPoint)
         {
-            //if (ViewModel is FreeFormViewerViewModel)
-            //{
-            //    return this;
-            //}
+            if (ViewModel is FreeFormViewerViewModel)
+            {
+                return this;
+            }
 
             return base.HitTest(screenPoint);
         }

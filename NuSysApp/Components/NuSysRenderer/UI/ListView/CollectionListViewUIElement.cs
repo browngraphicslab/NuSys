@@ -73,7 +73,7 @@ namespace NuSysApp.Components.NuSysRenderer.UI.ListView
         /// </summary>
         private IEnumerable<LibraryElementController> _previouslySelectedControllers;
 
-        public CollectionListViewUIElement(CollectionRenderItem parent, CanvasAnimatedControl resourceCreator) : base(parent, resourceCreator)
+        public CollectionListViewUIElement(CollectionRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             _collectionRenderItem = parent;
             // initialize the ui of the library listview

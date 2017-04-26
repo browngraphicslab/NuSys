@@ -113,12 +113,8 @@ namespace NuSysApp
             RenderEngine = new NuSysRenderer(xRenderCanvas, _renderRoot);
             xFullScreenImageViewer.Visibility = Visibility.Collapsed;
 
-
             xKeyboard.KeyboardKeyPressed += Keyboard_KeyboardKeyPressed;
             xKeyboard.KeyboardKeyReleased += Keyboard_KeyboardKeyReleased;
-
-            //_collectionList = new CollectionListViewUIElement(RenderEngine);
-
         }
 
         private void Keyboard_KeyboardKeyPressed(object sender, KeyArgs args)
@@ -922,24 +918,10 @@ namespace NuSysApp
 
             if (item == RenderEngine.ElementSelectionRect.BtnList)
             {
-                var collectionRenderItem = (CollectionRenderItem)Selections[0];
-                collectionRenderItem.HoldsList = !collectionRenderItem.HoldsList;
+                RenderEngine.ElementSelectionRect.HoldsList = !RenderEngine.ElementSelectionRect.HoldsList;
                 RenderEngine.ElementSelectionRect.UpdateLib();
             }
-
-            //if (item is CollectionRenderItem)
-            //{
-            //    var collection = item as CollectionRenderItem;
-            //    if (collection.HoldsList)
-            //    {
-                    
-            //    }
-            //}
-
         }
-
-
-
 
         /// <summary>
         /// Does the layout for a custom layout by arranging the selected nodes along a stroke.

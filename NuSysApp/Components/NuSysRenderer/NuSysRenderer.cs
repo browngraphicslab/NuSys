@@ -112,12 +112,6 @@ namespace NuSysApp
                 foreach (var childItem in childElements)
                 {
                     var childCollection = childItem as CollectionRenderItem;
-                    //// ---
-                    //if (childItem is ListViewUIElementContainer<LibraryElementModel>)
-                    //{
-                    //    return childItem;
-                    //}
-                    //// ---
                     if (childCollection != null)
                     {
 
