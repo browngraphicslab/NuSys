@@ -22,11 +22,11 @@ namespace NusysServer
         /// 
         //Nusys  Live
         //private const string SQLSTRING = "Server=tcp:nureposql.database.windows.net,1433;Database=NuRepo_SQL;User ID=nusys@nureposql;Password=browngfx1!;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;MultipleActiveResultSets=True;";
-        private const string SQLSTRING = "Server=tcp:nusystestsql.database.windows.net,1433;Initial Catalog=NuRepo_SQL_Copy_2_Copy;Persist Security Info=False;User ID=nusys@nureposql;Password=browngfx1!;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+        //private const string SQLSTRING = "Server=tcp:nusystestsql.database.windows.net,1433;Initial Catalog=NuRepo_SQL_Copy_2_Copy;Persist Security Info=False;User ID=nusys@nureposql;Password=browngfx1!;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
 
         //Nusys Test
         //private const string SQLSTRING = "Server=tcp:nusystestsql.database.windows.net,1433;Database=NuSysTest;User ID=nusys@nusystest;Password=browngfx1!;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;MultipleActiveResultSets=True;";    /// <summary>
-        //private const string SQLSTRING = "Server=tcp:nusystestsql.database.windows.net,1433;Initial Catalog=NuRepo_SQL_Copy_2;Persist Security Info=False;User ID=nusys@nusystestsql;Password=browngfx1!;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+        private const string SQLSTRING = "Server=tcp:nusystestsql.database.windows.net,1433;Initial Catalog=NuRepo_SQL_Copy_2;Persist Security Info=False;User ID=nusys@nusystestsql;Password=browngfx1!;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
 
 
         /// <summary>
