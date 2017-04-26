@@ -27,6 +27,14 @@ using NusysIntermediate;
 
 namespace NuSysApp
 {
+    /// <summary>
+    /// HOW TO SET UP THE GOOGLE DRIVE COMMUNICATOR
+    /// STEP 1: Call GoogleDriveCommunicator.Run() to make the web view show up and have the user authenticate nusys to access its data
+    /// STEP 2: Once the user clicks accept, and clicks the "open nusys" pop up, the flow of control goes to App.xaml.cs.OnActivated(IActivatedEventArgs args);
+    /// STEP 3: In App.xaml.cs.OnActivated(IActivatedEventArgs args), there is a line GoogleDriveCommunicator.GetAuthenticationFromUri(uri). This function trades the 
+    ///         code for an access token which can be used to make API calls
+    /// STEP 4: From this point on you can use the functions such as SearchDrive(String searchString, int maxResults);
+    /// </summary>
     public static class GoogleDriveCommunicator
     {
         /// <summary>
@@ -39,7 +47,7 @@ namespace NuSysApp
         const string tokenEndpoint = "https://www.googleapis.com/oauth2/v4/token";
         const string userInfoEndpoint = "https://www.googleapis.com/oauth2/v3/userinfo";
         private const string listFilesEndpoint = "https://www.googleapis.com/drive/v2/files";
-        private const string searchListFilesEndpoint = "https://www.googleapis.com/drive/v2/files?q=";
+        private const string searchListFilesEndpoint = "https://www.googleapis.com/drive/v2/files?maxResults=5&q=";
         private static string accessToken;
 
 
@@ -205,7 +213,12 @@ namespace NuSysApp
             return base64;
         }
 
-        public static async Task<Page<String>> GetNextSearchPage(String nextLink)
+        /// <summary>
+        /// Given the search URL, returns the first page of the search query.
+        /// </summary>
+        /// <param name="searchUrl"></param>
+        /// <returns></returns>
+        public static async Task<Page<String>> GetFileSearchResult(String searchUrl)
         {
             if (accessToken != null && !accessToken.Equals(""))
             {
@@ -216,103 +229,57 @@ namespace NuSysApp
                 // Makes a call to the Userinfo endpoint, and prints the results.
                 output("Making API Call to Userinfo...");
 
-                HttpResponseMessage userinfoResponse = client.GetAsync(nextLink).Result;
+                HttpResponseMessage userinfoResponse = client.GetAsync(searchUrl).Result;
 
                 string userinfoResponseContent = await userinfoResponse.Content.ReadAsStringAsync();
-                var test = JObject.Parse(userinfoResponseContent);
-                var driveItems = test["items"];
-                var driveImageElements = new List<ImageLibraryElementController>();
-                var i = 0;
+                //Parse the return JSON
+                var driveReturnJson = JObject.Parse(userinfoResponseContent);
+                //Get the drive items
+                var driveItems = driveReturnJson["items"];
                 var titles = new List<String>();
+                //Add titles to the list
                 foreach(var item in driveItems)
                 {
                     titles.Add(item["title"].ToString());
                 }
-                return new Page<String>(titles, test["nextLink"].ToString());
+                //Return a page depending on whether there is a next page or not.
+                if (driveReturnJson["nextLink"] != null)
+                {
+                    return new Page<String>(titles, driveReturnJson["nextLink"].ToString());
+                }
+                else
+                {
+                    return new Page<String>(titles);
+                }
 
             }
             else
             {
+                //If the access token has not been found, try to get the authorization from the user.
+                GoogleDriveCommunicator.run();
                 return null;
             }
         }
 
-        public static async Task<Page<String>> SearchDrive(String searchString)
+        /// <summary>
+        /// Searches the drive for any titles that contain the search string. Returns the first page with maxResults number of items.
+        /// </summary>
+        /// <param name="searchString"></param>
+        /// <param name="maxResults"></param>
+        /// <returns></returns>
+        public static async Task<Page<String>> SearchDrive(String searchString, int maxResults)
         {
-            if(accessToken != null && !accessToken.Equals(""))
-            {
-                var qValue = "title contains '" + searchString + "'";
-                var encodedValue = Uri.EscapeDataString(qValue);
-                var finalURL = searchListFilesEndpoint + encodedValue;
-                HttpClientHandler handler = new HttpClientHandler();
-                handler.AllowAutoRedirect = true;
-                HttpClient client = new HttpClient(handler);
-                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
-                // Makes a call to the Userinfo endpoint, and prints the results.
-                output("Making API Call to Userinfo...");
-
-                HttpResponseMessage userinfoResponse = client.GetAsync(finalURL).Result;
-
-                string userinfoResponseContent = await userinfoResponse.Content.ReadAsStringAsync();
-                var test = JObject.Parse(userinfoResponseContent);
-                var driveItems = test["items"];
-                var driveImageElements = new List<ImageLibraryElementController>();
-                var i = 0;
-                var titles = new List<String>();
-                foreach (var item in driveItems)
-                {
-                    titles.Add(item["title"].ToString());
-                }
-                return new Page<String>(titles, test["nextLink"].ToString());
-
-                //foreach (var driveItem in driveItems)
-                //{
-                //    i++;
-                //    if (i > 5)
-                //    {
-                //        break;
-                //    }
-                //    var imageArgs = new CreateNewImageLibraryElementRequestArgs();
-                //    imageArgs.AspectRatio = 1;
-                //    imageArgs.Title = driveItem["title"].ToString();
-                //    var keywords = new HashSet<Keyword>();
-                //    keywords.Add(new Keyword("drive"));
-                //    keywords.Add(new Keyword("google"));
-                //    imageArgs.Keywords = keywords;
-                //    var metadata = new List<MetadataEntry>();
-                //    var url = new List<String>();
-                //    url.Add(driveItem["alternateLink"].ToString());
-                //    metadata.Add(new MetadataEntry("URL", url, MetadataMutability.IMMUTABLE));
-                //    imageArgs.Metadata = metadata;
-                //    imageArgs.AccessType = NusysConstants.AccessType.Public;
-
-                //    var contentRequestArgs = new CreateNewContentRequestArgs();
-                //    //var id = driveItem["id"].ToString() + "2";
-                //    //contentRequestArgs.ContentId = id;
-                //    if (driveItem["thumbnailLink"] != null)
-                //    {
-                //        contentRequestArgs.DataBytes = driveItem["thumbnailLink"].ToString();
-                //    }
-                //    else
-                //    {
-                //        contentRequestArgs.DataBytes = driveItem["iconLink"].ToString();
-                //    }
-                //    contentRequestArgs.FileExtension = null;
-                //    contentRequestArgs.LibraryElementArgs = imageArgs;
-                //    var request = new CreateNewContentRequest(contentRequestArgs);
-                //    await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
-                //    if (request.AddReturnedLibraryElementToLibrary())
-                //    {
-                //        var x = 4;
-                //    }
-                //}
-            }
-            else
-            {
-                return null;
-            }
-
-
+            var builder = new StringBuilder();
+            builder.Append(searchListFilesEndpoint);
+            builder.Append("maxResults=");
+            builder.Append(maxResults);
+            builder.Append("&");
+            builder.Append("q=");
+            var qValue = "title contains '" + searchString + "'";
+            var encodedValue = Uri.EscapeDataString(qValue);
+            builder.Append("encodedValue");
+            var finalURL = searchListFilesEndpoint + encodedValue;
+            return await GetFileSearchResult(finalURL);
         }
     }
 }

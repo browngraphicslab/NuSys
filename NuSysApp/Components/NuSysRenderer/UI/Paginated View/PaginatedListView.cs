@@ -72,6 +72,9 @@ namespace NuSysApp
 
         }
 
+        /// <summary>
+        /// Sets up the previous and next buttons on the list view
+        /// </summary>
         private void SetUpNextPrevButtons()
         {
             _nextButton = new ButtonUIElement(this, Canvas)
@@ -90,14 +93,33 @@ namespace NuSysApp
                 Width = 20,
                 Background = Colors.Orange
             };
+            _prevButton.Tapped += _prevButton_Tapped;
             AddChild(_prevButton);
         }
 
-        private void _nextButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        /// <summary>
+        /// Is called when the previous button has been tapped. Calls PopulatePrevPage()
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void _prevButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            SearchAndPopulate();
+            PopulatePrevPage();
         }
 
+        /// <summary>
+        /// Is called when the next button has been tapped. Calls PopulateNextpage();
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
+        private void _nextButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        {
+            PopulateNextPage();
+        }
+
+        /// <summary>
+        /// Sets up the search bar and the search button
+        /// </summary>
         private void SetUpSearchBarAndButton()
         {
             // initialize the search bar
@@ -124,35 +146,69 @@ namespace NuSysApp
             };
             _searchButton.Tapped += _searchButton_Tapped; 
             AddChild(_searchButton);
+            _searchBar.Load();
         }
 
+        /// <summary>
+        /// Is called when the search button has been clicked. Calls the searchAndPopulate() function.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
         private void _searchButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             SearchAndPopulate();
         }
 
+        /// <summary>
+        /// This function tells the source that there is a new search value, and then 
+        /// calls PopulateNextPage();
+        /// </summary>
         private async void SearchAndPopulate()
         {
              _source.MakeSearchRequest(_searchBar.Text);
             PopulateNextPage();
         }
 
+        /// <summary>
+        /// Tries to get the next page from the source. If the next page is not null, then we clear the display list
+        /// and add the new items. If the source returns a null value, then nothing happens.
+        /// </summary>
         private async void PopulateNextPage()
         {
             var src = await _source.getNextPage();
-            _list.ClearItems();
-            _list.AddItems(src);
+            if(src != null)
+            {
+                _list.ClearItems();
+                _list.AddItems(src);
+            }
+        }
+
+        /// <summary>
+        /// Tries to get the previous page from the source. If the previous page is not null, then we clear the display list 
+        /// and add the new items. 
+        /// </summary>
+        private async void PopulatePrevPage()
+        {
+            var src = await _source.getPreviousPage();
+            if (src != null)
+            {
+                _list.ClearItems();
+                _list.AddItems(src);
+            }
         }
 
         public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
             base.Update(parentLocalToScreenTransform);
 
+            //Set the list so its the width of the paginatedListView, and comes right after the search bar.
             _list.Width = Width;
             _list.Height = Height - SEARCHBAR_HEIGHT;
             _list.Transform.LocalX = 0;
             _list.Transform.LocalY = SEARCHBAR_HEIGHT;
 
+            //Set the searchbar width to be the width of the paginatedListView.
+            //Set the height and location.
             _searchBar.Width = Width;
             _searchBar.Height = SEARCHBAR_HEIGHT;
             _searchBar.Transform.LocalY = 0;
