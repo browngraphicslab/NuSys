@@ -26,7 +26,7 @@ namespace NuSysApp
 
     {
         private ElementViewModel _vm;
-        private CanvasTextLayout _textLayout;
+        public CanvasTextLayout _textLayout {get; private set; }
         private Matrix3x2 _transform;
         private WrapRenderItem _tagRenderItem;
 

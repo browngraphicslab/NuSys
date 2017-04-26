@@ -17,7 +17,7 @@ using Microsoft.Graphics.Canvas.UI.Xaml;
 using NetTopologySuite.Geometries;
 using NusysIntermediate;
 using NuSysApp.Components.NuSysRenderer.UI;
-
+using NuSysApp.Components.NuSysRenderer.UI.ListView;
 
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -96,6 +96,8 @@ namespace NuSysApp
 
         public event EventHandler<bool> CanvasPanned;
 
+
+
         public FreeFormViewer()
         {
             this.InitializeComponent();
@@ -111,10 +113,8 @@ namespace NuSysApp
             RenderEngine = new NuSysRenderer(xRenderCanvas, _renderRoot);
             xFullScreenImageViewer.Visibility = Visibility.Collapsed;
 
-
             xKeyboard.KeyboardKeyPressed += Keyboard_KeyboardKeyPressed;
             xKeyboard.KeyboardKeyReleased += Keyboard_KeyboardKeyReleased;
-
         }
 
         private void Keyboard_KeyboardKeyPressed(object sender, KeyArgs args)
@@ -966,6 +966,12 @@ namespace NuSysApp
                 Rect rect = RenderEngine.ElementSelectionRect.GetLocalBounds();
                 RenderEngine.ElementSelectionRect.AddChild(_editTagsElement);
                 _editTagsElement.Load();
+            }
+
+            if (item == RenderEngine.ElementSelectionRect.BtnList)
+            {
+                RenderEngine.ElementSelectionRect.HoldsList = !RenderEngine.ElementSelectionRect.HoldsList;
+                RenderEngine.ElementSelectionRect.UpdateLib();
             }
         }
 

@@ -686,6 +686,8 @@ namespace NuSysApp
             LibraryListView.AddItems(
                            SessionController.Instance.ContentController.ContentValues.ToList());
 
+
+
             BorderWidth = 5;
             BorderColor = Colors.Black;
             TopBarColor = Colors.Azure;
@@ -1210,7 +1212,5 @@ namespace NuSysApp
             // return the string representation of the image
             return imageAsString;
         }
-
-
     }
 }
