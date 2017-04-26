@@ -209,10 +209,8 @@ namespace NuSysApp
             //CollectionListView and associated button showing or not:
             BtnList.IsVisible = _isSingleCollectionSelected;
 
-
-            RemoveLibrary();
             HoldsList = false;
-
+            RemoveLibrary();
 
             BtnDelete.IsVisible = !SessionController.IsReadonly;
             BtnGroup.IsVisible = !SessionController.IsReadonly;
