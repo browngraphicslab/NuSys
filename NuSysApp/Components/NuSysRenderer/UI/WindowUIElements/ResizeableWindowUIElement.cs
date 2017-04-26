@@ -315,10 +315,11 @@ namespace NuSysApp
             };
             AddChild(_bottomRightResizeHighlight);
 
+            var dragRecognizer = new DragGestureRecognizer();
+            GestureRecognizers.Add(dragRecognizer);
+            dragRecognizer.OnDragged += ResizeableWindowUIElement_Dragged;
 
             // add manipulation events
-            Dragged += ResizeableWindowUIElement_Dragged;
-            Pressed += ResizeableWindowUIElement_Pressed;
             OnFocusGained += FocusGained;
             OnChildFocusGained += FocusGained;
             OnFocusLost += FocusLostHideHighlight;
@@ -361,27 +362,11 @@ namespace NuSysApp
             ToggleResizeHighlight(false);
         }
 
-
-
-
-        /// <summary>
-        /// Fired when a pointer is pressed on the ResizeableWindowUIElement.
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void ResizeableWindowUIElement_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            // set the _resizePosition if the pointer is on a resizer
-            _resizePosition = GetResizerBorderPosition(pointer);
-        }
-
         /// <summary>
         /// The dispose method of the ResizeableWindowUIElement. Remove all events here.
         /// </summary>
         public override void Dispose()
         {
-            Dragged -= ResizeableWindowUIElement_Dragged;
-            Pressed -= ResizeableWindowUIElement_Pressed;
             OnFocusGained -= FocusGained;
             OnChildFocusGained -= FocusGained;
             OnFocusLost -= FocusLostHideHighlight;
@@ -398,68 +383,80 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void ResizeableWindowUIElement_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void ResizeableWindowUIElement_Dragged(DragGestureRecognizer sender, DragEventArgs args)
         {
-            // create variables for storing the calculated change in size and offset created by resizing.
-            Vector2 sizeDelta = new Vector2();
-            Vector2 offsetDelta = new Vector2();
-
-            // calculate change in size and offset based on the resizer that is being dragged
-            switch (_resizePosition)
+            if (args.CurrentState == GestureEventArgs.GestureState.Began)
             {
-                // in this case we are changing the size and the offset. Size decreases by drag x amount, offset increases
-                // by drag x amount
-                case ResizerBorderPosition.Left:
-                    sizeDelta.X = -pointer.DeltaSinceLastUpdate.X;
-                    if (Width + sizeDelta.X < MinWidth)
-                    {
-                        Debug.Assert(MinWidth != null);
-                        sizeDelta.X = (float) (MinWidth - Width);
-                    }
+                // set the _resizePosition if the pointer is on a resizer
+                _resizePosition = GetResizerBorderPosition(args.CurrentPoint);
+            } else if (args.CurrentState == GestureEventArgs.GestureState.Changed)
+            {
+                // create variables for storing the calculated change in size and offset created by resizing.
+                Vector2 sizeDelta = new Vector2();
+                Vector2 offsetDelta = new Vector2();
 
-                    if (Width + sizeDelta.X > MaxWidth)
-                    {
-                        Debug.Assert(MaxWidth != null);
-                        sizeDelta.X = (float) (MaxWidth - Width);
-                    }
+                // calculate change in size and offset based on the resizer that is being dragged
+                switch (_resizePosition)
+                {
+                    // in this case we are changing the size and the offset. Size decreases by drag x amount, offset increases
+                    // by drag x amount
+                    case ResizerBorderPosition.Left:
+                        sizeDelta.X = -args.Translation.X;
+                        if (Width + sizeDelta.X < MinWidth)
+                        {
+                            Debug.Assert(MinWidth != null);
+                            sizeDelta.X = (float)(MinWidth - Width);
+                        }
 
-                    offsetDelta.X -= sizeDelta.X;
-                    break;
-                // in this case we are changing the size only. Size increases by the drag x amount
-                case ResizerBorderPosition.Right:
-                    sizeDelta.X += pointer.DeltaSinceLastUpdate.X;
-                    break;
-                // in this case we are changing the size only. Size increases by the drag y amount
-                case ResizerBorderPosition.Bottom:
-                    sizeDelta.Y += pointer.DeltaSinceLastUpdate.Y;
-                    break;
-                case ResizerBorderPosition.BottomRight:
-                    sizeDelta.Y += pointer.DeltaSinceLastUpdate.Y;
-                    sizeDelta.X += pointer.DeltaSinceLastUpdate.X;
-                    break;
-                case ResizerBorderPosition.BottomLeft:
-                    sizeDelta.X -= pointer.DeltaSinceLastUpdate.X;
-                    if (Width + sizeDelta.X < MinWidth)
-                    {
-                        Debug.Assert(MinWidth != null);
-                        sizeDelta.X = (float)(MinWidth - Width);
-                    }
+                        if (Width + sizeDelta.X > MaxWidth)
+                        {
+                            Debug.Assert(MaxWidth != null);
+                            sizeDelta.X = (float)(MaxWidth - Width);
+                        }
 
-                    if (Width + sizeDelta.X > MaxWidth)
-                    {
-                        Debug.Assert(MaxWidth != null);
-                        sizeDelta.X = (float)(MaxWidth - Width);
-                    }
-                    offsetDelta.X -= sizeDelta.X;
-                    sizeDelta.Y += pointer.DeltaSinceLastUpdate.Y;
-                    break;
-                default:
-                    // make sure the pointer is null here, to indicate that we are not on a resizer. 
-                    //If it isn't we may not have added support for an enum value.
-                    Debug.Assert(_resizePosition == null, $"We do not support {nameof(_resizePosition)} yet. Please add support or check call");
-                    return;
+                        offsetDelta.X -= sizeDelta.X;
+                        break;
+                    // in this case we are changing the size only. Size increases by the drag x amount
+                    case ResizerBorderPosition.Right:
+                        sizeDelta.X += args.Translation.X;
+                        break;
+                    // in this case we are changing the size only. Size increases by the drag y amount
+                    case ResizerBorderPosition.Bottom:
+                        sizeDelta.Y += args.Translation.Y;
+                        break;
+                    case ResizerBorderPosition.BottomRight:
+                        sizeDelta.Y += args.Translation.Y;
+                        sizeDelta.X += args.Translation.X;
+                        break;
+                    case ResizerBorderPosition.BottomLeft:
+                        sizeDelta.X -= args.Translation.X;
+                        if (Width + sizeDelta.X < MinWidth)
+                        {
+                            Debug.Assert(MinWidth != null);
+                            sizeDelta.X = (float)(MinWidth - Width);
+                        }
+
+                        if (Width + sizeDelta.X > MaxWidth)
+                        {
+                            Debug.Assert(MaxWidth != null);
+                            sizeDelta.X = (float)(MaxWidth - Width);
+                        }
+                        offsetDelta.X -= sizeDelta.X;
+                        sizeDelta.Y += args.Translation.Y;
+                        break;
+                    default:
+                        // make sure the pointer is null here, to indicate that we are not on a resizer. 
+                        //If it isn't we may not have added support for an enum value.
+                        Debug.Assert(_resizePosition == null, $"We do not support {nameof(_resizePosition)} yet. Please add support or check call");
+                        return;
+                }
+                ApplyResizeChanges(offsetDelta, sizeDelta);
+            } else if (args.CurrentState == GestureEventArgs.GestureState.Ended)
+            {
+
             }
-            ApplyResizeChanges(offsetDelta, sizeDelta);
+
+            
         }
 
         /// <summary>
@@ -519,7 +516,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="pointer"></param>
         /// <returns></returns>
-        private ResizerBorderPosition? GetResizerBorderPosition(CanvasPointer pointer)
+        private ResizerBorderPosition? GetResizerBorderPosition(Vector2 currentPoint)
         {
 
             if (!IsResizeable)
@@ -531,7 +528,7 @@ namespace NuSysApp
             bool right = false, left = false, bottom = false;
 
             // transform the pointers current point into the local coordinate system
-            var currentPoint = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
+            currentPoint = Vector2.Transform(currentPoint, Transform.ScreenToLocalMatrix);
 
             // the pointer is on the right bound of the window
             if (currentPoint.X > Width - Math.Max(BorderWidth, ErrorMargin))
@@ -635,10 +632,10 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        protected override void OnTopBarDragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        protected override void OnTopBarDragStarted(InteractiveBaseRenderItem item, DragEventArgs args)
         {
             CurrentlyDraggingWindow = this;
-            base.OnTopBarDragStarted(item, pointer);
+            base.OnTopBarDragStarted(item, args);
         }
 
 
@@ -647,10 +644,10 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        protected override void OnTopBarDragCompleted(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        protected override void OnTopBarDragCompleted(InteractiveBaseRenderItem item, DragEventArgs args)
         {
             CurrentlyDraggingWindow = null;
-            base.OnTopBarDragCompleted(item, pointer);
+            base.OnTopBarDragCompleted(item, args);
         }
 
         /// <summary>

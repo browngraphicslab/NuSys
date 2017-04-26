@@ -31,6 +31,8 @@ namespace NuSysApp
         /// </summary>
         public float Height;
 
+        public event Action<AudioRegionResizerUIElement, DragEventArgs> Dragged;
+
         public AudioRegionResizerUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
             // initialize all the geometries
@@ -44,64 +46,17 @@ namespace NuSysApp
             InitializeHandleUI(_botHandle);
             AddChild(_botHandle);
 
-            // add dragging event handlers
-            _topHandle.Dragged += HandleDragged;
-            _botHandle.Dragged += HandleDragged;
-            _connectingLine.Dragged += HandleDragged;
+            var topHandleDragRecognizer = new DragGestureRecognizer();
+            _topHandle.GestureRecognizers.Add(topHandleDragRecognizer);
+            topHandleDragRecognizer.OnDragged += HandleDragged;
 
-            // add pressed event handlers
-            _topHandle.Pressed += HandleSelected;
-            _botHandle.Pressed += HandleSelected;
-            _connectingLine.Pressed += HandleSelected;
+            var botHandleDragRecognizer = new DragGestureRecognizer();
+            _botHandle.GestureRecognizers.Add(botHandleDragRecognizer);
+            botHandleDragRecognizer.OnDragged += HandleDragged;
 
-            // add released event handlers
-            _topHandle.Released += HandleUnselected;
-            _botHandle.Released += HandleUnselected;
-            _connectingLine.Released += HandleUnselected;
-
-
-        }
-
-        /// <summary>
-        /// Called whenever the handle is selected
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void HandleSelected(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            OnPressed(pointer);
-        }
-
-
-        /// <summary>
-        /// Called whenever the handle is unsleected
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void HandleUnselected(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            OnReleased(pointer);
-        }
-
-        /// <summary>
-        /// Remove event handlers
-        /// </summary>
-        public override void Dispose()
-        {
-
-            _topHandle.Dragged -= HandleDragged;
-            _botHandle.Dragged -= HandleDragged;
-            _connectingLine.Dragged -= HandleDragged;
-
-            _topHandle.Pressed -= HandleSelected;
-            _botHandle.Pressed -= HandleSelected;
-            _connectingLine.Pressed -= HandleSelected;
-
-            _topHandle.Released -= HandleUnselected;
-            _botHandle.Released -= HandleUnselected;
-            _connectingLine.Released -= HandleUnselected;
-
-            base.Dispose();
+            var connectingLineDragRecongizer = new DragGestureRecognizer();
+            _connectingLine.GestureRecognizers.Add(connectingLineDragRecongizer);
+            connectingLineDragRecongizer.OnDragged += HandleDragged;
         }
 
         /// <summary>
@@ -109,8 +64,9 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void HandleDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void HandleDragged(DragGestureRecognizer sender, DragEventArgs args)
         {
+            Dragged?.Invoke(this, args);
         }
 
         /// <summary>

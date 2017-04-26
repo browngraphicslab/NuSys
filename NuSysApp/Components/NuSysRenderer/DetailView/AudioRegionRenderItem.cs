@@ -130,15 +130,11 @@ namespace NuSysApp
             // Add the resizers and handlers
             _leftResizer = new AudioRegionResizerUIElement(this, Canvas);
             _leftResizer.Dragged += OnResizerDragged;
-            _leftResizer.Pressed += OnResizerPressed;
-            _leftResizer.Released += OnResizerReleased;
             AddChild(_leftResizer);
+
             _rightResizer = new AudioRegionResizerUIElement(this, Canvas);
             _rightResizer.Dragged += OnResizerDragged;
-            _rightResizer.Pressed += OnResizerPressed;
-            _rightResizer.Released += OnResizerReleased;
             AddChild(_rightResizer);
-
 
             // the region is only modifiable if it is fully contained by the parent
             IsModifiable = IsFullyContained(_normalizedCropStart, _normalizedCropDuration);
@@ -153,15 +149,13 @@ namespace NuSysApp
             _controller.TimeChanged += ControllerOnStartTimeChanged;
             _controller.DurationChanged += ControllerOnDurationChanged;
 
-            // add events for when the region is dragged
-            Dragged += RegionOnDragged;
-            
-            Pressed += RegionOnPressed;
-            Released += RegionOnReleased;
-
             var tapRecognizer = new TapGestureRecognizer();
-            this.GestureRecognizers.Add(tapRecognizer);
+            GestureRecognizers.Add(tapRecognizer);
             tapRecognizer.OnTapped += TapRecognizer_OnTapped;
+
+            var dragRecognizer = new DragGestureRecognizer();
+            GestureRecognizers.Add(dragRecognizer);
+            dragRecognizer.OnDragged += RegionOnDragged;
         }
 
         /// <summary>
@@ -175,31 +169,11 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Fired whenver the region resizer is released, deselects the region
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void OnResizerReleased(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            RegionOnReleased(item, pointer);
-        }
-
-        /// <summary>
-        /// fired whenver the region resizer is pressed, selects the region
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void OnResizerPressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            RegionOnPressed(item, pointer);
-        }
-
-        /// <summary>
         /// Fired whenver the region is released, unselected the region
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void RegionOnReleased(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void RegionOnReleased()
         {
             OnRegionUnselected?.Invoke(this);
         }
@@ -209,7 +183,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void RegionOnPressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void RegionOnPressed()
         {
             OnRegionSelected?.Invoke(this);
         }
@@ -219,37 +193,60 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void OnResizerDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void OnResizerDragged(AudioRegionResizerUIElement sender, DragEventArgs args)
         {
-            // get the normalized delta for the region
-            var normalizedDelta = pointer.DeltaSinceLastUpdate.X/_totalWidth * _normalizedCropDuration;
-
-            // get the curr normalized start and duration for the region
-            var currNormStartTime = _controller.AudioLibraryElementModel.NormalizedStartTime;
-            var currNormDurr = _controller.AudioLibraryElementModel.NormalizedDuration;
-
-            // set the new start and duration based on which resizer was dragged
-            if (item == _leftResizer)
+            if (args.CurrentState == GestureEventArgs.GestureState.Began)
             {
-                var newStartTime = currNormStartTime + normalizedDelta;
-                if (newStartTime > _normalizedCropStart)
+                RegionOnPressed();
+            } else if (args.CurrentState == GestureEventArgs.GestureState.Changed)
+            {
+                // get the normalized delta for the region
+                var normalizedDelta = args.Translation.X / _totalWidth * _normalizedCropDuration;
+
+                // get the curr normalized start and duration for the region
+                var currNormStartTime = _controller.AudioLibraryElementModel.NormalizedStartTime;
+                var currNormDurr = _controller.AudioLibraryElementModel.NormalizedDuration;
+
+                // set the new start and duration based on which resizer was dragged
+                if (sender == _leftResizer)
                 {
-                    _controller.SetStartTime(currNormStartTime + normalizedDelta);
-                    _controller.SetDuration(currNormDurr - normalizedDelta);
+                    var newStartTime = currNormStartTime + normalizedDelta;
+                    if (newStartTime > _normalizedCropStart)
+                    {
+                        _controller.SetStartTime(currNormStartTime + normalizedDelta);
+                        _controller.SetDuration(currNormDurr - normalizedDelta);
+                    }
+
+                }
+                else if (sender == _rightResizer)
+                {
+                    _controller.SetDuration(currNormDurr + normalizedDelta);
                 }
 
-            } else if (item == _rightResizer)
+                //The region has been resized so invoke the event
+                OnRegionManualResize?.Invoke(this);
+            } else if (args.CurrentState == GestureEventArgs.GestureState.Ended)
             {
-                _controller.SetDuration(currNormDurr + normalizedDelta);
+                RegionOnReleased();
             }
 
-            //The region has been resized so invoke the event
-            OnRegionManualResize?.Invoke(this);
+
         }
 
-        private void RegionOnDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void RegionOnDragged(DragGestureRecognizer sender, DragEventArgs args)
         {
-            OnRegionMoved?.Invoke(this, pointer.DeltaSinceLastUpdate.X);
+            if (args.CurrentState == GestureEventArgs.GestureState.Began)
+            {
+                RegionOnPressed();
+            } else if (args.CurrentState == GestureEventArgs.GestureState.Changed)
+            {
+                OnRegionMoved?.Invoke(this, args.Translation.X);
+            } else if (args.CurrentState == GestureEventArgs.GestureState.Ended)
+            {
+                RegionOnReleased();
+            }
+
+            
         }
 
         /// <summary>
@@ -261,13 +258,6 @@ namespace NuSysApp
             _controller.DurationChanged -= ControllerOnDurationChanged; //todo why is this unpredictable?????
             _leftResizer.Dragged -= OnResizerDragged;
             _rightResizer.Dragged -= OnResizerDragged;
-            Dragged -= RegionOnDragged;
-            Pressed -= RegionOnPressed;
-            Released -= RegionOnReleased;
-            _leftResizer.Pressed -= OnResizerPressed;
-            _leftResizer.Released -= OnResizerReleased;
-            _rightResizer.Pressed -= OnResizerPressed;
-            _rightResizer.Released -= OnResizerReleased;
 
             base.Dispose();
         }

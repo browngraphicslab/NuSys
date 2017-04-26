@@ -89,17 +89,7 @@ namespace NuSysApp
             foreach (var button in _menuButtons)
             {
                 button.Dragged += MenuButton_OnDragging;
-                button.DragCompleted += MenuButton_DragCompleted;
-                button.DragStarted += MenuButton_DragStarted;
             }
-        }
-
-        private void MenuButton_DragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            SetElementType(item as ButtonUIElement);
-            SetDragImage(_elementType);
-            _dragRect.Transform.LocalPosition = item.Transform.LocalPosition;
-            _dragRect.IsVisible = true;
         }
 
         /// <summary>
@@ -131,8 +121,6 @@ namespace NuSysApp
             foreach (var button in _menuButtons)
             {
                 button.Dragged -= MenuButton_OnDragging;
-                button.DragCompleted -= MenuButton_DragCompleted;
-                button.DragStarted -= MenuButton_DragStarted;
             }
             base.Dispose();
         }
@@ -142,26 +130,29 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void MenuButton_OnDragging(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
+        private async void MenuButton_OnDragging(ButtonUIElement sender, DragEventArgs args)
         {
+            if (args.CurrentState == GestureEventArgs.GestureState.Began)
+            {
+                SetElementType(sender);
+                SetDragImage(_elementType);
+                _dragRect.Transform.LocalPosition = sender.Transform.LocalPosition;
+                _dragRect.IsVisible = true;
+            } else if (args.CurrentState == GestureEventArgs.GestureState.Changed)
+            {
+                // move the drag rect to a new location
+                _dragRect.Transform.LocalPosition = sender.Transform.LocalPosition + args.Translation;
+            } else if (args.CurrentState == GestureEventArgs.GestureState.Ended)
+            {
+                // reset the visibility of the drag rect
+                _dragRect.IsVisible = false;
 
-            // move the drag rect to a new location
-            _dragRect.Transform.LocalPosition = interactiveBaseRenderItem.Transform.LocalPosition + pointer.Delta;
-        }
+                // Add the element at the dropped location          
+                await StaticServerCalls.AddElementToWorkSpace(args.CurrentPoint, _elementType).ConfigureAwait(false);
+            }
 
-        /// <summary>
-        /// Fired when drag is completed on a menu button, adds the proper element to the collection
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private async void MenuButton_DragCompleted(InteractiveBaseRenderItem interactiveBaseRenderItem, CanvasPointer pointer)
-        {
-            // reset the visibility of the drag rect
-            _dragRect.IsVisible = false;
 
-            // Add the element at the dropped location          
-            await StaticServerCalls.AddElementToWorkSpace(pointer.CurrentPoint, _elementType).ConfigureAwait(false);
-
+            
         }
 
         /// <summary>

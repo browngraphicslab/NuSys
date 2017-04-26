@@ -85,10 +85,12 @@ namespace NuSysApp
             IsRegionsVisible = showRegions;
 
             var tapRecognizer = new TapGestureRecognizer();
-            this.GestureRecognizers.Add(tapRecognizer);
+            GestureRecognizers.Add(tapRecognizer);
             tapRecognizer.OnTapped += TapRecognizer_OnTapped;
             
-            Dragged += AudioMediaContentUIElement_Dragged;
+            var dragRecognizer = new DragGestureRecognizer();
+            GestureRecognizers.Add(dragRecognizer);
+            dragRecognizer.OnDragged += AudioMediaContentUIElement_Dragged;
 
             _controller.TimeChanged += OnStartTimeChanged;
             _controller.DurationChanged += OnDurationChanged;
@@ -197,7 +199,6 @@ namespace NuSysApp
             {
                 _mediaElement.MediaOpened -= MediaElementOnMediaOpened;
             });
-            Dragged -= AudioMediaContentUIElement_Dragged;
             _controller.TimeChanged -= OnStartTimeChanged;
             _controller.DurationChanged -= OnDurationChanged; //todo find out why this is unpredictable
 
@@ -226,9 +227,9 @@ namespace NuSysApp
             ComputeRegions();
         }
 
-        private void AudioMediaContentUIElement_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void AudioMediaContentUIElement_Dragged(DragGestureRecognizer sender, DragEventArgs args)
         {
-            var currPoint = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
+            var currPoint = Vector2.Transform(args.CurrentPoint, Transform.ScreenToLocalMatrix);
             _currentShadowPosition = currPoint.X / Width;
             UITask.Run(() =>
             {
