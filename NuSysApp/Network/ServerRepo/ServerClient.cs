@@ -84,7 +84,7 @@ namespace NuSysApp
         public static HashSet<string> NeededLibraryDataIDs = new HashSet<string>();
         private ConcurrentDictionary<string,Message> _returnMessages = new ConcurrentDictionary<string, Message>();
         private ConcurrentDictionary<string, byte> _requestEventDictionary = new ConcurrentDictionary<string, byte>();
-        private ConcurrentDictionary<string, CallbackRequest<ServerRequestArgsBase, ServerReturnArgsBase>> _callbackDictionary;
+        private ConcurrentDictionary<string, Request> _callbackDictionary;
 
         private ConcurrentFixedQueue<int> _queue;
 
@@ -111,7 +111,7 @@ namespace NuSysApp
         public async Task Init()
         {
             _socket = new MessageWebSocket();
-            _callbackDictionary = new ConcurrentDictionary<string, CallbackRequest<ServerRequestArgsBase, ServerReturnArgsBase>>();
+            _callbackDictionary = new ConcurrentDictionary<string, Request>();
 
             ServerBaseURI = "://" + NusysConstants.ServerName + "/api/";
             var credentials = GetUserCredentials();
@@ -137,8 +137,6 @@ namespace NuSysApp
             firstpart += NusysConstants.TEST_LOCAL_BOOLEAN ? "" : "s";
             return new Uri(firstpart + ServerBaseURI + additionToBase);
         }
-
-
 
         private void SocketClosed(IWebSocket sender, WebSocketClosedEventArgs args)
         {
@@ -199,11 +197,9 @@ namespace NuSysApp
                         dict[NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING].ToString(),
                         out outByte);
 
-                    CallbackRequest<ServerRequestArgsBase, ServerReturnArgsBase> outReq;
-                    _callbackDictionary.TryRemove(dict[NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING].ToString(),
-                        out outReq);
-                    var callbackSuccess = outReq?.ExecuteCallback(false);
-                    Debug.Assert(callbackSuccess != false);
+                    Request outReq;
+                    _callbackDictionary.TryRemove(dict[NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING].ToString(),out outReq);
+                    outReq?.SetReturnedFromServer(false);
                 }
             }
             else if (dict.ContainsKey(NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING))
@@ -261,13 +257,17 @@ namespace NuSysApp
         /// method to call to execute a callback request
         /// </summary>
         /// <param name="request"></param>
-        public void ExecuteCallbackRequest(CallbackRequest<ServerRequestArgsBase, ServerReturnArgsBase> request)
+        public void ExecuteCallbackRequest<T, S>(CallbackRequest<T, S> request) where T : ServerRequestArgsBase where S : ServerReturnArgsBase, new()
         {
             var id = SessionController.Instance.GenerateId();
             _callbackDictionary[id] = request;
             request.CheckOutgoingRequest();
-            SendMessageToServer(request.GetFinalMessage());
+            var message = request.GetFinalMessage();
+            message[NusysConstants.RETURN_AWAITABLE_REQUEST_ID_STRING] = id;
+            SendMessageToServer(message);
         }
+
+
         /// <summary>
         /// Will send a dictionary to the server and manually wait for its return
         /// Later, another message will be called that will resumet this thread after placing the returned response in the _returnMessages dictionary
@@ -350,11 +350,10 @@ namespace NuSysApp
             }
             else if (_callbackDictionary.ContainsKey(id))
             {
-                CallbackRequest < ServerRequestArgsBase, ServerReturnArgsBase > request;
+                Request request;
                 _callbackDictionary.TryRemove(id, out request);
                 request.SetReturnMessage(message);
-                var callbackSuccess = request?.ExecuteCallback(true);
-                Debug.Assert(callbackSuccess != false);
+                request?.SetReturnedFromServer(true);
             }
             else
             {

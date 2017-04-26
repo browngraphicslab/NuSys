@@ -103,10 +103,12 @@ namespace NusysIntermediate
         /// Should only have one reference
         /// </summary>
         /// <param name="returnMessage"></param>
-        public void SetReturnMessage(Message returnMessage)
+        public virtual void SetReturnMessage(Message returnMessage)
         {
             _returnMessage = returnMessage;
         }
+
+        public virtual void SetReturnedFromServer(bool success) { }
 
         /// <summary>
         ///  THIS METHOD SHOULD ONLY BE USED TO VERIFY THE REQUEST CONTAINS THE CORRECT KEYS AND OBJECTS.  

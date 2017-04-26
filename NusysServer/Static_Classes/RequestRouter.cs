@@ -149,6 +149,9 @@ namespace NusysServer
                         case NusysConstants.RequestType.SendCollaboratorCoordinatesRequest:
                             requestHandler = new SendCollaboratorCoordinatesRequestHandler();
                             break;
+                        case NusysConstants.RequestType.UploadFileRequest:
+                            requestHandler = new UploadFileRequestHandler();
+                            break;
                         default:
                             throw new Exception("request type not supported on the server yet!");
                     }

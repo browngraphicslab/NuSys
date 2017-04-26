@@ -117,6 +117,11 @@ namespace NuSysApp
             _serverClient.ExecuteCallbackRequest(request);
         }
 
+        public void ExecuteCallbackRequest<T, S>(CallbackRequest<T, S> request) where T : ServerRequestArgsBase where S : ServerReturnArgsBase, new()
+        {
+            _serverClient.ExecuteCallbackRequest(request);
+        }
+
         /// <summary>
         /// Will execute a request and not return from this method until the server has processed the request and returned a confirmation message
         /// the message that is returned is the confirmation message

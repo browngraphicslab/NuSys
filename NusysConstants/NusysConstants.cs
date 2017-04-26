@@ -1798,6 +1798,8 @@ namespace NusysIntermediate
             GetAnalysisModelRequest,
 
             UpdateContentRequest,
+
+            UploadFileRequest,
             
             /// <summary>
             /// this request type is used to create a search over the library elements.  

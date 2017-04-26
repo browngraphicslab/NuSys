@@ -7,6 +7,32 @@ using System.Threading.Tasks;
 
 namespace NusysIntermediate
 {
+
+    /// Example usage (if this pull request is pushed to server after 3/15/17):
+    /// 
+    /// 
+    /// 
+    ///        public void Test()
+    ///        {
+    ///            var args = new UploadFileRequestArgs();
+    ///            args.Bytes = new byte[3];
+    ///            args.Id = "test";
+    ///
+    ///            var request = new UploadFileRequest(args, SuccessFunction);
+    ///            request.Execute();
+    ///        }
+    ///
+    //        private bool SuccessFunction(CallbackRequest<UploadFileRequestArgs, UploadFileReturnArgs> callbackRequest)
+    ///        {
+    ///            return true;
+    ///        }
+
+
+    ///<summary>
+    /// Class used to make requests that call a callback instead of being 'awaitable'.  
+    /// </summary>
+    /// <typeparam name="outT"></typeparam>
+    /// <typeparam name="returnT"></typeparam>
     public abstract class CallbackRequest<outT,returnT> : FullArgsRequest<outT,returnT> where returnT : ServerReturnArgsBase, new() where outT : ServerRequestArgsBase
     {
         /// <summary>
@@ -28,6 +54,13 @@ namespace NusysIntermediate
         }
 
         /// <summary>
+        /// constructor to use if you just want to pass in a success function
+        /// </summary>
+        /// <param name="args"></param>
+        /// <param name="success"></param>
+        public CallbackRequest(outT args, Func<CallbackRequest<outT, returnT>, bool> success) : this(args, new CallbackArgs<CallbackRequest<outT, returnT>>() {SuccessFunction = success }) { }
+
+        /// <summary>
         /// method to call to have this request execute its callback function
         /// </summary>
         /// <param name="requestWasSuccessfull"></param>
@@ -46,6 +79,17 @@ namespace NusysIntermediate
                 callbackSuccess = _callbackArgs.FailureFunction?.Invoke(this);
             }
             return callbackSuccess != false;
+        }
+
+        /// <summary>
+        /// This override will call the callback function
+        /// </summary>
+        /// <param name="success"></param>
+        public override void SetReturnedFromServer(bool success)
+        {
+            var callbackSuccess = ExecuteCallback(success);
+            Debug.Assert(callbackSuccess);
+            base.SetReturnedFromServer(success);
         }
     }
 }
