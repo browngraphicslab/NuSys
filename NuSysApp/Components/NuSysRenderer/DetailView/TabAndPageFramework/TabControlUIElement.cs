@@ -54,13 +54,7 @@ namespace NuSysApp
             public override void Draw(CanvasDrawingSession ds)
             {
                 SelectedBackground = TabControl.TabSelectedColor;
-                if(Selected)
-                {
-                    Background = TabPage.Background;
-                } else
-                {
-                    Background = TabControl.TabColor;
-                }
+                Background = Selected ? TabPage.Background : TabControl.TabColor;
                 ButtonText = TabPage.Name;
                 base.Draw(ds);
             }
@@ -69,26 +63,28 @@ namespace NuSysApp
         /// <summary>
         /// List of tabs in the TabControl
         /// </summary>
-        protected List<TabPageUIElement> _tabs = new List<TabPageUIElement>();
+        private List<TabPageUIElement> _tabs = new List<TabPageUIElement>();
+        private List<TabPageUIElement> _shownTabs = new List<TabPageUIElement>(); 
+        private ListViewUIElementContainer<TabPageUIElement> _overflowList;
 
-        protected ListViewUIElementContainer<TabPageUIElement> _overflowList;
+        private bool _needsShownUpdate = true;
 
-        protected ButtonUIElement _overflowButton;
-        protected float _overflowListWidth = 200;
+        private ButtonUIElement _overflowButton;
+        private float _overflowListWidth = 200;
 
         /// <summary>
         /// Map from each TabPage to the button it corresponds to
         /// </summary>
-        protected Dictionary<TabPageUIElement, TabButtonUIElement> _tabDict = new Dictionary<TabPageUIElement, TabButtonUIElement>();
+        private Dictionary<TabPageUIElement, TabButtonUIElement> _tabDict = new Dictionary<TabPageUIElement, TabButtonUIElement>();
         /// <summary>
         /// List of buttons in the TabControl
         /// </summary>
-        protected List<TabButtonUIElement> _tabButtons = new List<TabButtonUIElement>();
+        private List<TabButtonUIElement> _tabButtons = new List<TabButtonUIElement>();
 
         /// <summary>
         /// LayoutManager to lay out the tab buttons
         /// </summary>
-        protected StackLayoutManager _buttonLayoutManager = new StackLayoutManager();
+        private StackLayoutManager _buttonLayoutManager = new StackLayoutManager();
 
         /// <summary>
         /// Helper variable for the SelectedTab property
@@ -190,19 +186,22 @@ namespace NuSysApp
         /// <param name="resourceCreator"></param>
         public TabControlUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(parent, resourceCreator)
         {
-            _overflowList = new ListViewUIElementContainer<TabPageUIElement>(this, Canvas);
-            _overflowList.ShowHeader = false;
-            _overflowList.IsVisible = false;
-            _overflowList.Height = 300;
+            _overflowList = new ListViewUIElementContainer<TabPageUIElement>(this, Canvas)
+            {
+                ShowHeader = false,
+                IsVisible = false,
+                Height = 300
+            };
             _overflowList.RowTapped += _overflowList_RowTapped;
             AddChild(_overflowList);
-            ListTextColumn<TabPageUIElement> column = new ListTextColumn<TabPageUIElement>();
-            column.ColumnFunction = delegate (TabPageUIElement page) { return page.Name; };
-            column.RelativeWidth = 1f;
+            var column = new ListTextColumn<TabPageUIElement>
+            {
+                ColumnFunction = page => page.Name,
+                RelativeWidth = 1f
+            };
             _overflowList.AddColumn(column);
 
-            _overflowButton = new NuSysApp.ButtonUIElement(this, Canvas);
-            _overflowButton.ButtonText = "+";
+            _overflowButton = new NuSysApp.ButtonUIElement(this, Canvas) {ButtonText = "+"};
             _overflowButton.Tapped += _overflowButton_Tapped;
             _overflowList.Width = _overflowListWidth;
             AddChild(_overflowButton);
@@ -211,6 +210,7 @@ namespace NuSysApp
         private void _overflowList_RowTapped(TabPageUIElement item, string columnName, CanvasPointer pointer, bool isSelected)
         {
             SelectedTab = item;
+            _overflowList.IsVisible = false;
         }
 
         private void _overflowButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
@@ -251,13 +251,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="name">The name of the tab to access</param>
         /// <returns></returns>
-        public TabPageUIElement this[string name]
-        {
-            get
-            {
-                return GetTabWithName(name);
-            }
-        }
+        public TabPageUIElement this[string name] => GetTabWithName(name);
 
         /// <summary>
         /// Returns the tab with the given name, or null if it doesn't exist
@@ -289,10 +283,9 @@ namespace NuSysApp
         {
             newTab.Parent = this;
             _tabs.Add(newTab);
-            TabButtonUIElement button = new TabButtonUIElement(this, ResourceCreator, this, newTab);
+            var button = new TabButtonUIElement(this, ResourceCreator, this, newTab);
             _tabButtons.Add(button);
             AddChild(button);
-            _buttonLayoutManager.AddElement(button);
             button.Tapped += TabButton_Tapped;
             _tabDict.Add(newTab, button);
             newTab.IsVisible = false;
@@ -301,8 +294,17 @@ namespace NuSysApp
             {
                 SelectedTab = newTab;
             }
+            if (_shownTabs.Count*TabWidth > Width)
+            {
+                _overflowList.AddItem(newTab);
+            }
+            else
+            {
+                _shownTabs.Add(newTab);
+            }
             _overflowList.AddItem(newTab);
             SendToFront(_overflowList);
+            _needsShownUpdate = true;
         }
 
         /// <summary>
@@ -312,7 +314,7 @@ namespace NuSysApp
         /// <param name="pointer"></param>
         private void TabButton_Tapped(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            TabButtonUIElement button = item as TabButtonUIElement;
+            var button = item as TabButtonUIElement;
             if(button == null)
             {
                 return;
@@ -326,7 +328,7 @@ namespace NuSysApp
         /// <param name="tab">Tab to remove</param>
         public void RemoveTab(TabPageUIElement tab)
         {
-            int index = _tabs.IndexOf(tab);
+            var index = _tabs.IndexOf(tab);
             if(index == -1)
             {
                 throw new ArgumentException("TabControl does not contain the given tab", "tab");
@@ -352,13 +354,13 @@ namespace NuSysApp
                     SelectedTab = null;
                 }
             }
-            TabPageUIElement t = _tabs[index];
+            var t = _tabs[index];
             _overflowList.RemoveItem(t);
             if(_overflowList.GetItems().Count == 0)
             {
                 _overflowList.IsVisible = false;
             }
-            TabButtonUIElement button = _tabDict[t];
+            var button = _tabDict[t];
             _tabButtons.Remove(button);
             RemoveChild(button);
             _buttonLayoutManager.Remove(button);
@@ -366,6 +368,7 @@ namespace NuSysApp
             RemoveChild(_tabs[index]);
             _tabs.RemoveAt(index);
             _tabDict.Remove(t);
+            _needsShownUpdate = true;
         }
 
         /// <summary>
@@ -374,10 +377,10 @@ namespace NuSysApp
         /// <param name="name"></param>
         public void RemoveTabWithName(string name)
         {
-            TabPageUIElement t = GetTabWithName(name);
+            var t = GetTabWithName(name);
             if(t == null)
             {
-                throw new ArgumentException("TabControl does not contain tab with given name", "name");
+                throw new ArgumentException("TabControl does not contain tab with given name", nameof(name));
             }
             RemoveTab(t);
         }
@@ -389,6 +392,7 @@ namespace NuSysApp
         {
             _tabs.Clear();
             SelectedTab = null;
+            _needsShownUpdate = true;
         }
 
         /// <summary>
@@ -402,7 +406,7 @@ namespace NuSysApp
                 SelectedTab = tab;
             } else
             {
-                throw new ArgumentException("TabControl does not contain given tab", "tab");
+                throw new ArgumentException("TabControl does not contain given tab", nameof(tab));
             }
         }
 
@@ -414,7 +418,7 @@ namespace NuSysApp
         {
             if(index < 0 || index >= _tabs.Count)
             {
-                throw new ArgumentException("Given index is out of bounds", "index");
+                throw new ArgumentException("Given index is out of bounds", nameof(index));
             }
             SelectedIndex = index;
         }
@@ -426,10 +430,10 @@ namespace NuSysApp
         /// <param name="name">The name of the tab to set to be the selected tab</param>
         public void SelectTabWithName(string name)
         {
-            TabPageUIElement tp = GetTabWithName(name);
+            var tp = GetTabWithName(name);
             if(tp == null)
             {
-                throw new ArgumentException("TabControl does not contain tab with given name", "name");
+                throw new ArgumentException("TabControl does not contain tab with given name", nameof(name));
             } else
             {
                 SelectedTab = tp;
@@ -444,7 +448,7 @@ namespace NuSysApp
         {
             if(!_tabs.Contains(tab))
             {
-                throw new ArgumentException("TabControl does not contain given tab", "tab");
+                throw new ArgumentException("TabControl does not contain given tab", nameof(tab));
             }
             if (SelectedTab == tab)
             {
@@ -460,7 +464,7 @@ namespace NuSysApp
         {
             if (index < 0 || index >= _tabs.Count)
             {
-                throw new ArgumentException("Given index is out of bounds", "index");
+                throw new ArgumentException("Given index is out of bounds", nameof(index));
             }
             if (SelectedIndex == index)
             {
@@ -474,10 +478,10 @@ namespace NuSysApp
         /// <param name="name">The name of the tab to deselect</param>
         public void DeselectTabWithName(string name)
         {
-            int index = GetTabIndexWithName(name);
+            var index = GetTabIndexWithName(name);
             if(index == -1)
             {
-                throw new ArgumentException("TabControl does not contain tab with given name", "name");
+                throw new ArgumentException("TabControl does not contain tab with given name", nameof(name));
             }
             DeselectTabAt(index);
         }
@@ -491,7 +495,7 @@ namespace NuSysApp
         {
             if (index < 0 || index >= _tabs.Count)
             {
-                throw new ArgumentException("Given index is out of bounds", "index");
+                throw new ArgumentException("Given index is out of bounds", nameof(index));
             }
             return _tabs[index].GetLocalBounds();
         }
@@ -505,7 +509,7 @@ namespace NuSysApp
         {
             if (index < 0 || index >= _tabs.Count)
             {
-                throw new ArgumentException("Given index is out of bounds", "index");
+                throw new ArgumentException("Given index is out of bounds", nameof(index));
             }
             return _tabs[index].GetScreenBounds();
         }
@@ -519,22 +523,45 @@ namespace NuSysApp
         {
             if(index1 < 0 || index1 >= _tabs.Count)
             {
-                throw new ArgumentException("Given index is out of bounds", "index1");
+                throw new ArgumentException("Given index is out of bounds", nameof(index1));
             }
             if(index2 < 0 || index2 >= _tabs.Count)
             {
-                throw new ArgumentException("Given index is out of bounds", "index2");
+                throw new ArgumentException("Given index is out of bounds", nameof(index2));
             }
-            TabPageUIElement t = _tabs[index1];
+            var t = _tabs[index1];
             _tabs[index1] = _tabs[index2];
             _tabs[index2] = t;
-            TabButtonUIElement b = _tabButtons[index1];
+            var b = _tabButtons[index1];
             _tabButtons[index1] = _tabButtons[index2];
             _tabButtons[index2] = b;
-            _buttonLayoutManager = new StackLayoutManager();
-            foreach(ButtonUIElement bui in _tabButtons)
+            _needsShownUpdate = true;
+        }
+
+        private void UpdateShownTabs()
+        {
+            _shownTabs.Clear();
+            _overflowList.ClearItems();
+            foreach (var tab in _tabs)
             {
-                _buttonLayoutManager.AddElement(bui);
+                if ((_shownTabs.Count*TabWidth) + (_shownTabs.Count - 1)*TabSpacing < Width - TabHeight)
+                {
+                    _shownTabs.Add(tab);
+                }
+                else
+                {
+                    _overflowList.AddItem(tab);
+                }
+            }
+            UpdateStackManager();
+        }
+
+        private void UpdateStackManager()
+        {
+            _buttonLayoutManager = new StackLayoutManager();
+            foreach (var tab in _shownTabs)
+            {
+                _buttonLayoutManager.AddElement(_tabDict[tab]);
             }
         }
 
@@ -547,27 +574,29 @@ namespace NuSysApp
         {
             if (oldIndex < 0 || oldIndex >= _tabs.Count)
             {
-                throw new ArgumentException("Given index is out of bounds", "oldIndex");
+                throw new ArgumentException("Given index is out of bounds", nameof(oldIndex));
             }
             if (newIndex < 0 || newIndex >= _tabs.Count)
             {
-                throw new ArgumentException("Given index is out of bounds", "newIndex");
+                throw new ArgumentException("Given index is out of bounds", nameof(newIndex));
             }
-            TabPageUIElement t = _tabs[oldIndex];
+            var t = _tabs[oldIndex];
             _tabs.RemoveAt(oldIndex);
             _tabs.Insert(newIndex, t);
-            TabButtonUIElement b = _tabButtons[oldIndex];
+            var b = _tabButtons[oldIndex];
             _tabButtons.RemoveAt(oldIndex);
             _tabButtons.Insert(newIndex, b);
-            _buttonLayoutManager = new StackLayoutManager();
-            foreach (ButtonUIElement bui in _tabButtons)
-            {
-                _buttonLayoutManager.AddElement(bui);
-            }
+            _needsShownUpdate = true;
         }
 
         public override void Draw(CanvasDrawingSession ds)
         {
+            if (_needsShownUpdate)
+            {
+                _needsShownUpdate = false;
+                UpdateShownTabs();
+            }
+
             _buttonLayoutManager.ItemWidth = TabWidth;
             _buttonLayoutManager.ItemHeight = TabHeight;
             _buttonLayoutManager.Height = TabHeight;
@@ -595,7 +624,7 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            foreach(TabButtonUIElement button in _tabButtons)
+            foreach(var button in _tabButtons)
             {
                 button.Tapped -= TabButton_Tapped;
             }

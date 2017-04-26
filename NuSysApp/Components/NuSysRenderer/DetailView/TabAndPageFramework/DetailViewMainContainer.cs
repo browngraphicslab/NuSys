@@ -74,7 +74,7 @@ namespace NuSysApp
             //AddChild(_mainTabContainer);
 
             _tabControl = new TabControlUIElement(this, Canvas);
-            for(int i = 0; i < 5; ++i)
+            for(int i = 0; i < 15; ++i)
             {
                 TabPageUIElement tab = new TabPageUIElement(this, Canvas, "Tab " + i);
                 TextboxUIElement tb = new TextboxUIElement(this, Canvas);
