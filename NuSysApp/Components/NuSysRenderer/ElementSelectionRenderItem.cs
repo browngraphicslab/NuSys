@@ -93,12 +93,6 @@ namespace NuSysApp
             SessionController.Instance.SessionView.FreeFormViewer.Selections.CollectionChanged += SelectionsOnCollectionChanged;
         }
 
-        public override void Dispose()
-        {
-            BtnTools.Dragged -= BtnTools_Dragged;
-            base.Dispose();
-        }
-
         /// <summary>
         /// Sets up the tool button to be dragged and the dragging rectangle that shows up when you start to drag.
         /// </summary>
@@ -107,8 +101,7 @@ namespace NuSysApp
         {
 
             BtnTools = new TransparentButtonUIElement(this, ResourceCreator, UIDefaults.SecondaryStyle, "drag tools");
-            BtnTools.DragCompleted += BtnTools_DragCompleted;
-            BtnTools.Dragged += BtnTools_Dragged;
+            BtnTools.Dragged += DragRecognizer_OnDragged;
 
             DragToolsRect = new RectangleUIElement(this, ResourceCreator)
             {
@@ -122,33 +115,22 @@ namespace NuSysApp
 
         }
 
-        /// <summary>
-        /// Make the drag tools rect follow the pointer when trying to drag out a new tool
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void BtnTools_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void DragRecognizer_OnDragged(ButtonUIElement button, DragEventArgs args)
         {
-            DragToolsRect.IsVisible = true;
-            DragToolsRect.Transform.LocalPosition = Vector2.Transform(pointer.CurrentPoint, this.Transform.ScreenToLocalMatrix);
+            if (args.CurrentState == GestureEventArgs.GestureState.Changed)
+            {
+                DragToolsRect.IsVisible = true;
+                DragToolsRect.Transform.LocalPosition = Vector2.Transform(args.CurrentPoint, this.Transform.ScreenToLocalMatrix);
+            } else if (args.CurrentState == GestureEventArgs.GestureState.Ended)
+            {
+                DragToolsRect.IsVisible = false;
+
+                Debug.Assert(_isSingleCollectionSelected);
+                var collectionVm = (_selectedItems.First()?.ViewModel as ElementViewModel)?.Controller as ElementCollectionController;
+                Debug.Assert(collectionVm != null);
+                collectionVm.CreateToolFromCollection(args.CurrentPoint.X, args.CurrentPoint.Y);
+            }
         }
-
-        /// <summary>
-        /// When the tool button has been dragged, either create new tool or add the collection as a parent to the tool dragged ontop of
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void BtnTools_DragCompleted(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            DragToolsRect.IsVisible = false;
-
-            Debug.Assert(_isSingleCollectionSelected);
-            var collectionVm = (_selectedItems.First()?.ViewModel as ElementViewModel)?.Controller as ElementCollectionController;
-            Debug.Assert(collectionVm != null);
-            collectionVm.CreateToolFromCollection(pointer.CurrentPoint.X, pointer.CurrentPoint.Y);
-        }
-
-
 
         public override async Task Load()
         {

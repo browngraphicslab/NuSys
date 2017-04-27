@@ -20,7 +20,6 @@ namespace NuSysApp
         public event TapEventHandler RightTapped;
 
         public delegate void DragEventHandler(ButtonUIElement sender, DragEventArgs args);
-
         public event DragEventHandler Dragged;
 
         /// <summary>
