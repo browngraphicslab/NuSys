@@ -131,6 +131,16 @@ namespace NuSysApp
             }
         }
 
+        public override float Width
+        {
+            get { return base.Width; }
+            set
+            {
+                base.Width = value;
+                _needsShownUpdate = true;
+            }
+        }
+
         /// <summary>
         /// The height of each tab button
         /// </summary>
@@ -139,13 +149,20 @@ namespace NuSysApp
             get; set;
         } = 50;
 
+        private int _tabWidth = 100;
+
         /// <summary>
         /// The width of each tab button
         /// </summary>
         public int TabWidth
         {
-            get; set;
-        } = 100;
+            get { return _tabWidth; }
+            set
+            {
+                _tabWidth = value;
+                _needsShownUpdate = true;
+            }
+        }
 
         /// <summary>
         /// The color of each tab button when it is not selected.
@@ -172,13 +189,20 @@ namespace NuSysApp
             get; set;
         } = HorizontalAlignment.Left;
 
+
+        private int _tabSpacing = 0;
         /// <summary>
         /// The spacing in between each tab button
         /// </summary>
         public int TabSpacing
         {
-            get; set;
-        } = 0;
+            get { return _tabSpacing; }
+            set
+            {
+                _tabSpacing = value;
+                _needsShownUpdate = true;
+            }
+        }
 
         /// <summary>
         /// Default constructor for TabControl
