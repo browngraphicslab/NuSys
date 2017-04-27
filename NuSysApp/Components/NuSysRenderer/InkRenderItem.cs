@@ -159,7 +159,7 @@ namespace NuSysApp
             }
             LatestStroke = CurrentInkStrokeWithEndpoint(e);
 
-            if (_isEraser)                                                                      // KBTODO eraser may erase the strokes in "chunks" since i'm dividing up the lines lol ... 
+            if (_isEraser)                                                                      
             {
                 var allStrokes = _inkManager.GetStrokes().ToArray();
                 var thisStroke = _currentInkPoints.Select(p => p.Position);
@@ -192,14 +192,6 @@ namespace NuSysApp
                 LatestStrokeAdded = DateTime.Now;
                 var contentDataModelId = _parentCollectionController.LibraryElementController.LibraryElementModel.ContentDataModelId;
 
-                /* 
-                var model = LatestStroke.ToInkModel(contentDataModelId, InkColor, InkSize);
-
-                StrokesMap[model.InkStrokeId] = LatestStroke;
-                _parentCollectionController.LibraryElementController.ContentDataController.AddInk(model);
-                */
-
-                // IMPROVEINK CHANGES                                                   /////////////////////////////////////////////////////////////////////////////////////////////
                 _wetStrokesToDraw.Add(LatestStroke);                 
                 foreach (var wetStroke in _wetStrokesToDraw)
                 {
@@ -213,18 +205,6 @@ namespace NuSysApp
 
             _currentInkPoints = new List<InkPoint>();
             _strokesToDraw = _inkManager.GetStrokes().ToList();
-
-
-            // IMPROVEINK CHANGES                                                        /////////////////////////////////////////////////////////////////////////////////////////////
-            /* 
-            _inkManager.AddStroke(LatestStroke);  
-            foreach (var wetStroke in _wetStrokesToDraw)
-            {
-                _inkManager.AddStroke(wetStroke);
-            }
-
-            _strokesToDraw = _inkManager.GetStrokes().ToList();
-            */
             
             _wetStrokesToDraw.Clear();
 
@@ -346,18 +326,13 @@ namespace NuSysApp
                 if (_isEraser)
                     s.DrawingAttributes = GetDrawingAttributes(Colors.DarkRed, InkSize);
 
-                // IMPROVEINK CHANGE ////////////////                                  ///////////////////////////////////////////////////////////////////////////////////////////// 
-                const int threshold = 800; //                                
-                //Debug.WriteLine(_currentInkPoints.Count); 
+                const int threshold = 800;                                 
                 if (_currentInkPoints.Count >= threshold)
                 {
                     _wetStrokesToDraw.Add(s);
                     InkPoint lastPoint = _currentInkPoints.Last(); 
-                    _currentInkPoints.Clear();                                                                      // KBTODO check if there is anything else to reset 
+                    _currentInkPoints.Clear();                                                                  
                     _currentInkPoints.Add(lastPoint);
-                    //ds.DrawInk(_wetStrokesToDraw);
-                    // return; 
-                    Debug.WriteLine("new");                                                                             // KBTODO erase later 
                 }
                 var toDraw = new List<InkStroke>( _wetStrokesToDraw );
                 toDraw.Add(s);
