@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Graphics.Canvas;
@@ -210,6 +211,7 @@ namespace NuSysApp
         private void _overflowList_RowTapped(TabPageUIElement item, string columnName, CanvasPointer pointer, bool isSelected)
         {
             SelectedTab = item;
+            MoveTab(_tabs.IndexOf(item), 0);
             _overflowList.IsVisible = false;
         }
 
@@ -283,14 +285,15 @@ namespace NuSysApp
         {
             newTab.Parent = this;
             _tabs.Add(newTab);
+            
             var button = new TabButtonUIElement(this, ResourceCreator, this, newTab);
             _tabButtons.Add(button);
             AddChild(button);
             button.Tapped += TabButton_Tapped;
             _tabDict.Add(newTab, button);
-            newTab.IsVisible = false;
             AddChild(newTab);
-            if(select || SelectedTab == null)
+            newTab.IsVisible = false;
+            if (select || SelectedTab == null)
             {
                 SelectedTab = newTab;
             }
@@ -331,7 +334,7 @@ namespace NuSysApp
             var index = _tabs.IndexOf(tab);
             if(index == -1)
             {
-                throw new ArgumentException("TabControl does not contain the given tab", "tab");
+                throw new ArgumentException("TabControl does not contain the given tab", nameof(tab));
             }
             RemoveTabAt(index);
         }
@@ -344,7 +347,7 @@ namespace NuSysApp
         {
             if(index < 0 || index >= _tabs.Count)
             {
-                throw new ArgumentException("Given index is out of bounds", "index");
+                throw new ArgumentException("Given index is out of bounds", nameof(index));
             }
             if (SelectedIndex == index)
             {
@@ -544,7 +547,8 @@ namespace NuSysApp
             _overflowList.ClearItems();
             foreach (var tab in _tabs)
             {
-                if ((_shownTabs.Count*TabWidth) + (_shownTabs.Count - 1)*TabSpacing < Width - TabHeight)
+                var c = _shownTabs.Count;
+                if ((c + 1) * TabWidth + c * TabSpacing < Width - TabHeight)
                 {
                     _shownTabs.Add(tab);
                 }
@@ -561,7 +565,13 @@ namespace NuSysApp
             _buttonLayoutManager = new StackLayoutManager();
             foreach (var tab in _shownTabs)
             {
-                _buttonLayoutManager.AddElement(_tabDict[tab]);
+                var b = _tabDict[tab];
+                b.IsVisible = true;
+                _buttonLayoutManager.AddElement(b);
+            }
+            foreach (var tab in _overflowList.GetItems())
+            {
+                _tabDict[tab].IsVisible = false;
             }
         }
 
@@ -589,7 +599,7 @@ namespace NuSysApp
             _needsShownUpdate = true;
         }
 
-        public override void Draw(CanvasDrawingSession ds)
+        public override void Update(Matrix3x2 parentLocalToScreenTransform)
         {
             if (_needsShownUpdate)
             {
@@ -619,7 +629,8 @@ namespace NuSysApp
                 SelectedTab.Width = Width;
                 SelectedTab.Height = Height - TabHeight;
             }
-            base.Draw(ds);
+
+            base.Update(parentLocalToScreenTransform);
         }
 
         public override void Dispose()

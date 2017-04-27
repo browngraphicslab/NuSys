@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Text;
 using NusysIntermediate;
 
 namespace NuSysApp
@@ -74,11 +75,14 @@ namespace NuSysApp
             //AddChild(_mainTabContainer);
 
             _tabControl = new TabControlUIElement(this, Canvas);
-            for(int i = 0; i < 15; ++i)
+            for(var i = 0; i < 35; ++i)
             {
-                TabPageUIElement tab = new TabPageUIElement(this, Canvas, "Tab " + i);
-                TextboxUIElement tb = new TextboxUIElement(this, Canvas);
-                tb.Text = "Textbox " + i;
+                var tab = new TabPageUIElement(this, Canvas, "Tab " + i);
+                var tb = new TextboxUIElement(this, Canvas)
+                {
+                    Text = "Textbox " + i,
+                    TextVerticalAlignment = CanvasVerticalAlignment.Top
+                };
                 tab.AddChild(tb);
                 tab.Background = Colors.LightBlue;
                 _tabControl.AddTab(tab);
@@ -127,14 +131,14 @@ namespace NuSysApp
             //_tabControl.TabSpacing = 10;
             AddChild(_tabControl);
 
-            ButtonUIElement testButton = new ButtonUIElement(this, Canvas);
-            testButton.ButtonText = "Test";
-            testButton.Width = 70;
-            testButton.Height = 70;
-            testButton.Background = Colors.Red;
-            testButton.Transform.LocalY = 400;
-            testButton.Tapped += (sender, pointer) => { _tabControl.RemoveTab(new TabPageUIElement(this, Canvas, "Test")); };
-            AddChild(testButton);
+            //ButtonUIElement testButton = new ButtonUIElement(this, Canvas);
+            //testButton.ButtonText = "Test";
+            //testButton.Width = 70;
+            //testButton.Height = 70;
+            //testButton.Background = Colors.Red;
+            //testButton.Transform.LocalY = 400;
+            //testButton.Tapped += (sender, pointer) => { _tabControl.RemoveTab(new TabPageUIElement(this, Canvas, "Test")); };
+            //AddChild(testButton);
             TopBarColor = Constants.MED_BLUE;
             TopBarHeight = 25;
 

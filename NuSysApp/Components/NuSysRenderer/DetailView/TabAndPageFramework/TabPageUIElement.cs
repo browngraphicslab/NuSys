@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
+using Windows.UI;
 using Microsoft.Graphics.Canvas;
 
 namespace NuSysApp
@@ -40,7 +43,8 @@ namespace NuSysApp
         /// <param name="resourceCreator"></param>
         /// <param name="name">The name of the tab page</param>
         /// <param name="content">The RectangleUIElement set the content to</param>
-        public TabPageUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, string name, RectangleUIElement content) : base(parent, resourceCreator)
+        public TabPageUIElement(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, string name,
+            RectangleUIElement content) : base(parent, resourceCreator)
         {
             Name = name;
             AddChild(content);
