@@ -347,7 +347,8 @@ namespace NuSysApp
                     s.DrawingAttributes = GetDrawingAttributes(Colors.DarkRed, InkSize);
 
                 // IMPROVEINK CHANGE ////////////////                                  ///////////////////////////////////////////////////////////////////////////////////////////// 
-                const int threshold = 8000; // 8000 ? 200                               // KBTODO this number depends on the device, something to think about 
+                const int threshold = 800; //                                
+                //Debug.WriteLine(_currentInkPoints.Count); 
                 if (_currentInkPoints.Count >= threshold)
                 {
                     _wetStrokesToDraw.Add(s);
