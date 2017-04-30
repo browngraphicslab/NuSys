@@ -18,15 +18,9 @@ namespace NuSysApp
     public class RadialMenu : EllipseUIElement
     {
 
-        private AddElementMenuUIElement _addElementMenu;
-        private bool _disabled = false;
-        private int _selectedButtonIndex;
-        private float _originalHeight;
-        private float _originalWidth;
+        private EllipseButtonUIElement _selectedHighlight; //an ellipse that is positioned behind the buttons to indicate its selection
 
-        private EllipseButtonUIElement _selectedHighlight;
-
-        private RadialMenuButtons _radialMenuButtons;
+        private RadialMenuButtons _radialMenuButtons; //the buttons of the radial menu
 
         public RadialMenu(BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator, List<RadialMenuButtonContainer> buttonContainers) : base(parent, resourceCreator)
         {
@@ -56,9 +50,6 @@ namespace NuSysApp
             AddChild(_radialMenuButtons);
 
 
-            _originalWidth = Width;
-            _originalHeight = Height;
-
 
             DragStarted += RadialMenu_DragStarted;
             Dragged += RadialMenuOnDragged;
@@ -66,13 +57,17 @@ namespace NuSysApp
 
         }
 
-
+        /// <summary>
+        /// This gets called when the user releases the drag on the menu. If the pointer is on a button when this occurs, the button's action gets called.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
         private async void RadialMenuOnDragCompleted(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             var hitTest = this.HitTest(pointer.CurrentPoint);
             var casted = hitTest?.Parent as RadialMenuButtons;
 
-            //If drag ends on a buttone
+            //If drag ends on a button
             if (casted != null && hitTest != this)
             {
                 //Perform that button's action
@@ -80,21 +75,29 @@ namespace NuSysApp
 
             }
             
-            //Hide everything
+            //Hide everything in the menu
             _selectedHighlight.IsVisible = false;
             IsVisible = false;
             _radialMenuButtons.IsVisible = false;
 
-
         }
 
+        /// <summary>
+        /// Make the buttons of the radial menu visible when the user starts to drag
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
         private void RadialMenu_DragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             _radialMenuButtons.IsVisible = true;
         }
 
 
-
+        /// <summary>
+        /// As the user drags around the radial menu, if the pointer is on a button, the button gets highlighted.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="pointer"></param>
         private void RadialMenuOnDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
             var hitTest = this.HitTest(pointer.CurrentPoint);
