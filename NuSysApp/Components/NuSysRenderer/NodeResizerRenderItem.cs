@@ -9,6 +9,7 @@ using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using System.Numerics;
 using Windows.UI;
+using Microsoft.Graphics.Canvas.Brushes;
 
 namespace NuSysApp
 {
@@ -28,76 +29,62 @@ namespace NuSysApp
 
         public ResizerPosition Position { get; }
 
-        private CanvasGeometry _triangle;
+        public float ResizerSize { set; get; }
+        
+        //Circle represents the resizer
+        private EllipseUIElement _cornerCircle;
+
         public NodeResizerRenderItem(BaseRenderItem parent, CanvasAnimatedControl resourceCreator, ResizerPosition position) : base(parent, resourceCreator)
         {
+            ResizerSize = 30f;
             Position = position;
+
+            //Set up the circle handle
+            _cornerCircle = new EllipseUIElement(this, ResourceCreator)
+            {
+                Background = Colors.White,
+                BorderWidth = 3f,
+                BorderColor = Colors.SlateGray,
+                Width = 15f,
+                Height = 15f
+            };
+            AddChild(_cornerCircle);
         }
 
-        public override void Dispose()
-        {
-            if (IsDisposed)
-                return;
-            _triangle?.Dispose();
-            _triangle = null;
-            base.Dispose();
-        }
+
 
         public override async Task Load()
         {
             switch (Position)// Make the polygon correct for whichever corner we're in
             {
                 case ResizerPosition.TopLeft:
-                    _triangle = CanvasGeometry.CreatePolygon(ResourceCreator, new System.Numerics.Vector2[4]{
-                        new Vector2(0, 0),
-                        new Vector2(0, 30),
-                        new Vector2(30, 0),
-                        new Vector2(0, 0)
-                    });
+
+                    _cornerCircle.Transform.LocalPosition = new Vector2(-_cornerCircle.Width/2, -_cornerCircle.Height / 2);
                     break;
                 case ResizerPosition.TopRight:
-                    _triangle = CanvasGeometry.CreatePolygon(ResourceCreator, new System.Numerics.Vector2[4]{
-                        new Vector2(0, 0),
-                        new Vector2(30, 30),
-                        new Vector2(30, 0),
-                        new Vector2(0, 0)
-                    });
+                    _cornerCircle.Transform.LocalPosition = new Vector2(ResizerSize - _cornerCircle.Width/2, -_cornerCircle.Height/2);
                     break;
                 case ResizerPosition.BottomLeft:
-                    _triangle = CanvasGeometry.CreatePolygon(ResourceCreator, new System.Numerics.Vector2[4]{
-                        new Vector2(0, 0),
-                        new Vector2(0, 30),
-                        new Vector2(30, 30),
-                        new Vector2(0, 0)
-                    });
+                    _cornerCircle.Transform.LocalPosition = new Vector2(-_cornerCircle.Width/2, ResizerSize - _cornerCircle.Height/2);
                     break;
                 case ResizerPosition.BottomRight:
-                    _triangle = CanvasGeometry.CreatePolygon(ResourceCreator, new System.Numerics.Vector2[4]{
-                        new Vector2(0, 30),
-                        new Vector2(30, 30),
-                        new Vector2(30, 0),
-                        new Vector2(0, 30)
-                    });
+                    _cornerCircle.Transform.LocalPosition = new Vector2(ResizerSize - _cornerCircle.Width/2, ResizerSize - _cornerCircle.Height/2);
                     break;
                 default:
                     break;
             }
         }
 
-        public override void Draw(CanvasDrawingSession ds)
+
+        public override BaseRenderItem HitTest(Vector2 screenPoint)
         {
-            if (IsDisposed)
-                return;
+            var cornerHT = _cornerCircle.HitTest(screenPoint);
 
-            var orgTransform = ds.Transform;
-            ds.Transform = Transform.LocalToScreenMatrix;
-
-            if (_triangle != null)
-                ds.FillGeometry(_triangle, new Vector2(0, 0), Colors.Black);
-
-            ds.Transform = orgTransform;
-
-            base.Draw(ds);
+            if (cornerHT != null)
+            {
+                return this;
+            }
+            return base.HitTest(screenPoint);
         }
 
         public override Rect GetLocalBounds()
