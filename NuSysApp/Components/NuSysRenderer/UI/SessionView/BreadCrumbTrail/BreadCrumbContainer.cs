@@ -71,26 +71,31 @@ namespace NuSysApp
 
             _horizontalScrollBar.ScrollBarPositionChanged += _horizontalScrollBar_ScrollBarPositionChanged;
 
-            Dragged += MainBackgroundDragged;
-            DragStarted += MainBackgroundOnDragStarted;
+            // add manipulation events
+            var dragRecognizer = new DragGestureRecognizer();
+            GestureRecognizers.Add(dragRecognizer);
+            dragRecognizer.OnDragged += DragRecognizer_OnDragged;
         }
 
+        private void DragRecognizer_OnDragged(DragGestureRecognizer sender, DragEventArgs args)
+        {
+            // on pressed
+            if (args.CurrentState == GestureEventArgs.GestureState.Began)
+            {
+                initialScrollBarPosition = _horizontalScrollBar.Position;
+            }
+            // on dragged 
+            else if (args.CurrentState == GestureEventArgs.GestureState.Changed)
+            {
+                var normalizedDiff = args.Translation.X / _totalPathWidth;                          // KBTODO this is just Delta.X of CanvasPointer 
+                var _scrollDiff = -normalizedDiff;
+                _horizontalScrollBar.Position = initialScrollBarPosition + _scrollDiff;
+                BoundScrollHandle();
+                refreshUI = true;
+            }
+        }
         private void _horizontalScrollBar_ScrollBarPositionChanged(object source, float position)
         {
-            refreshUI = true;
-        }
-
-        private void MainBackgroundOnDragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            initialScrollBarPosition = _horizontalScrollBar.Position;
-        }
-
-        private void MainBackgroundDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            var normalizedDiff = pointer.Delta.X/_totalPathWidth;
-            var _scrollDiff = -normalizedDiff;
-            _horizontalScrollBar.Position = initialScrollBarPosition + _scrollDiff;
-            BoundScrollHandle();
             refreshUI = true;
         }
 
@@ -113,9 +118,6 @@ namespace NuSysApp
             {
                 crumb.Deleted -= OnBreadCrumbDeleted;
             }
-
-            Dragged += MainBackgroundDragged;
-            DragStarted += MainBackgroundOnDragStarted;
             base.Dispose();
         }
 

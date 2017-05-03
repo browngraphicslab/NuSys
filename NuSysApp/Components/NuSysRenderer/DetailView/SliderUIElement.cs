@@ -207,32 +207,42 @@ namespace NuSysApp
             Background = Colors.Transparent;
 
             // add manipulation events
-            _thumb.Dragged += OnThumbDragged;
-            _thumb.Pressed += OnThumbPressed;
-            _thumb.Released += OnThumbReleased;
-            _thumb.DragCompleted += OnThumbDragCompleted;
-            _thumb.DragStarted += OnThumbDragStarted;
+            var dragRecognizer = new DragGestureRecognizer();
+            _thumb.GestureRecognizers.Add(dragRecognizer);
+            dragRecognizer.OnDragged += DragRecognizer_OnDragged;
         }
 
-        /// <summary>
-        /// Event handler fired whenever the _thumb element has started its drag event
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void OnThumbDragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void DragRecognizer_OnDragged(DragGestureRecognizer sender, DragEventArgs args)
         {
-            OnSliderMoveStarted?.Invoke(this, SliderPosition);
+            // on pressed
+            if (args.CurrentState == GestureEventArgs.GestureState.Began)
+            {
+                // Fired when the thumb is pressed causes the tool tip to appear
+                if (IsTooltipEnabled)                                        
+                {
+                    _toolTipUIElement.IsVisible = true;
+                }                
+            }
+            // on released
+            else if (args.CurrentState == GestureEventArgs.GestureState.Ended)
+            {
+                // Fired when the thumb is released causes the tool tip to disappear
+                _toolTipUIElement.IsVisible = false;                           
+            }
+            // on dragged  
+            else
+            {
+                // dragstarted
+                OnSliderMoveStarted?.Invoke(this, SliderPosition);              
+
+                // Fired when the thumb is dragged, changes the position of the slider
+                SliderPosition += args.Translation.X / Width;                               // KBTODO this was DeltaSinceLastUpdate.X  
+
+                // dragcompleted
+                OnSliderMoveCompleted?.Invoke(this, SliderPosition);            
+            }
         }
 
-        /// <summary>
-        /// Event handler fired whenever the _thumb element has completed a drag event;
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void OnThumbDragCompleted(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            OnSliderMoveCompleted?.Invoke(this,SliderPosition);
-        }
 
         /// <summary>
         /// Fired when the slider is disposed
@@ -240,46 +250,9 @@ namespace NuSysApp
         public override void Dispose()
         {
             Debug.Assert(_thumb != null);
-            _thumb.Dragged -= OnThumbDragged;
-            _thumb.Pressed -= OnThumbPressed;
-            _thumb.Released -= OnThumbReleased;
-            _thumb.DragCompleted -= OnThumbDragCompleted;
-            _thumb.DragStarted -= OnThumbDragStarted;
             base.Dispose();
         }
 
-        /// <summary>
-        /// Fired when the thumb is released causes the tool tip to dissapear
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void OnThumbReleased(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            _toolTipUIElement.IsVisible = false;
-        }
-
-        /// <summary>
-        /// Fired when the thumb is pressed causes the tool tip to appear
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void OnThumbPressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            if (IsTooltipEnabled)
-            {
-                _toolTipUIElement.IsVisible = true;
-            }
-        }
-
-        /// <summary>
-        /// Fired when the thumb is dragged, changes the position of the slider
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="pointer"></param>
-        private void OnThumbDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            SliderPosition += pointer.DeltaSinceLastUpdate.X/Width;
-        }
 
         /// <summary>
         /// Initialize the UI for the tool tip

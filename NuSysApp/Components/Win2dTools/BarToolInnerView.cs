@@ -27,11 +27,24 @@ namespace NuSysApp
             _barChart.DisableSelectionByClick = true;
 
             _barChart.BarTapped += BarChart_BarTapped;
-            _barChart.BarDragged += BarChart_BarDragged;
-            _barChart.BarDragCompleted += BarChart_BarDragCompleted;
-      
+
+            // add manipulation events
+            var dragRecognizer = new DragGestureRecognizer();                        
+            _barChart.GestureRecognizers.Add(dragRecognizer);
+            dragRecognizer.OnDragged += DragRecognizer_OnDragged;
+
             AddChild(_barChart);
 
+        }
+
+        private void DragRecognizer_OnDragged(DragGestureRecognizer sender, DragEventArgs args)
+        {
+            // on dragged
+            if (args.CurrentState == GestureEventArgs.GestureState.Changed)
+            {
+                Item_Dragging(args);
+                Item_DragCompleted(bar.Item, args);                                                                 // KBTODO bar(BarChartElement).Item 
+            }
         }
 
         private void BarChart_BarDoubleTapped(object source, BarChartElement bar)
@@ -43,18 +56,6 @@ namespace NuSysApp
         {
             Item_OnTapped(bar.Item, type);
         }
-
-        private void BarChart_BarDragCompleted(object source, BarChartElement bar, CanvasPointer pointer)
-        {
-            Item_DragCompleted(bar.Item, pointer);
-        }
-
-        private void BarChart_BarDragged(BarChartElement bar, CanvasPointer pointer)
-        {
-            Item_Dragging(pointer);
-        }
-
-
 
         public override void SetProperties(List<string> propertiesList)
         {
