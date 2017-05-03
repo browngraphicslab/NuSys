@@ -343,13 +343,24 @@ namespace NuSysApp
             };
 
             // Set up events
-            Pressed += EditableTextboxUIElement_Pressed;
+            var pressedRecognizer = new TapGestureRecognizer();
+            GestureRecognizers.Add(pressedRecognizer);
+            pressedRecognizer.OnTapped += EditableTextboxUIElement_Pressed;
+            //Pressed += EditableTextboxUIElement_Pressed;
             OnFocusGained += EditableTextboxUIElement_OnFocusGained;
             OnFocusLost += EditableTextboxUIElement_OnFocusLost;
             KeyPressed += EditableTextboxUIElement_KeyPressed;
             KeyReleased += EditableTextboxUIElement_KeyReleased;
-            DragStarted += ScrollableTextboxUIElement_DragStarted;
-            Dragged += ScrollableTextboxUIElement_Dragged;
+
+
+            var dragRecognizer = new DragGestureRecognizer();
+            GestureRecognizers.Add(dragRecognizer);
+            dragRecognizer.OnDragged += ScrollableTextboxUIElement_Dragged;
+
+            //DragStarted += ScrollableTextboxUIElement_DragStarted;
+            //Dragged += ScrollableTextboxUIElement_Dragged;
+
+
             DoubleTapped += ScrollableTextboxUIElement_DoubleTapped;
             PointerWheelChanged += ScrollableTextboxUIElement_PointerWheelChanged;
         }
@@ -459,28 +470,28 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void ScrollableTextboxUIElement_DragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            // for touch pointer's drag only changes the transform so don't do any selection code
-            if (pointer.DeviceType == PointerDeviceType.Touch)
-            {
-                _initialDragXOffset = _xOffset;
-                _initialDragYOffset = _yOffset;
-                return; // just return
-            }
+        //private void ScrollableTextboxUIElement_DragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        //{
+        //    // for touch pointer's drag only changes the transform so don't do any selection code
+        //    if (pointer.DeviceType == PointerDeviceType.Touch)
+        //    {
+        //        _initialDragXOffset = _xOffset;
+        //        _initialDragYOffset = _yOffset;
+        //        return; // just return
+        //    }
 
-            if (IsEditable)
-            {
-                // if either shift is not pressed or we don't have selection, otherwise we'll be extending the current selection
-                if (!_isShiftPressed || !_hasSelection)
-                {
-                    // set the _selectionStartIndex to the current caret position
-                    _selectionStartIndex = GetCaretCharacterIndexFromPoint(pointer.CurrentPoint);
-                }
-            }
+        //    if (IsEditable)
+        //    {
+        //        // if either shift is not pressed or we don't have selection, otherwise we'll be extending the current selection
+        //        if (!_isShiftPressed || !_hasSelection)
+        //        {
+        //            // set the _selectionStartIndex to the current caret position
+        //            _selectionStartIndex = GetCaretCharacterIndexFromPoint(pointer.CurrentPoint);
+        //        }
+        //    }
 
 
-        }
+        //}
 
         /// <summary>
         /// Fired whenever the pointer is dragged on the scrollable textbox, if the pointer is a touch pointer
@@ -488,21 +499,42 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void ScrollableTextboxUIElement_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void ScrollableTextboxUIElement_Dragged(DragGestureRecognizer sender, DragEventArgs args)
         {
-            // when we are using touch scroll on drag
-            if (pointer.DeviceType == PointerDeviceType.Touch)
+            if (args.CurrentState == GestureEventArgs.GestureState.Began)
+            {
+                if (args.DeviceType == PointerDeviceType.Touch)
+                {
+                    _initialDragXOffset = _xOffset;
+                    _initialDragYOffset = _yOffset;
+                    return; // just return
+                }
+
+                if (IsEditable)
+                {
+                    // if either shift is not pressed or we don't have selection, otherwise we'll be extending the current selection
+                    if (!_isShiftPressed || !_hasSelection)
+                    {
+                        // set the _selectionStartIndex to the current caret position
+                        _selectionStartIndex = GetCaretCharacterIndexFromPoint(args.CurrentPoint);
+                    }
+                }
+            }
+            else if (args.CurrentState == GestureEventArgs.GestureState.Changed)
+            {
+               // when we are using touch scroll on drag
+            if (args.DeviceType == PointerDeviceType.Touch)
             {
                 if (_scrollVert)
                 {
-                    _yOffset = _initialDragYOffset + pointer.Delta.Y;
+                    _yOffset = _initialDragYOffset + args.Translation.Y;
                     BoundYOffset();
                     _updateCaretTransform = true;
                     _updateSelectionRects = true;
                 }
                 else
                 {
-                    _xOffset = _initialDragXOffset + pointer.Delta.X;
+                    _xOffset = _initialDragXOffset + args.Translation.X;
                     BoundXOffset();
                     _updateCaretTransform = true;
                     _updateSelectionRects = true;
@@ -514,7 +546,7 @@ namespace NuSysApp
             if (IsEditable)
             {
                 // update the caret character index to reflect the current point
-                CaretCharacterIndex = GetCaretCharacterIndexFromPoint(pointer.CurrentPoint);
+                CaretCharacterIndex = GetCaretCharacterIndexFromPoint(args.CurrentPoint);
 
                 // set the selection end index to the current caret position
                 _selectionEndIndex = CaretCharacterIndex;
@@ -535,7 +567,9 @@ namespace NuSysApp
 
                 // keep the caret on the screen
                 _keepCaretOnScreen = true;
+            } 
             }
+            
         }
 
 
@@ -544,7 +578,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="item"></param>
         /// <param name="pointer"></param>
-        private void EditableTextboxUIElement_Pressed(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void EditableTextboxUIElement_Pressed(TapGestureRecognizer sender, TapEventArgs args)
         {
             if (IsEditable)
             {
@@ -564,7 +598,7 @@ namespace NuSysApp
                         _selectionStartIndex = CaretCharacterIndex;
                     }
                     // update the CaretCharacterIndex to reflect the new caret character location
-                    CaretCharacterIndex = GetCaretCharacterIndexFromPoint(pointer.CurrentPoint);
+                    CaretCharacterIndex = GetCaretCharacterIndexFromPoint(args.Position);
                     _selectionEndIndex = CaretCharacterIndex;
                     _hasSelection = _selectionStartIndex != _selectionEndIndex;
                     _updateSelectionRects = true;
@@ -575,7 +609,7 @@ namespace NuSysApp
                     // clear the current selection and set the caret character index based on the pointer input
                     ClearSelection(false);
                     // update the CaretCharacterIndex
-                    CaretCharacterIndex = GetCaretCharacterIndexFromPoint(pointer.CurrentPoint);
+                    CaretCharacterIndex = GetCaretCharacterIndexFromPoint(args.Position);
                 }
             }
 
@@ -1166,13 +1200,13 @@ namespace NuSysApp
         {
             if (_loaded)
             {
-                Pressed -= EditableTextboxUIElement_Pressed;
+                //Pressed -= EditableTextboxUIElement_Pressed;
                 OnFocusGained -= EditableTextboxUIElement_OnFocusGained;
                 OnFocusLost -= EditableTextboxUIElement_OnFocusLost;
                 KeyPressed -= EditableTextboxUIElement_KeyPressed;
                 KeyReleased -= EditableTextboxUIElement_KeyReleased;
-                DragStarted -= ScrollableTextboxUIElement_DragStarted;
-                Dragged -= ScrollableTextboxUIElement_Dragged;
+                //DragStarted -= ScrollableTextboxUIElement_DragStarted;
+                //Dragged -= ScrollableTextboxUIElement_Dragged;
                 DoubleTapped -= ScrollableTextboxUIElement_DoubleTapped;
                 PointerWheelChanged -= ScrollableTextboxUIElement_PointerWheelChanged;
                 if (_scrollVert)

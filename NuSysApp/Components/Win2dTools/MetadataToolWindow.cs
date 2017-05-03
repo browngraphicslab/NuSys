@@ -300,9 +300,9 @@ namespace NuSysApp
 
             _metadataValuesList.AddColumns(new List<ListColumn<KeyValuePair<string, double>>>() { listColumn });
             _metadataValuesList.RowTapped += _metadataValuesList_RowTapped;
-            _metadataValuesList.RowDragged += _metadataValuesList_RowDragged; ;
-            _metadataValuesList.RowDragCompleted += _metadataValuesList_RowDragCompleted; ;
-            _metadataValuesList.RowDoubleTapped += _metadataValuesList_RowDoubleTapped; ;
+            _metadataValuesList.RowDragged += _metadataValuesList_RowDragged; 
+            _metadataValuesList.RowDragCompleted += _metadataValuesList_RowDragCompleted; 
+            _metadataValuesList.RowDoubleTapped += _metadataValuesList_RowDoubleTapped; 
             _metadataValuesList.Transform.LocalPosition = new Vector2(Width/2, SEARCHBAR_HEIGHT + FILTER_CHOOSER_HEIGHT);
 
 
@@ -315,15 +315,15 @@ namespace NuSysApp
         /// <param name="item"></param>
         /// <param name="columnName"></param>
         /// <param name="pointer"></param>
-        private void _metadataKeysList_RowDragCompleted(string item, string columnName, CanvasPointer pointer)
+        private void _metadataKeysList_RowDragCompleted(string item, string columnName, DragEventArgs args)
         {
             if (_dragFilterItem.IsVisible)
             {
                 _dragFilterItem.IsVisible = false;
                 var vm = (Vm as MetadataToolViewModel);
                 vm.Selection = new Tuple<string, HashSet<string>>(item, new HashSet<string>());
-                var dragDestination = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, null, 2) as ToolWindow; //maybe replace null w render engine.root
-                var canvasCoordinate = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(new Vector2(pointer.CurrentPoint.X, pointer.CurrentPoint.Y), SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection);
+                var dragDestination = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(args.CurrentPoint, null, 2) as ToolWindow; //maybe replace null w render engine.root
+                var canvasCoordinate = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(new Vector2(args.CurrentPoint.X, args.CurrentPoint.Y), SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection);
                 vm.FilterIconDropped(dragDestination, canvasCoordinate.X, canvasCoordinate.Y);
             }
         }
@@ -334,9 +334,9 @@ namespace NuSysApp
         /// <param name="item"></param>
         /// <param name="columnName"></param>
         /// <param name="pointer"></param>
-        private void _metadataKeysList_RowDragged(string item, string columnName, CanvasPointer pointer)
+        private void _metadataKeysList_RowDragged(string item, string columnName, DragEventArgs args)
         {
-            DragFilterIcon(pointer);
+            DragFilterIcon(args);
         }
 
         /// <summary>
@@ -345,13 +345,13 @@ namespace NuSysApp
         /// <param name="item"></param>
         /// <param name="columnName"></param>
         /// <param name="pointer"></param>
-        private void _metadataValuesList_RowDragCompleted(KeyValuePair<string, double> item, string columnName, CanvasPointer pointer)
+        private void _metadataValuesList_RowDragCompleted(KeyValuePair<string, double> item, string columnName, DragEventArgs args)
         {
             if (_dragFilterItem.IsVisible)
             {
                 _dragFilterItem.IsVisible = false;
                 var vm = (Vm as MetadataToolViewModel);
-                if (pointer.DeviceType == PointerDeviceType.Pen) // || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down
+                if (args.DeviceType == PointerDeviceType.Pen) // || CoreWindow.GetForCurrentThread().GetAsyncKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down
                 {
                     vm.Selection.Item2.Add(item.Key);
                     vm.Selection = vm.Selection;
@@ -361,8 +361,8 @@ namespace NuSysApp
                     vm.Selection = new Tuple<string, HashSet<string>>(vm.Selection.Item1,
                         new HashSet<string>() { item.Key });
                 }
-                var dragDestination = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(pointer.CurrentPoint, null, 2) as ToolWindow; //maybe replace null w render engine.root
-                var canvasCoordinate = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(new Vector2(pointer.CurrentPoint.X, pointer.CurrentPoint.Y), SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection);
+                var dragDestination = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.GetRenderItemAt(args.CurrentPoint, null, 2) as ToolWindow; //maybe replace null w render engine.root
+                var canvasCoordinate = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(new Vector2(args.CurrentPoint.X, args.CurrentPoint.Y), SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection);
 
                 vm.FilterIconDropped(dragDestination, canvasCoordinate.X, canvasCoordinate.Y);
             }
@@ -372,9 +372,9 @@ namespace NuSysApp
         /// Makes the drag filter icon go to the pointer if you are outside the tool area
         /// </summary>
         /// <param name="pointer"></param>
-        public void DragFilterIcon(CanvasPointer pointer)
+        public void DragFilterIcon(DragEventArgs args)
         {
-            _dragFilterItem.Transform.LocalPosition = Vector2.Transform(pointer.CurrentPoint, this.Transform.ScreenToLocalMatrix);
+            _dragFilterItem.Transform.LocalPosition = Vector2.Transform(args.CurrentPoint, this.Transform.ScreenToLocalMatrix);
             if (_dragFilterItem.Transform.LocalX > 0 && _dragFilterItem.Transform.LocalX < Width &&
                 _dragFilterItem.Transform.LocalY < Height && _dragFilterItem.Transform.LocalY > 0)
             {
@@ -392,9 +392,9 @@ namespace NuSysApp
         /// <param name="item"></param>
         /// <param name="columnName"></param>
         /// <param name="pointer"></param>
-        private void _metadataValuesList_RowDragged(KeyValuePair<string, double> item, string columnName, CanvasPointer pointer)
+        private void _metadataValuesList_RowDragged(KeyValuePair<string, double> item, string columnName, DragEventArgs args)
         {
-            DragFilterIcon(pointer);
+            DragFilterIcon(args);
         }
 
         /// <summary>

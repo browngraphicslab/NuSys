@@ -171,8 +171,11 @@ namespace NuSysApp
             AddChild(_verticalScrollBar);
 
             _verticalScrollBar.ScrollBarPositionChanged += _verticalScrollBar_ScrollBarPositionChanged;
-            DragStarted += MarkdownConvertingTextbox_DragStarted;
-            Dragged += MarkdownConvertingTextbox_Dragged;
+            var dragRecognizer = new DragGestureRecognizer();
+            GestureRecognizers.Add(dragRecognizer);
+            dragRecognizer.OnDragged += MarkdownConvertingTextbox_Dragged;
+            //DragStarted += MarkdownConvertingTextbox_DragStarted;
+            //Dragged += MarkdownConvertingTextbox_Dragged;
             PointerWheelChanged += MarkdownConvertingTextbox_PointerWheelChanged;
         }
 
@@ -186,21 +189,29 @@ namespace NuSysApp
             BoundYOffset();
         }
 
-        private void MarkdownConvertingTextbox_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void MarkdownConvertingTextbox_Dragged(DragGestureRecognizer sender, DragEventArgs args)
         {
             if (!Scrollable)
             {
                 return;
             }
-            _yOffset = _initialDragYOffset + pointer.Delta.Y;
-            BoundYOffset();
+            if (args.CurrentState == GestureEventArgs.GestureState.Changed)
+            {
+                //Switched in args.translation for pointer.delta
+                _yOffset = _initialDragYOffset + args.Translation.Y;
+                BoundYOffset();
+            } else if (args.CurrentState == GestureEventArgs.GestureState.Began)
+            {
+                _initialDragXOffset = _xOffset;
+                _initialDragYOffset = _yOffset;
+            }
+            
         }
 
-        private void MarkdownConvertingTextbox_DragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            _initialDragXOffset = _xOffset;
-            _initialDragYOffset = _yOffset;
-        }
+        //private void MarkdownConvertingTextbox_DragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        //{
+            
+        //}
 
         /// <summary>
         /// Bound the y offset
@@ -243,9 +254,10 @@ namespace NuSysApp
         public override void Dispose()
         {
             _verticalScrollBar.ScrollBarPositionChanged -= _verticalScrollBar_ScrollBarPositionChanged;
-            DragStarted -= MarkdownConvertingTextbox_DragStarted;
-            Dragged -= MarkdownConvertingTextbox_Dragged;
+            //DragStarted -= MarkdownConvertingTextbox_DragStarted;
+            //Dragged -= MarkdownConvertingTextbox_Dragged;
             PointerWheelChanged -= MarkdownConvertingTextbox_PointerWheelChanged;
+
 
             base.Dispose();
         }
