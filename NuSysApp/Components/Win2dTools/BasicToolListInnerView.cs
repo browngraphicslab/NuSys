@@ -36,8 +36,14 @@ namespace NuSysApp
 
             _listView.AddColumns(new List<ListColumn<string>>() { listColumn });
             _listView.RowTapped += _listView_RowTapped;
+
             _listView.RowDragged += _listView_RowDragged;
             _listView.RowDragCompleted += _listView_RowDragCompleted;
+
+            var dragRecognizer = new DragGestureRecognizer();
+            _listView.GestureRecognizers.Add(dragRecognizer);
+            
+
             _listView.RowDoubleTapped += _listView_RowDoubleTapped;
             
             AddChild(_listView);
@@ -48,14 +54,14 @@ namespace NuSysApp
             Item_OnDoubleTapped(item);
         }
 
-        private void _listView_RowDragCompleted(string item, string columnName, CanvasPointer pointer)
+        private void _listView_RowDragCompleted(string item, string columnName, DragEventArgs args)
         {
-            Item_DragCompleted(item, pointer);
+            Item_DragCompleted(item, args);
         }
 
-        private void _listView_RowDragged(string item, string columnName, CanvasPointer pointer)
+        private void _listView_RowDragged(string item, string columnName, DragEventArgs args)
         {
-            Item_Dragging(pointer);
+            Item_Dragging(args);
         }
 
         private void _listView_RowTapped(string item, string columnName, bool isSelected, PointerDeviceType type)

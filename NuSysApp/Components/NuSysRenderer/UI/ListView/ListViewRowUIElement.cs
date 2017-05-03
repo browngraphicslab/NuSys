@@ -43,7 +43,7 @@ namespace NuSysApp
         public event DoubleTappedEventHandler RowDoubleTapped;
 
         public delegate void DraggedEventHandler(
-            ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer);
+            ListViewRowUIElement<T> rowUIElement, int colIndex, DragEventArgs args);
 
         public event DraggedEventHandler RowDragged;
 

@@ -37,11 +37,11 @@ namespace NuSysApp
         public delegate void BarChartElementDeselectedEventHandler(object source, BarChartElement element);
         public event BarChartElementDeselectedEventHandler BarDeselected;
 
-        public delegate void BarChartElementDraggedEventHandler(BarChartElement bar, CanvasPointer pointer);
+        public delegate void BarChartElementDraggedEventHandler(BarChartElement bar, DragEventArgs args);
         public event BarChartElementDraggedEventHandler BarDragged;
 
-
-        public delegate void BarChartElementDragCompletedEventHandler(object source, BarChartElement element, CanvasPointer pointer);
+        //changed from CanvasPointer to DragEventArgs
+        public delegate void BarChartElementDragCompletedEventHandler(object source, BarChartElement element, DragEventArgs args);
         public event BarChartElementDragCompletedEventHandler BarDragCompleted;
 
         public delegate void BarChartElementTappedEventHandler(object source, BarChartElement bar, PointerDeviceType type);
@@ -113,8 +113,26 @@ namespace NuSysApp
 
         public void AddBarHandlers(BarChartElement element)
         {
-            element.Dragged += Element_Dragged;
-            element.DragCompleted += Element_DragCompleted;
+            //We commented these out
+            //element.Dragged += Element_Dragged;
+            //element.DragCompleted += Element_DragCompleted;
+
+            //We attempted to add a dragrecognizer
+            var dragRecognizer = new DragGestureRecognizer();
+            element.GestureRecognizers.Add(dragRecognizer);
+            dragRecognizer.OnDragged += delegate(DragGestureRecognizer sender, DragEventArgs args)
+            {
+                if (args.CurrentState == GestureEventArgs.GestureState.Began)
+                {
+                    BarDragged?.Invoke(element, args);
+                } else if (args.CurrentState == GestureEventArgs.GestureState.Changed)
+                {
+                    BarDragged?.Invoke(element, args);
+                } else if (args.CurrentState == GestureEventArgs.GestureState.Ended)
+                {
+                    BarDragCompleted?.Invoke(this, element, args);
+                }
+            };
 
             var tapRecognizer = new TapGestureRecognizer();
             element.GestureRecognizers.Add(tapRecognizer);
@@ -130,6 +148,19 @@ namespace NuSysApp
                 }
             };
         }
+
+        //private void DragRecognizer_OnDragged(DragGestureRecognizer sender, DragEventArgs args)
+        //{
+        //    ////Parameter types changed to DragGestureRecognizer and DragEventArgs
+        //    ////Questionable code; we aattempted to invoke on selected barchartelement
+        //    //var bar = HitTest(args.StartPoint) as BarChartElement;
+        //    //BarDragged?.Invoke(bar, args);
+        //}
+        //private void Element_DragCompleted(DragGestureRecognizer item, CanvasPointer pointer)
+        //{
+        //    //Parameter types changed to DragGestureRecognizer and DragEventArgs
+        //    BarDragCompleted?.Invoke(this, item as BarChartElement, pointer);
+        //}
 
         public void RemoveBarHandlers(BarChartElement element)
         {
@@ -148,11 +179,6 @@ namespace NuSysApp
                 RemoveBarHandlers(child as BarChartElement);
             }
             ClearChildren();
-        }
-        private void Element_DragCompleted(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            BarDragCompleted?.Invoke(this, item as BarChartElement, pointer);
-
         }
 
         private void Element_DoubleTapped(BarChartElement bar)
@@ -253,13 +279,7 @@ namespace NuSysApp
             }
         }
 
-        private void Element_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            var bar = item as BarChartElement;
-            Debug.Assert(bar != null);
-            BarDragged?.Invoke(bar, pointer);
 
-        }
 
         public override void Draw(CanvasDrawingSession ds)
         {

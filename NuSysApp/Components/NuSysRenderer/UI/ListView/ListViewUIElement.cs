@@ -28,7 +28,7 @@ namespace NuSysApp
         public delegate void RowTappedEventHandler(T item, String columnName, bool isSelected, PointerDeviceType type);
         public event RowTappedEventHandler RowTapped;
 
-        public delegate void RowDraggedEventHandler(T item, string columnName, CanvasPointer pointer);
+        public delegate void RowDraggedEventHandler(T item, string columnName, DragEventArgs args);
         public event RowDraggedEventHandler RowDragged;
 
         public delegate void RowDoubleTappedEventHandler(T item, string columnName, PointerDeviceType type);
@@ -104,7 +104,7 @@ namespace NuSysApp
 
 
         
-        public delegate void RowDragCompletedEventHandler(T item, string columnName, CanvasPointer pointer);
+        public delegate void RowDragCompletedEventHandler(T item, string columnName, DragEventArgs args);
 
         /// <summary>
         /// This event will fire when you release after dragging a row
@@ -336,11 +336,11 @@ namespace NuSysApp
         {
             //rowToRemoveHandlersFrom.Selected -= ListViewRowUIElement_Selected;
             //rowToRemoveHandlersFrom.Deselected -= ListViewRowUIElement_Deselected;
-            rowToRemoveHandlersFrom.RowPointerReleased -= ListViewRowUIElement_PointerReleased;
+            //rowToRemoveHandlersFrom.RowPointerReleased -= ListViewRowUIElement_PointerReleased;
             rowToRemoveHandlersFrom.RowTapped -= ListViewRowUIElementOnRowTapped;
             rowToRemoveHandlersFrom.RowDoubleTapped -= ListViewRowUIElementOnRowDoubleTapped;
             rowToRemoveHandlersFrom.RowDragged -= ListViewRowUIElement_Dragged;
-            rowToRemoveHandlersFrom.RowDragStarted -= ListViewRowUIElement_RowDragStarted;
+            //rowToRemoveHandlersFrom.RowDragStarted -= ListViewRowUIElement_RowDragStarted;
             rowToRemoveHandlersFrom.PointerWheelChanged -= ListViewRowUIElement_PointerWheelChanged;
             rowToRemoveHandlersFrom.RowHolding -= ListViewRowUIElement_RowHolding;
         }
@@ -635,11 +635,11 @@ namespace NuSysApp
                 listViewRowUIElement.Width = Width - BorderWidth * 2;
                 listViewRowUIElement.Height = RowHeight;
                 PopulateListRow(listViewRowUIElement);
-                listViewRowUIElement.RowPointerReleased += ListViewRowUIElement_PointerReleased;
+                //listViewRowUIElement.RowPointerReleased += ListViewRowUIElement_PointerReleased;
                 listViewRowUIElement.RowTapped += ListViewRowUIElementOnRowTapped;
                 listViewRowUIElement.RowDoubleTapped += ListViewRowUIElementOnRowDoubleTapped;
                 listViewRowUIElement.RowDragged += ListViewRowUIElement_Dragged;
-                listViewRowUIElement.RowDragStarted += ListViewRowUIElement_RowDragStarted;
+                //listViewRowUIElement.RowDragStarted += ListViewRowUIElement_RowDragStarted;
                 listViewRowUIElement.PointerWheelChanged += ListViewRowUIElement_PointerWheelChanged;
                 listViewRowUIElement.RowHolding += ListViewRowUIElement_RowHolding;
                 Rows.Add(listViewRowUIElement);
@@ -923,37 +923,37 @@ namespace NuSysApp
 
         #region Event handlers
 
-        private void ListViewRowUIElement_PointerReleased(ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer, T item)
-        {
-            if (_isDragging)
-            {
-                RowDragCompleted?.Invoke(rowUIElement.Item, _listColumns[colIndex].Title, pointer);
-                _isDragging = false;
+        //private void ListViewRowUIElement_PointerReleased(ListViewRowUIElement<T> rowUIElement, int colIndex, DragEventArgs args, T item)
+        //{
+        //    if (_isDragging)
+        //    {
+        //        RowDragCompleted?.Invoke(rowUIElement.Item, _listColumns[colIndex].Title, args);
+        //        _isDragging = false;
 
-            }
-            //Remove reference to item you were dragging
-            _draggedItem = default(T);
-            _isScrolling = false;
+        //    }
+        //    //Remove reference to item you were dragging
+        //    _draggedItem = default(T);
+        //    _isScrolling = false;
 
 
-        }
+        //}
 
         private void ListViewRowUIElement_RowHolding(ListViewRowUIElement<T> rowUIElement, int colIndex, Vector2 point, T item)
         {
             SelectItem(item);
         }
 
-        private void ListViewRowUIElement_RowDragStarted(T item, int colIndex, CanvasPointer pointer)
-        {
-            _draggedItem = item;
-            _startingDragPoint = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
-            _x = _startingDragPoint.X;
-            _y = _startingDragPoint.Y;
-            _isDragging = false;
-            _isScrolling = false;
+        //private void ListViewRowUIElement_RowDragStarted(T item, int colIndex, CanvasPointer pointer)
+        //{
+        //    _draggedItem = item;
+        //    _startingDragPoint = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
+        //    _x = _startingDragPoint.X;
+        //    _y = _startingDragPoint.Y;
+        //    _isDragging = false;
+        //    _isScrolling = false;
 
 
-        }
+        //}
 
 
 
@@ -965,58 +965,79 @@ namespace NuSysApp
         /// <param name="rowUIElement"></param>
         /// <param name="cell"></param>
         /// <param name="pointer"></param>
-        private void ListViewRowUIElement_Dragged(ListViewRowUIElement<T> rowUIElement, int colIndex, CanvasPointer pointer)
+        private void ListViewRowUIElement_Dragged(ListViewRowUIElement<T> rowUIElement, int colIndex, DragEventArgs args)
         {
-            //calculate bounds of listview
-            float minX = 0f, maxX = Width, minY = 0, maxY = Height;
-
-            //Get local point from screen point
-            var point = Vector2.Transform(pointer.CurrentPoint, Transform.ScreenToLocalMatrix);
-
-            float dX = point.X - _x, dY = point.Y - _y;
-
-            _x = point.X;
-            _y = point.Y;
-            //Vector representing change from start position
-            var deltaVector = point - _startingDragPoint;
-
-            if (!_isDragging)
+            if (args.CurrentState == GestureEventArgs.GestureState.Began)
             {
-                if (point.X < minX || point.X > maxX || point.Y < minY || point.Y > maxY && !_isScrolling)
+                _draggedItem = rowUIElement.Item;
+                _startingDragPoint = Vector2.Transform(args.CurrentPoint, Transform.ScreenToLocalMatrix);
+                _x = _startingDragPoint.X;
+                _y = _startingDragPoint.Y;
+                _isDragging = false;
+                _isScrolling = false;
+            }
+            else if (args.CurrentState == GestureEventArgs.GestureState.Changed)
+            {
+                //calculate bounds of listview
+                float minX = 0f, maxX = Width, minY = 0, maxY = Height;
+
+                //Get local point from screen point
+                var point = Vector2.Transform(args.CurrentPoint, Transform.ScreenToLocalMatrix);
+
+                float dX = point.X - _x, dY = point.Y - _y;
+
+                _x = point.X;
+                _y = point.Y;
+                //Vector representing change from start position
+                var deltaVector = point - _startingDragPoint;
+
+                if (!_isDragging)
                 {
-                    //find difference in start and end vector
-                    var angle = Math.Atan(deltaVector.Y / deltaVector.X);
-                    //If drag gesture inferred, set isDragging to true
-                    if(Math.Abs(angle) < DragAngleThreshold)
+                    if (point.X < minX || point.X > maxX || point.Y < minY || point.Y > maxY && !_isScrolling)
                     {
-                        _isDragging = true;
-                        //If it's the first time we are leaving the listview, select the item
-                        if (!DisableSelectionByClick && !(pointer.DeviceType == PointerDeviceType.Pen || SessionController.Instance.ShiftHeld))
+                        //find difference in start and end vector
+                        var angle = Math.Atan(deltaVector.Y / deltaVector.X);
+                        //If drag gesture inferred, set isDragging to true
+                        if (Math.Abs(angle) < DragAngleThreshold)
                         {
-                            SelectItem(_draggedItem);
+                            _isDragging = true;
+                            //If it's the first time we are leaving the listview, select the item
+                            if (!DisableSelectionByClick &&
+                                !(args.DeviceType == PointerDeviceType.Pen || SessionController.Instance.ShiftHeld))
+                            {
+                                SelectItem(_draggedItem);
+                            }
                         }
+                        else
+                        {
+                            _isScrolling = true;
+                        }
+
                     }
+                    //Otherwise, scroll
                     else
                     {
-                        _isScrolling = true;
+                        //scroll if in bounds
+                        var deltaY = -dY / (HeightOfAllRows);
+                        if (Math.Abs(dY) > 0.001)
+                        {
+                            _scrollVelocity = dY;
+                        }
+                        ChangePosition(deltaY);
                     }
-
                 }
-                //Otherwise, scroll
                 else
                 {
-                    //scroll if in bounds
-                    var deltaY = -dY / (HeightOfAllRows);
-                    if (Math.Abs(dY) > 0.001)
-                    {
-                        _scrollVelocity = dY;
-                    }
-                    ChangePosition(deltaY);
-                }
-            }else
-            {
-                RowDragged?.Invoke(_draggedItem, rowUIElement != null ? _listColumns[colIndex].Title : null, pointer);
+                    RowDragged?.Invoke(_draggedItem, rowUIElement != null ? _listColumns[colIndex].Title : null, args);
 
+                }
+            }
+            else if (args.CurrentState == GestureEventArgs.GestureState.Ended)
+            {
+                RowDragCompleted?.Invoke(rowUIElement.Item, _listColumns[colIndex].Title, args);
+                _isDragging = false;
+                _draggedItem = default(T);
+                _isScrolling = false;
             }
 
 

@@ -31,14 +31,14 @@ namespace NuSysApp
         /// </summary>
         public event RowTappedEventHandler RowTapped;
 
-        public delegate void RowDraggedEventHandler(T item, string columnName, CanvasPointer pointer);
+        public delegate void RowDraggedEventHandler(T item, string columnName, DragEventArgs args);
 
         /// <summary>
         /// If a row was dragged outisde the list this event will fire.
         /// </summary>
         public event RowDraggedEventHandler RowDragged;
 
-        public delegate void RowDragCompletedEventHandler(T item, string columnName, CanvasPointer pointer);
+        public delegate void RowDragCompletedEventHandler(T item, string columnName, DragEventArgs args);
 
         /// <summary>
         /// If a row has been double tapped this event will fire.
@@ -641,9 +641,9 @@ namespace NuSysApp
         /// <param name="item"></param>
         /// <param name="columnName"></param>
         /// <param name="pointer"></param>
-        private void ListView_RowDragged(T item, string columnName, CanvasPointer pointer)
+        private void ListView_RowDragged(T item, string columnName, DragEventArgs args)
         {
-            RowDragged?.Invoke(item, columnName, pointer);
+            RowDragged?.Invoke(item, columnName, args);
         }
 
         /// <summary>
@@ -652,9 +652,9 @@ namespace NuSysApp
         /// <param name="item"></param>
         /// <param name="columnName"></param>
         /// <param name="pointer"></param>
-        private void ListView_RowDragCompleted(T item, string columnName, CanvasPointer pointer)
+        private void ListView_RowDragCompleted(T item, string columnName, DragEventArgs args)
         {
-            RowDragCompleted?.Invoke(item, columnName, pointer);
+            RowDragCompleted?.Invoke(item, columnName, args);
         }
 
         /// <summary>

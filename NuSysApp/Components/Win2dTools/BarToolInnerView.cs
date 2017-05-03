@@ -27,7 +27,13 @@ namespace NuSysApp
             _barChart.DisableSelectionByClick = true;
 
             _barChart.BarTapped += BarChart_BarTapped;
-            _barChart.BarDragged += BarChart_BarDragged;
+
+            //_barChart.BarDragged += BarChart_BarDragged;
+
+            var dragRecognizer = new DragGestureRecognizer();
+            _barChart.GestureRecognizers.Add(dragRecognizer);
+            dragRecognizer.OnDragged += DragRecognizer_OnDragged;
+
             _barChart.BarDragCompleted += BarChart_BarDragCompleted;
       
             AddChild(_barChart);
@@ -44,14 +50,14 @@ namespace NuSysApp
             Item_OnTapped(bar.Item, type);
         }
 
-        private void BarChart_BarDragCompleted(object source, BarChartElement bar, CanvasPointer pointer)
+        private void BarChart_BarDragCompleted(object source, BarChartElement bar, DragEventArgs args)
         {
-            Item_DragCompleted(bar.Item, pointer);
+            Item_DragCompleted(bar.Item, args);
         }
 
-        private void BarChart_BarDragged(BarChartElement bar, CanvasPointer pointer)
+        private void DragRecognizer_OnDragged(DragGestureRecognizer sender, DragEventArgs args)
         {
-            Item_Dragging(pointer);
+            Item_Dragging(args);
         }
 
 
