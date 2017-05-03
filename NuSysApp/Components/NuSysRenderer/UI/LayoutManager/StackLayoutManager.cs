@@ -265,21 +265,27 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// The dispose method fore the stack layout manager
+        /// The dispose method for the stack layout manager
         /// </summary>
         public override void Dispose()
         {
             _elements.RemoveRange(0, _elements.Count);
         }
 
-        public void ClearStack(BaseInteractiveUIElement parent)
+        /// <summary>
+        /// Clear the StackLayoutManager. Optionally provide a parent ui element to remove all elements in the stack from
+        /// </summary>
+        /// <param name="parent"></param>
+        public void ClearStack(BaseInteractiveUIElement parent = null)
         {
-            for (int i = 0; i < _elements.Count; i++)
+            if (parent != null)
             {
-                var element = _elements[i];
-                parent.RemoveChild(element);
-                _elements.Remove(element);
+                for (int i = 0; i < _elements.Count; i++)
+                {
+                    parent.RemoveChild(_elements[i]);
+                }
             }
+            _elements.Clear();
         }
 
         /// <summary>

@@ -611,7 +611,7 @@ namespace NuSysApp
         {
             _shownTabs.Clear();
             _overflowList.ClearItems();
-            _buttonLayoutManager = new StackLayoutManager();
+            _buttonLayoutManager.ClearStack();
             bool hasOverflow = false;
             foreach (var tab in _tabs)
             {
