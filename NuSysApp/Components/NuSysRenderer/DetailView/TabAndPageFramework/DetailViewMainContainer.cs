@@ -75,7 +75,8 @@ namespace NuSysApp
             //AddChild(_mainTabContainer);
 
             _tabControl = new TabControlUIElement(this, Canvas);
-            for(var i = 0; i < 35; ++i)
+            Random r = new Random();
+            for (var i = 0; i < 35; ++i)
             {
                 var tab = new TabPageUIElement(this, Canvas, "Tab " + i);
                 var tb = new TextboxUIElement(this, Canvas)
@@ -84,42 +85,33 @@ namespace NuSysApp
                     TextVerticalAlignment = CanvasVerticalAlignment.Top
                 };
                 tab.AddChild(tb);
+                var control = new TabControlUIElement(this, Canvas)
+                {
+                    Width = 800,
+                    Height = 600,
+                    TabWidth = 175,
+                    TabHeight = 40,
+                    TabAlignment = HorizontalAlignment.Right,
+                    TabColor = Colors.Orange,
+                    TabSelectedColor = Colors.DarkOrange,
+                    TabSpacing = 5
+                };
+                for(int j = 0, count = r.Next(20) + 1; j < count; ++j)
+                {
+                    var tab2 = new TabPageUIElement(this, Canvas, "Internal Tab " + i + ", " + j);
+                    var tb2 = new TextboxUIElement(this, Canvas)
+                    {
+                        Text = "Internal Textbox " + i + ", " + j,
+                        TextVerticalAlignment = CanvasVerticalAlignment.Top
+                    };
+                    tab2.AddChild(tb2);
+                    tab2.Background = Colors.AliceBlue;
+                    control.AddTab(tab2);
+                }
+                tab.AddChild(control);
                 tab.Background = Colors.LightBlue;
                 _tabControl.AddTab(tab);
             }
-            //TabPageUIElement page1 = new TabPageUIElement(this, Canvas, "Page 1");
-            //TextboxUIElement tb1 = new TextboxUIElement(this, Canvas);
-            //tb1.Text = "TextBox 1";
-            //page1.AddChild(tb1);
-            //page1.Background = Colors.LightBlue;
-            //TabPageUIElement page2 = new TabPageUIElement(this, Canvas, "Page 2");
-            //TextboxUIElement tb2 = new TextboxUIElement(this, Canvas);
-            //tb2.Text = "TextBox 2";
-            //page2.AddChild(tb2);
-            //page2.Background = Colors.LightBlue;
-            //TabPageUIElement page3 = new TabPageUIElement(this, Canvas, "Page 3");
-            //TextboxUIElement tb3 = new TextboxUIElement(this, Canvas);
-            //tb3.Text = "TextBox 3";
-            //page3.AddChild(tb3);
-            //page3.Background = Colors.LightBlue;
-            //TabPageUIElement page4 = new TabPageUIElement(this, Canvas, "Page 4");
-            //TextboxUIElement tb4 = new TextboxUIElement(this, Canvas);
-            //tb4.Text = "TextBox 4";
-            //page4.AddChild(tb4);
-            //TabControlUIElement internalTabControl = new TabControlUIElement(this, Canvas);
-            //TabPageUIElement tp1 = new TabPageUIElement(this, Canvas, "Internal 1");
-            //TabPageUIElement tp2 = new TabPageUIElement(this, Canvas, "Internal 2");
-            //TextboxUIElement tbi1 = new TextboxUIElement(this, Canvas);
-            //tbi1.Text = "Internal Textbox 1";
-            //TextboxUIElement tbi2 = new TextboxUIElement(this, Canvas);
-            //tbi2.Text = "Internal Textbox 2";
-            //tp1.AddChild(tbi1);
-            //tp2.AddChild(tbi2);
-            //internalTabControl.AddTab(tp1);
-            //internalTabControl.AddTab(tp2);
-            //internalTabControl.Transform.LocalY += 100;
-            //page4.AddChild(internalTabControl);
-            //page4.Background = Colors.LightBlue;
             _tabControl.TabColor = Colors.CornflowerBlue;
             _tabControl.TabWidth = 70;
             _tabControl.TabHeight = 30;

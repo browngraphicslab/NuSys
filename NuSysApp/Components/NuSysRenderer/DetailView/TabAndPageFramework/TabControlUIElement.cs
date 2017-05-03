@@ -65,7 +65,13 @@ namespace NuSysApp
         /// List of tabs in the TabControl
         /// </summary>
         private List<TabPageUIElement> _tabs = new List<TabPageUIElement>();
+        /// <summary>
+        /// List of tabs whose buttons are shown in the main bar
+        /// </summary>
         private List<TabPageUIElement> _shownTabs = new List<TabPageUIElement>(); 
+        /// <summary>
+        /// ListView containing the tabs that don't fit in the top bar and are kept in the list on the side.
+        /// </summary>
         private ListViewUIElementContainer<TabPageUIElement> _overflowList;
 
         private bool _needsShownUpdate = true;
@@ -136,8 +142,11 @@ namespace NuSysApp
             get { return base.Width; }
             set
             {
+                if(value != base.Width)
+                {
+                    MarkDirty();
+                }
                 base.Width = value;
-                _needsShownUpdate = true;
             }
         }
 
@@ -159,8 +168,11 @@ namespace NuSysApp
             get { return _tabWidth; }
             set
             {
+                if(_tabWidth != value)
+                {
+                    MarkDirty();
+                }
                 _tabWidth = value;
-                _needsShownUpdate = true;
             }
         }
 
@@ -199,8 +211,11 @@ namespace NuSysApp
             get { return _tabSpacing; }
             set
             {
+                if(_tabSpacing != value)
+                {
+                    MarkDirty();
+                }
                 _tabSpacing = value;
-                _needsShownUpdate = true;
             }
         }
 
@@ -215,7 +230,7 @@ namespace NuSysApp
             {
                 ShowHeader = false,
                 IsVisible = false,
-                Height = 300
+                Height = 500
             };
             _overflowList.RowTapped += _overflowList_RowTapped;
             AddChild(_overflowList);
@@ -331,7 +346,7 @@ namespace NuSysApp
             }
             _overflowList.AddItem(newTab);
             SendToFront(_overflowList);
-            _needsShownUpdate = true;
+            MarkDirty();
         }
 
         /// <summary>
@@ -395,7 +410,7 @@ namespace NuSysApp
             RemoveChild(_tabs[index]);
             _tabs.RemoveAt(index);
             _tabDict.Remove(t);
-            _needsShownUpdate = true;
+            MarkDirty();
         }
 
         /// <summary>
@@ -419,7 +434,7 @@ namespace NuSysApp
         {
             _tabs.Clear();
             SelectedTab = null;
-            _needsShownUpdate = true;
+            MarkDirty();
         }
 
         /// <summary>
@@ -562,41 +577,7 @@ namespace NuSysApp
             var b = _tabButtons[index1];
             _tabButtons[index1] = _tabButtons[index2];
             _tabButtons[index2] = b;
-            _needsShownUpdate = true;
-        }
-
-        private void UpdateShownTabs()
-        {
-            _shownTabs.Clear();
-            _overflowList.ClearItems();
-            foreach (var tab in _tabs)
-            {
-                var c = _shownTabs.Count;
-                if ((c + 1) * TabWidth + c * TabSpacing < Width - TabHeight)
-                {
-                    _shownTabs.Add(tab);
-                }
-                else
-                {
-                    _overflowList.AddItem(tab);
-                }
-            }
-            UpdateStackManager();
-        }
-
-        private void UpdateStackManager()
-        {
-            _buttonLayoutManager = new StackLayoutManager();
-            foreach (var tab in _shownTabs)
-            {
-                var b = _tabDict[tab];
-                b.IsVisible = true;
-                _buttonLayoutManager.AddElement(b);
-            }
-            foreach (var tab in _overflowList.GetItems())
-            {
-                _tabDict[tab].IsVisible = false;
-            }
+            MarkDirty();
         }
 
         /// <summary>
@@ -620,6 +601,44 @@ namespace NuSysApp
             var b = _tabButtons[oldIndex];
             _tabButtons.RemoveAt(oldIndex);
             _tabButtons.Insert(newIndex, b);
+            MarkDirty();
+        }
+
+        /// <summary>
+        /// Update which tabs are in the shown tabs list and which are in the overflow tab list
+        /// </summary>
+        private void UpdateShownTabs()
+        {
+            _shownTabs.Clear();
+            _overflowList.ClearItems();
+            _buttonLayoutManager = new StackLayoutManager();
+            bool hasOverflow = false;
+            foreach (var tab in _tabs)
+            {
+                var c = _shownTabs.Count;
+                if ((c + 1) * TabWidth + c * TabSpacing < Width - TabHeight - 5)
+                {
+                    _shownTabs.Add(tab);
+                    var b = _tabDict[tab];
+                    b.IsVisible = true;
+                    _buttonLayoutManager.AddElement(b);
+                }
+                else
+                {
+                    _overflowList.AddItem(tab);
+                    _tabDict[tab].IsVisible = false;
+                    hasOverflow = true;
+                }
+            }
+            _overflowButton.IsVisible = hasOverflow;
+        }
+
+        /// <summary>
+        /// Mark that something that affects tabs and the overflow list has changed and we need to recalculate 
+        /// which tabs are in the overflow list and which are in the main list
+        /// </summary>
+        private void MarkDirty()
+        {
             _needsShownUpdate = true;
         }
 
@@ -634,7 +653,7 @@ namespace NuSysApp
             _buttonLayoutManager.ItemWidth = TabWidth;
             _buttonLayoutManager.ItemHeight = TabHeight;
             _buttonLayoutManager.Height = TabHeight;
-            _buttonLayoutManager.Width = Width - TabHeight;
+            _buttonLayoutManager.Width = Width - TabHeight - 5;
             _buttonLayoutManager.HorizontalAlignment = TabAlignment;
             _buttonLayoutManager.Spacing = TabSpacing;
             _buttonLayoutManager.ArrangeItems();
