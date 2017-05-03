@@ -37,7 +37,7 @@ namespace NuSysApp
         public delegate void BarChartElementDeselectedEventHandler(object source, BarChartElement element);
         public event BarChartElementDeselectedEventHandler BarDeselected;
 
-        public delegate void BarChartElementDraggedEventHandler(BarChartElement bar, CanvasPointer pointer);
+        public delegate void BarChartElementDraggedEventHandler(BarChartElement bar, DragEventArgs args);
         public event BarChartElementDraggedEventHandler BarDragged;
 
 
@@ -113,8 +113,12 @@ namespace NuSysApp
 
         public void AddBarHandlers(BarChartElement element)
         {
-            element.Dragged += Element_Dragged;
-            element.DragCompleted += Element_DragCompleted;
+            //element.Dragged += Element_Dragged;
+            //element.DragCompleted += Element_DragCompleted;
+
+            var dragRecognizer = new DragGestureRecognizer();
+            element.GestureRecognizers.Add(dragRecognizer);
+            dragRecognizer.OnDragged += DragRecognizer_OnDragged;
 
             var tapRecognizer = new TapGestureRecognizer();
             element.GestureRecognizers.Add(tapRecognizer);
@@ -129,6 +133,15 @@ namespace NuSysApp
                     Element_DoubleTapped(element);
                 }
             };
+        }
+        private void DragRecognizer_OnDragged(DragGestureRecognizer sender, DragEventArgs args)
+        {
+
+            BarDragged?.Invoke(this, args);
+        }
+        private void Element_DragCompleted(DragGestureRecognizer item, CanvasPointer pointer)
+        {
+            BarDragCompleted?.Invoke(this, item as BarChartElement, pointer);
         }
 
         public void RemoveBarHandlers(BarChartElement element)
@@ -148,11 +161,6 @@ namespace NuSysApp
                 RemoveBarHandlers(child as BarChartElement);
             }
             ClearChildren();
-        }
-        private void Element_DragCompleted(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            BarDragCompleted?.Invoke(this, item as BarChartElement, pointer);
-
         }
 
         private void Element_DoubleTapped(BarChartElement bar)
@@ -253,13 +261,7 @@ namespace NuSysApp
             }
         }
 
-        private void Element_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            var bar = item as BarChartElement;
-            Debug.Assert(bar != null);
-            BarDragged?.Invoke(bar, pointer);
 
-        }
 
         public override void Draw(CanvasDrawingSession ds)
         {
