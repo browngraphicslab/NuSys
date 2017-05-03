@@ -55,6 +55,9 @@ namespace NuSysApp
                     break;
                 case NusysConstants.ElementType.Area:
                     vm = new AreaNodeViewModel((ElementCollectionController)controller);
+                    break;
+                case NusysConstants.ElementType.GoogleDrive:
+                    vm = new ImageElementViewModel(controller);
                     break;/*
                 case ElementType.Link:
                     var linkModel = (LinkModel)controller.Model;

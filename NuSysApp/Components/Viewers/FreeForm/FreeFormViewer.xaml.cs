@@ -898,17 +898,32 @@ namespace NuSysApp
             }
             if (item == RenderEngine.ElementSelectionRect.BtnEditTags)
             {
+                //============================TESTING STUFF===================================
                 var driveSearch = new PaginatedGoogleDriveSearch();
-                var paginatedList = new PaginatedListView<String>(RenderEngine.Root, RenderEngine.CanvasAnimatedControl, driveSearch);
+                var paginatedList = new PaginatedListView<GoogleDriveFileResult>(RenderEngine.Root, RenderEngine.CanvasAnimatedControl, driveSearch);
                 paginatedList.Height = 500;
                 paginatedList.Width = 500;
                 paginatedList.Transform.LocalPosition = pointer.CurrentPoint;
-                var column = new ListTextColumn<String>();
-                column.RelativeWidth = 1;
-                column.ColumnFunction = str => str;
+
+                var thumbnailColumn = new ListImageColumn<GoogleDriveFileResult>(RenderEngine.CanvasAnimatedControl);
+                thumbnailColumn.RelativeWidth = 1;
+                thumbnailColumn.ColumnFunction = f => new Uri(f.ThumbnailLink != null ? f.ThumbnailLink : f.IconLink);
+                paginatedList.AddColumn(thumbnailColumn);
+
+                var column = new ListTextColumn<GoogleDriveFileResult>();
+                column.RelativeWidth = 4;
+                column.ColumnFunction = f => f.Title;
                 paginatedList.AddColumn(column);
 
+                paginatedList.RowDragCompleted += PaginatedList_RowDragCompleted;
+
+
+
                 RenderEngine.Root.AddChild(paginatedList);
+
+                //============================TESTING STUFF ENDED===================================
+
+
                 // edit tags
                 if (_editTagsElement != null)
                 {
@@ -924,6 +939,48 @@ namespace NuSysApp
                 _editTagsElement.Load();
             }
         }
+
+        //============================TESTING STUFF===================================
+
+        private void PaginatedList_RowDragCompleted(GoogleDriveFileResult item, string columnName, CanvasPointer pointer)
+        {
+            Debug.WriteLine("HI");
+            var imageArgs = new CreateNewGoogleDriveLibraryElementRequestArgs();
+            imageArgs.AccessType = NusysConstants.AccessType.Public;
+            imageArgs.AspectRatio = 1;
+            imageArgs.Title = item.Title;
+            var keywords = new HashSet<Keyword>();
+            keywords.Add(new Keyword("drive"));
+            keywords.Add(new Keyword("google"));
+            imageArgs.Keywords = keywords;
+ 
+            var contentRequestArgs = new CreateNewContentRequestArgs();
+            var id = item.id;
+            contentRequestArgs.ContentId = id;
+            if (item.ThumbnailLink != null)
+            {
+                contentRequestArgs.DataBytes = item.ThumbnailLink;
+            }
+            else
+            {
+                contentRequestArgs.DataBytes = item.IconLink;
+            }
+            contentRequestArgs.FileExtension = null;
+            contentRequestArgs.LibraryElementArgs = imageArgs;
+            var request = new CreateNewContentRequest(contentRequestArgs);
+            executeRequest(request);
+        }
+
+        public async void executeRequest(CreateNewContentRequest request)
+        {
+            await SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(request);
+            if (request.AddReturnedLibraryElementToLibrary())
+            {
+                var x = 4;
+            }
+        }
+        //============================TESTING STUFF ENDED===================================
+
 
         /// <summary>
         /// Does the layout for a custom layout by arranging the selected nodes along a stroke.

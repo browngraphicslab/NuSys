@@ -218,7 +218,7 @@ namespace NuSysApp
         /// </summary>
         /// <param name="searchUrl"></param>
         /// <returns></returns>
-        public static async Task<Page<String>> GetFileSearchResult(String searchUrl)
+        public static async Task<Page<GoogleDriveFileResult>> GetFileSearchResult(String searchUrl)
         {
             if (accessToken != null && !accessToken.Equals(""))
             {
@@ -236,20 +236,20 @@ namespace NuSysApp
                 var driveReturnJson = JObject.Parse(userinfoResponseContent);
                 //Get the drive items
                 var driveItems = driveReturnJson["items"];
-                var titles = new List<String>();
+                var files = new List<GoogleDriveFileResult>();
                 //Add titles to the list
                 foreach(var item in driveItems)
                 {
-                    titles.Add(item["title"].ToString());
+                    files.Add(GoogleDriveFileResult.fromJson(item));
                 }
                 //Return a page depending on whether there is a next page or not.
                 if (driveReturnJson["nextLink"] != null)
                 {
-                    return new Page<String>(titles, driveReturnJson["nextLink"].ToString());
+                    return new Page<GoogleDriveFileResult>(files, driveReturnJson["nextLink"].ToString());
                 }
                 else
                 {
-                    return new Page<String>(titles);
+                    return new Page<GoogleDriveFileResult>(files);
                 }
 
             }
@@ -267,7 +267,7 @@ namespace NuSysApp
         /// <param name="searchString"></param>
         /// <param name="maxResults"></param>
         /// <returns></returns>
-        public static async Task<Page<String>> SearchDrive(String searchString, int maxResults)
+        public static async Task<Page<GoogleDriveFileResult>> SearchDrive(String searchString, int maxResults)
         {
             var builder = new StringBuilder();
             builder.Append(searchListFilesEndpoint);

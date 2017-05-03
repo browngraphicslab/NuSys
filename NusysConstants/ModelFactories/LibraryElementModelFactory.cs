@@ -44,9 +44,9 @@ namespace NusysIntermediate
                 case NusysConstants.ElementType.Word:
                     model = new WordLibraryElementModel(id);
                     break;
-                //case NusysConstants.ElementType.GoogleDrive:
-                //    model = new GoogleDriveLibraryElementModel(id);
-                //    break;
+                case NusysConstants.ElementType.GoogleDrive:
+                    model = new ImageLibraryElementModel(id);
+                    break;
                 default:
                     model = new LibraryElementModel(id, type);
                     break;
@@ -87,6 +87,9 @@ namespace NusysIntermediate
                         model = JsonConvert.DeserializeObject<WordLibraryElementModel>(libraryElementJSON);
                         break;
                     case NusysConstants.ElementType.Image:
+                        model = JsonConvert.DeserializeObject<ImageLibraryElementModel>(libraryElementJSON);
+                        break;
+                    case NusysConstants.ElementType.GoogleDrive:
                         model = JsonConvert.DeserializeObject<ImageLibraryElementModel>(libraryElementJSON);
                         break;
                 }

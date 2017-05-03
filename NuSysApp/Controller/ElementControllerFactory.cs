@@ -36,6 +36,9 @@ namespace NuSysApp
                 case NusysConstants.ElementType.Collection:
                     controller = new ElementCollectionController(elementModel);
                     break;
+                case NusysConstants.ElementType.GoogleDrive:
+                    controller = new ImageElementIntanceController(elementModel);
+                    break;
                 default:
                     controller = new ElementController(elementModel);
                     break;

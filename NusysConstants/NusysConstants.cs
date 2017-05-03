@@ -1953,6 +1953,8 @@ namespace NusysIntermediate
                     return ContentType.Collection;
                 case ElementType.Text:
                     return ContentType.Text;
+                case ElementType.GoogleDrive:
+                    return ContentType.Image;
                 default:
                     return ContentType.Text;
             }

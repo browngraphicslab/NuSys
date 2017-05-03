@@ -683,6 +683,7 @@
     <Compile Include="Google Drive\GoogleDriveAuthPage.xaml.cs">
       <DependentUpon>GoogleDriveAuthPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Google Drive\GoogleDriveFileResult.cs" />
     <Compile Include="Google Drive\GoogleDriveTest.cs" />
     <Compile Include="Google Drive\Page.cs" />
     <Compile Include="Models\InqCanvasModel.cs" />
@@ -866,6 +867,7 @@
     <Compile Include="Network\Requests\RequestArgs\CreateInkStrokeRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewAudioLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewCollectionContentRequestArgs.cs" />
+    <Compile Include="Network\Requests\RequestArgs\CreateNewGoogleDriveLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewImageLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewLinkLibraryElementRequestArgs.cs" />
     <Compile Include="Network\Requests\RequestArgs\CreateNewMetadataRequestArgs.cs" />

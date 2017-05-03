@@ -55,6 +55,11 @@ namespace NuSysApp
                     controller = new LinkLibraryElementController(model as LinkLibraryElementModel);
                     //SessionController.Instance.LinksController.CreateVisualLinks(controller as LinkLibraryElementController);
                     break;
+                case NusysConstants.ElementType.GoogleDrive:
+                    var imageModel1 = model as ImageLibraryElementModel;
+                    Debug.Assert(imageModel1 != null);
+                    controller = new ImageLibraryElementController(imageModel1);
+                    break;
                 default:
                     controller = new LibraryElementController(model);
                     break;

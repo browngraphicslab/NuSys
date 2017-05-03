@@ -46,6 +46,9 @@ namespace NusysIntermediate
                 case NusysConstants.ElementType.Area:
                     elementModel = new AreaModel(id);
                     break;
+                case NusysConstants.ElementType.GoogleDrive:
+                    elementModel = new ImageElementModel(id);
+                    break;
                 default:
                     elementModel = new ElementModel(id);
                     break;
@@ -88,6 +91,9 @@ namespace NusysIntermediate
                     break;
                 case NusysConstants.ElementType.Area:
                         elementModel = JsonConvert.DeserializeObject<AreaModel>(elementJSON);
+                    break;
+                case NusysConstants.ElementType.GoogleDrive:
+                    elementModel = JsonConvert.DeserializeObject<ImageElementModel>(elementJSON);
                     break;
                 }
                 //VERY IMPORTANT

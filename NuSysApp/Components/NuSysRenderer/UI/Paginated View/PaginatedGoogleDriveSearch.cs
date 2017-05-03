@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace NuSysApp
 {
-    class PaginatedGoogleDriveSearch : NextPageable<String>
+    class PaginatedGoogleDriveSearch : NextPageable<GoogleDriveFileResult>
     {
         //The list to keep track of all our pages
-        List<Page<String>> pages;
+        List<Page<GoogleDriveFileResult>> pages;
         int index = -1;
 
         /// <summary>
@@ -17,7 +17,7 @@ namespace NuSysApp
         /// </summary>
         public PaginatedGoogleDriveSearch()
         {
-            pages = new List<Page<String>>();
+            pages = new List<Page<GoogleDriveFileResult>>();
         }
 
         /// <summary>
@@ -25,18 +25,18 @@ namespace NuSysApp
         /// call to google drive communicator which then fetches the next page from the API. If there is no next page, this returns null.
         /// </summary>
         /// <returns></returns>
-        public async Task<List<string>> getNextPage()
+        public async Task<List<GoogleDriveFileResult>> getNextPage()
         {
             //If no pages have been loaded return an empty string
             if (pages.Count == 0)
             {
-                return new List<string>();
+                return new List<GoogleDriveFileResult>();
             }
             //If you are not viewing the last page we have, just get the next page from the list
             if (pages.Count > index + 1)
             {
                 index++;
-                List< String > items = pages.ElementAt(index).Items;
+                List<GoogleDriveFileResult> items = pages.ElementAt(index).Items;
                 return items;
 
             }else
@@ -56,7 +56,7 @@ namespace NuSysApp
                     return null;
                 }else
                 {
-                    return new List<String>();
+                    return new List<GoogleDriveFileResult>();
                 }
             }
         }
@@ -65,7 +65,7 @@ namespace NuSysApp
         /// If you are not at the start of the list, this just returns the previous page in the list and adjusts the index.
         /// </summary>
         /// <returns></returns>
-        public async Task<List<string>> getPreviousPage()
+        public async Task<List<GoogleDriveFileResult>> getPreviousPage()
         {
             if(index > 0)
             {

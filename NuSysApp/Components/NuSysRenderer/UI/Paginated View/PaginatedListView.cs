@@ -47,8 +47,36 @@ namespace NuSysApp
 
         private ButtonUIElement _prevButton;
 
+        public delegate void RowTappedEventHandler(T item, String columnName, CanvasPointer pointer, bool isSelected);
+        /// <summary>
+        /// If the row was selected by a click this will give you the item of the row that was selected and the column 
+        /// title that was clicked. If you select a row programatically it will just give you the item. The string columnName will
+        /// be null.
+        /// </summary>
+        public event RowTappedEventHandler RowTapped;
+
+        public delegate void RowDraggedEventHandler(T item, string columnName, CanvasPointer pointer);
+
+        /// <summary>
+        /// If a row was dragged outisde the list this event will fire.
+        /// </summary>
+        public event RowDraggedEventHandler RowDragged;
+
+        public delegate void RowDragCompletedEventHandler(T item, string columnName, CanvasPointer pointer);
+
+        /// <summary>
+        /// If a row was dragged outisde the list this event will fire.
+        /// </summary>
+        public event RowDragCompletedEventHandler RowDragCompleted;
+
+        public delegate void RowDoubleTappedEventHandler(T item, string columnName, CanvasPointer pointer);
 
 
+        /// <summary>
+        /// If a row has been double tapped this event will fire.
+        /// </summary>
+        public event RowDoubleTappedEventHandler RowDoubleTapped;
+        
 
         /// <summary>
         /// Creates a new Paginated list view
@@ -65,11 +93,72 @@ namespace NuSysApp
                 throw new ArgumentNullException("Cannot have a null source when creating a paginated list view");
             }
             _list = new ListViewUIElementContainer<T>(parent, resourceCreator);
+            _list.RowTapped += ListViewRowTapped;
+            _list.RowDragged += ListView_RowDragged;
+            _list.RowDragCompleted += ListView_RowDragCompleted;
+            _list.RowDoubleTapped += ListView_RowDoubleTapped;
+
             AddChild(_list);
             SetUpSearchBarAndButton();
             SetUpNextPrevButtons();
             _source = source;
 
+        }
+
+        /// <summary>
+        /// Removes all listeners
+        /// </summary>
+        public override void Dispose()
+        {
+            base.Dispose();
+            _list.RowTapped -= ListViewRowTapped;
+            _list.RowDragged -= ListView_RowDragged;
+            _list.RowDragCompleted -= ListView_RowDragCompleted;
+            _list.RowDoubleTapped -= ListView_RowDoubleTapped;
+        }
+
+        /// <summary>
+        /// Fires when a list item is double tapped
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="columnName"></param>
+        /// <param name="pointer"></param>
+        private void ListView_RowDoubleTapped(T item, string columnName, CanvasPointer pointer)
+        {
+            RowDoubleTapped?.Invoke(item, columnName, pointer);
+        }
+
+        /// <summary>
+        /// Fires when a list item is being dragged
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="columnName"></param>
+        /// <param name="pointer"></param>
+        private void ListView_RowDragged(T item, string columnName, CanvasPointer pointer)
+        {
+            RowDragged?.Invoke(item, columnName, pointer);
+        }
+
+        /// <summary>
+        /// This fires when the dragging of a row has been completed
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="columnName"></param>
+        /// <param name="pointer"></param>
+        private void ListView_RowDragCompleted(T item, string columnName, CanvasPointer pointer)
+        {
+            RowDragCompleted?.Invoke(item, columnName, pointer);
+        }
+
+        /// <summary>
+        /// When the listview ui element firest its row selected event, the container will fires it's row selected event which the user should be 
+        /// listening to.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="columnName"></param>
+        private void ListViewRowTapped(T item, string columnName, CanvasPointer pointer, bool isSelected)
+        {
+            RowTapped?.Invoke(item, columnName, pointer, isSelected);
         }
 
         /// <summary>
