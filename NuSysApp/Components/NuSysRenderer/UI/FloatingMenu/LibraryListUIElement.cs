@@ -436,32 +436,32 @@ namespace NuSysApp
         /// <param name="item"></param>
         /// <param name="columnName"></param>
         /// <param name="pointer"></param>
-        //private async void LibraryListView_RowDragCompleted(LibraryElementModel item, string columnName, CanvasPointer pointer)
-        //{
-        //    if (_dragCanceled)
-        //    {
-        //        _dragCanceled = false;
-        //        return;
-        //    }
-        //    // remove each of the drag elements
-        //    foreach (var rect in _libraryDragElements)
-        //    {
-        //        RemoveChild(rect);
-        //    }
-        //    _libraryDragElements.Clear();
-        //    _isDragVisible = false;
+        private async void LibraryListView_RowDragCompleted(DragEventArgs args)
+        {
+            if (_dragCanceled)
+            {
+                _dragCanceled = false;
+                return;
+            }
+            // remove each of the drag elements
+            foreach (var rect in _libraryDragElements)
+            {
+                RemoveChild(rect);
+            }
+            _libraryDragElements.Clear();
+            _isDragVisible = false;
 
-        //    // add each of the items to the collection
-        //    foreach (var lem in LibraryListView.GetSelectedItems().ToArray())
-        //    {
-        //        var libraryElementController =
-        //            SessionController.Instance.ContentController.GetLibraryElementController(lem.LibraryElementId);
-        //        await
-        //            StaticServerCalls.AddElementToWorkSpace(pointer.CurrentPoint,
-        //                    libraryElementController.LibraryElementModel.Type, libraryElementController)
-        //                .ConfigureAwait(false);
-        //    }
-        //}
+            // add each of the items to the collection
+            foreach (var lem in LibraryListView.GetSelectedItems().ToArray())
+            {
+                var libraryElementController =
+                    SessionController.Instance.ContentController.GetLibraryElementController(lem.LibraryElementId);
+                await
+                    StaticServerCalls.AddElementToWorkSpace(args.CurrentPoint,
+                            libraryElementController.LibraryElementModel.Type, libraryElementController)
+                        .ConfigureAwait(false);
+            }
+        }
 
         /// <summary>
         /// Fired when a row is dragged from
@@ -469,33 +469,11 @@ namespace NuSysApp
         /// <param name="item"></param>
         /// <param name="columnName"></param>
         /// <param name="pointer"></param>
-        private void LibraryListView_RowDragged(LibraryElementModel item, string columnName, DragEventArgs args)
+        private void LibraryListView_RowDragged(DragGestureRecognizer sender, DragEventArgs args)
         {
             if (args.CurrentState == GestureEventArgs.GestureState.Ended)
             {
-                if (_dragCanceled)
-                {
-                    _dragCanceled = false;
-                    return;
-                }
-                // remove each of the drag elements
-                foreach (var rect in _libraryDragElements)
-                {
-                    RemoveChild(rect);
-                }
-                _libraryDragElements.Clear();
-                _isDragVisible = false;
-
-                // add each of the items to the collection
-                foreach (var lem in LibraryListView.GetSelectedItems().ToArray())
-                {
-                    var libraryElementController =
-                        SessionController.Instance.ContentController.GetLibraryElementController(lem.LibraryElementId);
-                    await
-                        StaticServerCalls.AddElementToWorkSpace(args.CurrentPoint,
-                                libraryElementController.LibraryElementModel.Type, libraryElementController)
-                            .ConfigureAwait(false);
-                }
+                LibraryListView_RowDragCompleted(args);
             }
             // if we are currently dragging
             if (args.CurrentState == GestureEventArgs.GestureState.Changed)
