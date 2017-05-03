@@ -521,11 +521,28 @@ namespace NuSysApp
                     {
                         rect.Image = await LoadCanvasBitmap(controller.SmallIconUri);
                         Debug.Assert(rect.Image is CanvasBitmap);
-                        rect.Width = (float) (rect.Image as CanvasBitmap).SizeInPixels.Width/ (rect.Image as CanvasBitmap).SizeInPixels.Height * 100;
-                        rect.Height = 100;
 
+                        //Set RectangleUIElement's RegionBounds to the region if it is an image, pdf, else null
+                        rect.RegionBounds = NuSysUtils.GetRegionBounds(controller.LibraryElementModel);
+                        //Get width and height of image
+                        var imgWidth = (rect.Image as CanvasBitmap).SizeInPixels.Width;
+                        var imgHeight = (rect.Image as CanvasBitmap).SizeInPixels.Height;
+
+                        //If no region, simply set height and width to 100 and the corresponding proportional width
+                        if (rect.RegionBounds == null)
+                        {
+                            rect.Width = imgWidth/imgHeight*100;
+                            rect.Height = 100;
+                        }
+                        //Otherswise, set the height and width to 100 and the corresponding proportional width relative to the region, respectively
+                        else
+                        {
+                            rect.Width = (float) rect.RegionBounds.Value.Width * imgWidth/ ((float)rect.RegionBounds.Value.Height *imgHeight) * 100;
+                            rect.Height = 100;
+                        }
 
                     });
+                    
                     rect.Transform.LocalPosition = position + new Vector2(_itemDropOffset * selectedControllers.IndexOf(controller));
                     _libraryDragElements.Add(rect);
                     position += new Vector2(_itemDropOffset, _itemDropOffset);
@@ -533,6 +550,7 @@ namespace NuSysApp
                 }
             }
         }
+
 
         private async Task<ICanvasImage> LoadCanvasBitmap(Uri smallIconURI)
         {

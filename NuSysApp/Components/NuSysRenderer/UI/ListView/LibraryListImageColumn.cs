@@ -67,7 +67,6 @@ namespace NuSysApp
             {
                 var model = itemSource as LibraryElementModel;
 
-
                 if (base.ImageDict.Keys.Contains(itemSource))
                 {
                     cell.Image = base.ImageDict[itemSource];
@@ -84,39 +83,56 @@ namespace NuSysApp
                     base.ImageDict[itemSource] = await MediaUtil.LoadCanvasBitmapAsync(cell.ResourceCreator, base.ColumnFunction(itemSource));
 
                 }
+                cell.RegionBounds = NuSysUtils.GetRegionBounds(model);
+                CenterImage(cell);
 
-                var cellWidth = cell.Width;
-                var cellHeight = cell.Height;
 
-                if ((cell?.Image as CanvasBitmap)?.Device == null)
-                {
-                    return;
-                }
-                var imgBounds = cell?.Image?.GetBounds(_resourceCreator);
 
-                
-                if (imgBounds == null)
-                {
-                    return;
-                }
-                var imgWidth = imgBounds?.Width;
-                var imgHeight = imgBounds?.Height;
-
-                if (imgWidth < 0 || imgHeight < 0)
-                {
-                    return;
-                }
-
-                var newWidth = imgWidth/imgHeight*cellHeight/cellWidth;
-                var newHeight = 1;
-
-                cell.ImageBounds = new Rect(0.5 - newWidth.Value/2, 0, newWidth.Value, newHeight);
             }
             catch (Exception e)
             {
                 
             }
 
+        }
+
+        private void CenterImage(RectangleUIElement cell)
+        {
+
+            var imgBounds = cell?.Image?.GetBounds(cell.ResourceCreator);
+
+            var cellHeight = cell.Height;
+            var cellWidth = cell.Width;
+            if (imgBounds == null)
+            {
+                return;
+            }
+
+            double imgWidth = 0;
+            double imgHeight = 0;
+
+            if (cell.RegionBounds == null)
+            {
+                imgWidth = imgBounds.Value.Width;
+                imgHeight = imgBounds.Value.Height;
+            }
+            else
+            {
+                imgWidth = imgBounds.Value.Width * cell.RegionBounds.Value.Width;
+                imgHeight = imgBounds.Value.Height * cell.RegionBounds.Value.Height;
+
+            }
+
+
+            if (imgWidth < 0 || imgHeight < 0)
+            {
+                return;
+            }
+
+            var newWidth = imgWidth / imgHeight * cellHeight / cellWidth;
+            var newHeight = 1;
+
+            cell.ImageBounds = new Rect(0.5 - newWidth / 2, 0, newWidth, newHeight);
         }
 
         public override void Dispose()

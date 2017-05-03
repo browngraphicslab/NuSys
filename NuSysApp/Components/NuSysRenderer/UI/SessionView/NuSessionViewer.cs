@@ -146,6 +146,7 @@ namespace NuSysApp
         private LibraryElementController _currController;
 
 
+
         public NuSessionViewer(BaseRenderItem parent, CanvasAnimatedControl canvas) : base(parent, canvas)
         {
             Background = Colors.Transparent;
@@ -199,6 +200,7 @@ namespace NuSysApp
 
             };
             AddChild(_chatButtonNotifications);
+
 
 
             _snapshotButton = new EllipseButtonUIElement(this, canvas, UIDefaults.AccentStyle, "snapshot");
