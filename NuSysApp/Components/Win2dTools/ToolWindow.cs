@@ -117,39 +117,47 @@ namespace NuSysApp
                 Height = BUTTON_BAR_HEIGHT,
             };
             //_resizer.
-            _resizer.Dragged += _resizer_Dragged;
+            var dragRecognizer = new DragGestureRecognizer();
+            _resizer.GestureRecognizers.Add(dragRecognizer);
+            dragRecognizer.OnDragged += DragRecognizer_Resizer_OnDragged;
+
             AddChild(_resizer);
 
         }
 
-        private void _resizer_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void DragRecognizer_Resizer_OnDragged(DragGestureRecognizer sender, DragEventArgs args)
         {
-            var transform = SessionController.Instance.SessionView.FreeFormViewer.Transform;
-            var collection = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection;
-            var delta = pointer.DeltaSinceLastUpdate;
-            var newX = Vm.Width + delta.X / (transform.M11 * collection.Camera.S.M11);
-            var newY = Vm.Height + delta.Y / (transform.M22 * collection.Camera.S.M22);
-            if (newX > MIN_WIDTH && newY > MIN_HEIGHT)
+            // on dragged
+            if (args.CurrentState == GestureEventArgs.GestureState.Changed)
             {
-                this.Vm.Controller.SetSize(newX, newY);
+                var transform = SessionController.Instance.SessionView.FreeFormViewer.Transform;
+                var collection = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection;
+                //var delta = pointer.DeltaSinceLastUpdate;
+                var delta = args.Translation;                                                               // KBTODO which one is it this or TotalTranslation
+                var newX = Vm.Width + delta.X / (transform.M11 * collection.Camera.S.M11);
+                var newY = Vm.Height + delta.Y / (transform.M22 * collection.Camera.S.M22);
+                if (newX > MIN_WIDTH && newY > MIN_HEIGHT)
+                {
+                    this.Vm.Controller.SetSize(newX, newY);
 
+                }
+                else if (newX > MIN_WIDTH)
+                {
+                    this.Vm.Controller.SetSize(newX, Vm.Height);
+                }
+                else if (newY > MIN_HEIGHT)
+                {
+                    this.Vm.Controller.SetSize(Vm.Width, newY);
+                }
+                else
+                {
+                    return;
+                }
+                SessionController.Instance.SessionView.FreeFormViewer.InvalidateMinimap();
             }
-            else if (newX > MIN_WIDTH)
-            {
-                this.Vm.Controller.SetSize(newX, Vm.Height);
-            }
-            else if (newY > MIN_HEIGHT)
-            {
-                this.Vm.Controller.SetSize(Vm.Width, newY);
-            }
-            else
-            {
-                return;
-            }
-            SessionController.Instance.SessionView.FreeFormViewer.InvalidateMinimap();
-
         }
 
+        
         public override Task Load()
         {
             SetUpFilterDropDown();
@@ -170,18 +178,10 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            _filterChooser.Dragged -= FilterChooserDropdownButtonOnDragged;
-            _filterChooser.DragStarted -= _filterChooser_DragStarted;
             _filterChooser.Selected -= FilterChooserItem_Clicked;
 
             Vm.Controller.NumberOfParentsChanged -= Controller_NumberOfParentsChanged;
             _parentOperatorButton.Tapped -= _parentOperatorButton_Tapped;
-
-            _draggableCollectionElement.Dragged -= CollectionOrStack_Dragging; 
-            _draggableCollectionElement.DragCompleted -= CollectionOrStack_DragCompleted;
-
-            _draggableStackElement.Dragged -= CollectionOrStack_Dragging; 
-            _draggableStackElement.DragCompleted -= CollectionOrStack_DragCompleted;
 
             Vm.Dispose();
             base.Dispose();
@@ -231,8 +231,11 @@ namespace NuSysApp
                 ButtonTextColor = Constants.DARK_BLUE
             };
             _draggableCollectionElement.Transform.LocalPosition = new Vector2(Width + (BUTTON_MARGIN + _draggableCollectionElement.Width / 2), BUTTON_MARGIN);
-            _draggableCollectionElement.Dragged += CollectionOrStack_Dragging; 
-            _draggableCollectionElement.DragCompleted += CollectionOrStack_DragCompleted; 
+
+            var collectionDragRecognizer = new DragGestureRecognizer();
+            _draggableCollectionElement.GestureRecognizers.Add(collectionDragRecognizer);
+            collectionDragRecognizer.OnDragged += DragRecognizer_CollectionOrStack_OnDragged;
+            
             AddChild(_draggableCollectionElement);
 
             //sets up icon to show under pointer while dragging
@@ -255,8 +258,11 @@ namespace NuSysApp
                 ButtonTextColor = Constants.DARK_BLUE
             };
             _draggableStackElement.Transform.LocalPosition = new Vector2(Width + (BUTTON_MARGIN + _draggableStackElement.Width / 2), _draggableCollectionElement.Height  + BUTTON_MARGIN);
-            _draggableStackElement.Dragged += CollectionOrStack_Dragging; 
-            _draggableStackElement.DragCompleted += CollectionOrStack_DragCompleted; 
+
+            var stackDragRecognizer = new DragGestureRecognizer();
+            _draggableStackElement.GestureRecognizers.Add(stackDragRecognizer);
+            stackDragRecognizer.OnDragged += DragRecognizer_CollectionOrStack_OnDragged;
+            
             AddChild(_draggableStackElement);
 
             //sets up icon to show under pointer while dragging
@@ -285,6 +291,53 @@ namespace NuSysApp
 
         }
 
+        private void DragRecognizer_CollectionOrStack_OnDragged(DragGestureRecognizer sender, DragEventArgs args)
+        {
+            // on dragged
+            if (args.CurrentState == GestureEventArgs.GestureState.Changed)
+            {
+                // When the stack or collection item is being dragged, move the drag icon to be under the mouse.
+                var item = interactiveBaseRenderItem as ButtonUIElement;                                                                        // KBTODO idk :(( 
+                Debug.Assert(item != null);
+
+                RectangleUIElement icon;
+                if (item == _draggableCollectionElement)
+                {
+                    icon = _collectionDragIcon;
+                }
+                else
+                {
+                    Debug.Assert(item == _draggableStackElement);
+                    icon = _stackDragIcon;
+                }
+                icon.IsVisible = true;
+                icon.Transform.LocalPosition = Vector2.Transform(args.CurrentPoint, this.Transform.ScreenToLocalMatrix);
+
+            }
+            // on completed
+            else if (args.CurrentState == GestureEventArgs.GestureState.Ended)
+            {
+                // When a dragging of the collection or stack elements has completed, this will be called which creates a collection or stack at the point of release
+                var item = interactiveBaseRenderItem as ButtonUIElement;
+                Debug.Assert(item != null);    
+                var canvasCoordinate = SessionController.Instance.SessionView.FreeFormViewer.RenderEngine.ScreenPointerToCollectionPoint(new Vector2(args.CurrentPoint.X, args.CurrentPoint.Y), SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection);
+                if (item == _draggableCollectionElement)
+                {
+                    _collectionDragIcon.IsVisible = false;
+                    Vm.CreateCollection(canvasCoordinate.X, canvasCoordinate.Y);
+
+                }
+                else
+                {
+                    Debug.Assert(item == _draggableStackElement);
+                    _stackDragIcon.IsVisible = false;
+                    Vm.CreateStack(args.CurrentPoint);
+
+                }
+            }
+        }
+
+        /* 
         /// <summary>
         /// When a dragging of the collection or stack elements has completed, this will be called which creates a collection or stack at the point of release
         /// </summary>
@@ -310,6 +363,7 @@ namespace NuSysApp
 
             }
         }
+         
 
         /// <summary>
         /// When the stack or collection item is being dragged, move the drag icon to be under the mouse.
@@ -335,6 +389,7 @@ namespace NuSysApp
             icon.Transform.LocalPosition = Vector2.Transform(pointer.CurrentPoint, this.Transform.ScreenToLocalMatrix);
 
         }
+        */
 
         /// <summary>
         /// Sets up the button and the basic list so that they work together like a dropdown list
@@ -366,27 +421,34 @@ namespace NuSysApp
             _filterChooser.Selected += FilterChooserItem_Clicked;
 
             // add all the filter options to the dropdown
-            _filterChooser.DragStarted += _filterChooser_DragStarted;
-            _filterChooser.Dragged += FilterChooserDropdownButtonOnDragged;
+            
+            var dragRecognizer = new DragGestureRecognizer();
+            _filterChooser.GestureRecognizers.Add(dragRecognizer);
+            dragRecognizer.OnDragged += DragRecognizer_FilterChooser_OnDragged;
 
             AddChild(_filterChooser);
         }
 
-        private void _filterChooser_DragStarted(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        private void DragRecognizer_FilterChooser_OnDragged(DragGestureRecognizer sender, DragEventArgs args)
         {
-            _InitialVmDragPosition = new Vector2((float)Vm.X, (float)Vm.Y);
+            // on dragged
+            if (args.CurrentState == GestureEventArgs.GestureState.Began)
+            {
+                _InitialVmDragPosition = new Vector2((float)Vm.X, (float)Vm.Y);
+            }
+            else if (args.CurrentState == GestureEventArgs.GestureState.Changed)
+            {
+                var transform = SessionController.Instance.SessionView.FreeFormViewer.Transform;
+                var collection = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection;
+                var delta = args.CurrentPoint - args.StartPoint;
+                var newX = _InitialVmDragPosition.X + delta.X / (transform.M11 * collection.Camera.S.M11);
+                var newY = _InitialVmDragPosition.Y + delta.Y / (transform.M22 * collection.Camera.S.M22);
+                this.Vm.Controller.SetPosition(newX, newY);
+                SessionController.Instance.SessionView.FreeFormViewer.InvalidateMinimap();
+            }
         }
 
-        private void FilterChooserDropdownButtonOnDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            var transform = SessionController.Instance.SessionView.FreeFormViewer.Transform;
-            var collection = SessionController.Instance.SessionView.FreeFormViewer.CurrentCollection;
-            var delta = pointer.CurrentPoint - pointer.StartPoint;
-            var newX = _InitialVmDragPosition.X + delta.X / (transform.M11 * collection.Camera.S.M11);
-            var newY = _InitialVmDragPosition.Y + delta.Y / (transform.M22 * collection.Camera.S.M22);
-            this.Vm.Controller.SetPosition(newX,newY);
-            SessionController.Instance.SessionView.FreeFormViewer.InvalidateMinimap();
-        }
+      
 
         /// <summary>
         /// The handler for when a filter is chosen

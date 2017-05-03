@@ -215,31 +215,30 @@ namespace NuSysApp
         private void DragRecognizer_OnDragged(DragGestureRecognizer sender, DragEventArgs args)
         {
             // on pressed
-            if (args.CurrentState == GestureEventArgs.GestureState.Began)
+            if (args.CurrentState == GestureEventArgs.GestureState.Began)                     // KBTODO not sure where to put DragStarted and DragCompleted 
             {
                 // Fired when the thumb is pressed causes the tool tip to appear
                 if (IsTooltipEnabled)                                        
                 {
                     _toolTipUIElement.IsVisible = true;
-                }                
+                }
+                // dragstarted
+                OnSliderMoveStarted?.Invoke(this, SliderPosition);
             }
             // on released
             else if (args.CurrentState == GestureEventArgs.GestureState.Ended)
             {
                 // Fired when the thumb is released causes the tool tip to disappear
-                _toolTipUIElement.IsVisible = false;                           
+                _toolTipUIElement.IsVisible = false;
+
+                // dragcompleted
+                OnSliderMoveCompleted?.Invoke(this, SliderPosition);
             }
             // on dragged  
             else
-            {
-                // dragstarted
-                OnSliderMoveStarted?.Invoke(this, SliderPosition);              
-
+            {             
                 // Fired when the thumb is dragged, changes the position of the slider
-                SliderPosition += args.Translation.X / Width;                               // KBTODO this was DeltaSinceLastUpdate.X  
-
-                // dragcompleted
-                OnSliderMoveCompleted?.Invoke(this, SliderPosition);            
+                SliderPosition += args.Translation.X / Width;                               // KBTODO this was DeltaSinceLastUpdate.X            
             }
         }
 

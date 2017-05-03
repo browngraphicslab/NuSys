@@ -56,13 +56,13 @@ namespace NuSysApp
             Width = 300;
             Background = Constants.LIGHT_BLUE_TRANSLUCENT;
 
-            Mask = new Rect(BorderWidth, BorderWidth, Width - BorderWidth*2, Height - BorderWidth*2);
+            Mask = new Rect(BorderWidth, BorderWidth, Width - BorderWidth * 2, Height - BorderWidth * 2);
 
             _horizontalScrollBar = new ScrollBarUIElement(this, resourceCreator,
                 ScrollBarUIElement.Orientation.Horizontal)
             {
                 Height = UIDefaults.ScrollBarWidth,
-                Width = Width - 2*BorderWidth
+                Width = Width - 2 * BorderWidth
             };
 
             _horizontalScrollBar.Transform.LocalPosition = new Vector2(0, Height - _horizontalScrollBar.Height);
@@ -158,11 +158,11 @@ namespace NuSysApp
         private void ComputeScrollHandleSize()
         {
             // calculate the total width needed to display all the breadcrumbs
-            _totalPathWidth = _breadCrumbData.Count*BreadCrumbUIElement.DefaultWidth + 
-                                (_breadCrumbData.Count + 1)*BreadCrumbUIElement.DefaultSpacing;
+            _totalPathWidth = _breadCrumbData.Count * BreadCrumbUIElement.DefaultWidth +
+                                (_breadCrumbData.Count + 1) * BreadCrumbUIElement.DefaultSpacing;
 
             // calculate the ratio of the width needed for the scrollbar
-            var ratio = Math.Min(1, Width/_totalPathWidth);
+            var ratio = Math.Min(1, Width / _totalPathWidth);
 
 
             // set the new range of the _scrollHandle
@@ -170,8 +170,8 @@ namespace NuSysApp
 
 
             // update the position of the scroll bar so the crop rect is maintained
-            var normalizedOffset = _cropRect.Left/_totalPathWidth;
-            _horizontalScrollBar.Position = (float) normalizedOffset;
+            var normalizedOffset = _cropRect.Left / _totalPathWidth;
+            _horizontalScrollBar.Position = (float)normalizedOffset;
             BoundScrollHandle();
         }
 
@@ -199,7 +199,7 @@ namespace NuSysApp
                 if (IsPartiallyContained(upperLeft, lowerRight, _cropRect))
                 {
                     var breadCrumb = new BreadCrumbUIElement(this, Canvas, crumb);
-                    breadCrumb.Transform.LocalPosition = new Vector2((float) (upperLeft.X - _cropRect.Left), Height/2 - BreadCrumbUIElement.DefaultHeight/2);
+                    breadCrumb.Transform.LocalPosition = new Vector2((float)(upperLeft.X - _cropRect.Left), Height / 2 - BreadCrumbUIElement.DefaultHeight / 2);
                     _visibleBreadCrumbs.Add(breadCrumb);
                     AddCrumbEvents(breadCrumb);
                     AddChild(breadCrumb);
@@ -248,7 +248,7 @@ namespace NuSysApp
 
         public override void Draw(CanvasDrawingSession ds)
         {
-            if(IsDisposed)
+            if (IsDisposed)
             {
                 return;
             }

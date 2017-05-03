@@ -43,7 +43,9 @@ namespace NuSysApp
             if (args.CurrentState == GestureEventArgs.GestureState.Changed)
             {
                 Item_Dragging(args);
-                Item_DragCompleted(bar.Item, args);                                                                 // KBTODO bar(BarChartElement).Item 
+            } else if (args.CurrentState == GestureEventArgs.GestureState.Ended)
+            {
+                Item_DragCompleted(sender.Item, args);                                                                 // KBTODO bar(BarChartElement).Item 
             }
         }
 
