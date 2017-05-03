@@ -203,8 +203,12 @@ namespace NuSysApp
             _addFileButton.Tapped += AddFileButtonTapped;
 
             // add dragging event s
-            LibraryListView.RowDragged += LibraryListView_RowDragged;
-            LibraryListView.RowDragCompleted += LibraryListView_RowDragCompleted;
+            //LibraryListView.RowDragged += LibraryListView_RowDragged;
+            //LibraryListView.RowDragCompleted += LibraryListView_RowDragCompleted;
+            var dragRecognizer = new DragGestureRecognizer();
+            LibraryListView.GestureRecognizers.Add(dragRecognizer);
+            dragRecognizer.OnDragged += LibraryListView_RowDragged;
+
             LibraryListView.RowTapped += OnLibraryItemSelected;
             LibraryListView.RowDoubleTapped += LibraryListView_RowDoubleTapped;
 
@@ -432,32 +436,32 @@ namespace NuSysApp
         /// <param name="item"></param>
         /// <param name="columnName"></param>
         /// <param name="pointer"></param>
-        private async void LibraryListView_RowDragCompleted(LibraryElementModel item, string columnName, CanvasPointer pointer)
-        {
-            if (_dragCanceled)
-            {
-                _dragCanceled = false;
-                return;
-            }
-            // remove each of the drag elements
-            foreach (var rect in _libraryDragElements)
-            {
-                RemoveChild(rect);
-            }
-            _libraryDragElements.Clear();
-            _isDragVisible = false;
+        //private async void LibraryListView_RowDragCompleted(LibraryElementModel item, string columnName, CanvasPointer pointer)
+        //{
+        //    if (_dragCanceled)
+        //    {
+        //        _dragCanceled = false;
+        //        return;
+        //    }
+        //    // remove each of the drag elements
+        //    foreach (var rect in _libraryDragElements)
+        //    {
+        //        RemoveChild(rect);
+        //    }
+        //    _libraryDragElements.Clear();
+        //    _isDragVisible = false;
 
-            // add each of the items to the collection
-            foreach (var lem in LibraryListView.GetSelectedItems().ToArray())
-            {
-                var libraryElementController =
-                    SessionController.Instance.ContentController.GetLibraryElementController(lem.LibraryElementId);
-                await
-                    StaticServerCalls.AddElementToWorkSpace(pointer.CurrentPoint,
-                            libraryElementController.LibraryElementModel.Type, libraryElementController)
-                        .ConfigureAwait(false);
-            }
-        }
+        //    // add each of the items to the collection
+        //    foreach (var lem in LibraryListView.GetSelectedItems().ToArray())
+        //    {
+        //        var libraryElementController =
+        //            SessionController.Instance.ContentController.GetLibraryElementController(lem.LibraryElementId);
+        //        await
+        //            StaticServerCalls.AddElementToWorkSpace(pointer.CurrentPoint,
+        //                    libraryElementController.LibraryElementModel.Type, libraryElementController)
+        //                .ConfigureAwait(false);
+        //    }
+        //}
 
         /// <summary>
         /// Fired when a row is dragged from
@@ -465,20 +469,42 @@ namespace NuSysApp
         /// <param name="item"></param>
         /// <param name="columnName"></param>
         /// <param name="pointer"></param>
-        private void LibraryListView_RowDragged(LibraryElementModel item, string columnName, CanvasPointer pointer)
+        private void LibraryListView_RowDragged(LibraryElementModel item, string columnName, DragEventArgs args)
         {
-            if (_dragCanceled)
+            if (args.CurrentState == GestureEventArgs.GestureState.Ended)
             {
-                return;
+                if (_dragCanceled)
+                {
+                    _dragCanceled = false;
+                    return;
+                }
+                // remove each of the drag elements
+                foreach (var rect in _libraryDragElements)
+                {
+                    RemoveChild(rect);
+                }
+                _libraryDragElements.Clear();
+                _isDragVisible = false;
+
+                // add each of the items to the collection
+                foreach (var lem in LibraryListView.GetSelectedItems().ToArray())
+                {
+                    var libraryElementController =
+                        SessionController.Instance.ContentController.GetLibraryElementController(lem.LibraryElementId);
+                    await
+                        StaticServerCalls.AddElementToWorkSpace(args.CurrentPoint,
+                                libraryElementController.LibraryElementModel.Type, libraryElementController)
+                            .ConfigureAwait(false);
+                }
             }
             // if we are currently dragging
-            if (_isDragVisible)
+            if (args.CurrentState == GestureEventArgs.GestureState.Changed)
             {
                 // simply move each of the element sto the new drag location
-                var position = Vector2.Transform(pointer.StartPoint, Transform.ScreenToLocalMatrix) + pointer.Delta;
+                var position = Vector2.Transform(args.StartPoint, Transform.ScreenToLocalMatrix) + args.Translation;
 
                 //If we are on the listview, "put the elements back"
-                if (LibraryListView.HitTest(pointer.CurrentPoint) != null)
+                if (LibraryListView.HitTest(args.CurrentPoint) != null)
                 {
                     // remove each of the drag elements
                     foreach (var rect in _libraryDragElements)
@@ -499,13 +525,13 @@ namespace NuSysApp
                 }
 
             }
-            else
+            else if (args.CurrentState == GestureEventArgs.GestureState.Began)
             {
                 // set drag visible to true so future calls of this event do not reach this control flow branch
                 _isDragVisible = true;
 
                 // get the current position of the pointer relative to the local matrix
-                var position = pointer.StartPoint;
+                var position = args.StartPoint;
                 // convert the list of selected library element models from the libraryListView into a list of controllers
                 var selectedControllers =
                     LibraryListView.GetSelectedItems()
@@ -603,8 +629,8 @@ namespace NuSysApp
 
         public override void Dispose()
         {
-            LibraryListView.RowDragged -= LibraryListView_RowDragged;
-            LibraryListView.RowDragCompleted -= LibraryListView_RowDragCompleted;
+            //LibraryListView.RowDragged -= LibraryListView_RowDragged;
+            //LibraryListView.RowDragCompleted -= LibraryListView_RowDragCompleted;
             LibraryListView.RowTapped -= OnLibraryItemSelected;
             LibraryListView.RowDoubleTapped -= LibraryListView_RowDoubleTapped;
 

@@ -113,10 +113,20 @@ namespace NuSysApp
                 }
             };
 
-            cell.Pressed += Cell_Pressed;
-            cell.Released += Cell_Released;
-            cell.Dragged += Cell_Dragged;
-            cell.DragStarted += Cell_DragStarted;
+            //commented these out, may need to come back and fix.
+            //cell.Pressed += Cell_Pressed;
+            //cell.Released += Cell_Released;
+
+            //cell.Dragged += Cell_Dragged;
+            //cell.DragStarted += Cell_DragStarted;
+
+            var dragRecognizer = new DragGestureRecognizer();
+            cell.GestureRecognizers.Add(dragRecognizer);
+            dragRecognizer.OnDragged += delegate(DragGestureRecognizer sender, DragEventArgs args)
+            {
+                RowDragged?.Invoke(this, _children.IndexOf(cell), args);
+            };
+
             cell.PointerWheelChanged += Cell_PointerWheelChanged;
             cell.Holding += Cell_Holding;
         }
@@ -187,12 +197,12 @@ namespace NuSysApp
         /// This method will fire either the dragged event handler that the listview
         /// will be listening to
         /// </summary>
-        private void Cell_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
-        {
-            var cell = item as RectangleUIElement;
-            Debug.Assert(cell != null);
-            RowDragged?.Invoke(this, _children.IndexOf(cell), pointer);
-        }
+        //private void Cell_Dragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
+        //{
+        //    var cell = item as RectangleUIElement;
+        //    Debug.Assert(cell != null);
+        //    RowDragged?.Invoke(this, _children.IndexOf(cell), pointer);
+        //}
 
         /// <summary>
         /// This returns the column index of the cell passed in.
@@ -239,10 +249,11 @@ namespace NuSysApp
             {
                 return;
             }
-            cell.Pressed -= Cell_Pressed;
-            cell.Released -= Cell_Released;
-            cell.Dragged -= Cell_Dragged;
-            cell.DragStarted -= Cell_DragStarted;
+            //commented these out, may need to come back and fix.
+            //cell.Pressed -= Cell_Pressed;
+            //cell.Released -= Cell_Released;
+            //cell.Dragged -= Cell_Dragged;
+            //cell.DragStarted -= Cell_DragStarted;
             cell.PointerWheelChanged -= Cell_PointerWheelChanged;
             cell.Holding -= Cell_Holding;
 
