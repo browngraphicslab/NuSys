@@ -336,29 +336,29 @@ namespace NuSysApp
             // used in detail view to resize window
             _leftSlider = new RectangleUIElement(this, resourceCreator)
             {
-                Width = UIDefaults.detailViewSliderWidth,
+                Width = UIDefaults.DetailViewSliderWidth,
                 Height = 1500,
                 IsHitTestVisible = true,
                 Background = Constants.MED_BLUE
             };
-            _leftSlider.Transform.LocalPosition = new Vector2(-UIDefaults.detailViewSliderWidth, 0);
+            _leftSlider.Transform.LocalPosition = new Vector2(-UIDefaults.DetailViewSliderWidth, 0);
             AddChild(_leftSlider);
 
             _leftIconButton = new ButtonUIElement(this, resourceCreator)
             {
-                Width = UIDefaults.detailViewSliderWidth,
-                Height = UIDefaults.detailViewSliderWidth,
+                Width = UIDefaults.DetailViewSliderWidth,
+                Height = UIDefaults.DetailViewSliderWidth,
                 IsHitTestVisible = false,
                 Background = Constants.MED_BLUE
             };
 
-            _leftIconButton.Transform.LocalPosition = new Vector2(-UIDefaults.detailViewSliderWidth, 500);
+            _leftIconButton.Transform.LocalPosition = new Vector2(-UIDefaults.DetailViewSliderWidth, 500);
             AddChild(_leftIconButton);
 
            
             _rightSlider = new RectangleUIElement(this, resourceCreator)
             {
-                Width = UIDefaults.detailViewSliderWidth,
+                Width = UIDefaults.DetailViewSliderWidth,
                 Height = 1500,
                 IsHitTestVisible = true,
                 Background = Constants.MED_BLUE
@@ -368,8 +368,8 @@ namespace NuSysApp
 
             _rightIconButton = new ButtonUIElement(this, resourceCreator)
             {
-                Width = UIDefaults.detailViewSliderWidth,
-                Height = UIDefaults.detailViewSliderWidth,
+                Width = UIDefaults.DetailViewSliderWidth,
+                Height = UIDefaults.DetailViewSliderWidth,
                 IsHitTestVisible = false,
                 Background = Constants.MED_BLUE,
             };
@@ -694,7 +694,7 @@ namespace NuSysApp
 
             _rightSlider.Transform.LocalPosition = new Vector2(this.Width-1, 0);
             _rightIconButton.Transform.LocalPosition = new Vector2(this.Width - 1, this.Height/2);
-            _leftIconButton.Transform.LocalPosition = new Vector2(-UIDefaults.detailViewSliderWidth, this.Height / 2);
+            _leftIconButton.Transform.LocalPosition = new Vector2(-UIDefaults.DetailViewSliderWidth, this.Height / 2);
 
             // If the element is snapped, show the sliders, else hide the sliders
             if (IsSnapped)
