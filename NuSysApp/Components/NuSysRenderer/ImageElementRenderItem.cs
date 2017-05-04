@@ -44,12 +44,6 @@ namespace NuSysApp
         // a list of ImageElementRenderItem in the same collection used for snap alignment
         private List<ImageElementRenderItem> _siblingImageElementRenderItems;
 
-        // keeps track of whether or not this element is already horizontally aligned with another element
-        private bool _horizontallySnapped;
-
-        // keeps track of whether or not this element is already vertically aligned with another element
-        private bool _verticallySnapped;
-
         /// <summary>
         /// Size of the image (used for snap alignment)
         /// </summary>
@@ -111,13 +105,12 @@ namespace NuSysApp
             AddChild(_inkable);
             _inkable.Transform.SetParent(_image.Transform);
 
+            _siblingImageElementRenderItems = new List<ImageElementRenderItem>();
             _horizontalSnapLocation = Location.None;
             _verticalSnapLocation = Location.None;
 
             Pressed += delegate
             {
-                _siblingImageElementRenderItems = new List<ImageElementRenderItem>();
-
                 foreach (var child in parent.GetChildren())
                 {
                     if (child is ImageElementRenderItem && child != this)
@@ -159,14 +152,13 @@ namespace NuSysApp
                     CreateAndShowGridLines();
                 }
             }
-            _horizontallySnapped = false;
-            _verticallySnapped = false;
-
             CreateSnapSelectionView();
+            _horizontalSnapLocation = Location.None;
+            _verticalSnapLocation = Location.None;
         }
 
         /// <summary>
-        /// Handles how this ImageElementRenderItem snaps to and align with another ImageElementRenderItem horizontally
+        /// Handle how this ImageElementRenderItem snaps to and align with another ImageElementRenderItem horizontally
         /// </summary>
         /// <param name="sibling"></param>
         private void HorizontalSnapToSibling(ImageElementRenderItem sibling)
@@ -176,8 +168,7 @@ namespace NuSysApp
                                           UIDefaults.SnapThresholdRatio;
 
             // if element has already aligned with another element horizontally, code below is not executed to prevent element from getting trapped between two items
-            if (_horizontallySnapped) return;
-            _horizontallySnapped = true;
+            if (_horizontalSnapLocation != Location.None) return;
 
             // when sibling is to the left of this element and the left side of this needs to align with the right side of the sibling
             if (Math.Abs(ViewModelLeft - sibling.ViewModelRight) < horizontalSnapThreshold)
@@ -214,13 +205,12 @@ namespace NuSysApp
             else
             {
                 sibling.RemoveSnapSelectionView();
-                _horizontallySnapped = false;
                 _horizontalSnapLocation = Location.None;
             }
         }
 
         /// <summary>
-        /// Handles how this ImageElementRenderItem snaps to and align with another ImageElementRenderItem vertically
+        /// Handle how this ImageElementRenderItem snaps to and align with another ImageElementRenderItem vertically
         /// </summary>
         /// <param name="sibling"></param>
         private void VerticalSnapToSibling(ImageElementRenderItem sibling)
@@ -228,9 +218,9 @@ namespace NuSysApp
             // determine the threshold distance for which snap alignment should occur
             var verticalSnapThreshold = Math.Min(sibling.ImageCanvasSize.Height, ImageCanvasSize.Height) /
                                         UIDefaults.SnapThresholdRatio;
+
             // if element has already aligned with another element vertically, code below is not executed to prevent element from getting trapped between two items
-            if (_verticallySnapped) return;
-            _verticallySnapped = true;
+            if (_verticalSnapLocation != Location.None) return;
 
             // when the sibling is above this element and the top of this element needs to align with the bottom of the sibling
             if (Math.Abs(ViewModelTop - sibling.ViewModelBottom) < verticalSnapThreshold)
@@ -266,8 +256,6 @@ namespace NuSysApp
 
             else
             {
-                sibling.RemoveSnapSelectionView();
-                _verticallySnapped = false;
                 _verticalSnapLocation = Location.None;
             }
         }
@@ -277,15 +265,17 @@ namespace NuSysApp
         /// </summary>
         public void CreateSnapSelectionView()
         {
-            if (_snapSelectionView != null) return;
-            _snapSelectionView = new RectangleUIElement(this, ResourceCreator)
+            if (_snapSelectionView == null)
             {
-                Width = (float) ImageCanvasSize.Width,
-                Height = (float) ImageCanvasSize.Height,
-                Background = UIDefaults.SnapPreviewRectColor,
-                IsHitTestVisible = false,
-            };
-            AddChild(_snapSelectionView);
+                _snapSelectionView = new RectangleUIElement(this, ResourceCreator)
+                {
+                    Width = (float) ImageCanvasSize.Width,
+                    Height = (float) ImageCanvasSize.Height,
+                    Background = UIDefaults.SnapPreviewRectColor,
+                    IsHitTestVisible = false,
+                };
+                AddChild(_snapSelectionView);
+            }
         }
 
         /// <summary>
@@ -317,6 +307,10 @@ namespace NuSysApp
                     RemoveLine(_left);
                     _left = null;
                     break;
+                case Location.Top:
+                    break;
+                case Location.Bottom:
+                    break;
                 case Location.None:
                     RemoveLine(_right);
                     _right = null;
@@ -327,6 +321,10 @@ namespace NuSysApp
 
             switch (_verticalSnapLocation)
             {
+                case Location.Left:
+                    break;
+                case Location.Right:
+                    break;
                 case Location.Top:
                     _top = CreateHorizontalLine(_top);
                     _top.Transform.LocalPosition = new Vector2((float)(-_top.Width / 2 + _vm.Width / 2), 0);
@@ -426,7 +424,6 @@ namespace NuSysApp
             _inkable.Width = (float) _image.CroppedImageTarget.Width;
             _inkable.Height = (float)_image.CroppedImageTarget.Height;
             _inkable.Transform.LocalPosition = _image.Transform.LocalPosition;
-//            CreateAndShowGridLines();
             base.Update(parentLocalToScreenTransform);
 
         }
