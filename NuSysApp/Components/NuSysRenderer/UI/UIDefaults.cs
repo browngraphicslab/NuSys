@@ -133,6 +133,14 @@ namespace NuSysApp
 
         #endregion
 
+        #region ImageElement
+
+        public static int GridLineLength = 50000;
+        public static int GridLineWidth = 2;
+        public static int SnapThresholdRatio = 50;
+        public static int SnapRadius = 1500;
+        #endregion
+
         #region floating menu
 
         public static float floatingMenuHeight = 60;
