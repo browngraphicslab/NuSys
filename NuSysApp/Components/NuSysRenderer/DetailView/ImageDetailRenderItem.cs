@@ -239,7 +239,6 @@ namespace NuSysApp
             var controller = SessionController.Instance.ContentController.GetLibraryElementController(region.LibraryElementModel.LibraryElementId) as ImageLibraryElementController;
             controller.SetWidth(rx);
             controller.SetHeight(ry);
-
             NeedsRedraw?.Invoke();
         }
 
