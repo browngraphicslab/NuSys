@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using Windows.Devices.HumanInterfaceDevice;
 using Windows.Foundation;
 using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
@@ -43,6 +44,11 @@ namespace NuSysApp
 
         // a list of ImageElementRenderItem in the same collection used for snap alignment
         private List<ImageElementRenderItem> _siblingImageElementRenderItems;
+
+        // keeps track of the ImageElementRenderItem this item is horizontally snapped to 
+        private ImageElementRenderItem _horizontalSnapItem;
+        // keeps track of the ImageElementRenderItem this item is vertically snapped to 
+        private ImageElementRenderItem _verticalSnapItem;
 
         /// <summary>
         /// Size of the image (used for snap alignment)
@@ -126,138 +132,183 @@ namespace NuSysApp
 
         private void OnReleased(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
-            foreach (var sibling in _siblingImageElementRenderItems)
-            {
-                sibling.RemoveSnapSelectionView();
-            }
+            // remove selection views from items this item aligned with (can be null)
+            _horizontalSnapItem?.RemoveSnapSelectionView();
+            _verticalSnapItem?.RemoveSnapSelectionView();
+            // deselect this item
             RemoveSnapSelectionView();
 
+            // remove all gridlines on this item
             _horizontalSnapLocation = Location.None;
             _verticalSnapLocation = Location.None;
-            CreateAndShowGridLines();
+            ManageGridLines();
 
+            // clear the list of ImageRenderItems
             _siblingImageElementRenderItems.Clear();
         }
 
         private void OnDragged(InteractiveBaseRenderItem item, CanvasPointer pointer)
         {
+            // select this item
+            CreateSnapSelectionView();
+
+            _horizontalSnapItem = null;
+            _verticalSnapItem = null;
+
             foreach (var sibling in _siblingImageElementRenderItems)
             {
                 // only consider ImageElementRenderItems within a certain radius of the current location of this ImageElementRenderItem
-                if (ViewModelLeft - sibling.ViewModelRight < UIDefaults.SnapRadius && sibling.ViewModelLeft - ViewModelRight < UIDefaults.SnapRadius &&
-                    ViewModelTop - sibling.ViewModelBottom < UIDefaults.SnapRadius && sibling.ViewModelTop - ViewModelBottom < UIDefaults.SnapRadius)
+                if (ViewModelLeft - sibling.ViewModelRight < UIDefaults.SnapRadius &&
+                    sibling.ViewModelLeft - ViewModelRight < UIDefaults.SnapRadius &&
+                    ViewModelTop - sibling.ViewModelBottom < UIDefaults.SnapRadius &&
+                    sibling.ViewModelTop - ViewModelBottom < UIDefaults.SnapRadius)
                 {
-                    HorizontalSnapToSibling(sibling);
-                    VerticalSnapToSibling(sibling);
-                    CreateAndShowGridLines();
+                    // check horizontal snap to sibling
+                    var snappedHorizontally = HorizontalSnapToSibling(sibling);
+                    // check vertical snap to sibling
+                    var snappedVertically = VerticalSnapToSibling(sibling);
+
+                    if (snappedHorizontally)
+                    {
+                        // remove selection view from the item this item horizontally snapped to previously
+                        _horizontalSnapItem?.RemoveSnapSelectionView();
+                        // set current sibling to be the new horizontal snap item
+                        _horizontalSnapItem = sibling;
+                        _horizontalSnapItem.CreateSnapSelectionView();
+                    }
+                    if (snappedVertically)
+                    {
+                        // remove selection view from the item this item vertically snapped to previously
+                        _verticalSnapItem?.RemoveSnapSelectionView();
+                        // set current sibling to be the new vertical snap item
+                        _verticalSnapItem = sibling;
+                        _verticalSnapItem.CreateSnapSelectionView();
+                    }
+                    if (!snappedHorizontally && !snappedVertically)
+                    {
+                        sibling.RemoveSnapSelectionView();
+                    }
+                }
+                else
+                {
+                    sibling.RemoveSnapSelectionView();
                 }
             }
-            CreateSnapSelectionView();
+  
+            // create & delete gridlines according to the horizontal and vertical snap location determined above
+            ManageGridLines();
+
+            // reset snap locations to none to correctly remove gridlines when necessary
             _horizontalSnapLocation = Location.None;
             _verticalSnapLocation = Location.None;
         }
 
         /// <summary>
-        /// Handle how this ImageElementRenderItem snaps to and align with another ImageElementRenderItem horizontally
+        /// Handle how this ImageElementRenderItem snaps to and align with another ImageElementRenderItem horizontally (left/right alignment)
+        /// Return a boolean, which represents whether or not this item has snapped to the sibling passed in
         /// </summary>
         /// <param name="sibling"></param>
-        private void HorizontalSnapToSibling(ImageElementRenderItem sibling)
+        private bool HorizontalSnapToSibling(ImageElementRenderItem sibling)
         {
             // determine the threshold distance for which snap alignment should occur
             var horizontalSnapThreshold = Math.Min(sibling.ImageCanvasSize.Width, ImageCanvasSize.Width) /
                                           UIDefaults.SnapThresholdRatio;
 
-            // if element has already aligned with another element horizontally, code below is not executed to prevent element from getting trapped between two items
-            if (_horizontalSnapLocation != Location.None) return;
+            // true if there doesn't exist an item that this item has previously snapped to horizontally or the previously snapped to item is farther away in the Y direction than the current sibling item in question (fixes the selection view problem and prevents this item from being trapped between two sibling items)
+            var shouldCheck = _horizontalSnapItem == null || Math.Abs(ViewModelTop - _horizontalSnapItem.ViewModelTop) >
+                               Math.Abs(ViewModelTop - sibling.ViewModelTop);
+
+            bool current = true;
 
             // when sibling is to the left of this element and the left side of this needs to align with the right side of the sibling
-            if (Math.Abs(ViewModelLeft - sibling.ViewModelRight) < horizontalSnapThreshold)
+            if (Math.Abs(ViewModelLeft - sibling.ViewModelRight) < horizontalSnapThreshold && shouldCheck)
             {
                 ViewModelLeft = sibling.ViewModelRight;
                 _horizontalSnapLocation = Location.Left;
-                sibling.CreateSnapSelectionView();
             }
 
             // when sibling is to the right of this element and the right side of this needs to align with the left side of the sibling
-            else if (Math.Abs(sibling.ViewModelLeft - ViewModelRight) < horizontalSnapThreshold)
+            else if (Math.Abs(sibling.ViewModelLeft - ViewModelRight) < horizontalSnapThreshold && shouldCheck)
             {
                 ViewModelRight = sibling.ViewModelLeft;
                 _horizontalSnapLocation = Location.Right;
-                sibling.CreateSnapSelectionView();
             }
 
             // when the left side of this needs to align with the left side of the sibling
-            else if (Math.Abs(ViewModelLeft - sibling.ViewModelLeft) < horizontalSnapThreshold)
+            else if (Math.Abs(ViewModelLeft - sibling.ViewModelLeft) < horizontalSnapThreshold && shouldCheck)
             {
                 ViewModelLeft = sibling.ViewModelLeft;
                 _horizontalSnapLocation = Location.Left;
-                sibling.CreateSnapSelectionView();
             }
 
             // when the right side of this needs to align with the right side of the sibling
-            else if (Math.Abs(sibling.ViewModelRight - ViewModelRight) < horizontalSnapThreshold)
+            else if (Math.Abs(sibling.ViewModelRight - ViewModelRight) < horizontalSnapThreshold && shouldCheck)
             {
                 ViewModelRight = sibling.ViewModelRight;
                 _horizontalSnapLocation = Location.Right;
-                sibling.CreateSnapSelectionView();
             }
 
             else
             {
-                sibling.RemoveSnapSelectionView();
-                _horizontalSnapLocation = Location.None;
+                current = false;
             }
+
+            // return true if this item has been determined to snap to the sibling passed in
+            return current;
         }
 
         /// <summary>
         /// Handle how this ImageElementRenderItem snaps to and align with another ImageElementRenderItem vertically
+        /// Return a boolean, which represents whether or not this item has snapped to the sibling passed in
         /// </summary>
         /// <param name="sibling"></param>
-        private void VerticalSnapToSibling(ImageElementRenderItem sibling)
+        private bool VerticalSnapToSibling(ImageElementRenderItem sibling)
         {
             // determine the threshold distance for which snap alignment should occur
             var verticalSnapThreshold = Math.Min(sibling.ImageCanvasSize.Height, ImageCanvasSize.Height) /
                                         UIDefaults.SnapThresholdRatio;
 
-            // if element has already aligned with another element vertically, code below is not executed to prevent element from getting trapped between two items
-            if (_verticalSnapLocation != Location.None) return;
+            // true if there doesn't exist an item that this item has previously snapped to or the previously snapped to vertically item is farther away in the X direction than the current sibling item in question (fixes the selection view problem and prevents this item from being trapped between two sibling items)
+            var shouldCheck = _verticalSnapItem == null || Math.Abs(ViewModelLeft - _verticalSnapItem.ViewModelLeft) >
+                               Math.Abs(ViewModelLeft - sibling.ViewModelLeft);
+
+            bool current = true;
 
             // when the sibling is above this element and the top of this element needs to align with the bottom of the sibling
-            if (Math.Abs(ViewModelTop - sibling.ViewModelBottom) < verticalSnapThreshold)
+            if (Math.Abs(ViewModelTop - sibling.ViewModelBottom) < verticalSnapThreshold && shouldCheck)
             {
                 ViewModelTop = sibling.ViewModelBottom;
                 _verticalSnapLocation = Location.Top;
-                sibling.CreateSnapSelectionView();
             }
 
             // when the sibling is below this element and the bottom of this element needs to align with the top of the sibling
-            else if (Math.Abs(sibling.ViewModelTop - ViewModelBottom) < verticalSnapThreshold)
+            else if (Math.Abs(sibling.ViewModelTop - ViewModelBottom) < verticalSnapThreshold && shouldCheck)
             {
                 ViewModelBottom = sibling.ViewModelTop;
                 _verticalSnapLocation = Location.Bottom;
-                sibling.CreateSnapSelectionView();
             }
 
             // when the top of this element needs to align with the top of the sibling
-            else if (Math.Abs(ViewModelTop - sibling.ViewModelTop) < verticalSnapThreshold)
+            else if (Math.Abs(ViewModelTop - sibling.ViewModelTop) < verticalSnapThreshold && shouldCheck)
             {
                 ViewModelTop = sibling.ViewModelTop;
                 _verticalSnapLocation = Location.Top;
-                sibling.CreateSnapSelectionView();
             }
 
             // when the bottom of this element needs to align with the bottom of the sibling
-            else if (Math.Abs(sibling.ViewModelBottom - ViewModelBottom) < verticalSnapThreshold)
+            else if (Math.Abs(sibling.ViewModelBottom - ViewModelBottom) < verticalSnapThreshold && shouldCheck)
             {
                 ViewModelBottom = sibling.ViewModelBottom;
                 _verticalSnapLocation = Location.Bottom;
-                sibling.CreateSnapSelectionView();
             }
 
             else
             {
-                _verticalSnapLocation = Location.None;
+                current = false;
             }
+
+            // return true if this item has been determined to snap to the sibling passed in
+            return current;
         }
 
         /// <summary>
@@ -291,7 +342,7 @@ namespace NuSysApp
         /// <summary>
         /// Create, position, and destroy horizontal and vertical gridlines on this element when necessary for snap alignment
         /// </summary>
-        private void CreateAndShowGridLines()
+        private void ManageGridLines()
         {
             switch (_horizontalSnapLocation)
             {
@@ -347,7 +398,7 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// If not null, remove from this element the line passed in
+        /// If not null, remove from this element the rectangle passed in
         /// </summary>
         /// <param name="line"></param>
         private void RemoveLine(RectangleUIElement line)
@@ -359,7 +410,7 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Create a vertical line to represent a gridline for horizontal snap alignment when the line passed in is null
+        /// Create a vertical rectangle to represent a gridline for horizontal snap alignment when the rectangle passed in is null
         /// </summary>
         /// <returns></returns>
         private RectangleUIElement CreateVerticalLine(RectangleUIElement line)
@@ -377,7 +428,7 @@ namespace NuSysApp
         }
 
         /// <summary>
-        /// Create a horizontal line to represent a gridline for vertical snap alignment when the line passed in is null
+        /// Create a horizontal rectangle to represent a gridline for vertical snap alignment when the rectangle passed in is null
         /// </summary>
         /// <returns></returns>
         private RectangleUIElement CreateHorizontalLine(RectangleUIElement line)

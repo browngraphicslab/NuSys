@@ -17,13 +17,6 @@ namespace NuSysApp
     {
         private bool _showCroppy;
         private ImageDetailRegionRenderItem _activeRegion;
-
-        public Size RegionSize
-        {
-            get { return _activeRegion.Size; }
-            set { _activeRegion.Size = value; }
-        }
-
         private bool _isLoading;
         protected ImageLibraryElementController _controller;
         protected CanvasBitmap _bmp;
