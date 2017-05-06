@@ -268,7 +268,7 @@ namespace NuSysApp
         private void filterlist()
         {
             _metadata_listview.ClearItems();
-            var filtered_metadata = filter_by_mutability(new List<MetadataEntry>(_controller.GetMetadata().Values),
+            var filtered_metadata = filter_by_mutability(new List<MetadataEntry>(GetAllMetadata()),
                 _hideImmutableCheckbox.IsSelected);
             filtered_metadata = filter_by_search_text(filtered_metadata, _searchTextBox.Text);
             _metadata_listview.AddItems(filtered_metadata);
@@ -421,7 +421,16 @@ namespace NuSysApp
                 metadataEntry => string.Join(", ", metadataEntry.Values.Select(value => string.Join(", ", value)));
 
             _metadata_listview.AddColumns(new List<ListColumn<MetadataEntry>> {listColumn, listColumn2});
-            _metadata_listview.AddItems(new List<MetadataEntry>(_controller.GetMetadata().Values));
+            _metadata_listview.AddItems(new List<MetadataEntry>(GetAllMetadata()));
+        }
+
+        private IEnumerable<MetadataEntry> GetAllMetadata()
+        {
+            return _controller.GetMetadata().Values.Concat(
+                new List<MetadataEntry>()
+                {
+                    new MetadataEntry("Icon", new List<string>(), MetadataMutability.IMMUTABLE)
+                });
         }
 
         public override async Task Load()

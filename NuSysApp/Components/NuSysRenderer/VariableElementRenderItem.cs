@@ -20,11 +20,17 @@ namespace NuSysApp
         public VariableElementRenderItem(VariableNodeViewModel vm, BaseRenderItem parent, ICanvasResourceCreatorWithDpi resourceCreator) : base(vm, parent, resourceCreator)
         {
             vm.VariableElementController.StoredLibraryIdChanged += VariableElementControllerOnStoredLibraryIdChanged;
+            vm.VariableElementController.ShowImageAsContent += VariableElementControllerOnShowImageAsContent;
             vm.VariableElementController.SizeChanged += VariableElementControllerOnSizeChanged;
             vm.VariableElementController.UpdateText();
             vm.VariableElementController.SetSize(vm.Model.Width, vm.Model.Height);
             BorderWidth = 3.5f;
             BorderColor = Color.FromArgb(150,76,124,153);
+        }
+
+        private void VariableElementControllerOnShowImageAsContent(object sender, string s)
+        {
+            SetIcon(s);
         }
 
         private void VariableElementControllerOnSizeChanged(object source, double width, double height)
@@ -34,7 +40,7 @@ namespace NuSysApp
 
         private void VariableElementControllerOnStoredLibraryIdChanged(object sender, string s)
         {
-            SetController(s);
+            //SetController(s);
             IsDirty = true;
         }
 
@@ -47,9 +53,19 @@ namespace NuSysApp
             }
         }
 
+        public async Task SetIcon(string iconUrl)
+        {
+            if (iconUrl == null)
+            {
+                _icon = null;
+                return;
+            }
+            _icon = await MediaUtil.LoadCanvasBitmapAsync(ResourceCreator, new Uri(iconUrl));
+        }
+
         public override async Task Load()
         {
-            SetController((ViewModel as VariableNodeViewModel).VariableElementController.VariableModel.StoredLibraryId);
+            //SetController((ViewModel as VariableNodeViewModel).VariableElementController.VariableModel.StoredLibraryId);
              await base.Load();
         }
 
@@ -58,6 +74,7 @@ namespace NuSysApp
             Debug.Assert(ViewModel is VariableNodeViewModel);
             (ViewModel as VariableNodeViewModel).VariableElementController.StoredLibraryIdChanged -= VariableElementControllerOnStoredLibraryIdChanged;
             (ViewModel as VariableNodeViewModel).VariableElementController.SizeChanged -= VariableElementControllerOnSizeChanged;
+            (ViewModel as VariableNodeViewModel).VariableElementController.ShowImageAsContent -= VariableElementControllerOnShowImageAsContent;
             base.Dispose();
         }
 
@@ -98,14 +115,14 @@ namespace NuSysApp
                 var orgTransform = ds.Transform;
                 ds.Transform = Transform.LocalToScreenMatrix;
 
-                var s = Constants.DefaultNodeSize*.1;
+                var s = Constants.DefaultNodeSize;
 
                 using (ds.CreateLayer(1, CanvasGeometry.CreateRectangle(Canvas, new Rect(0, 0, ViewModel.Width, ViewModel.Height))))
                 {
-                    //var b = _icon.GetBounds(ResourceCreator);
+                    var b = _icon.GetBounds(ResourceCreator);
                     ds.DrawText((ViewModel as VariableNodeViewModel).VariableElementController.MetadataKey,
                         new Rect(ViewModel.Width - 3*s, ViewModel.Height - (s/2), 3*s - 5.5, s/2), Color.FromArgb(150, 76, 124, 153),_format);
-                    //ds.DrawImage(_icon, new Rect(ViewModel.Width-s, ViewModel.Height-s,s,s*(b.Height/b.Width)), _icon.GetBounds(Canvas));
+                    ds.DrawImage(_icon,this.GetLocalBounds(), _icon.GetBounds(Canvas));
                 }
 
                 ds.Transform = orgTransform;

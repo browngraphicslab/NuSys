@@ -191,7 +191,7 @@ namespace NuSysApp
 
                 foreach (var child in children)
                 {
-                    var hit = child.HitTest(screenPoint);
+                    var hit = child?.HitTest(screenPoint);
                     if (hit != null)
                         return hit;
                 }

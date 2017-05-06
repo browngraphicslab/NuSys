@@ -13,7 +13,8 @@ namespace NuSysApp
     public class VariableElementController : TextNodeController
     {
         public static int MaxChars = 0;
-        public event EventHandler<string> StoredLibraryIdChanged; 
+        public event EventHandler<string> StoredLibraryIdChanged;
+        public event EventHandler<string> ShowImageAsContent;
         public VariableLibraryElementController VariableController
         {
             get
@@ -186,6 +187,22 @@ namespace NuSysApp
             if (_blockServerInteractionCount == 0)
             {
                 _debouncingDictionary.Add("StoredLibraryId",libraryId);
+            }
+            var controller = SessionController.Instance.ContentController.GetLibraryElementController(libraryId);
+            if (VariableModel.MetadataKey == "Icon")
+            {
+                if (controller != null)
+                {
+                    ShowImageAsContent?.Invoke(this, controller.LargeIconUri.AbsoluteUri);
+                }
+                else
+                {
+                    ShowImageAsContent?.Invoke(this, null);
+                }
+            }
+            else
+            {
+                ShowImageAsContent?.Invoke(this, null);
             }
         }
 

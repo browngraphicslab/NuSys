@@ -284,7 +284,7 @@ namespace NuSysApp
 
             var drawBoundsHeight = (float)(_textLayout?.DrawBounds.Height ?? 5.0f);
 
-            if (ViewModel.Controller.Model.ShowTitle)
+            if (ViewModel.Controller.Model.ShowTitle && false)
             {
                 if (SessionController.Instance.SessionSettings.ResizeElementTitles)
                 {
