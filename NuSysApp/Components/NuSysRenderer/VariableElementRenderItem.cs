@@ -24,6 +24,7 @@ namespace NuSysApp
             vm.VariableElementController.SizeChanged += VariableElementControllerOnSizeChanged;
             vm.VariableElementController.UpdateText();
             vm.VariableElementController.SetSize(vm.Model.Width, vm.Model.Height);
+            vm.VariableElementController.SetStoredLibraryId(vm.VariableElementController.VariableModel.StoredLibraryId);
             BorderWidth = 3.5f;
             BorderColor = Color.FromArgb(150,76,124,153);
         }

@@ -464,7 +464,7 @@ namespace NuSysApp
         {
             double x = Transform.TranslateX;
             double y = Transform.TranslateY;
-            return new Rect(x, y, Width, Height);
+            return new Rect(Model.X,Model.Y, Width, Height);
         }
 
         /// <summary>

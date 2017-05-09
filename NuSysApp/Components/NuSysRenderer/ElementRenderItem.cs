@@ -17,6 +17,7 @@ using Microsoft.Graphics.Canvas.Brushes;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using MyToolkit.Mathematics;
 using WinRTXamlToolkit.IO.Extensions;
 
 namespace NuSysApp
@@ -426,5 +427,27 @@ namespace NuSysApp
             return new Rect(0, 0, ViewModel.Width, ViewModel.Height);
         }
 
+        public Rect? IsInRectangle()
+        {
+            var coll = Parent as CollectionRenderItem;
+            /*
+            Task.Run(async delegate
+            {
+                foreach (var lem in SessionController.Instance.ContentController.AllLibraryElementControllers)
+                {
+                    var req = new DeleteLibraryElementRequest(lem.LibraryElementModel.LibraryElementId);
+                    SessionController.Instance.NuSysNetworkSession.ExecuteRequestAsync(req);
+                }
+            });*/
+            var rects = coll.GetRectangles();
+            foreach (var r in rects)
+            {
+                if (r.Intersects(ViewModel.GetBoundingRect()))
+                {
+                    return r;
+                }
+            }
+            return null;
+        }
     }
 }

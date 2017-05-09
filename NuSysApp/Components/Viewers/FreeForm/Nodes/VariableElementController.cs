@@ -193,7 +193,14 @@ namespace NuSysApp
             {
                 if (controller != null)
                 {
-                    ShowImageAsContent?.Invoke(this, controller.LargeIconUri.AbsoluteUri);
+                    if (controller.GetMetadata("Icon")?.First() != null && Uri.IsWellFormedUriString(controller.GetMetadata("Icon").First(),UriKind.RelativeOrAbsolute))
+                    {
+                        ShowImageAsContent?.Invoke(this, controller.GetMetadata("Icon").First());
+                    }
+                    else
+                    {
+                        ShowImageAsContent?.Invoke(this, controller.LargeIconUri.AbsoluteUri);
+                    }
                 }
                 else
                 {

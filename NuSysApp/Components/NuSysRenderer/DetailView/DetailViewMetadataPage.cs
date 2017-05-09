@@ -160,6 +160,7 @@ namespace NuSysApp
                     if (_lastDragEntry != null)
                     {
                         controller.SetMetadataKey(_lastDragEntry.Key);
+                        controller.SetStoredLibraryId(_controller.LibraryElementModel.LibraryElementId);
                     }
                 });
             }

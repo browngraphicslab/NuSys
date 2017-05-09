@@ -14,10 +14,11 @@ using Windows.Storage;
 using Windows.UI;
 using Windows.UI.Xaml.Input;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using MyToolkit.Mathematics;
 using NetTopologySuite.Geometries;
 using NusysIntermediate;
 using NuSysApp.Components.NuSysRenderer.UI;
-
+using Point = Windows.Foundation.Point;
 
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -1195,9 +1196,29 @@ namespace NuSysApp
 
         private void CollectionInteractionManagerOnDuplicateCreated(ElementRenderItem element, Vector2 point)
         {
-            var targetPoint = Vector2.Transform(point,
-                Win2dUtil.Invert(RenderEngine.GetTransformUntil(element)));
-            element.ViewModel.Controller.RequestDuplicate(targetPoint.X, targetPoint.Y);
+            var targetPoint = Vector2.Transform(point, Win2dUtil.Invert(RenderEngine.GetTransformUntil(element)));
+
+            var elementsToDuplicate = new List<Tuple<ElementRenderItem, Vector2>>() {new Tuple<ElementRenderItem, Vector2>(element, targetPoint)};
+
+            var elementRect = element.IsInRectangle();
+            if (elementRect != null)
+            {
+                elementsToDuplicate.Clear();
+                var elements = (element.Parent as CollectionRenderItem).GetRenderItems2();
+                var selectedElements = elements.OfType<VariableElementRenderItem>().Where(i => i.ViewModel.GetBoundingRect().Intersects(elementRect.Value));
+                foreach (var e in selectedElements)
+                {
+                    var targetPoint2 = Vector2.Transform(point, Win2dUtil.Invert(RenderEngine.GetTransformUntil(e)));
+                    targetPoint2 += new Vector2((float) (e.ViewModel.X - element.ViewModel.X),
+                        (float) (e.ViewModel.Y - element.ViewModel.Y));
+                    elementsToDuplicate.Add(new Tuple<ElementRenderItem, Vector2>(e as ElementRenderItem, 
+                        targetPoint2));
+                }
+            }
+            foreach (var e in elementsToDuplicate)
+            {
+                e.Item1.ViewModel.Controller.RequestDuplicate(e.Item2.X, e.Item2.Y);
+            }
         }
 
         private void CollectionInteractionManagerOnItemMoved(CanvasPointer pointer, ElementRenderItem elem,

@@ -66,6 +66,11 @@ namespace NuSysApp
 
         private List<Rect> _boundingRects = new List<Rect>();
 
+        public List<Rect> GetRectangles()
+        {
+            return _boundingRects;
+        }
+
         public void AddRect(Rect rect)
         {
             var array = _renderItems2.OfType<VariableElementRenderItem>().ToArray();
@@ -113,6 +118,10 @@ namespace NuSysApp
             _boundingRects.Add(new Rect(minx - b, miny - b, fx.Max(i => i.X + i.Width) - minx + b +b, fx.Max(i => i.Y + i.Height) - miny +b+ b));
         }
 
+        public List<BaseRenderItem> GetRenderItems2()
+        {
+            return _renderItems2;
+        }
         public void SetNewController(LibraryElementController controller)
         {
             var array = _renderItems2.OfType<VariableElementRenderItem>().ToArray();
